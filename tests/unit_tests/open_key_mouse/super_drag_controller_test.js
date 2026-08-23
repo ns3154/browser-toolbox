@@ -39,4 +39,24 @@ context("Super drag controller", () => {
     );
     assert.isTrue(validation.ok);
   });
+
+  should("preserve native input and cancellation paths", () => {
+    const doc =
+      new jsdom.JSDOM("<input id='input'><a id='link' href='https://example.com'>Link</a>").window
+        .document;
+    const link = doc.querySelector("#link");
+    const input = doc.querySelector("#input");
+    const event = { button: 0, altKey: false, clientX: 0, clientY: 0, target: link };
+    const controller = new OpenKeyMouseSuperDragController({ enabled: false });
+    assert.isFalse(controller.pointerDown(event, "", null));
+    controller.updateSettings({ enabled: true, nativeBypassModifier: "Alt", bindings: [] });
+    assert.isFalse(controller.pointerDown({ ...event, button: 2 }, "", null));
+    assert.isFalse(controller.pointerDown({ ...event, altKey: true }, "", null));
+    assert.isFalse(controller.pointerDown({ ...event, target: input }, "", null));
+    assert.isTrue(controller.pointerDown(event, "", null));
+    controller.cancel();
+    assert.equal(null, controller.pointerMove({ clientX: 20, clientY: 0 }));
+    assert.equal(null, controller.pointerUp());
+    assert.isFalse(controller.pointerDown({ ...event, target: input }, "", { files: [{}] }));
+  });
 });

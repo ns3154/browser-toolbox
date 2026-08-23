@@ -24,3 +24,9 @@
 GitHub、Gmail 登录页、Google Docs 登录页、Notion、YouTube、Reddit challenge、StackBlitz 和
 Wikipedia 长列表也完成了隔离内容脚本注入冒烟。上述证据不替代屏幕阅读器、人工高对比度/缩放、登录态
 业务流程或设计文档 §18.4 的 Windows、macOS、Linux Chrome Stable、Edge 手工矩阵，因此不改变矩阵状态。
+
+2026-08-24 自动门禁补充：当前 checkout 的单元/DOM 基线为 `308/308`、`109/109`，macOS Chrome for
+Testing 148 与 Linux ARM64 Debian Chromium 151 的增强 E2E 均通过；新增算法、配置和 Dispatcher 的
+行覆盖率门槛也已实际采集并通过。窗口状态命令补齐了 fullscreen/normal、minimized、maximized 的
+浏览器 API 路由。上述自动证据仍不提供 §18.4 所需的 Windows、Edge、Chrome Stable 手工结果，因此
+`V-002`、`O-001` 至 `O-005` 和 `C-001` 至 `C-003` 继续保持 `IN_PROGRESS`。

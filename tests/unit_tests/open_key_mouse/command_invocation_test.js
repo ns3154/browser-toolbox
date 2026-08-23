@@ -53,4 +53,49 @@ context("OpenKeyMouse command invocation", () => {
     assert.isFalse(result.ok);
     assert.equal("INVALID_OPTIONS", result.code);
   });
+
+  should("validate boundaries, protocols and plain data", () => {
+    const api = OpenKeyMouseCommandInvocation;
+    assert.isTrue(api.isPlainData(null));
+    assert.isTrue(api.isPlainData({ nested: ["ok", 1, true] }));
+    assert.isFalse(api.isPlainData(new Date()));
+    assert.isTrue(
+      api.isPlainData({
+        value: { value: { value: { value: { value: { value: null } } } } },
+      }),
+    );
+    assert.isFalse(api.isAllowedUrl(""));
+    assert.isFalse(api.isAllowedUrl("x".repeat(8193)));
+    assert.isFalse(api.isAllowedUrl("http://[::1"));
+    assert.isTrue(api.isAllowedUrl("file:///tmp/example"));
+    assert.isTrue(api.isAllowedUrl("ftp://example.com/file"));
+    assert.isTrue(api.isAllowedUrl("mailto:test@example.com"));
+    assert.isFalse(api.isAllowedUrl("chrome-extension://other/pages/options.html"));
+    assert.isFalse(api.isAllowedUrl("chrome-extension://own/pages/options.html", {
+      allowExtension: false,
+    }));
+  });
+
+  should("reject malformed invocation fields", () => {
+    const api = OpenKeyMouseCommandInvocation;
+    const valid = api.createInvocation("scrollDown", {}, { type: "ui" }, {});
+    const check = (changes, code) => {
+      const result = api.validateInvocation(
+        Object.assign({}, valid, changes),
+        OpenKeyMouseCommandRegistry,
+      );
+      assert.equal(code, result.code);
+    };
+    check(null, "OK");
+    check({ protocolVersion: 2 }, "INVALID_OPTIONS");
+    check({ requestId: "short" }, "INVALID_OPTIONS");
+    check({ commandName: "x".repeat(129) }, "UNKNOWN_COMMAND");
+    check({ commandName: "missing" }, "UNKNOWN_COMMAND");
+    check({ count: 0 }, "INVALID_OPTIONS");
+    check({ count: 51 }, "INVALID_OPTIONS");
+    check({ source: { type: "unknown" } }, "INVALID_OPTIONS");
+    check({ options: new Date() }, "INVALID_OPTIONS");
+    check({ context: new Date() }, "INVALID_OPTIONS");
+    check({ context: { imageUrl: "javascript:bad" } }, "BLOCKED_URL_SCHEME");
+  });
 });

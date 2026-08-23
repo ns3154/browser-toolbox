@@ -11,4 +11,18 @@ context("Rocker gesture controller", () => {
     assert.equal(null, controller.pointerDown(0));
     assert.equal("HOLD_LEFT_THEN_CLICK_RIGHT", controller.pointerDown(2));
   });
+
+  should("ignore invalid or repeated buttons and clear suppression", () => {
+    const controller = new OpenKeyMouseRockerGestureController();
+    assert.equal(null, controller.pointerDown(1));
+    assert.equal(null, controller.pointerDown(2));
+    assert.equal(null, controller.pointerDown(2));
+    assert.isFalse(controller.pointerUp(0));
+    controller.cancel();
+    assert.isFalse(controller.pointerUp(2));
+    assert.equal(null, controller.pointerDown(0));
+    assert.equal("HOLD_LEFT_THEN_CLICK_RIGHT", controller.pointerDown(2));
+    assert.isTrue(controller.pointerUp(2));
+    assert.isTrue(controller.pointerUp(0));
+  });
 });

@@ -41,4 +41,43 @@ context("Site rule matcher", () => {
       ),
     );
   });
+
+  should("resolve flags, choose effective rules and ignore invalid input", () => {
+    const matcher = OpenKeyMouseSiteRuleMatcher;
+    assert.equal(null, matcher.compile("x".repeat(2049)));
+    assert.equal(-3, matcher.specificity("***"));
+    assert.equal({ mouse: true }, matcher.resolve(null, "https://example.com", { mouse: true }));
+    assert.equal(
+      {
+        enabled: true,
+        mouse: true,
+        passKeys: "jk",
+      },
+      matcher.resolve(
+        [
+          {
+            pattern: "https://example.com/*",
+            enabled: false,
+            modules: { mouse: false },
+            passKeys: "jk",
+          },
+          { pattern: "https://example.com/*", enabled: true, modules: { mouse: true } },
+        ],
+        "https://example.com/page",
+        { enabled: false },
+      ),
+    );
+    assert.equal(
+      { pattern: "https://docs.example.com/editor/private", modules: { mouse: true } },
+      matcher.effectiveRule(rules, "https://docs.example.com/editor/private"),
+    );
+    assert.equal(null, matcher.effectiveRule(rules, "https://other.example/"));
+    assert.equal(
+      { disabled: false, passKeys: "" },
+      matcher.exclusionState([
+        { pattern: "[", passKeys: "j" },
+        null,
+      ], "https://example.com/"),
+    );
+  });
 });

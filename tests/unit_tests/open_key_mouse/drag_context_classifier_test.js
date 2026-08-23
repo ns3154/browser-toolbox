@@ -75,4 +75,29 @@ context("Drag context classifier", () => {
       OpenKeyMouseDragContextClassifier.classify(doc.querySelector("#bad-image")).type,
     );
   });
+
+  should("classify images and selected text while rejecting unsupported targets", () => {
+    const image = document.querySelector("#image");
+    assert.equal("IMAGE", OpenKeyMouseDragContextClassifier.classify(image).type);
+    assert.equal(
+      "SELECTED_TEXT",
+      OpenKeyMouseDragContextClassifier.classify(
+        document.body,
+        "  selected text  ",
+      ).type,
+    );
+    assert.equal(
+      "UNSUPPORTED_NATIVE_DRAG",
+      OpenKeyMouseDragContextClassifier.classify(
+        document.body,
+        "",
+        null,
+        null,
+      ).type,
+    );
+    assert.equal("UNSUPPORTED_NATIVE_DRAG", OpenKeyMouseDragContextClassifier.classify(null).type);
+    assert.isFalse(OpenKeyMouseDragContextClassifier.isProtectedTarget(document.body));
+    assert.equal(null, OpenKeyMouseDragContextClassifier.safeUrl("javascript:alert(1)"));
+    assert.equal(null, OpenKeyMouseDragContextClassifier.safeUrl("blob:https://example.com/id"));
+  });
 });

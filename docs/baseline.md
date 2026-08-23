@@ -235,3 +235,37 @@ Reddit/在线编辑器等真实站点矩阵，也不能替代完整 Vimium 原�
 该结果只证明这些页面上的内容脚本隔离注入和初始化冒烟通过，不证明已登录 Gmail/Docs/Notion 或在线
 编辑器中的手势功能，也不替代真实站点人工操作、跨 frame、长列表和 Windows/Edge/Linux Chrome Stable
 矩阵；功能矩阵中的相关项继续保持 `IN_PROGRESS`。
+
+## 当前 checkout 最终自动门禁（2026-08-24）
+
+本轮在新增覆盖率测试、配置仓库测试、命令路由测试和窗口状态实现后，重新构建 `dist/vimium`，并对当前
+checkout 执行完整自动门禁：
+
+- macOS arm64 系统 Chrome 151 覆盖下，`./make.js test` 通过：单元 `308/308`、DOM `109/109`，总计
+  `417/417`；系统 Chrome 的扩展命令行加载仍被 Google Chrome 明确拒绝，因此该结果只作为 Vimium
+  基线测试覆盖，不作为系统 Chrome Stable unpacked 扩展手工证据；
+- macOS arm64 Chrome for Testing `148.0.7778.96` 独立临时 profile 的增强扩展 E2E 通过，页面错误为空，
+  覆盖设置、无障碍语义、核心手势、Super Drag、Wheel、Rocker、跨 frame、站点规则、导入导出和
+  Service Worker 重启；
+- Docker `linux/arm64`、Debian 13、Chromium `151.0.7922.169`，以非 root 用户在临时容器中重跑当前
+  checkout：`./make.js test` 为 `417/417`，增强扩展 E2E 退出码为 0，页面错误为空；这仍不是
+  §18.4 要求的 Linux + Chrome Stable 手工矩阵。
+
+覆盖率使用 Deno V8 coverage 对 `test-unit` 实际采集：
+
+| 范围 | 行覆盖率结果 |
+| --- | ---: |
+| 新增纯算法模块（方向量化、手势识别、拖拽分类、轨迹、滚轮、摇杆、超级拖拽、光标） | `95.2%`–`100%` |
+| 配置模块（schema、validator、migrations、repository） | `98.1%`–`99.7%` |
+| Command Dispatcher | `100%` |
+| 本轮纳入范围总计 | `97.6%` |
+
+此外，权限审计仍为 9 项权限且无禁止权限/远程脚本，网络审计扫描 26 个新增模块且无后台或隐式网络调用，
+`deno check`、`scripts/build_release.js`、商店包重建和 `git diff --check` 均通过。Windows、Edge、
+认证态真实站点、屏幕阅读器以及四平台手工矩阵没有可复核证据，继续保持未完成状态。
+
+本次重建产物 SHA-256：Chrome 商店包
+`c8af2b604024069ace7e5edd2bbf89b37e783122743649ff0b7b5aa8db7972e6`；Firefox 包
+`c2a02027409c4c4d7f2e6d879a86719a76bc55a5b506abba0efb09a6be09a39a`；Canary 包
+`11af2eacad4b3ea57d530eeae07b4b3b594c38c9eb908bf0e2b2fdc18730bd6e`；源码包
+`ba76e75dda45c2a94b12465c3b4cda59865d4af4713a000e3e8cbc74e7ac96a0`。

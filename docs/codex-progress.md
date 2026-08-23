@@ -326,3 +326,40 @@ git diff --check：通过
 - 下一步：取得合规的 Windows + Chrome Stable/Edge Stable 测试环境后，按设计文档 §18.4 逐项执行手工矩阵，
   再据实际证据更新 `docs/feature-parity-matrix.md`；在此之前不标记 `DONE`。
 - 对应提交：本轮文档核对后创建本地检查点；无 `origin`，不推送。
+
+## 2026-08-24 / 覆盖率门禁、配置仓库与最终跨运行时重跑 / E-007
+
+- 授权边界：继续执行用户明确的“一次性完成”要求；本轮只补齐当前 OpenKeyMouse 实现的可验证缺口，
+  不把缺少 Windows、Edge、认证态站点和人工矩阵的部分写成完成，也不改变开源、免费、无商业化、无遥测、
+  无远程代码和 clean-room 禁止复制 CrxMouse 闭源代码/资产/文案/界面的约束。
+- 代码与测试修改：补充方向量化、手势识别、滚轮、摇杆、光标、超级拖拽、拖拽分类、命令调用、消息协议、
+  站点规则、配置校验、命令注册表、配置仓库、帧协调器、浏览器命令适配器和 Dispatcher 的边界/异常测试；
+  修复 `BrowserCommandAdapter` 缺失的窗口状态路由，fullscreen 在 fullscreen/normal 间切换，另支持
+  minimized 和 maximized，并保留无活动窗口的安全错误返回。
+- 覆盖率实际结果：Deno V8 coverage 的 `test-unit` 为 `308/308`；新增纯算法模块行覆盖率均不低于 90%，
+  配置模块（schema、validator、migrations、repository）为 `98.1%`–`99.7%`，Dispatcher 为 `100%`，
+  本轮纳入范围总计 `97.6%`。这是真实采集结果，不是由单元通过率推定。
+- 当前 checkout 的自动验证：
+
+```text
+macOS arm64 系统 Chrome 覆盖 ./make.js test：单元 308/308，DOM 109/109，总计 417/417，退出码 0
+macOS arm64 Chrome for Testing 148.0.7778.96 增强扩展 E2E：退出码 0，页面错误为空
+Linux arm64 Debian 13 Chromium 151.0.7922.169（非 root 临时容器）./make.js test：单元 308/308，DOM 109/109，总计 417/417，退出码 0
+Linux arm64 Debian 13 Chromium 151.0.7922.169 增强扩展 E2E：退出码 0，页面错误为空
+```
+
+- 其他门禁：`deno check` 通过；权限审计通过（9 项权限，无禁止权限或远程脚本）；网络审计扫描 26 个新增
+  模块且无后台/隐式网络调用；`scripts/build_release.js` 和 `./make.js package` 通过；`git diff --check`
+  通过。商店包不包含 `docs/`、`scripts/`、测试目录或 Markdown，源码交付包仍按设计保留开发审计资料。
+- 当前重建产物 SHA-256：Chrome 商店包
+  `c8af2b604024069ace7e5edd2bbf89b37e783122743649ff0b7b5aa8db7972e6`；Firefox 包
+  `c2a02027409c4c4d7f2e6d879a86719a76bc55a5b506abba0efb09a6be09a39a`；Canary 包
+  `11af2eacad4b3ea57d530eeae07b4b3b594c38c9eb908bf0e2b2fdc18730bd6e`；源码包
+  `ba76e75dda45c2a94b12465c3b4cda59865d4af4713a000e3e8cbc74e7ac96a0`。
+- 浏览器边界：系统 Chrome 151 的命令行扩展加载仍明确报告 `--disable-extensions-except is not allowed`
+  并忽略加载参数；Windows VM、Edge Stable 不在当前主机可用环境中。Linux Chromium 隔离结果不等同于
+  Linux Chrome Stable 手工结果。认证态 Gmail/Docs/Notion/在线编辑器、屏幕阅读器、人工高对比度/缩放、
+  完整 Vimium 手工回归和 §18.4 四平台矩阵仍未验证，功能矩阵维持 `IN_PROGRESS`。
+- 下一步：只有在取得合规的 Windows + Chrome Stable/Edge Stable 测试环境并实际完成 §18.4 矩阵后，才可
+  更新对应矩阵状态；当前本地工作仅创建检查点，不推送、不发布。
+- 对应提交：已创建本地 main 检查点；无 `origin`，不推送。

@@ -85,6 +85,19 @@
       });
     }
 
+    async toggleWindowState(tab, state) {
+      if (tab?.windowId == null) {
+        return invocationApi.createResult(false, invocationApi.ERROR_CODES.NO_ACTIVE_TAB);
+      }
+      let nextState = state;
+      if (state === "fullscreen") {
+        const window = await chrome.windows.get(tab.windowId);
+        nextState = window?.state === "fullscreen" ? "normal" : "fullscreen";
+      }
+      await chrome.windows.update(tab.windowId, { state: nextState });
+      return invocationApi.createResult(true);
+    }
+
     async searchSelection(text, disposition, tab) {
       if (typeof text !== "string" || text.trim().length === 0) {
         return invocationApi.createResult(false, invocationApi.ERROR_CODES.NO_MATCHING_ELEMENT);

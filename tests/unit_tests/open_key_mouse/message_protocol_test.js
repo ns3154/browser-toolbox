@@ -20,4 +20,30 @@ context("Message protocol", () => {
       OpenKeyMouseMessageProtocol.isTrustedSender({ id: "openkeymouse" }, "openkeymouse"),
     );
   });
+
+  should("validate sender shapes, errors and responses", () => {
+    const protocol = OpenKeyMouseMessageProtocol;
+    let threw = false;
+    try {
+      protocol.create("unknown");
+    } catch (_) {
+      threw = true;
+    }
+    assert.isTrue(threw);
+    assert.isFalse(protocol.validate(null));
+    assert.isFalse(protocol.validate({ protocolVersion: 2, type: "openKeyMouse.invoke" }));
+    assert.isFalse(
+      protocol.validate({ protocolVersion: 1, type: "openKeyMouse.invoke", bad: new Date() }),
+    );
+    assert.isFalse(protocol.isTrustedSender(null, "id"));
+    assert.isFalse(protocol.isTrustedSender({ id: 1 }, "id"));
+    assert.isFalse(protocol.isTrustedSender({ id: "other" }, "id"));
+    assert.isTrue(protocol.isTrustedSender({}, "id"));
+    assert.equal({
+      protocolVersion: 1,
+      type: "openKeyMouse.result",
+      requestId: "request-1",
+      result: { ok: true },
+    }, protocol.response("request-1", { ok: true }));
+  });
 });
