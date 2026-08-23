@@ -508,6 +508,104 @@ async function saveOptions(options) {
   if (result !== true) throw new Error(`设置保存失败：${result}`);
 }
 
+async function testOptionsAccessibility(options) {
+  console.log("E2E: 设置页键盘和无障碍语义");
+  await waitFor(() =>
+    options.$eval(".okm-nav button", (element) => element.getAttribute("role") === "tab")
+  );
+  const semantics = await options.evaluate(() => {
+    const controls = [...document.querySelectorAll("input, select, textarea")];
+    const unnamed = controls.filter((control) => {
+      if (control.type === "hidden") return false;
+      return !control.getAttribute("aria-label") && !control.labels?.length;
+    });
+    const tabs = [...document.querySelectorAll("[role=tab]")];
+    const panels = [...document.querySelectorAll("[role=tabpanel]")];
+    return {
+      tablist: document.querySelector("[role=tablist]")?.getAttribute("aria-orientation"),
+      tabs: tabs.length,
+      validTabs: tabs.every((tab) => tab.getAttribute("aria-controls") && tab.id),
+      panels: panels.length,
+      validPanels: panels.every((panel) => panel.getAttribute("aria-labelledby")),
+      unnamed: unnamed.map((control) => control.id || control.outerHTML.slice(0, 80)),
+    };
+  });
+  assertEqual(semantics.tablist, "vertical", "设置页导航应声明垂直标签组");
+  assert(
+    semantics.tabs === 11 && semantics.validTabs,
+    `设置页导航按钮应具备完整 tab 语义：${JSON.stringify(semantics)}`,
+  );
+  assert(
+    semantics.panels === 11 && semantics.validPanels,
+    `设置页面板应具备完整 tabpanel 语义：${JSON.stringify(semantics)}`,
+  );
+  assertEqual(
+    semantics.unnamed.length,
+    0,
+    `设置页表单控件应有可访问名称：${JSON.stringify(semantics)}`,
+  );
+
+  await options.focus(".okm-nav button");
+  await options.keyboard.press("End");
+  await waitFor(() =>
+    options.$eval(
+      ".okm-nav button:last-child",
+      (element) => element.getAttribute("aria-selected") === "true",
+    )
+  );
+  await options.keyboard.press("Home");
+  await waitFor(() =>
+    options.$eval(
+      ".okm-nav button:first-child",
+      (element) => element.getAttribute("aria-selected") === "true",
+    )
+  );
+  await options.keyboard.press("ArrowDown");
+  await options.keyboard.press("ArrowDown");
+  await waitFor(() =>
+    options.$eval(
+      "button[data-section='mouse']",
+      (element) => element.getAttribute("aria-selected") === "true",
+    )
+  );
+
+  await options.focus("#gesture-pattern-input");
+  await options.keyboard.type("L>R");
+  assertEqual(
+    await options.$eval("#gesture-preview", (element) => element.textContent),
+    "L > R",
+    "键盘轨迹输入应更新可读预览",
+  );
+  await options.focus("#add-gesture-binding");
+  await options.keyboard.press("Enter");
+  assert(
+    await options.$eval(
+      "#mouse-bindings",
+      (element) => [...element.querySelectorAll("input")].some((input) => input.value === "L>R"),
+    ),
+    "键盘轨迹输入应可添加绑定",
+  );
+
+  const mediaClient = await options.createCDPSession();
+  await mediaClient.send("Emulation.setEmulatedMedia", {
+    features: [
+      { name: "forced-colors", value: "active" },
+      { name: "prefers-contrast", value: "more" },
+    ],
+  });
+  await options.setViewport({ width: 480, height: 800 });
+  const responsive = await options.evaluate(() => ({
+    forcedColors: matchMedia("(forced-colors: active)").matches,
+    highContrast: matchMedia("(prefers-contrast: more)").matches,
+    layout: getComputedStyle(document.querySelector(".okm-layout")).display,
+  }));
+  assert(responsive.forcedColors && responsive.highContrast, "设置页应响应高对比度媒体特征");
+  assertEqual(responsive.layout, "block", "设置页窄视口应切换为单列布局");
+  await mediaClient.send("Emulation.setEmulatedMedia", { features: [] });
+  await mediaClient.detach();
+  await options.setViewport({ width: 1280, height: 800 });
+}
+
 async function testOptionsAndBackup(options, base127, tempDir, page) {
   console.log("E2E: 设置页保存");
   await options.select("#language", "en");
@@ -1018,6 +1116,8 @@ async function main() {
     }
     options = await openOptions(browser, id, errors);
     console.log("E2E: 扩展页面已加载");
+    await resetSettings(options);
+    await testOptionsAccessibility(options);
     await resetSettings(options);
     await options.evaluate(() => navigator.clipboard?.writeText?.(""));
     await patchSettings(options, { general: { language: "en" } });

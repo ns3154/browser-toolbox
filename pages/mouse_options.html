@@ -23,8 +23,9 @@
   <body>
     <div class="okm-layout">
       <aside class="okm-sidebar">
-        <h1 data-i18n="openKeyMouse">OpenKeyMouse</h1>
-        <nav class="okm-nav" aria-label="Settings sections" data-i18n-aria-label="settingsSections">
+        <h1 id="open-key-mouse-title" data-i18n="openKeyMouse">OpenKeyMouse</h1>
+        <nav class="okm-nav" role="tablist" aria-orientation="vertical"
+          aria-label="Settings sections" data-i18n-aria-label="settingsSections">
           <button data-section="general" aria-selected="true" data-i18n="general">General</button>
           <button data-section="keyboard" aria-selected="false"
             data-i18n="keyboard">Keyboard</button>
@@ -47,7 +48,7 @@
             data-i18n="aboutLicenses">About &amp; Licenses</button>
         </nav>
       </aside>
-      <main class="okm-main">
+      <main class="okm-main" aria-labelledby="open-key-mouse-title">
         <section class="okm-panel" data-panel="general">
           <h2 data-i18n="general">General</h2>
           <div class="okm-grid">
@@ -110,7 +111,13 @@
               class="okm-check"><input id="show-command-hud" type="checkbox"> <span data-i18n="showHud">Show command HUD</span></label>
           </div>
           <h3 data-i18n="pattern">Pattern</h3>
-          <canvas id="gesture-canvas" width="320" height="180" aria-label="Gesture editor"></canvas>
+          <canvas id="gesture-canvas" width="320" height="180" tabindex="0"
+            aria-label="Gesture editor" data-i18n-aria-label="gestureEditor"></canvas>
+          <label class="okm-field okm-pattern-input">
+            <span data-i18n="patternInput">Pattern text (for example, L&gt;R)</span>
+            <input id="gesture-pattern-input" type="text" autocomplete="off" spellcheck="false"
+              aria-describedby="gesture-preview">
+          </label>
           <div id="gesture-preview" aria-live="polite"></div>
           <div
             class="okm-actions"><button id="clear-gesture" data-i18n="reset">Reset</button><button id="add-gesture-binding" class="primary" data-i18n="addBinding">Add binding</button></div>

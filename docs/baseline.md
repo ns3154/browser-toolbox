@@ -197,3 +197,41 @@ Reddit/在线编辑器等真实站点矩阵，也不能替代完整 Vimium 原�
   Super Drag、Wheel、Rocker、跨 frame 和 Service Worker 重启均通过；
 - 该项是 Linux ARM64 Chromium 自动/隔离补充证据，不是设计文档 §18.4 要求的 Linux + Chrome Stable
   手工矩阵，因此不将 `V-002`、`O-001` 至 `O-005` 或 `C-001` 至 `C-003` 改为 `DONE`。
+
+## 设置页键盘、语义、高对比度补充验证（2026-08-24）
+
+在 macOS arm64 上使用 Chrome for Testing 148.0.7778.96 独立临时 profile 重跑
+`scripts/e2e_open_key_mouse.js`，退出码为 0，页面错误为空。新增自动断言实际覆盖：
+
+- 设置页导航为垂直 `tablist`，11 个 tab 与 11 个 tabpanel 的 `id`、`aria-controls`、
+  `aria-labelledby` 对应关系，以及 roving `tabindex`；
+- 侧栏通过 `ArrowUp`/`ArrowDown`/`Home`/`End` 键盘切换，所有表单控件都有可计算名称；
+- 在没有依赖画布拖动的情况下，通过文本框输入 `L>R` 并用键盘提交绑定；
+- 通过 CDP 检查 `forced-colors: active` 与 `prefers-contrast: more`，并在 480px 窄视口确认
+  设置页退化为单列布局。
+
+随后在 Linux ARM64 Debian 13 Chromium 151.0.7922.169 隔离容器中重跑同一增强 E2E，退出码同样为 0。
+这些是自动化语义和响应式冒烟证据，不等同于屏幕阅读器、人工高对比度、缩放或设计文档 §18.4 的
+跨平台手工矩阵验收。
+
+## 真实站点隔离注入冒烟（2026-08-24）
+
+使用 Chrome for Testing 独立临时 profile，不使用登录态、不读取用户资料；通过扩展设置页调用
+`chrome.scripting.executeScript` 的 `ISOLATED` world 检查内容脚本状态。每个站点均返回 HTTP 200，
+`controller` 和 `initialized` 均为 `true`，监听器数量为 13，页面错误为空：
+
+| 站点类别 | 实际地址或结果 |
+| --- | --- |
+| 静态网页 | `https://example.com/` |
+| GitHub | `https://github.com/` |
+| Gmail | 跳转到 Google 登录页，未使用登录态 |
+| Google Docs | 跳转到 Google Docs 登录页，未使用登录态 |
+| Notion | 跳转到 `https://www.notion.com/` |
+| YouTube | `https://www.youtube.com/` |
+| Reddit | 返回 Reddit challenge 页面，未绕过验证 |
+| 在线编辑器 | `https://stackblitz.com/` |
+| 长列表 | Wikipedia 编程语言列表页 |
+
+该结果只证明这些页面上的内容脚本隔离注入和初始化冒烟通过，不证明已登录 Gmail/Docs/Notion 或在线
+编辑器中的手势功能，也不替代真实站点人工操作、跨 frame、长列表和 Windows/Edge/Linux Chrome Stable
+矩阵；功能矩阵中的相关项继续保持 `IN_PROGRESS`。

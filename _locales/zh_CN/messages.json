@@ -32,6 +32,8 @@
   "pageUnavailable": { "message": "浏览器不允许扩展在此页面运行。", "description": "受限页面提示" },
   "noTelemetry": { "message": "无遥测、无账户、无广告、无付费功能。", "description": "隐私承诺" },
   "pattern": { "message": "轨迹", "description": "手势轨迹标签" },
+  "patternInput": { "message": "轨迹文本（例如 L>R）", "description": "键盘手势轨迹输入" },
+  "gestureEditor": { "message": "手势编辑区", "description": "手势绘制区域" },
   "command": { "message": "命令", "description": "命令标签" },
   "addBinding": { "message": "添加绑定", "description": "添加绑定按钮" },
   "removeBinding": { "message": "删除绑定", "description": "删除绑定按钮" },

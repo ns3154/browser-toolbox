@@ -95,6 +95,7 @@
       pattern.setAttribute("aria-label", message("pattern"));
       const command = document.createElement("select");
       commandOptions(command, binding.commandName);
+      command.setAttribute("aria-label", message("command"));
       const enabled = document.createElement("input");
       enabled.type = "checkbox";
       enabled.checked = binding.enabled !== false;
@@ -158,6 +159,7 @@
   function commandSelectForBinding(binding) {
     const select = document.createElement("select");
     commandOptions(select, binding.commandName);
+    select.setAttribute("aria-label", message("command"));
     select.addEventListener("change", () => binding.commandName = select.value);
     return select;
   }
@@ -169,19 +171,29 @@
       const row = document.createElement("tr");
       const pattern = document.createElement("input");
       pattern.value = rule.pattern;
+      pattern.setAttribute("aria-label", message("urlPattern"));
       pattern.addEventListener("input", () => rule.pattern = pattern.value);
       const modules = document.createElement("div");
-      for (const name of ["keyboard", "mouse", "superDrag", "wheel", "rocker", "cursor"]) {
+      const moduleLabels = {
+        keyboard: "keyboard",
+        mouse: "mouseGestures",
+        superDrag: "superDrag",
+        wheel: "wheelRocker",
+        rocker: "rocker",
+        cursor: "cursor",
+      };
+      for (const name of Object.keys(moduleLabels)) {
         const label = document.createElement("label");
         label.className = "okm-check";
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
         checkbox.checked = rule.modules?.[name] !== false;
+        checkbox.setAttribute("aria-label", message(moduleLabels[name]));
         checkbox.addEventListener("change", () => {
           rule.modules ||= {};
           rule.modules[name] = checkbox.checked;
         });
-        label.append(checkbox, document.createTextNode(name));
+        label.append(checkbox, document.createTextNode(message(moduleLabels[name])));
         modules.appendChild(label);
       }
       row.append(
@@ -465,18 +477,67 @@
     await loadCursorPreview();
   }
 
-  function setupNavigation() {
-    for (const button of document.querySelectorAll("[data-section]")) {
-      button.addEventListener("click", () => {
-        const name = button.dataset.section;
-        for (const item of document.querySelectorAll("[data-section]")) {
-          item.setAttribute("aria-selected", String(item === button));
-        }
-        for (const panel of document.querySelectorAll("[data-panel]")) {
-          panel.hidden = panel.dataset.panel !== name;
-        }
-      });
+  function setPreviewPattern(pattern, updateInput = true) {
+    previewPattern = quantizer.normalizePattern(pattern);
+    const preview = document.querySelector("#gesture-preview");
+    preview.textContent = previewPattern.join(" > ") || "";
+    if (updateInput) {
+      document.querySelector("#gesture-pattern-input").value = previewPattern.join(">");
     }
+    document.querySelector("#add-gesture-binding").disabled = previewPattern.length === 0;
+  }
+
+  function setupNavigation() {
+    const nav = document.querySelector(".okm-nav");
+    const buttons = [...document.querySelectorAll("[data-section]")];
+    const panels = [...document.querySelectorAll("[data-panel]")];
+    const activate = (button, focus = false) => {
+      const name = button.dataset.section;
+      for (const item of buttons) {
+        const selected = item === button;
+        item.setAttribute("aria-selected", String(selected));
+        item.setAttribute("tabindex", selected ? "0" : "-1");
+      }
+      for (const panel of panels) panel.hidden = panel.dataset.panel !== name;
+      if (focus) button.focus();
+    };
+    nav?.setAttribute("role", "tablist");
+    nav?.setAttribute("aria-orientation", "vertical");
+    buttons.forEach((button, index) => {
+      const name = button.dataset.section;
+      const panel = panels.find((candidate) => candidate.dataset.panel === name);
+      const tabId = `okm-tab-${name}`;
+      const panelId = `okm-panel-${name}`;
+      button.id = tabId;
+      button.setAttribute("role", "tab");
+      button.setAttribute("aria-controls", panelId);
+      button.setAttribute("tabindex", index === 0 ? "0" : "-1");
+      if (panel) {
+        panel.id = panelId;
+        panel.setAttribute("role", "tabpanel");
+        panel.setAttribute("aria-labelledby", tabId);
+        panel.tabIndex = 0;
+      }
+      button.addEventListener("click", () => activate(button));
+      button.addEventListener("keydown", (event) => {
+        const current = buttons.indexOf(button);
+        let next = null;
+        if (event.key === "ArrowDown" || event.key === "ArrowRight") {
+          next = buttons[current + 1] || buttons[0];
+        }
+        if (event.key === "ArrowUp" || event.key === "ArrowLeft") {
+          next = buttons[current - 1] || buttons.at(-1);
+        }
+        if (event.key === "Home") next = buttons[0];
+        if (event.key === "End") next = buttons.at(-1);
+        if (!next) return;
+        event.preventDefault();
+        activate(next, true);
+      });
+    });
+    activate(
+      buttons.find((button) => button.getAttribute("aria-selected") === "true") || buttons[0],
+    );
   }
 
   function setupEvents() {
@@ -512,6 +573,9 @@
         options: {},
       });
       renderMouseBindings();
+    });
+    document.querySelector("#gesture-pattern-input").addEventListener("input", (event) => {
+      setPreviewPattern(event.target.value, false);
     });
     document.querySelector("#cursor-file").addEventListener("change", async (event) => {
       const file = event.target.files?.[0];
@@ -554,12 +618,12 @@
     editor = new globalThis.OpenKeyMouseGestureEditor(
       document.querySelector("#gesture-canvas"),
       (pattern) => {
-        previewPattern = pattern;
-        document.querySelector("#gesture-preview").textContent = pattern.join(" > ") || "";
+        setPreviewPattern(pattern);
       },
     );
     setupNavigation();
     setupEvents();
+    setPreviewPattern([]);
     writeForm();
     await loadCursorPreview();
   }

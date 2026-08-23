@@ -280,3 +280,49 @@ scripts/e2e_open_key_mouse.js
 - 风险与未验证：Windows + Chrome、Windows + Edge、macOS + Chrome Stable 手工矩阵、Linux + Chrome Stable
   手工矩阵、真实第三方站点、完整 Vimium 页面人工回归、屏幕阅读器/高对比度/缩放回归仍无实际证据。
 - 对应提交：待本轮文档核对后创建本地提交；无 `origin`，不推送。
+
+## 2026-08-24 / 设置页无障碍、真实站点冒烟与最终本地门禁 / E-006
+
+- 授权边界：用户明确要求“按照建议 一次性完成”；本轮继续只收口当前环境可执行的代码、自动化、
+  隔离浏览器和发布门禁，不把 Windows、Edge、认证态真实站点、屏幕阅读器或人工跨平台矩阵写成完成。
+- 修改文件：`pages/mouse_options.html`、`pages/mouse_options.js`、`pages/gesture_editor.css`、
+  `lib/i18n.js`、`_locales/en/messages.json`、`_locales/zh_CN/messages.json`、
+  `tests/unit_tests/open_key_mouse/i18n_test.js`、`scripts/e2e_open_key_mouse.js`，以及本记录、
+  `docs/baseline.md`、`docs/release-checklist.md`、`docs/feature-parity-matrix.md`。
+- 实现内容：设置页补充可访问名称、tab/tablist/tabpanel 语义、键盘导航、文本模式手势录入、焦点可见样式、
+  窄视口单列布局和强制颜色/高对比度样式；命令下拉、站点规则和模块开关补充本地化可计算名称。
+- 实际执行命令与结果：
+
+```text
+macOS Chrome 151.0.7922.173 ./make.js test：单元 282/282，DOM 109/109，总计 391/391，退出码 0
+Linux ARM64 Debian 13 Chromium 151.0.7922.169 ./make.js test：单元 282/282，DOM 109/109，总计 391/391，退出码 0
+Chrome for Testing 148.0.7778.96 增强扩展 E2E：退出码 0，页面错误为空
+Linux ARM64 Chromium 151.0.7922.169 增强扩展 E2E：退出码 0，页面错误为空
+deno check（本轮触及 JavaScript）：通过
+定向 deno fmt --check（8 个本轮触及文件）：通过
+deno run -A scripts/audit_permissions.js：通过，9 项权限
+deno run -A scripts/audit_network_usage.js：通过，扫描 26 个新增模块且无后台/隐式网络调用
+deno run -A scripts/build_release.js：通过
+deno run -A scripts/build_release.js --package：通过，生成源码发布包
+商店、Firefox、Canary、源码归档禁入路径审计：无命中
+git diff --check：通过
+```
+
+- 增强 E2E 新增实际覆盖：11 个 tab/tabpanel 关联、roving tabindex、方向键/Home/End、表单名称、
+  `L>R` 文本录入和键盘提交、`forced-colors`/`prefers-contrast` 媒体以及 480px 布局；原有核心手势、
+  Super Drag、Wheel、Rocker、跨 frame、站点规则、设置迁移和 Service Worker 重启仍通过。
+- 真实站点隔离冒烟：在不使用登录态的独立 profile 中，9 个页面（静态页、GitHub、Gmail 登录页、
+  Google Docs 登录页、Notion、YouTube、Reddit challenge、StackBlitz、Wikipedia 长列表）均实际返回
+  200、内容脚本 `controller`/`initialized` 为真、监听器为 13、页面错误为空；这只是初始化冒烟，不是
+  登录态业务或手工手势验收。
+- 全仓格式边界：`deno fmt --check` 退出码 1，报告 18 个既有上游测试/样式、设计文档和证据 Markdown
+  文件；本轮触及的代码、JSON 和脚本已通过定向格式检查，未用格式化命令改写上游文件。
+- 安全边界：没有新增商业化、账户、广告、遥测、远程代码或远程配置；没有复制或移植 CrxMouse 闭源
+  代码、资产、文案或界面。真实站点冒烟脚本只用于本地测试，不进入商店包。
+- 风险与未验证：当前宿主为 macOS arm64，无可用 Windows VM 或 Edge 安装；系统 Chrome 151 的 unpacked
+  content verification 仍导致本项目扩展页面目标不可用，不能把该次失败写成通过。Linux 证据是 ARM64
+  Debian Chromium，不是 §18.4 要求的 Linux + Chrome Stable 手工矩阵。认证态 Gmail/Docs/Notion/在线编辑器、
+  屏幕阅读器、人工高对比度/缩放、完整 Vimium 原有 E2E 和四平台手工矩阵仍未验证；矩阵维持原状态。
+- 下一步：取得合规的 Windows + Chrome Stable/Edge Stable 测试环境后，按设计文档 §18.4 逐项执行手工矩阵，
+  再据实际证据更新 `docs/feature-parity-matrix.md`；在此之前不标记 `DONE`。
+- 对应提交：本轮文档核对后创建本地检查点；无 `origin`，不推送。

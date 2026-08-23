@@ -38,6 +38,11 @@
     "description": "Privacy promise"
   },
   "pattern": { "message": "Pattern", "description": "Gesture pattern label" },
+  "patternInput": {
+    "message": "Pattern text (for example, L>R)",
+    "description": "Keyboard gesture pattern input"
+  },
+  "gestureEditor": { "message": "Gesture editor", "description": "Gesture drawing area" },
   "command": { "message": "Command", "description": "Command label" },
   "addBinding": { "message": "Add binding", "description": "Add binding button" },
   "removeBinding": { "message": "Remove binding", "description": "Remove binding button" },

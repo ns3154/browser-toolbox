@@ -7,8 +7,10 @@
 - [x] `deno run -A scripts/audit_network_usage.js` 通过。
 - [x] 新算法、配置、Dispatcher 和关键 UI 流程有自动测试。
 - [x] Service Worker 终止后可以重新初始化。
-- [x] 独立 Chrome for Testing 148.0.7778.96 临时 profile 的增强扩展 E2E 通过，覆盖核心手势、Super Drag、原生安全、跨 frame、设置迁移和 Service Worker 重启。
+- [x] 独立 Chrome for Testing 148.0.7778.96 临时 profile 的增强扩展 E2E 通过，覆盖核心手势、Super Drag、原生安全、跨 frame、设置迁移、键盘无障碍语义、高对比度媒体和窄视口布局。
 - [x] Linux ARM64 Debian Chromium 151 隔离环境的完整基线 `391/391` 和增强扩展 E2E 通过；该项不替代 Linux + Chrome Stable 手工矩阵。
+- [x] 设置页自动化无障碍语义、键盘替代录入、强制颜色和窄视口冒烟通过；不替代屏幕阅读器和人工可访问性验收。
+- [x] 9 个真实站点的隔离内容脚本注入冒烟通过；该项不替代登录态业务流程和 §18.4 手工矩阵。
 
 ## 隐私与安全
 

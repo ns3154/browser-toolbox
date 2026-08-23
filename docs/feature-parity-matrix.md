@@ -18,3 +18,9 @@
 | C-003 | CrxMouse     | 超级拖拽                                | 公开功能描述   | OpenKeyMouse.*      | PASS     | E2E-CFT  | IN_PROGRESS | 真实 E2E 已覆盖链接、图片、文字、下载、Shadow DOM 和原生旁路；不复制闭源代码、资产、文案或界面 |
 
 任何未达到 `DONE` 或明确浏览器限制的项目都不能宣称完整覆盖。
+
+2026-08-24 补充证据：设置页键盘导航、ARIA 关联、无名称控件检查、文本替代录入、强制颜色媒体和
+480px 窄视口已由 Chrome for Testing 与 Linux ARM64 Chromium 增强 E2E 自动验证；`example.com`、
+GitHub、Gmail 登录页、Google Docs 登录页、Notion、YouTube、Reddit challenge、StackBlitz 和
+Wikipedia 长列表也完成了隔离内容脚本注入冒烟。上述证据不替代屏幕阅读器、人工高对比度/缩放、登录态
+业务流程或设计文档 §18.4 的 Windows、macOS、Linux Chrome Stable、Edge 手工矩阵，因此不改变矩阵状态。
