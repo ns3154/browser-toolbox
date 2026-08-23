@@ -53,3 +53,8 @@ Windows、Windows Edge、Linux Chrome Stable、macOS Chrome Stable 人工矩阵�
 2026-08-24 官方 Linux Chrome Stable 补充证据：Google Chrome Stable `151.0.7922.173` 在 Linux amd64 隔离容器
 中完成 `309/309` 单元、`109/109` DOM，总计 `418/418`；其命令行 unpacked 扩展未形成项目 Service Worker 目标，
 因此不计为 §18.3 E2E 或 §18.4 手工证据，相关状态继续保持 `IN_PROGRESS`。
+
+2026-08-24 Chrome Stable CDP 补充证据：macOS 和 Linux amd64 的 Google Chrome Stable `151.0.7922.173` 均通过
+`Extensions.loadUnpacked` 实际加载项目扩展，并完整通过 `scripts/e2e_open_key_mouse.js`；该结果覆盖 §18.3 的
+CDP E2E，但不替代 §18.4 的人工矩阵，因此 `V-002`、`O-001` 至 `O-005` 和 `C-001` 至 `C-003` 继续保持
+`IN_PROGRESS`。

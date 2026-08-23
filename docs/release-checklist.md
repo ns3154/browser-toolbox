@@ -11,7 +11,7 @@
 - [x] 动作页在扩展页面自身等受限上下文中显示本地化浏览器限制提示，并隐藏 OpenKeyMouse 操作控件；CFT 148 与 Linux ARM64 Chromium E2E 均实际断言通过。
 - [x] 设计文档 §18.2 的 8 个仓库 fixture 均由真实扩展 E2E 加载并完成结构断言。
 - [x] Linux ARM64 Debian Chromium 151 隔离环境的完整基线 `418/418` 和增强扩展 E2E 通过；该项不替代 Linux + Chrome Stable 手工矩阵。
-- [x] 官方 Google Chrome Stable `151.0.7922.173` Linux amd64 隔离环境的完整基线 `418/418` 通过；Chrome Stable 的命令行 unpacked 扩展未加载，故不替代 Linux + Chrome Stable 手工矩阵或 §18.3 unpacked E2E。
+- [x] 官方 Google Chrome Stable `151.0.7922.173` Linux amd64 隔离环境的完整基线 `418/418` 和通过 `Extensions.loadUnpacked` 加载本项目后的完整 E2E 通过；该项仍不替代 Linux + Chrome Stable 手工矩阵。
 - [x] 官方 Microsoft Edge Linux 151.0.4129.101 amd64 隔离环境的完整基线 `418/418` 和增强扩展 E2E 通过；该项不替代 Windows Edge 手工矩阵。
 - [x] 覆盖率门槛通过：新增纯算法模块行覆盖率均不低于 90%，配置模块和 Dispatcher 行覆盖率均不低于 85%；当前新增运行时模块范围汇总行覆盖率 98.8%。
 - [x] 设置页自动化无障碍语义、键盘替代录入、强制颜色和窄视口冒烟通过；不替代屏幕阅读器和人工可访问性验收。
@@ -31,7 +31,7 @@
 - [x] `deno run -A scripts/build_release.js --package` 已生成源码发布包，并完成归档内容审计。
 - [x] 预发布版本使用 `0.1.0`；Vimium `2.4.2` 仅作为键盘与设置迁移兼容基线。
 - [x] 源码、发布包和 SHA-256 对应同一提交；本地检查点提交后已重新生成并核对 Chrome 包 SHA-256，最终值记录在本轮交付报告。
-- [x] 当前 `0.1.0` 重建产物 SHA-256：Chrome 商店 `d59749f042f3f989109489838a409d6acf00cd747f14003d8275fca0ccb80c3a`；Firefox `18868d7d868bcfc445aa9589111020ba044c62a5ad493a5ba4eedd3ccb3d84a5`；Canary `8204c189a1236fb33229984a8a1a18a99e7ed26c3ee3fbe1e8666f0dacd84f9a`；源码 `a46ee9d1db1fd516b843208fb0d22a3eccd156d59da1efe8ad67adbd6e8dcb8d`。
+- [x] 当前 `0.1.0` 重建产物 SHA-256：Chrome 商店 `24db8ba6bb0e080d65d25f8157c35a1537a09ceb955d254e2d12d209d131f145`；Firefox `f3e2fa2a11737bff263a742ffa5e0bf00c8ef892b23066b44b9bd1bfe49f294f`；Canary `c4342265111d5aec7a96e86d3988a32c0d27d63a0a3f91e19aefdb4479a765e3`；源码 `19d25dd658d394da3186d128bc471bd77f9803d9742c8a6680f0abd107f54d59`。
 - [x] 发布包不含测试、调试日志、个人路径、测试密钥或本机凭证；`make.js` 已排除 `docs/` 和
       `scripts/`，并通过 `unzip -l dist/chrome-store/vimium-chrome-store-0.1.0.zip` 的禁入路径审计。
 - [ ] Chrome、Edge、Windows、macOS、Linux 的手工矩阵已记录实际结果。

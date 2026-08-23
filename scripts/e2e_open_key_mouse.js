@@ -152,6 +152,11 @@ async function getFreePort() {
 async function startChrome() {
   const port = await getFreePort();
   const userDataDir = await Deno.makeTempDir({ prefix: "open-key-mouse-e2e-profile-" });
+  const loadUnpackedViaCdp = Deno.env.get("OPEN_KEY_MOUSE_E2E_LOAD_UNPACKED_VIA_CDP") === "true";
+  const extensionArgs = loadUnpackedViaCdp ? [] : [
+    `--disable-extensions-except=${extensionPath}`,
+    `--load-extension=${extensionPath}`,
+  ];
   const process = new Deno.Command(executablePath, {
     args: [
       headless ? "--headless=new" : "--headless=false",
@@ -160,8 +165,7 @@ async function startChrome() {
       "--remote-allow-origins=*",
       `--remote-debugging-port=${port}`,
       `--user-data-dir=${userDataDir}`,
-      `--disable-extensions-except=${extensionPath}`,
-      `--load-extension=${extensionPath}`,
+      ...extensionArgs,
       "--no-first-run",
       "--no-default-browser-check",
       "about:blank",
@@ -178,6 +182,16 @@ async function startChrome() {
     }
   }, 10000);
   const browser = await puppeteer.connect({ browserURL: `http://127.0.0.1:${port}` });
+  if (loadUnpackedViaCdp) {
+    // Google Chrome Stable 可能拒绝命令行 unpacked 开关；使用其官方 CDP 扩展域加载本地目录。
+    const browserSession = await browser.target().createCDPSession();
+    try {
+      const { id } = await browserSession.send("Extensions.loadUnpacked", { path: extensionPath });
+      console.log(`E2E: 通过 Extensions.loadUnpacked 加载扩展 ${id}`);
+    } finally {
+      await browserSession.detach().catch(() => {});
+    }
+  }
   return { browser, process, userDataDir };
 }
 

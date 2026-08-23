@@ -325,10 +325,10 @@ Chrome for Testing 148 macOS 与 Linux ARM64 Debian Chromium 151 均退出码 0�
 
 本轮 `deno run -A scripts/build_release.js --package` 生成 [源码包](/Users/yang/project/plugin/open-key-mouse/dist/open-key-mouse-0.1.0.zip)，
 四类产物 SHA-256：Chrome 商店
-`d59749f042f3f989109489838a409d6acf00cd747f14003d8275fca0ccb80c3a`；Firefox
-`18868d7d868bcfc445aa9589111020ba044c62a5ad493a5ba4eedd3ccb3d84a5`；Canary
-`8204c189a1236fb33229984a8a1a18a99e7ed26c3ee3fbe1e8666f0dacd84f9a`；源码
-`a46ee9d1db1fd516b843208fb0d22a3eccd156d59da1efe8ad67adbd6e8dcb8d`。
+`24db8ba6bb0e080d65d25f8157c35a1537a09ceb955d254e2d12d209d131f145`；Firefox
+`f3e2fa2a11737bff263a742ffa5e0bf00c8ef892b23066b44b9bd1bfe49f294f`；Canary
+`c4342265111d5aec7a96e86d3988a32c0d27d63a0a3f91e19aefdb4479a765e3`；源码
+`19d25dd658d394da3186d128bc471bd77f9803d9742c8a6680f0abd107f54d59`。
 版本号修复只证明自动化和隔离运行时兼容，不替代 Windows、Chrome Stable、Edge Stable 人工矩阵。
 
 ## 当前 checkout Edge 自动兼容性补充（2026-08-24）
@@ -347,3 +347,17 @@ Worker 重启。该证据不等同于 Windows Edge Stable 手工矩阵，未据�
 `service_worker.js` 目标，目标列表只出现 Chrome 内置 Google Network Speech 组件扩展，因此脚本在扩展页面探针
 处超时退出。该结果证明 Chrome Stable 的基线测试通过，但不证明 unpacked 扩展已加载，也不替代 Linux + Chrome
 Stable 人工矩阵；功能矩阵和发布检查表继续保留未完成状态。
+
+## 当前 checkout 官方 Chrome Stable CDP 加载补充（2026-08-24）
+
+为保留 Chrome Stable 的真实品牌浏览器覆盖，同时绕开其禁用 `--load-extension` 的命令行行为，E2E 启动器新增
+显式环境开关 `OPEN_KEY_MOUSE_E2E_LOAD_UNPACKED_VIA_CDP=true`，通过 Chrome DevTools Protocol 的
+`Extensions.loadUnpacked` 加载本地 `dist/vimium`，默认 CFT/Chromium 启动路径不变。
+
+macOS Chrome Stable `151.0.7922.173` 和 Linux amd64 Debian 13 Chrome Stable `151.0.7922.173` 均实际加载
+OpenKeyMouse Service Worker，并完成完整 `scripts/e2e_open_key_mouse.js`：核心手势、Super Drag、Wheel、Rocker、
+跨 frame、设置导入导出、站点规则、设计文档 fixtures、受限动作页和 Service Worker 重启均退出码 0。Linux
+同环境 `./make.js test` 仍为单元 `309/309`、DOM `109/109`，总计 `418/418`。
+
+这是 Chrome Stable 的 CDP 自动化证据，不是 §18.4 的人工平台矩阵；Windows Chrome、Windows Edge、Linux Chrome
+Stable 人工操作、认证态站点、屏幕阅读器和完整 Vimium 手工回归仍未验证。

@@ -456,10 +456,10 @@ Linux ARM64 Debian 13 Chromium 151（非 root 临时容器）：单元 309/309�
   `98.8%`；纯算法模块最低 `95.2%`，配置模块最低 `98.1%`，Dispatcher `100%`，均达到设计文档阈值。
 - 产物：`./make.js package` 与 `deno run -A scripts/build_release.js --package` 通过；生成 `0.1.0` 商店、Firefox、
   Canary 和源码包。Chrome 商店、Firefox、Canary、源码 SHA-256 分别为
-  `d59749f042f3f989109489838a409d6acf00cd747f14003d8275fca0ccb80c3a`、
-  `18868d7d868bcfc445aa9589111020ba044c62a5ad493a5ba4eedd3ccb3d84a5`、
-  `8204c189a1236fb33229984a8a1a18a99e7ed26c3ee3fbe1e8666f0dacd84f9a`、
-  `a46ee9d1db1fd516b843208fb0d22a3eccd156d59da1efe8ad67adbd6e8dcb8d`。
+  `24db8ba6bb0e080d65d25f8157c35a1537a09ceb955d254e2d12d209d131f145`、
+  `f3e2fa2a11737bff263a742ffa5e0bf00c8ef892b23066b44b9bd1bfe49f294f`、
+  `c4342265111d5aec7a96e86d3988a32c0d27d63a0a3f91e19aefdb4479a765e3`、
+  `19d25dd658d394da3186d128bc471bd77f9803d9742c8a6680f0abd107f54d59`。
 - 未完成边界：Windows、Windows Edge、Linux Chrome Stable、macOS Chrome Stable 人工矩阵，认证态真实站点、
   屏幕阅读器、人工高对比度/缩放和完整 Vimium 手工回归仍没有实际证据；功能矩阵继续保持 `IN_PROGRESS`。
 - 本地检查点：已创建提交 `fix: 收口预发布版本与设置迁移兼容`；工作区最终复核应保持干净；未配置新远端，未推送。
@@ -476,3 +476,17 @@ Linux ARM64 Debian 13 Chromium 151（非 root 临时容器）：单元 309/309�
 - 边界：该证据补足官方 Linux Chrome Stable 的测试运行时基线，但不替代 §18.3 unpacked E2E、§18.4 Linux Chrome
   Stable 手工矩阵，也不改变 `V-002`、`O-001` 至 `O-005` 和 `C-001` 至 `C-003` 的 `IN_PROGRESS` 状态。
 - 本轮未修改运行时代码；后续仍需真实 Chrome Stable UI 加载扩展，或取得可复核的 Windows/Edge 测试环境。
+
+## 2026-08-24 / Chrome Stable CDP unpacked E2E / E-014
+
+- 修改：`scripts/e2e_open_key_mouse.js` 增加显式环境开关 `OPEN_KEY_MOUSE_E2E_LOAD_UNPACKED_VIA_CDP=true`；开启时
+  不使用品牌 Chrome 会忽略的命令行 unpacked 参数，改用浏览器级 `Extensions.loadUnpacked`，默认 CFT/Chromium
+  路径保持不变。
+- macOS Chrome Stable `151.0.7922.173`：实际加载项目扩展，完整 E2E 退出码 0。
+- Linux amd64 Debian 13 Chrome Stable `151.0.7922.173`：非 root、`seccomp=unconfined`、临时 profile 下，
+  `./make.js test` 为单元 `309/309`、DOM `109/109`、总计 `418/418`；随后通过 CDP 加载项目扩展，完整 E2E
+  退出码 0。
+- E2E 覆盖：受限动作页、设置页键盘/无障碍语义、鼠标轨迹、历史、Super Drag、Wheel/Rocker、跨 frame、原生旁路、
+  站点规则、设置保存/导入导出、Vimium 备份迁移、逐级迁移、本地 PNG 指针、Service Worker 重启和 8 个 fixtures。
+- 边界：这是官方 Chrome Stable 的真实 CDP 自动化证据，不是 §18.4 人工矩阵；Windows Chrome、Windows Edge、
+  Linux Chrome Stable 人工操作、认证态站点、屏幕阅读器、人工高对比度/缩放和完整 Vimium 手工回归仍未验证。
