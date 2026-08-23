@@ -8,6 +8,7 @@
 - [x] 新算法、配置、Dispatcher 和关键 UI 流程有自动测试。
 - [x] Service Worker 终止后可以重新初始化。
 - [x] 独立 Chrome for Testing 148.0.7778.96 临时 profile 的增强扩展 E2E 通过，覆盖核心手势、Super Drag、原生安全、跨 frame、设置迁移和 Service Worker 重启。
+- [x] Linux ARM64 Debian Chromium 151 隔离环境的完整基线 `391/391` 和增强扩展 E2E 通过；该项不替代 Linux + Chrome Stable 手工矩阵。
 
 ## 隐私与安全
 

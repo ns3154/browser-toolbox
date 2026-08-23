@@ -182,3 +182,18 @@ PUPPETEER_EXECUTABLE_PATH="/tmp/open-key-mouse-cft-lizqY7/chrome-mac-arm64/Googl
 该 E2E 仍不能替代 Windows/Linux/Edge 手工兼容性矩阵、GitHub/Gmail/Google Docs/Notion/YouTube/
 Reddit/在线编辑器等真实站点矩阵，也不能替代完整 Vimium 原有 E2E 的逐项人工回归；这些项目仍未
 验证，不在本轮宣称完成。
+
+## Linux ARM64 Chromium 补充验证（2026-08-23）
+
+为补充非 macOS 证据，使用 Docker `linux/arm64` 的 Debian 13 容器、Chromium
+151.0.7922.169 和独立临时 profile 执行。完整基线测试在容器内以非 root 用户运行；容器额外使用
+`--security-opt seccomp=unconfined` 以满足 Chromium 的 namespace 启动条件，不改变宿主机浏览器或仓库
+配置。增强扩展 E2E 使用脚本自身声明的 `--no-sandbox`，只访问本地 fixture 服务。
+
+实际结果：
+
+- `./make.js test` 退出码 0；单元测试 `282/282`，DOM 测试 `109/109`，总计 `391/391`；
+- `scripts/e2e_open_key_mouse.js` 退出码 0，页面错误为空，设置导入导出、站点规则、核心手势、
+  Super Drag、Wheel、Rocker、跨 frame 和 Service Worker 重启均通过；
+- 该项是 Linux ARM64 Chromium 自动/隔离补充证据，不是设计文档 §18.4 要求的 Linux + Chrome Stable
+  手工矩阵，因此不将 `V-002`、`O-001` 至 `O-005` 或 `C-001` 至 `C-003` 改为 `DONE`。

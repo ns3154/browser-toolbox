@@ -251,3 +251,32 @@ git diff --check
   Windows、Linux、Edge、真实站点、完整 Vimium 页面回归或无障碍回归已完成。
 - 下一步：在真实 Windows 环境的隔离 Chrome Stable profile 中执行设计文档 §18.4 手工矩阵，并将实际结果回写功能矩阵。
 - 对应提交：本轮本地 main 提交；无 `origin`，不推送。
+
+## 2026-08-23 / Linux ARM64 补充基线与扩展 E2E / E-005
+
+- 授权边界：继续执行用户要求的一次性验证；只记录实际可运行的 Linux ARM64 隔离证据，不把它扩大为
+  Linux + Chrome Stable、Windows、Edge、真实第三方站点或无障碍人工验收。
+- 环境：Docker `linux/arm64`、Debian 13、Chromium `151.0.7922.169`；完整 `make.js` 基线以非 root
+  用户运行，并在一次性隔离容器中使用 `--security-opt seccomp=unconfined` 解决 namespace 启动限制。
+- 实际执行与结果：
+
+```text
+./make.js test
+单元测试：282/282
+DOM 测试：109/109
+总计：391/391，退出码 0
+
+scripts/e2e_open_key_mouse.js
+退出码 0；页面错误为空；设置导入导出、站点规则、核心手势、Super Drag、Wheel、Rocker、跨 frame、Service Worker 重启通过
+```
+
+- 该证据补足了 Linux 内核/浏览器运行时的自动测试覆盖，但 Chromium 不是设计文档要求的 Chrome Stable，
+  也没有执行 Linux 手工真实站点矩阵；对应功能矩阵继续保持 `IN_PROGRESS`。
+- 本次最终重建产物 SHA-256：Chrome 商店包
+  `0e6b8b5e62a09d61946bd5d2321105e7758e4b309e05afe8db36ee11c600dfc3`；源码包
+  `5fe236b81e2cd3c288988261e100aa39e8ce9b130c7097ec7e3c66a0983300f0`。源码包按设计包含审计和 E2E
+  开发脚本，但不包含测试目录、Markdown 文件、密钥或个人路径；商店包不包含 `scripts/`、`docs/` 或测试目录。
+- 修改文件：`docs/baseline.md`、`docs/release-checklist.md`、`docs/codex-progress.md`。
+- 风险与未验证：Windows + Chrome、Windows + Edge、macOS + Chrome Stable 手工矩阵、Linux + Chrome Stable
+  手工矩阵、真实第三方站点、完整 Vimium 页面人工回归、屏幕阅读器/高对比度/缩放回归仍无实际证据。
+- 对应提交：待本轮文档核对后创建本地提交；无 `origin`，不推送。
