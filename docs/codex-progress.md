@@ -86,3 +86,39 @@ git diff --check
 - 下一步：仅列一个可执行任务：在独立临时浏览器中补充真实扩展消息 E2E，先验证 Super Drag LINK
   前台打开和 Wheel/Rocker 命令路由，再按结果更新功能矩阵。
 - 对应提交：本地 main 检查点（最终哈希见 Git 记录，未配置 origin，未推送）。
+
+## 2026-08-23 / 真实扩展消息 E2E 修复与验证 / E-001
+
+- 目标：执行上一条记录指定的真实扩展消息 E2E；使用独立 Chrome for Testing 148.0.7778.96 和全新临时
+  profile，不关闭或修改用户现有 Chrome。
+- 发现并修复：Super Drag 激活后浏览器仍会先发出原生 `dragstart`，继而触发 `pointercancel`；即使阻止
+  `dragstart`，链接还可能在 `pointerup` 后生成默认 click。新增仅在 Super Drag 已激活时阻止
+  `dragstart`，并以 500ms 短窗口抑制本次接管产生的 click；同时把 Rocker 的组合识别移到
+  `mousedown`/`mouseup`，兼容第二个鼠标按键不产生额外 `pointerdown` 的浏览器事件模型。
+- 修改文件：content_scripts/mouse/mouse_controller.js；重新生成 dist/vimium 包。
+- 实际执行命令：
+
+```bash
+deno fmt content_scripts/mouse/mouse_controller.js
+./make.js package
+PUPPETEER_EXECUTABLE_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" ./make.js test
+deno check background_scripts/main.js pages/mouse_options.js content_scripts/mouse/mouse_controller.js scripts/audit_permissions.js scripts/audit_network_usage.js scripts/build_release.js
+deno run -A scripts/audit_permissions.js
+deno run -A scripts/audit_network_usage.js
+deno run -A scripts/build_release.js
+git diff --check
+```
+
+- 浏览器实测结果：
+  - Super Drag LINK：右拖链接后，原生 `dragstart` 的 `defaultPrevented` 为 true，轨迹层保持
+    `block`；释放后新前台标签打开 `https://example.com/`，原 fixture 标签仍保持原 URL。
+  - Wheel：通过 CDP 发送右键按住和 `buttons: 2`、`deltaY: -100` 的滚轮事件；事件被阻止，页面
+    从滚动位置 1200 回到 0。
+  - Rocker：通过 CDP 发送右键按住再按左键；左键 `mousedown`/`mouseup` 被阻止，页面 URL 从 `#two`
+    回到 `#one`，确认 `goBack` 路由执行。
+  - 三项均在页面错误为空的情况下完成；全量测试为单元 277/277、DOM 109/109。
+- 未验证内容：其他 Super Drag 上下文和绑定、Wheel 其他方向、Rocker 反向组合、跨 frame、导入
+  导出、站点规则及跨平台行为仍不能写成完成。
+- 下一步：仅列一个可执行任务：补齐功能矩阵中剩余的 Super Drag 上下文、Wheel/Rocker 组合和
+  设置导入导出/站点规则手工用例，再决定哪些行可以标记 `DONE`。
+- 对应提交：本地 main 检查点（未配置 origin，未推送；提交哈希见 Git 记录）。

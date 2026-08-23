@@ -148,3 +148,10 @@ chrome.runtime.openOptionsPage() 也返回 Could not create an options page。
 这些证据只覆盖列出的子项。Super Drag、Wheel、Rocker 的真实命令效果、导入导出、站点规则、完整 Vimium
 手工矩阵和跨平台验证仍未完成；不能把它们写成已验证。此前系统 Chrome 的 unpacked content verification
 阻塞仍然有效，Chrome 151 仅作为自动 DOM 测试的浏览器覆盖。
+
+## 真实扩展消息 E2E 补充
+
+在后续修复 Super Drag 原生 `dragstart`/默认 click 冲突和 Rocker 多按钮事件模型后，使用全新临时
+profile 的 Chrome for Testing 148.0.7778.96 完成了三条代表性链路：Super Drag LINK 前台打开、
+右键按住上滚触发 `scrollToTop`、右键按住再点左键触发 `goBack`。验证过程中页面错误为空；完整
+矩阵中的其他上下文、组合、跨 frame、设置导入导出、站点规则和跨平台行为仍未完成。

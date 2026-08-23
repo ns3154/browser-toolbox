@@ -95,6 +95,7 @@
       this.rocker = null;
       this.bridge = null;
       this.cursor = null;
+      this.suppressClickUntil = 0;
       this.listeners = [];
       this.initialized = false;
     }
@@ -142,9 +143,13 @@
     installListeners() {
       const capture = { capture: true, passive: false };
       this.listen("pointerdown", (event) => this.onPointerDown(event), capture);
+      this.listen("mousedown", (event) => this.onMouseDown(event), capture);
       this.listen("pointermove", (event) => this.onPointerMove(event), capture);
       this.listen("pointerup", (event) => this.onPointerUp(event), capture);
+      this.listen("mouseup", (event) => this.onMouseUp(event), capture);
       this.listen("pointercancel", () => this.cancelAll("pointercancel"), capture);
+      this.listen("dragstart", (event) => this.onDragStart(event), capture);
+      this.listen("click", (event) => this.onClick(event), capture);
       this.listen("contextmenu", (event) => this.onContextMenu(event), capture);
       this.listen("wheel", (event) => this.onWheel(event), { capture: true, passive: false });
       this.listen("keydown", (event) => this.onKeyDown(event), capture);
@@ -161,25 +166,6 @@
 
     onPointerDown(event) {
       if (!trusted(event) || event.pointerType && event.pointerType !== "mouse") return;
-      const rockerSequence = this.effective("rocker")
-        ? this.rocker.pointerDown(event.button)
-        : null;
-      if (rockerSequence) {
-        const binding = this.settings.rocker.bindings.find((item) =>
-          item.enabled !== false && item.sequence === rockerSequence
-        );
-        if (binding) {
-          event.preventDefault();
-          event.stopPropagation();
-          this.dispatchBinding(
-            binding,
-            "rocker",
-            pageContext({ pointer: { x: event.clientX, y: event.clientY } }),
-          );
-          this.cancelAll("rocker", { preserveRocker: true });
-          return;
-        }
-      }
       if (event.button === 2 && this.effective("mouse")) {
         this.gesture = new globalThis.OpenKeyMouseGestureSession(this.settings.mouse);
         this.gesture.start({ x: event.clientX, y: event.clientY }, event.timeStamp || Date.now());
@@ -200,6 +186,24 @@
         this.drag = new globalThis.OpenKeyMouseSuperDragController(this.settings.superDrag);
         if (!this.drag.pointerDown(event, selection, event.dataTransfer)) this.drag = null;
       }
+    }
+
+    onMouseDown(event) {
+      if (!trusted(event) || !this.effective("rocker")) return;
+      const sequence = this.rocker.pointerDown(event.button);
+      if (!sequence) return;
+      const binding = this.settings.rocker.bindings.find((item) =>
+        item.enabled !== false && item.sequence === sequence
+      );
+      if (!binding) return;
+      event.preventDefault();
+      event.stopPropagation();
+      this.dispatchBinding(
+        binding,
+        "rocker",
+        pageContext({ pointer: { x: event.clientX, y: event.clientY } }),
+      );
+      this.cancelAll("rocker", { preserveRocker: true });
     }
 
     onPointerMove(event) {
@@ -269,6 +273,7 @@
         if (result.active) {
           event.preventDefault();
           event.stopPropagation();
+          this.suppressClickUntil = Date.now() + 500;
           if (result.binding) {
             this.dispatchBinding(result.binding, "superDrag", pageContext(result.context));
           }
@@ -282,11 +287,35 @@
       }
     }
 
+    onMouseUp(event) {
+      if (!trusted(event) || !this.rocker?.pointerUp(event.button)) return;
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
     onContextMenu(event) {
       if (this.guard?.shouldSuppress()) {
         event.preventDefault();
         event.stopPropagation();
       }
+    }
+
+    onDragStart(event) {
+      // 只有已越过超级拖拽阈值才接管，避免破坏文件上传和普通原生拖拽。
+      if (!this.drag?.active) return;
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    onClick(event) {
+      // pointerup 后浏览器仍可能为链接生成 click；只抑制本次已接管的超级拖拽。
+      if (Date.now() > this.suppressClickUntil) {
+        this.suppressClickUntil = 0;
+        return;
+      }
+      this.suppressClickUntil = 0;
+      event.preventDefault();
+      event.stopPropagation();
     }
 
     onWheel(event) {
@@ -325,6 +354,7 @@
       this.bridge?.cancel();
       this.gesture = null;
       this.drag = null;
+      this.suppressClickUntil = 0;
       this.guard?.deactivate();
       if (!preserveRocker) this.rocker?.cancel();
       this.wheel?.reset();
