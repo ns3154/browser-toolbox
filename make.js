@@ -121,6 +121,9 @@ async function buildStorePackage() {
     "MIT-LICENSE.txt",
     "build_scripts",
     "dist",
+    // 审计、发布和 E2E 脚本只服务于源码仓库，不应进入商店包。
+    "docs",
+    "scripts",
     "make.js",
     "deno.json",
     "deno.lock",

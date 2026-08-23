@@ -149,6 +149,7 @@ deno check background_scripts/main.js pages/mouse_options.js content_scripts/mou
 deno run -A scripts/audit_permissions.js
 deno run -A scripts/audit_network_usage.js
 deno run -A scripts/build_release.js
+deno run -A scripts/build_release.js --package
 git diff --check
 deno fmt --check
 ```
@@ -169,3 +170,39 @@ deno fmt --check
 - 下一步：在独立 Windows + Edge Stable 临时 profile 中运行与本轮相同的手工兼容性矩阵，并将实际
   结果回写 `docs/feature-parity-matrix.md`；本轮不虚构该结果。
 - 对应提交：本地 main 检查点已创建；未配置 origin，不推送。
+
+## 2026-08-23 / 发布包纯净性收口与最终基线重跑 / E-003
+
+- 授权边界：用户明确要求“按照建议 一次性完成”；本条只收口当前本机可执行的发布工程和自动验证，
+  不把 Windows、Linux、Edge 或真实第三方站点矩阵写成已验证。
+- 发现并修复：`rsync` 的发布排除项原先只排除了 Markdown 文件，商店包仍会携带 `docs/` 目录和
+  `scripts/` 下的开发脚本。`make.js` 现显式排除这两个源码仓库专用目录；未修改功能代码、权限、
+  网络行为或许可证链。
+- 修改文件：`make.js`、`docs/release-checklist.md`、`docs/codex-progress.md`。
+- 实际执行命令与结果：
+
+```bash
+./make.js package
+unzip -l dist/chrome-store/vimium-chrome-store-2.4.2.zip | rg '(^|/)(tests|scripts|docs)/|\.md$|debug|personal|e2e|\.log$|\.pem$|\.key$' || true
+PUPPETEER_EXECUTABLE_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" ./make.js test
+PUPPETEER_EXECUTABLE_PATH="/Users/yang/Library/Caches/ms-playwright/chromium-1223/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing" deno run --allow-read --allow-write --allow-env --allow-net --allow-run --allow-sys scripts/e2e_open_key_mouse.js
+deno check make.js background_scripts/main.js pages/mouse_options.js content_scripts/mouse/mouse_controller.js content_scripts/mouse/frame_gesture_bridge.js background_scripts/open_key_mouse/command_dispatcher.js scripts/e2e_open_key_mouse.js tests/unit_tests/open_key_mouse/command_dispatcher_test.js scripts/audit_permissions.js scripts/audit_network_usage.js scripts/build_release.js
+deno run -A scripts/audit_permissions.js
+deno run -A scripts/audit_network_usage.js
+deno run -A scripts/build_release.js
+git diff --check
+deno fmt --check
+```
+
+- 验证结果：商店包生成通过，禁入路径审计无输出；单元测试 `277/277`、DOM 测试 `109/109`，总计
+  `386/386`；Chrome for Testing 148.0.7778.96 独立临时 profile 的完整 E2E 退出码 0，页面错误为空；
+  `deno check`、权限审计、网络审计、发布检查、源码发布包生成和 `git diff --check` 通过。Chrome
+  商店包和源码发布包均已完成 SHA-256 记录；源码包归档审计未发现测试目录、Markdown 或密钥文件。
+- 格式边界：`deno fmt --check` 仍以退出码 1 结束，报告 17 个既有上游、测试/样式、设计文档及本轮
+  证据 Markdown 文件；检查未修改文件。定向检查的新增 JavaScript 已通过。
+- 额外浏览器尝试：Chromium 145.0.7632.6 可执行文件能输出版本，但启动后 10 秒内没有提供 CDP
+  `/json/version`；本地 Chromium 152 下载缺少 Framework 文件，连版本启动均失败。两次都未进入功能
+  断言，因此不计入 E2E 通过，也不替代 Windows/Linux/Edge 证据。
+- 风险与未验证：完整 Vimium 页面手工回归、Windows + Chrome、Windows + Edge、Linux + Chrome、
+  Firefox/Safari、真实第三方站点和无障碍矩阵仍未执行；功能矩阵继续保留 `IN_PROGRESS`。
+- 对应提交：本轮本地 main 收口提交；无 `origin`，不推送。

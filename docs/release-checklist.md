@@ -19,6 +19,8 @@
 ## 开源与产物
 
 - [x] GPL-3.0-or-later、Vimium MIT 和 shoulda MIT 通知完整；发布检查通过。
+- [x] `deno run -A scripts/build_release.js --package` 已生成源码发布包，并完成归档内容审计。
 - [x] 源码、发布包和 SHA-256 对应同一提交；本地检查点提交后已重新生成并核对 Chrome 包 SHA-256，最终值记录在本轮交付报告。
-- [ ] 发布包不含测试、调试日志、个人路径、测试密钥或本机凭证；本轮 E2E 脚本仍位于 `scripts/`，暂不宣称发布包就绪。
+- [x] 发布包不含测试、调试日志、个人路径、测试密钥或本机凭证；`make.js` 已排除 `docs/` 和
+      `scripts/`，并通过 `unzip -l dist/chrome-store/vimium-chrome-store-2.4.2.zip` 的禁入路径审计。
 - [ ] Chrome、Edge、Windows、macOS、Linux 的手工矩阵已记录实际结果。
