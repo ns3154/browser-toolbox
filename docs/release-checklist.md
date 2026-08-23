@@ -11,6 +11,7 @@
 - [x] 动作页在扩展页面自身等受限上下文中显示本地化浏览器限制提示，并隐藏 OpenKeyMouse 操作控件；CFT 148 与 Linux ARM64 Chromium E2E 均实际断言通过。
 - [x] 设计文档 §18.2 的 8 个仓库 fixture 均由真实扩展 E2E 加载并完成结构断言。
 - [x] Linux ARM64 Debian Chromium 151 隔离环境的完整基线 `418/418` 和增强扩展 E2E 通过；该项不替代 Linux + Chrome Stable 手工矩阵。
+- [x] 官方 Google Chrome Stable `151.0.7922.173` Linux amd64 隔离环境的完整基线 `418/418` 通过；Chrome Stable 的命令行 unpacked 扩展未加载，故不替代 Linux + Chrome Stable 手工矩阵或 §18.3 unpacked E2E。
 - [x] 官方 Microsoft Edge Linux 151.0.4129.101 amd64 隔离环境的完整基线 `418/418` 和增强扩展 E2E 通过；该项不替代 Windows Edge 手工矩阵。
 - [x] 覆盖率门槛通过：新增纯算法模块行覆盖率均不低于 90%，配置模块和 Dispatcher 行覆盖率均不低于 85%；当前新增运行时模块范围汇总行覆盖率 98.8%。
 - [x] 设置页自动化无障碍语义、键盘替代录入、强制颜色和窄视口冒烟通过；不替代屏幕阅读器和人工可访问性验收。

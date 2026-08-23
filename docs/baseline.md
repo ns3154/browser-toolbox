@@ -336,3 +336,14 @@ Chrome for Testing 148 macOS 与 Linux ARM64 Debian Chromium 151 均退出码 0�
 官方 Microsoft Edge `151.0.4129.101` 在 Debian amd64 隔离容器中以非 root 用户运行；`./make.js test` 为
 `308/308` 单元、`109/109` DOM，增强扩展 E2E 退出码 0，并通过 8 个设计文档 fixture、受限动作页和 Service
 Worker 重启。该证据不等同于 Windows Edge Stable 手工矩阵，未据此改变功能矩阵状态。
+
+## 当前 checkout 官方 Linux Chrome Stable 自动基线补充（2026-08-24）
+
+在 Docker `linux/amd64`、Debian 13 隔离容器中安装官方 Google Chrome Stable `151.0.7922.173`，以非 root
+用户、`seccomp=unconfined`、临时浏览器 profile 和显式 `PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome` 运行：
+`./make.js test` 实际通过，单元 `309/309`、DOM `109/109`，总计 `418/418`。
+
+同环境执行设计文档 §18.3 unpacked E2E 时，Chrome Stable 没有出现本项目的 `background_scripts/main.js` 或
+`service_worker.js` 目标，目标列表只出现 Chrome 内置 Google Network Speech 组件扩展，因此脚本在扩展页面探针
+处超时退出。该结果证明 Chrome Stable 的基线测试通过，但不证明 unpacked 扩展已加载，也不替代 Linux + Chrome
+Stable 人工矩阵；功能矩阵和发布检查表继续保留未完成状态。

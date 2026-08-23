@@ -463,3 +463,16 @@ Linux ARM64 Debian 13 Chromium 151（非 root 临时容器）：单元 309/309�
 - 未完成边界：Windows、Windows Edge、Linux Chrome Stable、macOS Chrome Stable 人工矩阵，认证态真实站点、
   屏幕阅读器、人工高对比度/缩放和完整 Vimium 手工回归仍没有实际证据；功能矩阵继续保持 `IN_PROGRESS`。
 - 本地检查点：已创建提交 `fix: 收口预发布版本与设置迁移兼容`；工作区最终复核应保持干净；未配置新远端，未推送。
+
+## 2026-08-24 / 官方 Linux Chrome Stable 自动基线 / E-013
+
+- 环境：Docker `linux/amd64`、Debian 13，官方 Google Chrome Stable `151.0.7922.173`，非 root 用户，
+  `seccomp=unconfined`，临时 profile，显式 `PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome`；项目目录只读挂载，
+  Deno 使用容器内可写缓存。
+- 实际结果：`./make.js test` 通过，单元 `309/309`、DOM `109/109`，总计 `418/418`，退出码 0。
+- unpacked E2E 结果：`scripts/e2e_open_key_mouse.js` 未发现项目的 `background_scripts/main.js` 或
+  `service_worker.js` 目标，Chrome 目标列表只出现内置 Google Network Speech 组件扩展，故在扩展页面探针处超时；
+  这不是 E2E 通过，也不证明官方 Chrome Stable 已加载 OpenKeyMouse。
+- 边界：该证据补足官方 Linux Chrome Stable 的测试运行时基线，但不替代 §18.3 unpacked E2E、§18.4 Linux Chrome
+  Stable 手工矩阵，也不改变 `V-002`、`O-001` 至 `O-005` 和 `C-001` 至 `C-003` 的 `IN_PROGRESS` 状态。
+- 本轮未修改运行时代码；后续仍需真实 Chrome Stable UI 加载扩展，或取得可复核的 Windows/Edge 测试环境。
