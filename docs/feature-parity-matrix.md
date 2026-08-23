@@ -43,3 +43,9 @@ Testing 148 与 Linux ARM64 Debian Chromium 151 的增强 E2E 均通过；新增
 2026-08-24 Edge 自动运行补充证据：官方 Microsoft Edge `151.0.4129.101` 在 Debian amd64 隔离容器中完成
 `308/308` 单元、`109/109` DOM 和增强扩展 E2E；该结果覆盖 Edge 运行时自动兼容性，不等同于 Windows Edge
 Stable 人工矩阵，因此所有需要人工矩阵的状态保持不变。
+
+2026-08-24 预发布版本补充证据：将 manifest 版本改为 OpenKeyMouse `0.1.0` 后，Vimium 设置迁移兼容版本仍固定为
+`2.4.2`；macOS 系统 Chrome、Linux ARM64 Debian Chromium 151 和官方 Microsoft Edge Debian amd64 隔离环境的
+当前全量测试均为 `309/309` 单元、`109/109` DOM，总计 `418/418`，增强扩展 E2E 均通过。该证据不替代
+Windows、Windows Edge、Linux Chrome Stable、macOS Chrome Stable 人工矩阵、认证态站点、屏幕阅读器或完整 Vimium
+手工回归，因此相关状态继续保持 `IN_PROGRESS`。

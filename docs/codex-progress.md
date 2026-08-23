@@ -433,3 +433,33 @@ Deno V8 coverage：test-unit 308/308；本轮纳入范围行覆盖率 97.6%，�
   Firefox `6b918bbf93cf443f3f4a5e16b94ffba0ecedaafa9d641db6ba2d3c929b85c355`；Canary
   `b51a656cdc6bdefaed42ba128d0034ed55fad281694acdfee7a884fba25d38e8`；源码包
   `9c9e2a157638225a2efd85c1ebb7787a387f80e68cba36b0fffa0a9d43279a5f`。
+
+## 2026-08-24 / 预发布版本与 Vimium 设置迁移兼容 / E-012
+
+- 授权边界：继续执行用户明确的“一次性完成”要求；修正设计文档要求的 `0.x` 预发布版本和当前治理文档事实，
+  不改变 Vimium `v2.4.2` 键盘基线，也不放宽开源、免费、无商业化、无遥测和 clean-room 约束。
+- 修改内容：`manifest.json` 使用 OpenKeyMouse `0.1.0`；`lib/settings.js` 将上游 `settingsVersion` 与项目发布版本
+  分离并固定为 Vimium `2.4.2`；新增 `tests/unit_tests/settings_test.js` 回归测试；同步 `AGENTS.md`、项目章程、
+  隐私/安全政策、ADR、CHANGELOG 和发布清单，去除“当前只有 Phase 0、没有鼠标功能”的陈旧描述。
+- 实际验证：
+
+```text
+无 PUPPETEER_EXECUTABLE_PATH 的 ./make.js test：环境失败，Puppeteer 缓存的 CFT 131 框架文件缺失；未执行 DOM 断言
+macOS 系统 Chrome ./make.js test：单元 309/309，DOM 109/109，总计 418/418，退出码 0
+macOS Chrome for Testing 148 增强扩展 E2E：退出码 0，页面错误为空
+Linux ARM64 Debian 13 Chromium 151（非 root 临时容器）：单元 309/309，DOM 109/109，总计 418/418；增强 E2E 退出码 0
+官方 Microsoft Edge 151.0.4129.101 Debian amd64 隔离容器：单元 309/309，DOM 109/109，总计 418/418；增强 E2E 退出码 0
+```
+
+- 安全和工程门禁：权限审计 9 项通过；新增模块网络审计扫描 26 个文件通过；定向 `deno fmt --check` 25 个文件、
+  `deno check`、`git diff --check` 和源码/商店包禁入路径审计通过。Deno V8 当前新增运行时模块范围汇总行覆盖率为
+  `98.8%`；纯算法模块最低 `95.2%`，配置模块最低 `98.1%`，Dispatcher `100%`，均达到设计文档阈值。
+- 产物：`./make.js package` 与 `deno run -A scripts/build_release.js --package` 通过；生成 `0.1.0` 商店、Firefox、
+  Canary 和源码包。Chrome 商店、Firefox、Canary、源码 SHA-256 分别为
+  `d59749f042f3f989109489838a409d6acf00cd747f14003d8275fca0ccb80c3a`、
+  `18868d7d868bcfc445aa9589111020ba044c62a5ad493a5ba4eedd3ccb3d84a5`、
+  `8204c189a1236fb33229984a8a1a18a99e7ed26c3ee3fbe1e8666f0dacd84f9a`、
+  `a46ee9d1db1fd516b843208fb0d22a3eccd156d59da1efe8ad67adbd6e8dcb8d`。
+- 未完成边界：Windows、Windows Edge、Linux Chrome Stable、macOS Chrome Stable 人工矩阵，认证态真实站点、
+  屏幕阅读器、人工高对比度/缩放和完整 Vimium 手工回归仍没有实际证据；功能矩阵继续保持 `IN_PROGRESS`。
+- 本地检查点：已创建提交 `fix: 收口预发布版本与设置迁移兼容`；工作区最终复核应保持干净；未配置新远端，未推送。

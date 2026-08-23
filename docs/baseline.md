@@ -313,6 +313,24 @@ Chrome for Testing 148 macOS 与 Linux ARM64 Debian Chromium 151 均退出码 0�
 `9c9e2a157638225a2efd85c1ebb7787a387f80e68cba36b0fffa0a9d43279a5f`。
 这仍是自动化 fixture 证据，不替代设计文档 §18.4 的 Windows、Edge、Chrome Stable 人工矩阵。
 
+## 当前 checkout 预发布版本与设置迁移补充门禁（2026-08-24）
+
+为满足设计文档 Phase 8 的预发布要求，扩展版本从上游继承的 `2.4.2` 改为 OpenKeyMouse `0.1.0`；Vimium
+设置迁移单独固定使用兼容版本 `2.4.2`，避免预发布版本号触发上游旧版新标签页迁移。新增单元测试覆盖该边界。
+
+当前 checkout 实际验证：macOS 系统 Chrome `./make.js test` 为单元 `309/309`、DOM `109/109`，总计
+`418/418`；macOS Chrome for Testing 148 增强扩展 E2E 退出码 0；Linux ARM64 Debian 13 Chromium 151
+基线为 `309/309`、`109/109`、总计 `418/418`，增强 E2E 退出码 0；官方 Microsoft Edge
+`151.0.4129.101` Debian amd64 隔离环境同样为 `418/418`，增强 E2E 退出码 0。
+
+本轮 `deno run -A scripts/build_release.js --package` 生成 [源码包](/Users/yang/project/plugin/open-key-mouse/dist/open-key-mouse-0.1.0.zip)，
+四类产物 SHA-256：Chrome 商店
+`d59749f042f3f989109489838a409d6acf00cd747f14003d8275fca0ccb80c3a`；Firefox
+`18868d7d868bcfc445aa9589111020ba044c62a5ad493a5ba4eedd3ccb3d84a5`；Canary
+`8204c189a1236fb33229984a8a1a18a99e7ed26c3ee3fbe1e8666f0dacd84f9a`；源码
+`a46ee9d1db1fd516b843208fb0d22a3eccd156d59da1efe8ad67adbd6e8dcb8d`。
+版本号修复只证明自动化和隔离运行时兼容，不替代 Windows、Chrome Stable、Edge Stable 人工矩阵。
+
 ## 当前 checkout Edge 自动兼容性补充（2026-08-24）
 
 官方 Microsoft Edge `151.0.4129.101` 在 Debian amd64 隔离容器中以非 root 用户运行；`./make.js test` 为

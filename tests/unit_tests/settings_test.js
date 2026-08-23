@@ -2,6 +2,19 @@ import "./test_helper.js";
 import "../../lib/settings.js";
 
 context("settings", () => {
+  context("OpenKeyMouse pre-release version", () => {
+    teardown(async () => {
+      await Settings.clear();
+    });
+
+    should("keeps Vimium migration version separate from the manifest version", async () => {
+      await Settings.load();
+      const settings = Settings.getSettings();
+      assert.equal("2.4.2", settings.settingsVersion);
+      assert.equal(Settings.newTabDestinations.vimiumNewTabPage, settings.newTabDestination);
+    });
+  });
+
   context("v2.0 migration", () => {
     setup(async () => {
       // Prior to Vimium 2.0.0, the settings values were encoded as JSON strings.
