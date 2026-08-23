@@ -2,11 +2,12 @@
 
 ## 代码与测试
 
-- [x] `./make.js test` 通过，或所有上游失败项有明确基线证据。当前系统 Chrome 覆盖下为 386/386。
+- [x] `./make.js test` 通过，或所有上游失败项有明确基线证据。当前 macOS 环境为单元 282/282、DOM 109/109，总计 391/391。
 - [x] `deno run -A scripts/audit_permissions.js` 通过。
 - [x] `deno run -A scripts/audit_network_usage.js` 通过。
 - [x] 新算法、配置、Dispatcher 和关键 UI 流程有自动测试。
 - [x] Service Worker 终止后可以重新初始化。
+- [x] 独立 Chrome for Testing 148.0.7778.96 临时 profile 的增强扩展 E2E 通过，覆盖核心手势、Super Drag、原生安全、跨 frame、设置迁移和 Service Worker 重启。
 
 ## 隐私与安全
 

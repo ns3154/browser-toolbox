@@ -37,14 +37,18 @@
     );
   }
 
-  function classify(target, selectedText = "", dataTransfer = null) {
-    if (!target || isProtectedTarget(target)) {
+  function classify(target, selectedText = "", dataTransfer = null, composedPath = []) {
+    const pathTarget = Array.isArray(composedPath)
+      ? composedPath.find((item) => item?.nodeType === 1)
+      : null;
+    const actualTarget = pathTarget || target;
+    if (!actualTarget || isProtectedTarget(actualTarget)) {
       return { type: "UNSUPPORTED_NATIVE_DRAG", reason: "protected-target" };
     }
     if (dataTransfer?.files?.length) {
       return { type: "UNSUPPORTED_NATIVE_DRAG", reason: "file-drag" };
     }
-    const link = closest(target, "a[href], area[href]");
+    const link = closest(actualTarget, "a[href], area[href]");
     if (link) {
       const linkUrl = safeUrl(link.href || link.getAttribute("href"));
       if (!linkUrl) return { type: "UNSUPPORTED_NATIVE_DRAG", reason: "invalid-link" };
@@ -54,17 +58,17 @@
         linkText: (link.innerText || link.textContent || "").trim().slice(0, 4096),
       };
     }
-    const image = closest(target, "img[src], picture img");
+    const image = closest(actualTarget, "img[src], picture img");
     if (image) {
       const imageUrl = safeUrl(image.currentSrc || image.src);
       if (!imageUrl) return { type: "UNSUPPORTED_NATIVE_DRAG", reason: "invalid-image" };
       return { type: "IMAGE", imageUrl };
     }
-    if (closest(target, "[draggable='true']")) {
+    if (closest(actualTarget, "[draggable='true']")) {
       return { type: "UNSUPPORTED_NATIVE_DRAG", reason: "custom-draggable" };
     }
     const text = typeof selectedText === "string" ? selectedText.trim().slice(0, 16384) : "";
-    if (text && !closest(target, "input, textarea, [contenteditable]")) {
+    if (text && !closest(actualTarget, "input, textarea, [contenteditable]")) {
       return { type: "SELECTED_TEXT", selectedText: text };
     }
     return { type: "UNSUPPORTED_NATIVE_DRAG", reason: "no-supported-object" };

@@ -206,3 +206,48 @@ deno fmt --check
 - 风险与未验证：完整 Vimium 页面手工回归、Windows + Chrome、Windows + Edge、Linux + Chrome、
   Firefox/Safari、真实第三方站点和无障碍矩阵仍未执行；功能矩阵继续保留 `IN_PROGRESS`。
 - 对应提交：本轮本地 main 收口提交；无 `origin`，不推送。
+
+## 2026-08-23 / 增强 Super Drag 与设置闭环验证 / E-004
+
+- 授权边界：用户明确要求“按照建议 一次性完成”；本条继续只记录当前可执行的本地闭环，不把
+  Windows、Linux、Edge、真实第三方站点或完整 Vimium 手工矩阵写成完成。
+- 发现并修复：真实 Shadow DOM 事件在文档监听器中会把 `event.target` 重定向为宿主元素；超级拖拽
+  分类器现结合 `event.composedPath()` 识别 Shadow DOM 内的链接，同时保留文件上传、文本输入、
+  textarea、contenteditable、draggable 和危险 URL 的原生/安全旁路。
+- 新增验证：BrowserCommandAdapter 的安全 URL、搜索 API、会话模块切换单元测试；Shadow DOM 重定向
+  分类单元测试；隔离 fixture 的链接文字/URL复制、图片 URL/下载、选择文字、Shadow DOM、原生输入
+  保护、内层滚动、普通右键、Vimium 备份未知字段报告、schemaVersion 逐级迁移和本地 PNG 指针闭环。
+- 修改文件：`content_scripts/mouse/drag_context_classifier.js`、`content_scripts/mouse/super_drag_controller.js`、
+  `scripts/e2e_open_key_mouse.js`、`tests/unit_tests/open_key_mouse/drag_context_classifier_test.js`、
+  `tests/unit_tests/open_key_mouse/browser_command_adapter_test.js`。
+- 实际执行命令与结果：
+
+```bash
+PUPPETEER_EXECUTABLE_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" ./make.js test
+deno check make.js background_scripts/main.js pages/mouse_options.js content_scripts/mouse/mouse_controller.js content_scripts/mouse/super_drag_controller.js content_scripts/mouse/drag_context_classifier.js content_scripts/mouse/frame_gesture_bridge.js background_scripts/open_key_mouse/command_dispatcher.js background_scripts/open_key_mouse/browser_command_adapter.js scripts/e2e_open_key_mouse.js tests/unit_tests/open_key_mouse/browser_command_adapter_test.js tests/unit_tests/open_key_mouse/drag_context_classifier_test.js scripts/audit_permissions.js scripts/audit_network_usage.js scripts/build_release.js
+deno run -A scripts/audit_permissions.js
+deno run -A scripts/audit_network_usage.js
+deno run -A scripts/build_release.js
+./make.js package
+deno run -A scripts/build_release.js --package
+PUPPETEER_EXECUTABLE_PATH="/Users/yang/Library/Caches/ms-playwright/chromium-1223/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing" deno run --allow-read --allow-write --allow-env --allow-net --allow-run --allow-sys scripts/e2e_open_key_mouse.js
+git diff --check
+```
+
+- 验证结果：单元测试 `282/282`、DOM 测试 `109/109`，总计 `391/391`；权限审计通过 9 项权限，网络
+  审计扫描 26 个新增模块且无后台或隐式网络调用；发布检查、商店包/源码包生成、包禁入路径审计和
+  `git diff --check` 通过。CFT 148.0.7778.96 独立临时 profile 的增强 E2E 退出码 0，页面错误为空，
+  实际覆盖核心手势、Super Drag、Wheel、Rocker、跨 frame、原生安全、站点规则、设置导入导出、
+  Vimium 备份迁移、逐级迁移、本地 PNG 指针和 Service Worker 重启。
+- 发布包 SHA-256：Chrome 商店包
+  `6f4e561c69adaa9c4d7dc13de008efe271e89ff1849413c1f5c7e83d5175b90f`；源码包
+  `6962858128eaa13f96661d4db58bb443487208efd1c4f855a9631b0e47a31013`。
+- 额外浏览器实际尝试：系统 Chrome 151.0.7922.173 的隔离启动只发现无法提供本项目
+  `pages/mouse_options.html` 的扩展目标，脚本在功能断言前退出；不计入通过，也不替代 CFT 148 证据。
+  Windows、Linux、Edge、Firefox、Safari 和真实第三方站点仍未验证。
+- 格式边界：定向 JavaScript 格式/类型检查通过；全仓 `deno fmt --check` 的既有上游/测试/样式/设计
+  文档和证据 Markdown 不作为本轮源码通过依据，也未由检查命令自动改写。
+- 风险与未验证：功能矩阵中未达到完整平台手工矩阵的条目继续保持 `IN_PROGRESS`；不能据此声称
+  Windows、Linux、Edge、真实站点、完整 Vimium 页面回归或无障碍回归已完成。
+- 下一步：在真实 Windows 环境的隔离 Chrome Stable profile 中执行设计文档 §18.4 手工矩阵，并将实际结果回写功能矩阵。
+- 对应提交：本轮本地 main 提交；无 `origin`，不推送。

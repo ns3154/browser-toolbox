@@ -60,11 +60,21 @@ function fixtureHtml(base127, baseLocal) {
     <a id="second-link" href="${base127}/target-2.html">Second link text</a>
     <p id="selectable">Text selected for a local E2E clipboard check.</p>
     <img id="image" src="${base127}/pixel.png" alt="Local image">
+    <div id="shadow-host" style="width:220px;height:36px;border:1px solid #888;margin:24px">
+      <span>Shadow host</span>
+    </div>
     <div id="card" draggable="true">Native draggable card</div>
     <div id="editor" contenteditable="true">Protected editor</div>
     <input id="upload" type="file">
+    <input id="text-input" type="text" value="Protected text input">
+    <textarea id="textarea">Protected textarea</textarea>
     <div id="scroll-box"><div>Scrollable inner content</div></div>
     <iframe id="frame" src="${baseLocal}/frame.html" title="E2E frame"></iframe>
+    <script>
+      const shadowRoot = document.querySelector("#shadow-host").attachShadow({ mode: "open" });
+      shadowRoot.innerHTML =
+        '<a id="shadow-link" href="${base127}/target-2.html" style="display:block;padding:8px">Shadow link</a>';
+    </script>
   `);
 }
 
@@ -152,14 +162,35 @@ async function startChrome() {
   return { browser, process, userDataDir };
 }
 
+async function hasExtensionPage(browser, id) {
+  const probe = await browser.newPage();
+  try {
+    const response = await probe.goto(`chrome-extension://${id}/pages/mouse_options.html`, {
+      waitUntil: "domcontentloaded",
+      timeout: 2000,
+    });
+    return response?.status() === 200 && Boolean(await probe.$("#save-settings"));
+  } catch (_) {
+    return false;
+  } finally {
+    await probe.close().catch(() => {});
+  }
+}
+
 async function extensionId(browser) {
-  return waitFor(() => {
-    const target = browser.targets().find((item) =>
-      item.type() === "service_worker" &&
-      item.url().startsWith("chrome-extension://") &&
-      item.url().includes("/background_scripts/main.js")
-    );
-    return target?.url().split("/")[2] || null;
+  return waitFor(async () => {
+    const targets = browser.targets().filter((item) => {
+      if (item.type() !== "service_worker" || !item.url().startsWith("chrome-extension://")) {
+        return false;
+      }
+      return item.url().includes("/background_scripts/main.js") ||
+        item.url().endsWith("/service_worker.js");
+    });
+    for (const target of targets) {
+      const id = target.url().split("/")[2];
+      if (await hasExtensionPage(browser, id)) return id;
+    }
+    return null;
   });
 }
 
@@ -377,6 +408,29 @@ async function turnPoints(page, selector, firstDx, firstDy, secondDx, secondDy) 
   ];
 }
 
+async function gesturePoints(page, selector, deltas) {
+  const box = await page.$eval(selector, (element) => {
+    const rect = element.getBoundingClientRect();
+    return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+  });
+  return [box, ...deltas.map(({ x, y }) => ({ x: box.x + x, y: box.y + y }))];
+}
+
+async function centerFor(page, selector) {
+  return await page.$eval(selector, (element) => {
+    const rect = element.getBoundingClientRect();
+    return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+  });
+}
+
+async function directoryFiles(directory) {
+  const files = [];
+  for await (const entry of Deno.readDir(directory)) {
+    if (entry.isFile) files.push(entry.name);
+  }
+  return files;
+}
+
 async function waitForPageUrl(browser, predicate) {
   return await waitFor(async () => {
     const pages = await browser.pages();
@@ -444,12 +498,17 @@ async function readSettings(options) {
 async function saveOptions(options) {
   await options.$eval("#save-status", (element) => element.textContent = "");
   await options.$eval("#save-settings", (element) => element.click());
-  await waitFor(() =>
-    options.evaluate(() => document.querySelector("#save-status").textContent === "Saved")
+  const result = await waitFor(() =>
+    options.evaluate(() => {
+      const status = document.querySelector("#save-status").textContent;
+      const error = document.querySelector("#settings-error").textContent;
+      return status.length > 0 ? true : error ? `error:${error}` : false;
+    })
   );
+  if (result !== true) throw new Error(`设置保存失败：${result}`);
 }
 
-async function testOptionsAndBackup(options, base127, tempDir) {
+async function testOptionsAndBackup(options, base127, tempDir, page) {
   console.log("E2E: 设置页保存");
   await options.select("#language", "en");
   console.log("E2E: 已选择语言");
@@ -527,12 +586,77 @@ async function testOptionsAndBackup(options, base127, tempDir) {
   const savedRule = (await readSettings(options)).siteRules[0];
   assertEqual(savedRule.pattern, `${base127}/*`, "站点规则保存网址匹配式");
   assertEqual(savedRule.modules.mouse, false, "站点规则保存鼠标禁用状态");
+
+  console.log("E2E: Vimium 备份迁移");
+  const vimiumBackupPath = `${tempDir}/vimium-backup.json`;
+  await Deno.writeTextFile(
+    vimiumBackupPath,
+    JSON.stringify({
+      keyMappings: "map x scrollDown",
+      searchEngines: "l: http://127.0.0.1/search?q=%s Local",
+      unknownField: "must be ignored",
+    }),
+  );
+  await options.evaluate(() => globalThis.confirm = () => true);
+  await (await options.$("#import-settings")).uploadFile(vimiumBackupPath);
+  await waitFor(() => options.evaluate(() => Settings.get("keyMappings") === "map x scrollDown"));
+  assert(
+    (await options.$eval("#settings-error", (element) => element.textContent)).includes(
+      "Ignored fields",
+    ),
+    "Vimium 备份中的未知字段应被报告并忽略",
+  );
+
+  console.log("E2E: 配置逐级迁移");
+  await options.evaluate(async (key) => {
+    await chrome.storage.sync.set({
+      [key]: { schemaVersion: 0, gestureBindings: [{ pattern: ["L"], commandName: "goBack" }] },
+    });
+  }, settingsKey);
+  await options.reload({ waitUntil: "load" });
+  await options.waitForSelector("#save-settings");
+  await waitFor(() =>
+    options.evaluate(
+      (key) => chrome.storage.sync.get(key).then((items) => items[key]?.schemaVersion === 3),
+      settingsKey,
+    )
+  );
+  const migrated = await readSettings(options);
+  assert(
+    migrated.mouse.bindings[0].pattern.join(",") === "L",
+    "旧版 gestureBindings 应迁移到 mouse.bindings",
+  );
+  const migrationBackup = await options.evaluate(async () =>
+    (await chrome.storage.local.get("openKeyMouseSettingsMigrationBackup"))
+      .openKeyMouseSettingsMigrationBackup
+  );
+  assertEqual(migrationBackup.schemaVersion, 0, "迁移前配置应保存在本地备份");
+
+  console.log("E2E: 本地 PNG 指针");
+  await options.$eval("button[data-section='mouse']", (element) => element.click());
+  await (await options.$("#cursor-file")).uploadFile(`${projectRoot}/icons/icon16.png`);
+  await waitFor(() => options.$eval("#cursor-preview", (element) => !element.hidden));
+  await saveOptions(options);
+  const cursorSettings = await readSettings(options);
+  assert(
+    cursorSettings.cursor.enabled &&
+      /^openKeyMouseCursor-/.test(cursorSettings.cursor.localAssetId),
+    "保存本地 PNG 后应只生成本地指针资源引用",
+  );
+  await page.reload({ waitUntil: "load" });
+  await sleep(500);
+  assert(
+    await page.evaluate(() => Boolean(document.querySelector("style[data-open-key-mouse-cursor]"))),
+    "内容页应应用本地 PNG 指针样式",
+  );
 }
 
 async function testMouseGestures(page, base127, browser, options) {
   console.log("E2E: 鼠标轨迹");
+  await page.bringToFront();
   await page.goto(`${base127}/fixture.html`, { waitUntil: "load" });
   await sleep(1000);
+  await waitForController(options, page.url());
   await clearEvents(page);
   await sendDrag(page, await pointsFor(page, "#gesture-target", -5, 0), "right");
   assert(page.url().endsWith("/fixture.html"), "低于激活距离的右键输入不应触发历史命令");
@@ -542,6 +666,7 @@ async function testMouseGestures(page, base127, browser, options) {
   await page.goto(`${base127}/one.html`, { waitUntil: "load" });
   await page.goto(`${base127}/two.html`, { waitUntil: "load" });
   await sleep(1000);
+  await waitForController(options, page.url());
   console.log(
     "E2E: 历史起点",
     await page.evaluate(() => ({ url: location.href, length: history.length })),
@@ -586,11 +711,16 @@ async function testMouseGestures(page, base127, browser, options) {
   assertEqual((await browser.pages()).length, pageCount - 1, "关闭标签页手势关闭当前标签页");
 }
 
-async function testSuperDrag(page, base127, browser) {
+async function testSuperDrag(page, base127, browser, tempDir) {
   console.log("E2E: 超级拖拽");
   await page.goto(`${base127}/fixture.html`, { waitUntil: "load" });
   await sleep(1000);
   await page.bringToFront();
+  const downloadClient = await page.createCDPSession();
+  await downloadClient.send("Page.setDownloadBehavior", {
+    behavior: "allow",
+    downloadPath: tempDir,
+  });
   let pageCount = (await browser.pages()).length;
   await sendDrag(page, await pointsFor(page, "#link", 150, 0), "left");
   const foreground = await waitForPageUrl(browser, (url) => url.endsWith("/target.html"));
@@ -609,6 +739,77 @@ async function testSuperDrag(page, base127, browser) {
   const imagePage = await waitForPageUrl(browser, (url) => url.endsWith("/pixel.png"));
   assert(imagePage != null, "Super Drag IMAGE 右向应打开图片");
   await imagePage.close();
+
+  await sendDrag(
+    page,
+    await gesturePoints(page, "#link", [{ x: -110, y: 0 }, { x: -110, y: 80 }, { x: 20, y: 80 }]),
+    "left",
+  );
+  assert(
+    (await page.evaluate(() => navigator.clipboard?.readText?.() || "")).includes(
+      "Example link text",
+    ),
+    "Super Drag LINK 左下右应复制链接文字",
+  );
+
+  await sendDrag(
+    page,
+    await gesturePoints(page, "#link", [{ x: 110, y: 0 }, { x: 110, y: 80 }, { x: 0, y: 80 }]),
+    "left",
+  );
+  assert(
+    (await page.evaluate(() => navigator.clipboard?.readText?.() || "")).endsWith(
+      "/target.html",
+    ),
+    "Super Drag LINK 右下左应复制链接 URL",
+  );
+
+  await sendDrag(page, await pointsFor(page, "#image", 0, 120), "left");
+  assert(
+    (await page.evaluate(() => navigator.clipboard?.readText?.() || "")).endsWith("/pixel.png"),
+    "Super Drag IMAGE 下应复制图片 URL",
+  );
+
+  const beforeDownloads = await directoryFiles(tempDir);
+  await sendDrag(
+    page,
+    await gesturePoints(page, "#image", [{ x: 0, y: 100 }, { x: 100, y: 100 }]),
+    "left",
+  );
+  const downloaded = await waitFor(async () => {
+    const files = await directoryFiles(tempDir);
+    return files.find((file) =>
+      !beforeDownloads.includes(file) && file !== "open-key-mouse-settings.json"
+    );
+  });
+  assert(downloaded, "Super Drag IMAGE 下右应触发本地下载");
+
+  const shadowPageCount = (await browser.pages()).length;
+  await sendDrag(page, await pointsFor(page, "#shadow-host", 150, 0), "left");
+  const shadowTarget = await waitForPageUrl(browser, (url) => url.endsWith("/target-2.html"));
+  assert(shadowTarget != null, "Shadow DOM 内的链接应支持 Super Drag");
+  assertEqual(
+    (await browser.pages()).length,
+    shadowPageCount + 1,
+    "Shadow DOM 拖拽只打开一个标签页",
+  );
+  await shadowTarget.close();
+
+  for (const selector of ["#upload", "#text-input", "#textarea", "#editor"]) {
+    const protectedPageCount = (await browser.pages()).length;
+    await clearEvents(page);
+    await sendDrag(page, await pointsFor(page, selector, 150, 0), "left");
+    assertEqual(
+      (await browser.pages()).length,
+      protectedPageCount,
+      `${selector} 不应被 Super Drag 接管`,
+    );
+    const protectedEvents = await events(page);
+    assert(
+      protectedEvents.every((event) => event.defaultPrevented !== true),
+      `${selector} 的原生拖拽事件不应被阻止`,
+    );
+  }
 
   await page.evaluate(() => {
     const text = document.querySelector("#selectable");
@@ -643,6 +844,7 @@ async function testSuperDrag(page, base127, browser) {
   for (const item of await browser.pages()) {
     if (item !== page && item.url().endsWith("/target.html")) await item.close();
   }
+  await downloadClient.detach().catch(() => {});
 }
 
 async function testWheelRockerAndFrames(page, base127) {
@@ -676,6 +878,7 @@ async function testWheelRockerAndFrames(page, base127) {
   await sleep(1000);
   const frame = page.frames().find((item) => item.url().includes("/frame.html"));
   assert(frame, "跨域 iframe 应加载本地 frame");
+  await page.$eval("#frame", (element) => element.scrollIntoView({ block: "center" }));
   const frameBox = await page.$eval("#frame", (element) => {
     const rect = element.getBoundingClientRect();
     return { x: rect.left, y: rect.top, width: rect.width, height: rect.height };
@@ -686,6 +889,37 @@ async function testWheelRockerAndFrames(page, base127) {
     { x: frameBox.x + frameBox.width / 2 - 150, y: frameBox.y + frameBox.height / 2 },
   ], "right");
   await waitFor(() => page.url().endsWith("/one.html"));
+}
+
+async function testNativeSafety(page, base127) {
+  console.log("E2E: 原生右键、内层滚动和普通输入");
+  await page.goto(`${base127}/fixture.html`, { waitUntil: "load" });
+  await sleep(1000);
+
+  const heading = await centerFor(page, "#heading");
+  await clearEvents(page);
+  await page.mouse.click(heading.x, heading.y, { button: "right" });
+  await sleep(300);
+  const contextMenu = (await events(page)).find((event) => event.type === "contextmenu");
+  assert(contextMenu, "普通右键应产生 contextmenu 事件");
+  assert(!contextMenu.defaultPrevented, "未激活手势的普通右键不应被阻止");
+
+  await page.evaluate(() =>
+    document.querySelector("#scroll-box").scrollIntoView({ block: "center" })
+  );
+  const scrollBox = await centerFor(page, "#scroll-box");
+  await clearEvents(page);
+  await dispatchMouse(page, {
+    type: "mouseWheel",
+    x: scrollBox.x,
+    y: scrollBox.y,
+    buttons: 0,
+    deltaX: 0,
+    deltaY: 240,
+  });
+  await waitFor(() => page.evaluate(() => document.querySelector("#scroll-box").scrollTop > 0));
+  const nativeWheel = (await events(page)).find((event) => event.type === "wheel");
+  assert(nativeWheel && !nativeWheel.defaultPrevented, "无按键的内层滚动不应被滚轮手势接管");
 }
 
 async function testSiteRule(page, options, base127) {
@@ -793,10 +1027,11 @@ async function main() {
       "clipboard-write",
     ]);
     await testMouseGestures(fixture, base127, browser, options);
-    await testSuperDrag(fixture, base127, browser);
+    await testSuperDrag(fixture, base127, browser, tempDir);
     await testWheelRockerAndFrames(fixture, base127);
+    await testNativeSafety(fixture, base127);
     await testSiteRule(fixture, options, base127);
-    await testOptionsAndBackup(options, base127, tempDir);
+    await testOptionsAndBackup(options, base127, tempDir, fixture);
     console.log("E2E: 设置闭环完成");
     await testServiceWorkerRestart(browser, id, fixture, options);
     assert(errors.length === 0, `E2E 页面错误：${errors.join("；")}`);

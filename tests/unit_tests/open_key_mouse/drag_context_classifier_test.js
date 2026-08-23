@@ -27,4 +27,52 @@ context("Drag context classifier", () => {
       OpenKeyMouseDragContextClassifier.classify(document.querySelector("#card")).type,
     );
   });
+
+  should("protect editors, reject files, and classify shadow DOM links", () => {
+    const editor = document.createElement("div");
+    editor.contentEditable = "true";
+    document.body.appendChild(editor);
+    assert.equal(
+      "UNSUPPORTED_NATIVE_DRAG",
+      OpenKeyMouseDragContextClassifier.classify(editor).type,
+    );
+
+    const link = document.createElement("a");
+    link.href = "https://example.com/shadow";
+    link.textContent = "Shadow link";
+    const host = document.createElement("div");
+    const shadow = host.attachShadow({ mode: "open" });
+    shadow.appendChild(link);
+    document.body.appendChild(host);
+    const result = OpenKeyMouseDragContextClassifier.classify(link);
+    assert.equal("LINK", result.type);
+    assert.equal("https://example.com/shadow", result.linkUrl);
+    const retargeted = OpenKeyMouseDragContextClassifier.classify(host, "", null, [
+      link,
+      shadow,
+      host,
+    ]);
+    assert.equal("LINK", retargeted.type);
+    assert.equal("https://example.com/shadow", retargeted.linkUrl);
+
+    const file = { files: [{ name: "local.txt" }] };
+    assert.equal(
+      "UNSUPPORTED_NATIVE_DRAG",
+      OpenKeyMouseDragContextClassifier.classify(link, "", file).type,
+    );
+  });
+
+  should("reject unsafe link and image schemes", () => {
+    const doc = new jsdom.JSDOM(
+      "<a id='bad-link' href='javascript:alert(1)'>bad</a><img id='bad-image' src='data:image/png;base64,AA=='>",
+    ).window.document;
+    assert.equal(
+      "UNSUPPORTED_NATIVE_DRAG",
+      OpenKeyMouseDragContextClassifier.classify(doc.querySelector("#bad-link")).type,
+    );
+    assert.equal(
+      "UNSUPPORTED_NATIVE_DRAG",
+      OpenKeyMouseDragContextClassifier.classify(doc.querySelector("#bad-image")).type,
+    );
+  });
 });

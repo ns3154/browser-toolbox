@@ -19,7 +19,12 @@
     pointerDown(event, selectedText, dataTransfer) {
       if (!this.settings.enabled || event.button !== 0) return false;
       if (event.altKey && this.settings.nativeBypassModifier === "Alt") return false;
-      const context = classifier.classify(event.target, selectedText, dataTransfer);
+      const context = classifier.classify(
+        event.target,
+        selectedText,
+        dataTransfer,
+        event.composedPath?.(),
+      );
       if (context.type === "UNSUPPORTED_NATIVE_DRAG") return false;
       this.context = context;
       this.session = new Session({
