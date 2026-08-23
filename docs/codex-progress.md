@@ -395,3 +395,41 @@ Deno V8 coverage：test-unit 308/308；本轮纳入范围行覆盖率 97.6%，�
   通过。Windows、Edge、Linux Chrome Stable、认证态真实站点、屏幕阅读器、人工高对比度/缩放和完整 Vimium
   手工回归仍未验证，功能矩阵继续保持 `IN_PROGRESS`。
 - 对应提交：待本轮提交；仓库仅保留本地检查点，无 `origin`，不推送、不发布。
+
+## 2026-08-24 / 设计文档 fixtures 真实扩展冒烟 / E-009
+
+- 授权边界：继续执行用户明确的“一次性完成”要求；本轮只补齐 §18.2 fixture 的自动化证据，不将其扩大为
+  Windows、Edge 或人工平台矩阵完成。
+- 修改文件：`scripts/e2e_open_key_mouse.js`，并同步本记录、发布检查表和功能对照矩阵。
+- 实际覆盖：通过本地 fixture 服务加载并断言 `basic-links.html`、`inputs.html`、`scroll-containers.html`、
+  `iframes.html`、`shadow-dom.html`、`drag-drop-app.html`、`contenteditable.html`、`images.html`；图片资源在
+  测试服务内改写为本地 PNG，未引入第三方网络请求。
+- 实际结果：macOS Chrome for Testing 148.0.7778.96 与 Linux ARM64 Debian Chromium 151.0.7922.169 的
+  增强扩展 E2E 均退出码 0；两者均同时通过动作页受限提示、核心手势、设置闭环和 Service Worker 重启。
+  macOS 系统 Chrome 覆盖下 `./make.js test` 仍为单元 `308/308`、DOM `109/109`，总计 `417/417`。
+- 重新生成源码包后 SHA-256：`3630fae8e26603f7a093bf141d891612f2b209cbcdbc59b8647057e32bd62c2c`；
+  Chrome 商店、Firefox、Canary 包分别保持 `f2ea61ce0868595371b5c26fa627687e37cf2d5bce7498b7c188193716e1e896`、
+  `b61b49dfca555657a2b4f907a6e14895f1df4d0bee8242d38f2a2d7a8265c6f2`、
+  `c83f591d63cb4274654ebf098b05b2dfc39dbbb28279fa137826e12c41637317`。
+- 未完成边界：Windows、Edge、Linux Chrome Stable 与 macOS Chrome Stable 的人工扩展矩阵、认证态真实站点、
+  屏幕阅读器、人工高对比度/缩放和完整 Vimium 手工回归仍无可复核证据。
+
+## 2026-08-24 / Edge Linux 隔离运行时补充 / E-010
+
+- 环境：官方 Microsoft Edge `151.0.4129.101`、Debian amd64 隔离容器（ARM 宿主通过 Docker amd64 模拟）、
+  非 root 用户、临时 profile；未接触用户浏览器或登录态。
+- 实际结果：`./make.js test` 单元 `308/308`、DOM `109/109`，总计 `417/417`；增强扩展 E2E 退出码 0，
+  通过核心手势、设置闭环、受限动作页、8 个设计文档 fixture、跨 frame、站点规则、导入导出和 Service
+  Worker 重启。
+- 边界：这是 Edge 运行时的自动化隔离证据，不是设计文档 §18.4 要求的 Windows Edge Stable 手工结果；
+  Windows、Linux Chrome Stable、macOS Chrome Stable 的人工扩展矩阵、认证态真实站点、屏幕阅读器、人工高对比度/
+  缩放和完整 Vimium 手工回归仍未验证。
+
+## 2026-08-24 / 最终发布包重建 / E-011
+
+- `./make.js package` 与 `deno run -A scripts/build_release.js --package` 均通过；商店包、Firefox、Canary 和源码
+  包禁入路径审计无命中。
+- 本次最终重建 SHA-256：Chrome 商店 `ff7bae3401955da6b99a4eb656f2060446c73e617a0bea460f54cae995186e23`；
+  Firefox `6b918bbf93cf443f3f4a5e16b94ffba0ecedaafa9d641db6ba2d3c929b85c355`；Canary
+  `b51a656cdc6bdefaed42ba128d0034ed55fad281694acdfee7a884fba25d38e8`；源码包
+  `9c9e2a157638225a2efd85c1ebb7787a387f80e68cba36b0fffa0a9d43279a5f`。

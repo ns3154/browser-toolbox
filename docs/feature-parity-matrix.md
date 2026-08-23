@@ -34,3 +34,12 @@ Testing 148 与 Linux ARM64 Debian Chromium 151 的增强 E2E 均通过；新增
 2026-08-24 受限动作页补充证据：动作页现在先确认当前标签页存在内容脚本，再初始化 OpenKeyMouse 控件；
 在扩展页面自身这一受限上下文中，CFT 148 与 Linux ARM64 Chromium 151 的增强 E2E 均实际确认限制提示可见、
 操作控件隐藏，且提示包含浏览器限制说明。该证据覆盖了“不能静默失效”的 UI 约束，但不改变跨平台手工矩阵状态。
+
+2026-08-24 fixture 补充证据：真实扩展 E2E 通过本地 fixture 服务加载并断言了 `basic-links.html`、
+`inputs.html`、`scroll-containers.html`、`iframes.html`、`shadow-dom.html`、`drag-drop-app.html`、
+`contenteditable.html`、`images.html` 八个设计文档 §18.2 fixture；该证据增强自动测试覆盖，不替代 §18.4
+要求的人工平台矩阵。
+
+2026-08-24 Edge 自动运行补充证据：官方 Microsoft Edge `151.0.4129.101` 在 Debian amd64 隔离容器中完成
+`308/308` 单元、`109/109` DOM 和增强扩展 E2E；该结果覆盖 Edge 运行时自动兼容性，不等同于 Windows Edge
+Stable 人工矩阵，因此所有需要人工矩阵的状态保持不变。

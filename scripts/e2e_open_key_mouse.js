@@ -15,6 +15,16 @@ const pngBytes = Uint8Array.from(
   ),
   (char) => char.charCodeAt(0),
 );
+const designFixtureFiles = [
+  "basic-links.html",
+  "inputs.html",
+  "scroll-containers.html",
+  "iframes.html",
+  "shadow-dom.html",
+  "drag-drop-app.html",
+  "contenteditable.html",
+  "images.html",
+];
 
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
@@ -96,8 +106,17 @@ function response(body, contentType = "text/html; charset=utf-8") {
 async function startFixtureServer() {
   let base127 = "";
   let baseLocal = "";
-  const server = Deno.serve({ hostname: "127.0.0.1", port: 0 }, (request) => {
+  const server = Deno.serve({ hostname: "127.0.0.1", port: 0 }, async (request) => {
     const url = new URL(request.url);
+    if (url.pathname.startsWith("/fixtures/")) {
+      const fileName = url.pathname.slice("/fixtures/".length);
+      if (designFixtureFiles.includes(fileName)) {
+        let fixture = await Deno.readTextFile(`${projectRoot}/tests/fixtures/${fileName}`);
+        fixture = fixture.replaceAll("https://example.com/image.png", `${base127}/pixel.png`);
+        fixture = fixture.replaceAll("https://example.com/image", `${base127}/image`);
+        return response(fixture);
+      }
+    }
     switch (url.pathname) {
       case "/fixture.html":
         return response(fixtureHtml(base127, baseLocal));
@@ -489,6 +508,45 @@ async function testActionRestrictedPage(browser, id, errors) {
     "受限页面提示应说明浏览器限制",
   );
   await action.close();
+}
+
+async function testDesignFixtures(page, options, base127) {
+  console.log("E2E: 设计文档 fixtures");
+  for (const fileName of designFixtureFiles) {
+    const url = `${base127}/fixtures/${fileName}`;
+    await page.goto(url, { waitUntil: "load" });
+    await sleep(300);
+    await waitForController(options, page.url());
+    const state = await page.evaluate(() => ({
+      links: document.querySelectorAll("a").length,
+      inputs: document.querySelectorAll("input").length,
+      fileInputs: document.querySelectorAll('input[type="file"]').length,
+      scrollContainers: [...document.querySelectorAll("*")].filter((element) => {
+        const style = getComputedStyle(element);
+        return ["auto", "scroll"].includes(style.overflowY) &&
+          element.scrollHeight > element.clientHeight;
+      }).length,
+      frames: document.querySelectorAll("iframe").length,
+      shadowLink: Boolean(document.querySelector("#host")?.shadowRoot?.querySelector("a")),
+      draggable: document.querySelectorAll("[draggable=true]").length,
+      contenteditable: document.querySelectorAll("[contenteditable=true]").length,
+      images: document.querySelectorAll("img").length,
+    }));
+    const checks = {
+      "basic-links.html": state.links >= 2,
+      "inputs.html": state.inputs >= 3 && state.fileInputs >= 1,
+      "scroll-containers.html": state.scrollContainers >= 1,
+      "iframes.html": state.frames >= 1,
+      "shadow-dom.html": state.shadowLink,
+      "drag-drop-app.html": state.draggable >= 1 && state.fileInputs >= 1,
+      "contenteditable.html": state.contenteditable >= 1,
+      "images.html": state.images >= 1,
+    };
+    assert(
+      checks[fileName],
+      `设计文档 fixture 未满足结构断言：${fileName} ${JSON.stringify(state)}`,
+    );
+  }
 }
 
 async function resetSettings(options) {
@@ -1159,9 +1217,10 @@ async function main() {
     await testOptionsAndBackup(options, base127, tempDir, fixture);
     console.log("E2E: 设置闭环完成");
     await testServiceWorkerRestart(browser, id, fixture, options);
+    await testDesignFixtures(fixture, options, base127);
     assert(errors.length === 0, `E2E 页面错误：${errors.join("；")}`);
     console.log(
-      "OpenKeyMouse E2E 通过：设置导入导出、站点规则、核心手势、超级拖拽、滚轮、摇杆、跨 frame 和 Service Worker 重启。",
+      "OpenKeyMouse E2E 通过：设置导入导出、站点规则、核心手势、超级拖拽、滚轮、摇杆、跨 frame、设计文档 fixtures 和 Service Worker 重启。",
     );
   } finally {
     await browser?.disconnect();

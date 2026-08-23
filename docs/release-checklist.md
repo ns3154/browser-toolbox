@@ -9,7 +9,9 @@
 - [x] Service Worker 终止后可以重新初始化。
 - [x] 独立 Chrome for Testing 148.0.7778.96 临时 profile 的增强扩展 E2E 通过，覆盖核心手势、Super Drag、原生安全、跨 frame、设置迁移、键盘无障碍语义、高对比度媒体和窄视口布局。
 - [x] 动作页在扩展页面自身等受限上下文中显示本地化浏览器限制提示，并隐藏 OpenKeyMouse 操作控件；CFT 148 与 Linux ARM64 Chromium E2E 均实际断言通过。
+- [x] 设计文档 §18.2 的 8 个仓库 fixture 均由真实扩展 E2E 加载并完成结构断言。
 - [x] Linux ARM64 Debian Chromium 151 隔离环境的完整基线 `417/417` 和增强扩展 E2E 通过；该项不替代 Linux + Chrome Stable 手工矩阵。
+- [x] 官方 Microsoft Edge Linux 151.0.4129.101 amd64 隔离环境的完整基线 `417/417` 和增强扩展 E2E 通过；该项不替代 Windows Edge 手工矩阵。
 - [x] 覆盖率门槛通过：新增纯算法模块行覆盖率均不低于 90%，配置模块和 Dispatcher 行覆盖率均不低于 85%；本轮最高范围汇总行覆盖率 97.6%。
 - [x] 设置页自动化无障碍语义、键盘替代录入、强制颜色和窄视口冒烟通过；不替代屏幕阅读器和人工可访问性验收。
 - [x] 9 个真实站点的隔离内容脚本注入冒烟通过；该项不替代登录态业务流程和 §18.4 手工矩阵。
@@ -27,7 +29,7 @@
 - [x] GPL-3.0-or-later、Vimium MIT 和 shoulda MIT 通知完整；发布检查通过。
 - [x] `deno run -A scripts/build_release.js --package` 已生成源码发布包，并完成归档内容审计。
 - [x] 源码、发布包和 SHA-256 对应同一提交；本地检查点提交后已重新生成并核对 Chrome 包 SHA-256，最终值记录在本轮交付报告。
-- [x] 当前重建产物 SHA-256：Chrome 商店 `f2ea61ce0868595371b5c26fa627687e37cf2d5bce7498b7c188193716e1e896`；Firefox `b61b49dfca555657a2b4f907a6e14895f1df4d0bee8242d38f2a2d7a8265c6f2`；Canary `c83f591d63cb4274654ebf098b05b2dfc39dbbb28279fa137826e12c41637317`；源码 `9e7424adfbbd3791161b7155ac9fb56e18f3f5b91a8d7023a3163d2f3fa114cd`。
+- [x] 当前重建产物 SHA-256：Chrome 商店 `ff7bae3401955da6b99a4eb656f2060446c73e617a0bea460f54cae995186e23`；Firefox `6b918bbf93cf443f3f4a5e16b94ffba0ecedaafa9d641db6ba2d3c929b85c355`；Canary `b51a656cdc6bdefaed42ba128d0034ed55fad281694acdfee7a884fba25d38e8`；源码 `9c9e2a157638225a2efd85c1ebb7787a387f80e68cba36b0fffa0a9d43279a5f`。
 - [x] 发布包不含测试、调试日志、个人路径、测试密钥或本机凭证；`make.js` 已排除 `docs/` 和
       `scripts/`，并通过 `unzip -l dist/chrome-store/vimium-chrome-store-2.4.2.zip` 的禁入路径审计。
 - [ ] Chrome、Edge、Windows、macOS、Linux 的手工矩阵已记录实际结果。

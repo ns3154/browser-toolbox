@@ -298,3 +298,23 @@ checkout 执行完整自动门禁：
 选择目录；命令行扩展加载参数也被 Google Chrome 拒绝。Windows、Edge、Linux Chrome Stable、认证态真实站点、
 屏幕阅读器、人工高对比度/缩放和完整 Vimium 手工回归没有可复核证据，功能矩阵仍保持 `IN_PROGRESS`，本轮不
 宣称这些项目完成。
+
+## 当前 checkout 设计文档 fixtures 补充门禁（2026-08-24）
+
+新增真实扩展 E2E 对设计文档 §18.2 的 8 个仓库 fixture 做结构冒烟：`basic-links.html`、`inputs.html`、
+`scroll-containers.html`、`iframes.html`、`shadow-dom.html`、`drag-drop-app.html`、`contenteditable.html`、
+`images.html`。图片资源在本地测试服务内改写为本地 PNG，避免测试过程产生第三方图片请求。
+
+Chrome for Testing 148 macOS 与 Linux ARM64 Debian Chromium 151 均退出码 0；macOS 系统 Chrome 覆盖下
+`./make.js test` 仍为 `417/417`。本次最终重建产物 SHA-256：Chrome 商店包
+`ff7bae3401955da6b99a4eb656f2060446c73e617a0bea460f54cae995186e23`；Firefox 包
+`6b918bbf93cf443f3f4a5e16b94ffba0ecedaafa9d641db6ba2d3c929b85c355`；Canary 包
+`b51a656cdc6bdefaed42ba128d0034ed55fad281694acdfee7a884fba25d38e8`；源码包
+`9c9e2a157638225a2efd85c1ebb7787a387f80e68cba36b0fffa0a9d43279a5f`。
+这仍是自动化 fixture 证据，不替代设计文档 §18.4 的 Windows、Edge、Chrome Stable 人工矩阵。
+
+## 当前 checkout Edge 自动兼容性补充（2026-08-24）
+
+官方 Microsoft Edge `151.0.4129.101` 在 Debian amd64 隔离容器中以非 root 用户运行；`./make.js test` 为
+`308/308` 单元、`109/109` DOM，增强扩展 E2E 退出码 0，并通过 8 个设计文档 fixture、受限动作页和 Service
+Worker 重启。该证据不等同于 Windows Edge Stable 手工矩阵，未据此改变功能矩阵状态。
