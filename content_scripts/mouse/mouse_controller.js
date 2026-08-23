@@ -87,6 +87,7 @@
     constructor(doc = globalThis.document) {
       this.document = doc;
       this.gesture = null;
+      this.gestureRequestId = null;
       this.drag = null;
       this.settings = null;
       this.overlay = null;
@@ -95,26 +96,47 @@
       this.rocker = null;
       this.bridge = null;
       this.cursor = null;
+      this.repositoryListener = null;
+      this.nativeDragTarget = null;
+      this.nativeDragAttribute = null;
+      this.pageshowListener = () => {
+        if (!this.initialized || this.listeners.length === 0) this.init();
+      };
       this.suppressClickUntil = 0;
       this.listeners = [];
       this.initialized = false;
+      this.initializing = false;
+      globalThis.addEventListener?.("pageshow", this.pageshowListener, true);
     }
 
     async init() {
-      if (this.initialized || !repository || !this.document?.addEventListener) return;
+      const currentDocument = globalThis.document;
+      if (this.initializing) return;
+      if (
+        this.initialized && this.document === currentDocument && this.listeners.length > 0
+      ) return;
+      if (this.initialized) this.destroy();
+      this.document = currentDocument;
+      if (!repository || !this.document?.addEventListener) return;
+      this.initializing = true;
       this.initialized = true;
-      await repository.ensureLoaded();
-      await this.refreshSettings();
-      this.overlay = new globalThis.OpenKeyMouseGestureOverlay(this.document);
-      this.guard = new globalThis.OpenKeyMouseContextMenuGuard();
-      this.wheel = new globalThis.OpenKeyMouseWheelGestureController();
-      this.rocker = new globalThis.OpenKeyMouseRockerGestureController();
-      this.cursor = new globalThis.OpenKeyMouseCursorController(this.document);
-      this.installListeners();
-      repository.addEventListener(() => {
-        this.refreshSettings().then(() => this.applyCursor()).catch(() => {});
-      });
-      this.applyCursor();
+      try {
+        await repository.ensureLoaded();
+        await this.refreshSettings();
+        this.overlay = new globalThis.OpenKeyMouseGestureOverlay(this.document);
+        this.guard = new globalThis.OpenKeyMouseContextMenuGuard();
+        this.wheel = new globalThis.OpenKeyMouseWheelGestureController();
+        this.rocker = new globalThis.OpenKeyMouseRockerGestureController();
+        this.cursor = new globalThis.OpenKeyMouseCursorController(this.document);
+        this.installListeners();
+        this.repositoryListener = () => {
+          this.refreshSettings().then(() => this.applyCursor()).catch(() => {});
+        };
+        repository.addEventListener(this.repositoryListener);
+        this.applyCursor();
+      } finally {
+        this.initializing = false;
+      }
     }
 
     async refreshSettings() {
@@ -122,9 +144,10 @@
       this.settings = repository.getEffectiveSettings(url);
       this.drag?.updateSettings(this.settings.superDrag);
       try {
-        const remote = await chrome.runtime.sendMessage({
-          handler: "openKeyMouse.effectiveSettings",
-        });
+        const remote = await Promise.race([
+          chrome.runtime.sendMessage({ handler: "openKeyMouse.effectiveSettings" }),
+          new Promise((resolve) => setTimeout(() => resolve(null), 500)),
+        ]);
         if (remote?.effectiveModules) {
           this.settings = remote;
           this.drag?.updateSettings(this.settings.superDrag);
@@ -147,13 +170,17 @@
       this.listen("pointermove", (event) => this.onPointerMove(event), capture);
       this.listen("pointerup", (event) => this.onPointerUp(event), capture);
       this.listen("mouseup", (event) => this.onMouseUp(event), capture);
-      this.listen("pointercancel", () => this.cancelAll("pointercancel"), capture);
+      this.listen("pointercancel", (event) => this.onPointerCancel(event), capture);
       this.listen("dragstart", (event) => this.onDragStart(event), capture);
       this.listen("click", (event) => this.onClick(event), capture);
       this.listen("contextmenu", (event) => this.onContextMenu(event), capture);
       this.listen("wheel", (event) => this.onWheel(event), { capture: true, passive: false });
       this.listen("keydown", (event) => this.onKeyDown(event), capture);
-      this.listen("blur", () => this.cancelAll("blur"), { capture: true, passive: true });
+      this.listen("blur", () => {
+        // Chrome 在超级拖拽起始阶段可能短暂触发页面失焦，保留已分类的拖拽会话。
+        if (this.drag) return;
+        this.cancelAll("blur");
+      }, { capture: true, passive: true });
       this.listen("visibilitychange", () => {
         if (this.document.visibilityState !== "visible") this.cancelAll("hidden");
       }, { capture: true, passive: true });
@@ -178,13 +205,23 @@
           pageContext(),
           1,
         );
+        this.gestureRequestId = invocation.requestId;
         this.bridge.start(invocation.requestId);
         return;
       }
       if (event.button === 0 && this.effective("superDrag")) {
         const selection = this.document.defaultView?.getSelection?.()?.toString() || "";
         this.drag = new globalThis.OpenKeyMouseSuperDragController(this.settings.superDrag);
-        if (!this.drag.pointerDown(event, selection, event.dataTransfer)) this.drag = null;
+        if (!this.drag.pointerDown(event, selection, event.dataTransfer)) {
+          this.drag = null;
+        } else {
+          this.suppressNativeDrag(event.target, this.drag.context?.type);
+          if (this.drag.context?.type === "IMAGE") {
+            // Chrome 图片原生拖拽会在首个移动前触发失焦；图片已由超级拖拽接管，阻止默认拖拽。
+            event.preventDefault();
+            event.stopPropagation();
+          }
+        }
       }
     }
 
@@ -246,13 +283,19 @@
         if (result.state === "COMPLETED") {
           event.preventDefault();
           event.stopPropagation();
+          const bridgeReady = this.bridge?.waitUntilReady
+            ? await this.bridge.waitUntilReady()
+            : true;
           const match = recognizer.find(result.pattern, this.settings.mouse.bindings);
-          if (match.exact) {
+          if (bridgeReady && match.exact) {
             await this.dispatchBinding(
               match.exact,
               "mouseGesture",
               pageContext({ pointer: { x: event.clientX, y: event.clientY } }),
+              this.gestureRequestId,
             );
+          } else if (!bridgeReady) {
+            this.bridge?.cancel();
           } else {
             this.overlay.setHud(
               globalThis.OpenKeyMouseI18n?.message("gestureUnrecognized") ||
@@ -265,6 +308,7 @@
           this.bridge?.cancel();
         }
         this.gesture = null;
+        this.gestureRequestId = null;
         this.guard.deactivate();
         this.overlay.hide();
       }
@@ -278,6 +322,7 @@
             this.dispatchBinding(result.binding, "superDrag", pageContext(result.context));
           }
         }
+        this.restoreNativeDrag();
         this.drag = null;
         this.overlay.hide();
       }
@@ -305,6 +350,16 @@
       if (!this.drag?.active) return;
       event.preventDefault();
       event.stopPropagation();
+    }
+
+    onPointerCancel(event) {
+      // Chrome 在原生拖拽开始前可能先发 pointercancel；超级拖拽仍需让 dragstart 进入接管逻辑。
+      if (this.drag && ["LINK", "IMAGE"].includes(this.drag.context?.type)) {
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
+      this.cancelAll("pointercancel");
     }
 
     onClick(event) {
@@ -351,8 +406,10 @@
     cancelAll(reason, { preserveRocker = false } = {}) {
       this.gesture?.cancel(reason);
       this.drag?.cancel();
+      this.restoreNativeDrag();
       this.bridge?.cancel();
       this.gesture = null;
+      this.gestureRequestId = null;
       this.drag = null;
       this.suppressClickUntil = 0;
       this.guard?.deactivate();
@@ -361,7 +418,7 @@
       this.overlay?.hide();
     }
 
-    async dispatchBinding(binding, sourceType, context) {
+    async dispatchBinding(binding, sourceType, context, requestId = null) {
       const invocation = invocationApi.createInvocation(
         binding.commandName,
         binding.options || {},
@@ -369,11 +426,30 @@
         context,
         1,
       );
+      if (requestId) invocation.requestId = requestId;
       try {
         return await chrome.runtime.sendMessage({ handler: "openKeyMouse.invoke", invocation });
       } catch (_) {
         return invocationApi.createResult(false, invocationApi.ERROR_CODES.EXTENSION_CONTEXT_LOST);
       }
+    }
+
+    suppressNativeDrag(target, contextType) {
+      if (!target || !["LINK", "IMAGE"].includes(contextType)) return;
+      const selector = contextType === "IMAGE" ? "img[src], picture img" : "a[href], area[href]";
+      const element = target.closest?.(selector);
+      if (!element) return;
+      this.nativeDragTarget = element;
+      this.nativeDragAttribute = element.getAttribute("draggable");
+      element.setAttribute("draggable", "false");
+    }
+
+    restoreNativeDrag() {
+      if (!this.nativeDragTarget) return;
+      if (this.nativeDragAttribute == null) this.nativeDragTarget.removeAttribute("draggable");
+      else this.nativeDragTarget.setAttribute("draggable", this.nativeDragAttribute);
+      this.nativeDragTarget = null;
+      this.nativeDragAttribute = null;
     }
 
     async applyCursor() {
@@ -392,6 +468,8 @@
       this.cancelAll("destroy");
       for (const remove of this.listeners) remove();
       this.listeners = [];
+      repository?.removeEventListener?.(this.repositoryListener);
+      this.repositoryListener = null;
       this.overlay?.destroy();
       this.initialized = false;
     }

@@ -155,3 +155,30 @@ chrome.runtime.openOptionsPage() 也返回 Could not create an options page。
 profile 的 Chrome for Testing 148.0.7778.96 完成了三条代表性链路：Super Drag LINK 前台打开、
 右键按住上滚触发 `scrollToTop`、右键按住再点左键触发 `goBack`。验证过程中页面错误为空；完整
 矩阵中的其他上下文、组合、跨 frame、设置导入导出、站点规则和跨平台行为仍未完成。
+
+## 真实扩展消息 E2E 完整闭环（2026-08-23）
+
+使用独立临时 profile 的 Chrome for Testing 148.0.7778.96，加载最终 `dist/vimium`，由
+`scripts/e2e_open_key_mouse.js` 启动本地 fixture 服务；未连接、关闭或修改用户现有 Chrome。
+
+实际执行：
+
+```bash
+./make.js package
+PUPPETEER_EXECUTABLE_PATH="/tmp/open-key-mouse-cft-lizqY7/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing" \
+  deno run --allow-read --allow-write --allow-env --allow-net --allow-run --allow-sys \
+  scripts/e2e_open_key_mouse.js
+```
+
+结果：退出码 0，输出 `OpenKeyMouse E2E 通过`，页面错误为空。已实际覆盖：
+
+- 真实右键轨迹：低于阈值旁路、后退、前进、滚轮到顶/到底、关闭标签页；
+- Super Drag：链接前台/后台、图片打开、选择文字复制、draggable 组件保护、Alt 原生旁路；
+- Wheel/Rocker：右键滚轮上下、摇杆正反组合；
+- 跨域 localhost/127.0.0.1 iframe 的右键轨迹；
+- 设置保存、语言持久化、设置导出、有效导入、非法导入不覆盖、运行时站点规则；
+- 强制终止扩展 Service Worker 后，由真实内容页继续执行 `scrollToTop`。
+
+该 E2E 仍不能替代 Windows/Linux/Edge 手工兼容性矩阵、GitHub/Gmail/Google Docs/Notion/YouTube/
+Reddit/在线编辑器等真实站点矩阵，也不能替代完整 Vimium 原有 E2E 的逐项人工回归；这些项目仍未
+验证，不在本轮宣称完成。

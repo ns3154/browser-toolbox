@@ -451,30 +451,6 @@ const openKeyMouseDispatcher = new globalThis.OpenKeyMouseCommandDispatcher({
   gestureCoordinator: openKeyMouseFrameCoordinator,
 });
 
-chrome.runtime.onConnect.addListener((port) => {
-  if (port?.name !== "open-key-mouse-gesture") return;
-  const sender = port.sender || {};
-  const tabId = sender.tab?.id;
-  const frameId = sender.frameId;
-  port.onMessage?.addListener((message) => {
-    if (!message || typeof message.requestId !== "string") return;
-    switch (message.type) {
-      case "start":
-        openKeyMouseFrameCoordinator.start(tabId, frameId, message.requestId);
-        break;
-      case "update":
-        openKeyMouseFrameCoordinator.update(tabId, frameId, message.requestId, message.direction);
-        break;
-      case "finish":
-        openKeyMouseFrameCoordinator.finish(tabId, frameId, message.requestId);
-        break;
-      case "cancel":
-        openKeyMouseFrameCoordinator.cancel(tabId, message.requestId);
-        break;
-    }
-  });
-});
-
 async function forCountTabs(count, currentTab, callback) {
   const tabs = await chrome.tabs.query(visibleTabsQueryArgs);
   const activeTabIndex = getTabIndex(currentTab, tabs);
@@ -645,7 +621,51 @@ const HintCoordinator = {
   },
 };
 
+function isValidGestureRequest(request, field = null) {
+  if (!/^[a-zA-Z0-9-]{8,128}$/.test(request?.requestId || "")) return false;
+  if (field === "direction") return /^(?:L|R|U|D|UL|UR|DL|DR)$/.test(request.direction || "");
+  if (field === "pattern") {
+    return Array.isArray(request.pattern) && request.pattern.length <= 8 &&
+      request.pattern.every((direction) => /^(?:L|R|U|D|UL|UR|DL|DR)$/.test(direction));
+  }
+  return true;
+}
+
 const sendRequestHandlers = {
+  "openKeyMouse.gestureStart"(request, sender) {
+    if (!isValidGestureRequest(request)) return { accepted: false };
+    return {
+      accepted: openKeyMouseFrameCoordinator.start(
+        sender.tab?.id,
+        sender.frameId,
+        request.requestId,
+      ),
+    };
+  },
+  "openKeyMouse.gestureUpdate"(request, sender) {
+    if (!isValidGestureRequest(request, "direction")) return { accepted: false };
+    return {
+      accepted: openKeyMouseFrameCoordinator.update(
+        sender.tab?.id,
+        sender.frameId,
+        request.requestId,
+        request.direction,
+      ),
+    };
+  },
+  "openKeyMouse.gestureFinish"(request, sender) {
+    if (!isValidGestureRequest(request, "pattern")) return { accepted: false };
+    return {
+      accepted: Boolean(
+        openKeyMouseFrameCoordinator.finish(sender.tab?.id, sender.frameId, request.requestId),
+      ),
+    };
+  },
+  "openKeyMouse.gestureCancel"(request, sender) {
+    if (!isValidGestureRequest(request)) return { accepted: false };
+    openKeyMouseFrameCoordinator.cancel(sender.tab?.id, request.requestId);
+    return { accepted: true };
+  },
   "openKeyMouse.commandRegistry"() {
     return globalThis.OpenKeyMouseCommandRegistry.listCommands().map((command) => {
       const copy = Object.assign({}, command);

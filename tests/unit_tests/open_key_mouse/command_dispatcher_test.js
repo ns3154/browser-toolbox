@@ -34,6 +34,7 @@ context("Command dispatcher", () => {
     const result = await dispatcher.dispatch(invocation, {});
     assert.isTrue(result.ok);
     assert.equal("openKeyMouse.executePageCommand", received.type);
+    assert.equal("openKeyMouse.executePageCommand", received.handler);
   });
 
   should("deduplicate dangerous requests", async () => {

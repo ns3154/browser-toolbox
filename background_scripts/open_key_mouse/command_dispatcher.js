@@ -79,6 +79,7 @@
         ? {}
         : { frameId: sender.frameId };
       const message = protocol.create("openKeyMouse.executePageCommand", { invocation });
+      message.handler = message.type;
       const result = await chrome.tabs.sendMessage(tab.id, message, options);
       return result?.ok == null ? invocationApi.createResult(true) : result;
     }

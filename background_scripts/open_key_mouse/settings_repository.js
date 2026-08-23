@@ -145,6 +145,10 @@
       this.listeners.add(listener);
     }
 
+    removeEventListener(listener) {
+      this.listeners.delete(listener);
+    }
+
     emit() {
       for (const listener of this.listeners) listener(this.getSettings());
     }

@@ -122,3 +122,50 @@ git diff --check
 - 下一步：仅列一个可执行任务：补齐功能矩阵中剩余的 Super Drag 上下文、Wheel/Rocker 组合和
   设置导入导出/站点规则手工用例，再决定哪些行可以标记 `DONE`。
 - 对应提交：本地 main 检查点（未配置 origin，未推送；提交哈希见 Git 记录）。
+
+## 2026-08-23 / 一次性闭环验证与生命周期修复 / E-002
+
+- 授权边界：用户在询问下一步后明确要求“按照建议 一次性完成”；本轮据此完成剩余可执行的
+  OpenKeyMouse 闭环验证，但没有把当前 macOS 无法运行的 Windows、Linux、Edge 及真实站点手工矩阵
+  写成完成。
+- 发现并修复：真实右键手势的 pointerdown 与 pointerup 使用了不同 requestId，导致 Dispatcher 会话
+  校验取消命令；改为复用同一手势 requestId。Frame bridge 改为带 requestId 的 runtime message，
+  并等待 Service Worker 接受会话；加入请求字段校验。修复 bfcache/`pageshow` 后内容控制器监听器
+  丢失和重复安装；设置仓库监听器可移除；修复图片原生拖拽的 `blur`/`pointercancel` 先行路径、
+  原生属性恢复和点击旁路。Dispatcher 发往内容脚本的内部协议消息补齐 `handler`，避免 Vimium
+  消息监听器拒绝页面命令。
+- 修改文件：`background_scripts/main.js`、`background_scripts/open_key_mouse/command_dispatcher.js`、
+  `background_scripts/open_key_mouse/settings_repository.js`、`content_scripts/mouse/frame_gesture_bridge.js`、
+  `content_scripts/mouse/mouse_controller.js`、`tests/unit_tests/open_key_mouse/command_dispatcher_test.js`、
+  `scripts/e2e_open_key_mouse.js`、`docs/baseline.md`、`docs/codex-progress.md`、
+  `docs/feature-parity-matrix.md`、`docs/release-checklist.md`。
+- 实际执行命令与结果：
+
+```bash
+./make.js package
+PUPPETEER_EXECUTABLE_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" ./make.js test
+PUPPETEER_EXECUTABLE_PATH="/tmp/open-key-mouse-cft-lizqY7/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing" deno run --allow-read --allow-write --allow-env --allow-net --allow-run --allow-sys scripts/e2e_open_key_mouse.js
+deno check background_scripts/main.js pages/mouse_options.js content_scripts/mouse/mouse_controller.js content_scripts/mouse/frame_gesture_bridge.js background_scripts/open_key_mouse/command_dispatcher.js scripts/e2e_open_key_mouse.js tests/unit_tests/open_key_mouse/command_dispatcher_test.js scripts/audit_permissions.js scripts/audit_network_usage.js scripts/build_release.js
+deno run -A scripts/audit_permissions.js
+deno run -A scripts/audit_network_usage.js
+deno run -A scripts/build_release.js
+git diff --check
+deno fmt --check
+```
+
+- 验证结果：`./make.js package` 通过；单元测试 `277/277`、DOM 测试 `109/109`，总计 `386/386`；
+  隔离 Chrome for Testing E2E 退出码 0，覆盖核心鼠标轨迹、Super Drag 链接/图片/文字/原生旁路、
+  Wheel、Rocker、跨 frame、站点规则、设置导入导出/非法导入和 Service Worker 终止后命令；语法检查、
+  权限审计、网络审计、发布检查和 `git diff --check` 均通过。定向 `deno fmt` 检查通过；全仓
+  `deno fmt --check` 退出码 1，报告既有上游测试/样式和用户设计文档 14 个文件，以及本轮触及的
+  3 个 Markdown 证据文档；检查未修改任何文件。
+- 安全边界：权限审计仍为 9 项权限且无禁止权限/远程脚本；网络审计扫描 26 个新增模块文件，未发现
+  后台或隐式网络调用；本轮没有引入账户、广告、付费入口、遥测、远程代码，也没有复制或移植
+  CrxMouse 闭源代码、资产、文案或界面。以上为审计和当前代码证据，不扩大为平台兼容性声明。
+- 风险与未验证：系统 Chrome 151 的 unpacked content verification 仍阻塞扩展页面直接手工加载；
+  Windows + Chrome、Windows + Edge、Linux + Chrome，以及 GitHub/Gmail/Google Docs/Notion/YouTube/
+  Reddit/在线编辑器/长列表等真实站点矩阵、完整 Vimium 原有 E2E 和无障碍回归未执行。功能矩阵中
+  对应项目保持 `IN_PROGRESS`，没有标记为 `DONE`。
+- 下一步：在独立 Windows + Edge Stable 临时 profile 中运行与本轮相同的手工兼容性矩阵，并将实际
+  结果回写 `docs/feature-parity-matrix.md`；本轮不虚构该结果。
+- 对应提交：本地 main 检查点已创建；未配置 origin，不推送。
