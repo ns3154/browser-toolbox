@@ -467,6 +467,30 @@ async function openOptions(browser, id, errors) {
   return page;
 }
 
+async function testActionRestrictedPage(browser, id, errors) {
+  console.log("E2E: 动作页受限页面提示");
+  const action = await createPage(browser, errors);
+  await action.goto(`chrome-extension://${id}/pages/action.html`, { waitUntil: "load" });
+  await action.bringToFront();
+  await waitFor(() =>
+    action.$eval("#not-enabled-error", (element) => getComputedStyle(element).display !== "none")
+  );
+  const state = await action.evaluate(() => ({
+    restrictionVisible: getComputedStyle(document.querySelector("#not-enabled-error")).display !==
+      "none",
+    controlsHidden: getComputedStyle(document.querySelector("#open-key-mouse-controls")).display ===
+      "none",
+    restrictionText: document.querySelector("#not-enabled-error").textContent.trim(),
+  }));
+  assert(state.restrictionVisible, "动作页应显示受浏览器限制提示");
+  assert(state.controlsHidden, "受限页面不应显示 OpenKeyMouse 操作控件");
+  assert(
+    state.restrictionText.includes("browser") || state.restrictionText.includes("浏览器"),
+    "受限页面提示应说明浏览器限制",
+  );
+  await action.close();
+}
+
 async function resetSettings(options) {
   await options.evaluate(async (key) => {
     await chrome.storage.sync.clear();
@@ -1116,6 +1140,7 @@ async function main() {
     }
     options = await openOptions(browser, id, errors);
     console.log("E2E: 扩展页面已加载");
+    await testActionRestrictedPage(browser, id, errors);
     await resetSettings(options);
     await testOptionsAccessibility(options);
     await resetSettings(options);

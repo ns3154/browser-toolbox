@@ -269,3 +269,32 @@ checkout 执行完整自动门禁：
 `c2a02027409c4c4d7f2e6d879a86719a76bc55a5b506abba0efb09a6be09a39a`；Canary 包
 `11af2eacad4b3ea57d530eeae07b4b3b594c38c9eb908bf0e2b2fdc18730bd6e`；源码包
 `ba76e75dda45c2a94b12465c3b4cda59865d4af4713a000e3e8cbc74e7ac96a0`。
+
+## 当前 checkout 受限动作页修复后的最终门禁（2026-08-24）
+
+本轮修复动作页在受限标签页先显示操作控件的问题，并为限制提示接入现有中英文文案；同时新增真实扩展 E2E
+断言。当前 checkout 的自动验证结果如下：
+
+- macOS arm64 系统 Chrome 151 覆盖下，`./make.js test` 通过：单元 `308/308`、DOM `109/109`，总计
+  `417/417`；系统 Chrome 的扩展命令行加载限制仍不作为手工扩展证据。
+- macOS arm64 Chrome for Testing `148.0.7778.96` 独立临时 profile 的增强扩展 E2E 退出码为 0，页面错误为空；
+  动作页受限分支实际确认提示可见、OpenKeyMouse 操作控件隐藏，原有手势、设置、站点规则、导入导出、迁移、
+  跨 frame 和 Service Worker 重启继续通过。
+- Docker `linux/arm64` Debian 13、Chromium `151.0.7922.169` 非 root 临时容器中，`./make.js test` 为
+  `417/417`，增强扩展 E2E 退出码为 0；动作页受限分支同样通过。该证据仍不是 §18.4 要求的 Linux + Chrome
+  Stable 手工矩阵。
+- Deno V8 coverage 的 `test-unit` 为 `308/308`，本轮纳入范围行覆盖率 `97.6%`；新增纯算法模块为
+  `95.2%`–`100%`，配置模块为 `98.1%`–`99.7%`，Dispatcher 为 `100%`。
+- 权限审计通过 9 项权限，网络审计扫描 26 个新增模块且无后台或隐式网络调用；`deno check`、定向
+  `deno fmt --check`、`git diff --check`、发布检查、商店/Firefox/Canary/源码包生成和禁入路径审计均通过。
+
+本次重建产物 SHA-256：Chrome 商店包
+`f2ea61ce0868595371b5c26fa627687e37cf2d5bce7498b7c188193716e1e896`；Firefox 包
+`b61b49dfca555657a2b4f907a6e14895f1df4d0bee8242d38f2a2d7a8265c6f2`；Canary 包
+`c83f591d63cb4274654ebf098b05b2dfc39dbbb28279fa137826e12c41637317`；源码包
+`9e7424adfbbd3791161b7155ac9fb56e18f3f5b91a8d7023a3163d2f3fa114cd`。
+
+系统 Chrome 的隔离 UI 尝试实际确认“加载已解压”会进入浏览器原生文件选择器，Puppeteer/CDP 无法代替用户
+选择目录；命令行扩展加载参数也被 Google Chrome 拒绝。Windows、Edge、Linux Chrome Stable、认证态真实站点、
+屏幕阅读器、人工高对比度/缩放和完整 Vimium 手工回归没有可复核证据，功能矩阵仍保持 `IN_PROGRESS`，本轮不
+宣称这些项目完成。

@@ -19,10 +19,10 @@ const ActionPage = {
     // Is it possible for the current tab's URL to change while this action popup is open?
     const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
     const activeTab = tabs[0];
-    this.tabUrl = activeTab.url;
-    await this.initOpenKeyMouseControls(activeTab);
+    this.tabUrl = activeTab?.url || "";
 
     const hideUI = () => {
+      document.querySelector("#open-key-mouse-controls").style.display = "none";
       document.querySelector("#dialog-body").style.display = "none";
       document.querySelector("footer").style.display = "none";
     };
@@ -49,11 +49,13 @@ const ActionPage = {
       }
     }
 
-    if (!await this.isVimiumInstalledInTab(activeTab.id)) {
+    if (!activeTab || !await this.isVimiumInstalledInTab(activeTab.id)) {
       hideUI();
       document.querySelector("#not-enabled-error").style.display = "block";
       return;
     }
+
+    await this.initOpenKeyMouseControls(activeTab);
 
     document.querySelector("#optionsLink").href = chrome.runtime.getURL("pages/options.html");
 

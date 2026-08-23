@@ -363,3 +363,35 @@ Linux arm64 Debian 13 Chromium 151.0.7922.169 增强扩展 E2E：退出码 0，�
 - 下一步：只有在取得合规的 Windows + Chrome Stable/Edge Stable 测试环境并实际完成 §18.4 矩阵后，才可
   更新对应矩阵状态；当前本地工作仅创建检查点，不推送、不发布。
 - 对应提交：已创建本地 main 检查点；无 `origin`，不推送。
+
+## 2026-08-24 / 受限动作页修复与最终门禁复核 / E-008
+
+- 授权边界：继续执行用户明确的“一次性完成”要求；只修复已由代码审查确认的受限页 UI 缺口，不扩大
+  浏览器权限、网络、商业化或 CrxMouse 参考范围。
+- 修改文件：`pages/action.html`、`pages/action.js`、`scripts/e2e_open_key_mouse.js`，并同步本记录、发布检查表
+  和功能对照矩阵。
+- 修复内容：动作页在判断当前标签页是否存在内容脚本前不再显示 OpenKeyMouse 操作控件；受限页统一隐藏操作区，
+  使用 `browserRestriction` 与 `pageUnavailable` 本地化文案显示浏览器限制。新增 E2E 断言覆盖扩展页面自身这一
+  受限上下文。
+- 实际验证：
+
+```text
+macOS arm64 Chrome 151 覆盖下 ./make.js test：单元 308/308，DOM 109/109，总计 417/417，退出码 0
+macOS arm64 Chrome for Testing 148.0.7778.96：增强扩展 E2E 退出码 0，页面错误为空
+Linux arm64 Debian 13 Chromium 151.0.7922.169（非 root 临时容器）：./make.js test 417/417，增强扩展 E2E 退出码 0
+动作页受限分支：CFT 148 与 Linux Chromium 151 均确认提示可见、OpenKeyMouse 控件隐藏
+Deno V8 coverage：test-unit 308/308；本轮纳入范围行覆盖率 97.6%，新增纯算法模块 95.2%–100%
+权限审计：9 项权限通过；网络审计：26 个新增模块通过；deno check、定向 deno fmt、git diff --check 通过
+./make.js package 与 deno run -A scripts/build_release.js --package：通过
+商店包、Firefox、Canary、源码包禁入路径审计：无命中
+```
+
+- 当前重建产物 SHA-256：Chrome 商店 `f2ea61ce0868595371b5c26fa627687e37cf2d5bce7498b7c188193716e1e896`；
+  Firefox `b61b49dfca555657a2b4f907a6e14895f1df4d0bee8242d38f2a2d7a8265c6f2`；Canary
+  `c83f591d63cb4274654ebf098b05b2dfc39dbbb28279fa137826e12c41637317`；源码包
+  `9e7424adfbbd3791161b7155ac9fb56e18f3f5b91a8d7023a3163d2f3fa114cd`。
+- 浏览器边界：系统 Chrome 的隔离 UI 尝试实际确认“加载已解压”进入原生文件选择器，Puppeteer/CDP 无法代替
+  用户选择目录；命令行扩展加载参数也被 Google Chrome 拒绝。因此没有将系统 Chrome Stable 手工扩展矩阵写成
+  通过。Windows、Edge、Linux Chrome Stable、认证态真实站点、屏幕阅读器、人工高对比度/缩放和完整 Vimium
+  手工回归仍未验证，功能矩阵继续保持 `IN_PROGRESS`。
+- 对应提交：待本轮提交；仓库仅保留本地检查点，无 `origin`，不推送、不发布。

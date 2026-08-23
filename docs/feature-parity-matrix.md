@@ -30,3 +30,7 @@ Testing 148 与 Linux ARM64 Debian Chromium 151 的增强 E2E 均通过；新增
 行覆盖率门槛也已实际采集并通过。窗口状态命令补齐了 fullscreen/normal、minimized、maximized 的
 浏览器 API 路由。上述自动证据仍不提供 §18.4 所需的 Windows、Edge、Chrome Stable 手工结果，因此
 `V-002`、`O-001` 至 `O-005` 和 `C-001` 至 `C-003` 继续保持 `IN_PROGRESS`。
+
+2026-08-24 受限动作页补充证据：动作页现在先确认当前标签页存在内容脚本，再初始化 OpenKeyMouse 控件；
+在扩展页面自身这一受限上下文中，CFT 148 与 Linux ARM64 Chromium 151 的增强 E2E 均实际确认限制提示可见、
+操作控件隐藏，且提示包含浏览器限制说明。该证据覆盖了“不能静默失效”的 UI 约束，但不改变跨平台手工矩阵状态。
