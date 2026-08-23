@@ -325,11 +325,12 @@ Chrome for Testing 148 macOS 与 Linux ARM64 Debian Chromium 151 均退出码 0�
 
 本轮 `deno run -A scripts/build_release.js --package` 生成 [源码包](/Users/yang/project/plugin/open-key-mouse/dist/open-key-mouse-0.1.0.zip)，
 四类产物 SHA-256：Chrome 商店
-`24db8ba6bb0e080d65d25f8157c35a1537a09ceb955d254e2d12d209d131f145`；Firefox
-`f3e2fa2a11737bff263a742ffa5e0bf00c8ef892b23066b44b9bd1bfe49f294f`；Canary
-`c4342265111d5aec7a96e86d3988a32c0d27d63a0a3f91e19aefdb4479a765e3`；源码
-`19d25dd658d394da3186d128bc471bd77f9803d9742c8a6680f0abd107f54d59`。
+`162c01666c97320ece953ab0ad5388a1f1b39ef05f7546e504b633d37c9f3c5d`；Firefox
+`ed3b903cac7a0e34f4ebb6bbe78689d758f666cdbf915e9cb294e2a5c661f8d2`；Canary
+`95c958cff0208d9b8d5c29f1f60d6fa7f48b23869a1882fddb6d3425c2ff04ef`；源码
+`4fa08dd01c30cb490d130d79023a3cd561356b61406091aa3ea3d0b0bbfc0763`。
 版本号修复只证明自动化和隔离运行时兼容，不替代 Windows、Chrome Stable、Edge Stable 人工矩阵。
+当前 checkout 连续两次运行商店包和源码包构建，四类产物 SHA-256 均完全一致；该结果补足本机重复构建可复现性证据。
 
 ## 当前 checkout Edge 自动兼容性补充（2026-08-24）
 
@@ -375,3 +376,9 @@ Stable 人工操作、认证态站点、屏幕阅读器和完整 Vimium 手工�
 调用在 30 秒超时，未形成可复核的人工操作证据。临时 Chrome 进程已关闭。
 
 该探测只补充环境事实和 CDP 加载事实，不改变 §18.4 人工矩阵状态。
+
+## OpenKeyMouse 独立 Deno 测试入口（2026-08-24）
+
+设计文档要求的 `deno test -A tests/open_key_mouse/` 原先因目录不存在而失败；新增
+`tests/open_key_mouse/deno_test_adapter_test.js` 作为现有 shoulda 单元测试的 Deno 入口，不复制测试逻辑。
+实际结果：`1 passed / 0 failed`，适配入口内 shoulda 测试 `64/64`，退出码 0。

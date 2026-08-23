@@ -135,18 +135,22 @@ async function buildStorePackage() {
   ];
 
   const chromeManifest = await parseManifestFile();
-  const rsyncOptions = ["-r", ".", "dist/vimium"].concat(
+  // 保留源文件时间，避免同一 checkout 的重复打包因 ZIP 条目时间变化而产生不同哈希。
+  const rsyncOptions = ["-rt", ".", "dist/vimium"].concat(
     ...excludeList.map((item) => ["--exclude", item]),
   );
   const version = chromeManifest["version"];
   const writeDistManifest = async (manifest) => {
-    await Deno.writeTextFile("dist/vimium/manifest.json", JSON.stringify(manifest, null, 2));
+    const sourceStat = await Deno.stat("manifest.json");
+    const distManifest = "dist/vimium/manifest.json";
+    await Deno.writeTextFile(distManifest, JSON.stringify(manifest, null, 2));
+    await Deno.utime(distManifest, sourceStat.atime, sourceStat.mtime);
   };
   // cd into "dist/vimium" before building the zip, so that the files in the zip don't each have the
   // path prefix "dist/vimium".
   // --filesync ensures that files in the archive which are no longer on disk are deleted. It's
   // equivalent to removing the zip file before the build.
-  const zipCommand = "cd dist/vimium && zip -r --filesync ";
+  const zipCommand = "cd dist/vimium && zip -r -X --filesync ";
 
   await shell("rm", ["-rf", "dist/vimium"]);
   await shell("mkdir", [

@@ -502,3 +502,28 @@ Linux ARM64 Debian 13 Chromium 151（非 root 临时容器）：单元 309/309�
 - 结论边界：本条只记录环境和加载路径事实，不把 CDP 或超时前的启动结果写成 §18.4 手工矩阵通过；Windows Chrome、
   Windows Edge、认证态真实站点、屏幕阅读器、人工高对比度/缩放和完整 Vimium 手工回归仍未验证。
 - 下一步：取得合规的 Windows Chrome Stable/Edge Stable 测试环境后，按设计文档 §18.4 执行并回写实际结果。
+
+## 2026-08-24 / 修复发布包重复构建哈希漂移 / E-017
+
+- 修改文件：`make.js`、`scripts/build_release.js`、`docs/baseline.md`、`docs/release-checklist.md`、
+  `docs/codex-progress.md`。
+- 原因：原 `rsync -r` 会把发布目录文件时间更新为当前时间，重复 `zip` 的 SHA-256 会漂移；这与设计文档 Phase 8 的
+  可复现构建要求不符。
+- 修复：发布同步改为保留源文件时间，生成的各版本 `manifest.json` 恢复源 manifest 时间，ZIP 排除额外文件属性；
+  源码归档排除会记录自身哈希的三份审计日志，避免归档自引用。
+- 实际结果：连续两次 `./make.js package` 的 Chrome/Firefox/Canary SHA-256 分别稳定为
+  `162c01666c97320ece953ab0d5388a1f1b39ef05f7546e504b633d37c9f3c5d`、
+  `ed3b903cac7a0e34f4ebb6bbe78689d758f666cdbf915e9cb294e2a5c661f8d2`、
+  `95c958cff0208d9b8d5c29f1f60d6fa7f48b23869a1882fddb6d3425c2ff04ef`；连续两次源码包 SHA-256 均为
+  `4fa08dd01c30cb490d130d79023a3cd561356b61406091aa3ea3d0b0bbfc0763`。
+- 边界：这是本机同一 checkout 的重复构建证据，不替代跨机器干净 checkout 重建或 §18.4 人工矩阵。
+
+## 2026-08-24 / 补齐独立 OpenKeyMouse Deno 测试入口 / E-016
+
+- 修改文件：`tests/open_key_mouse/deno_test_adapter_test.js`、`docs/baseline.md`、`docs/release-checklist.md`、
+  `docs/codex-progress.md`。
+- 原因：设计文档 §20 明确要求 `deno test -A tests/open_key_mouse/`，但此前目录不存在；新增入口只负责发现并
+  导入 `tests/unit_tests/open_key_mouse/` 的现有 shoulda 测试，再由一个 Deno test 汇总结果，不复制测试逻辑。
+- 实际结果：`deno fmt --check tests/open_key_mouse/deno_test_adapter_test.js` 通过；独立命令 `deno test -A
+  tests/open_key_mouse/` 通过，Deno `1 passed / 0 failed`，shoulda `64/64`，退出码 0。
+- 边界：该入口补齐独立自动测试命令，不改变 Windows/Edge/真实站点认证态或 §18.4 人工矩阵未验证状态。

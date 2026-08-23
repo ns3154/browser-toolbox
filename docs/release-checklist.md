@@ -3,6 +3,7 @@
 ## 代码与测试
 
 - [x] `./make.js test` 通过，或所有上游失败项有明确基线证据。当前 macOS 环境为单元 309/309、DOM 109/109，总计 418/418。
+- [x] 设计文档规定的 `deno test -A tests/open_key_mouse/` 通过；独立入口运行 shoulda 测试 `64/64`。
 - [x] `deno run -A scripts/audit_permissions.js` 通过。
 - [x] `deno run -A scripts/audit_network_usage.js` 通过。
 - [x] 新算法、配置、Dispatcher 和关键 UI 流程有自动测试。
@@ -31,7 +32,8 @@
 - [x] `deno run -A scripts/build_release.js --package` 已生成源码发布包，并完成归档内容审计。
 - [x] 预发布版本使用 `0.1.0`；Vimium `2.4.2` 仅作为键盘与设置迁移兼容基线。
 - [x] 源码、发布包和 SHA-256 对应同一提交；本地检查点提交后已重新生成并核对 Chrome 包 SHA-256，最终值记录在本轮交付报告。
-- [x] 当前 `0.1.0` 重建产物 SHA-256：Chrome 商店 `24db8ba6bb0e080d65d25f8157c35a1537a09ceb955d254e2d12d209d131f145`；Firefox `f3e2fa2a11737bff263a742ffa5e0bf00c8ef892b23066b44b9bd1bfe49f294f`；Canary `c4342265111d5aec7a96e86d3988a32c0d27d63a0a3f91e19aefdb4479a765e3`；源码 `19d25dd658d394da3186d128bc471bd77f9803d9742c8a6680f0abd107f54d59`。
+- [x] 当前 `0.1.0` 重建产物 SHA-256：Chrome 商店 `162c01666c97320ece953ab0ad5388a1f1b39ef05f7546e504b633d37c9f3c5d`；Firefox `ed3b903cac7a0e34f4ebb6bbe78689d758f666cdbf915e9cb294e2a5c661f8d2`；Canary `95c958cff0208d9b8d5c29f1f60d6fa7f48b23869a1882fddb6d3425c2ff04ef`；源码 `4fa08dd01c30cb490d130d79023a3cd561356b61406091aa3ea3d0b0bbfc0763`。
+- [x] 当前 checkout 连续两次运行 `./make.js package` 和 `deno run -A scripts/build_release.js --package`，对应产物 SHA-256 完全一致。
 - [x] 发布包不含测试、调试日志、个人路径、测试密钥或本机凭证；`make.js` 已排除 `docs/` 和
       `scripts/`，并通过 `unzip -l dist/chrome-store/vimium-chrome-store-0.1.0.zip` 的禁入路径审计。
 - [ ] Chrome、Edge、Windows、macOS、Linux 的手工矩阵已记录实际结果。

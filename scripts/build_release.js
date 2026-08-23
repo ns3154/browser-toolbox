@@ -40,6 +40,7 @@ if (Deno.args.includes("--package")) {
   const result = await new Deno.Command("zip", {
     args: [
       "-r",
+      "-X",
       "-q",
       zipName,
       ".",
@@ -52,6 +53,10 @@ if (Deno.args.includes("--package")) {
       "./make.js",
       "./deno.json",
       "./deno.lock",
+      // 这些审计日志会记录当前归档的哈希；保留在 Git，但排除以避免源码包自引用哈希。
+      "./docs/baseline.md",
+      "./docs/codex-progress.md",
+      "./docs/release-checklist.md",
     ],
   }).output();
   if (!result.success) {
