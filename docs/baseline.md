@@ -361,3 +361,17 @@ OpenKeyMouse Service Worker，并完成完整 `scripts/e2e_open_key_mouse.js`：
 
 这是 Chrome Stable 的 CDP 自动化证据，不是 §18.4 的人工平台矩阵；Windows Chrome、Windows Edge、Linux Chrome
 Stable 人工操作、认证态站点、屏幕阅读器和完整 Vimium 手工回归仍未验证。
+
+## 当前主机 Windows 与可见 UI 环境探测（2026-08-24）
+
+只读探测确认：Parallels Desktop `26.4.1-57516` 已安装，且本机有一个 Windows ARM64 安装 ISO
+(`/Users/yang/Library/Parallels/Downloads/26200.8875.260711-1836.25h2_ge_release_svc_refresh_CLIENTCONSUMER_RET_A64FRE_zh-cn.iso`，约 6.4 GiB)，
+但 `prlctl list --all` 没有注册虚拟机，`/Users/yang/Parallels` 没有 `.pvm`，本机 Docker 只有 Linux 镜像；因此仍没有可直接运行的 Windows Chrome/Edge 环境。
+本轮未创建、启动或修改虚拟机，也未接触用户浏览器登录态。
+
+另用独立临时 profile 启动 macOS Chrome Stable `151.0.7922.173`，在浏览器级 CDP 通过
+`Extensions.loadUnpacked` 实际加载 `dist/vimium`，目标列表出现
+`chrome-extension://.../background_scripts/main.js` Service Worker；随后尝试 Computer Use 可见 UI 状态读取，
+调用在 30 秒超时，未形成可复核的人工操作证据。临时 Chrome 进程已关闭。
+
+该探测只补充环境事实和 CDP 加载事实，不改变 §18.4 人工矩阵状态。

@@ -490,3 +490,15 @@ Linux ARM64 Debian 13 Chromium 151（非 root 临时容器）：单元 309/309�
   站点规则、设置保存/导入导出、Vimium 备份迁移、逐级迁移、本地 PNG 指针、Service Worker 重启和 8 个 fixtures。
 - 边界：这是官方 Chrome Stable 的真实 CDP 自动化证据，不是 §18.4 人工矩阵；Windows Chrome、Windows Edge、
   Linux Chrome Stable 人工操作、认证态站点、屏幕阅读器、人工高对比度/缩放和完整 Vimium 手工回归仍未验证。
+
+## 2026-08-24 / Windows 环境与可见 UI 探测 / E-015
+
+- 环境探测：`prlctl list --all` 返回空列表；Parallels Desktop `26.4.1-57516` 虽已安装，本机也有约 6.4 GiB
+  的 Windows ARM64 ISO，但 `/Users/yang/Parallels` 没有 `.pvm`，Docker 仅有 Linux 镜像。本轮没有创建或启动虚拟机，
+  没有接触用户浏览器、Cookie、Token 或登录态。
+- macOS 隔离 UI 探测：独立临时 Chrome profile 使用浏览器级 `Extensions.loadUnpacked` 加载
+  `/Users/yang/project/plugin/open-key-mouse/dist/vimium`，实际出现项目 `background_scripts/main.js` Service Worker
+  目标；随后 `@oai/sky` 的 `get_app_state` 在 30 秒内超时，未形成 Computer Use 人工 UI 证据。临时 Chrome 进程已关闭。
+- 结论边界：本条只记录环境和加载路径事实，不把 CDP 或超时前的启动结果写成 §18.4 手工矩阵通过；Windows Chrome、
+  Windows Edge、认证态真实站点、屏幕阅读器、人工高对比度/缩放和完整 Vimium 手工回归仍未验证。
+- 下一步：取得合规的 Windows Chrome Stable/Edge Stable 测试环境后，按设计文档 §18.4 执行并回写实际结果。
