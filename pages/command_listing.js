@@ -1,5 +1,11 @@
 import "./all_content_scripts.js";
+import "../lib/i18n.js";
 import { allCommands } from "../background_scripts/all_commands.js";
+
+function commandDescription(command) {
+  const key = `command_${command.name.replaceAll(".", "_")}`;
+  return OpenKeyMouseI18n.hasMessage(key) ? OpenKeyMouseI18n.message(key) : command.desc;
+}
 
 // The ordering we show key bindings is alphanumerical, except that special keys sort to the end.
 function compareKeys(a, b) {
@@ -53,7 +59,7 @@ async function populatePage() {
         keysEl.appendChild(node);
       }
 
-      el.querySelector(".desc").textContent = command.desc;
+      el.querySelector(".desc").textContent = commandDescription(command);
       if (command.details) {
         el.querySelector(".details").textContent = command.details;
       }

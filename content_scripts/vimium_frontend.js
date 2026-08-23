@@ -3,6 +3,8 @@
 //
 
 let isEnabledForUrl = true;
+let vimiumEnabledForUrl = true;
+let openKeyMouseKeyboardListenerInstalled = false;
 let normalMode = null;
 
 // This is set by initializeFrame. We can only get this frame's ID from the background page.
@@ -433,7 +435,22 @@ async function checkIfEnabledForUrl() {
   }
   const [response, ...unused] = await Promise.all(promises);
 
-  isEnabledForUrl = response.isEnabledForUrl;
+  vimiumEnabledForUrl = response.isEnabledForUrl;
+  const openKeyMouseRepository = globalThis.OpenKeyMouseSettingsRepositoryInstance;
+  if (openKeyMouseRepository) {
+    await openKeyMouseRepository.ensureLoaded();
+    const updateOpenKeyMouseKeyboardState = () => {
+      const effective = openKeyMouseRepository.getEffectiveSettings(document.location.href);
+      isEnabledForUrl = vimiumEnabledForUrl && effective.effectiveModules?.keyboard !== false;
+      if (!isEnabledForUrl) HUD.hide(true, false);
+    };
+    if (!openKeyMouseKeyboardListenerInstalled) {
+      openKeyMouseKeyboardListenerInstalled = true;
+      openKeyMouseRepository.addEventListener(updateOpenKeyMouseKeyboardState);
+    }
+  }
+  const effective = openKeyMouseRepository?.getEffectiveSettings(document.location.href);
+  isEnabledForUrl = vimiumEnabledForUrl && effective?.effectiveModules?.keyboard !== false;
 
   // This browser info is used by other content scripts, but can only be determinted by the
   // background page.

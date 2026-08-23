@@ -1,0 +1,176 @@
+:root {
+  color-scheme: light dark;
+  font: 14px system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #f5f7fb;
+  color: #1f2937;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #111827;
+    color: #e5e7eb;
+  }
+  .okm-panel,
+  .okm-sidebar {
+    background: #1f2937;
+    border-color: #374151;
+  }
+  input,
+  select,
+  textarea {
+    background: #111827;
+    color: inherit;
+    border-color: #4b5563;
+  }
+}
+
+.okm-layout {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  min-height: 100vh;
+}
+.okm-sidebar {
+  padding: 24px 16px;
+  background: #fff;
+  border-right: 1px solid #dbe2ed;
+}
+.okm-sidebar h1 {
+  font-size: 18px;
+  margin: 0 0 20px;
+}
+.okm-nav {
+  display: grid;
+  gap: 6px;
+}
+.okm-nav button {
+  text-align: left;
+  border: 0;
+  background: transparent;
+  padding: 9px 10px;
+  border-radius: 6px;
+  color: inherit;
+  cursor: pointer;
+}
+.okm-nav button[aria-selected="true"],
+.okm-nav button:hover {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+.okm-main {
+  padding: 28px;
+  max-width: 1100px;
+  width: calc(100% - 56px);
+}
+.okm-panel {
+  background: #fff;
+  border: 1px solid #dbe2ed;
+  border-radius: 10px;
+  padding: 22px;
+  margin-bottom: 18px;
+}
+.okm-panel[hidden] {
+  display: none;
+}
+.okm-panel h2 {
+  margin-top: 0;
+}
+.okm-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 14px;
+}
+.okm-field {
+  display: grid;
+  gap: 6px;
+}
+.okm-field input,
+.okm-field select,
+.okm-field textarea {
+  min-height: 32px;
+  padding: 5px 8px;
+  box-sizing: border-box;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+}
+.okm-check {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.okm-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+button {
+  border: 1px solid #9ca3af;
+  border-radius: 5px;
+  background: #fff;
+  color: inherit;
+  padding: 7px 12px;
+  cursor: pointer;
+}
+button.primary {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #fff;
+}
+.okm-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.okm-table th,
+.okm-table td {
+  border-bottom: 1px solid #dbe2ed;
+  text-align: left;
+  padding: 8px 5px;
+  vertical-align: top;
+}
+.okm-table input,
+.okm-table select {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 30px;
+}
+.okm-note {
+  color: #64748b;
+  line-height: 1.5;
+}
+.okm-error {
+  color: #b91c1c;
+  white-space: pre-wrap;
+}
+#gesture-canvas {
+  width: 320px;
+  height: 180px;
+  background: #fff;
+  border: 1px dashed #94a3b8;
+  touch-action: none;
+}
+#gesture-preview {
+  min-height: 24px;
+  font: 600 18px ui-monospace, monospace;
+}
+.okm-cursor-preview {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-height: 44px;
+  margin-top: 12px;
+}
+.okm-cursor-preview img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+}
+.okm-cursor-preview img[hidden] {
+  display: none;
+}

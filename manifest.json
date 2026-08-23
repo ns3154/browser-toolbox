@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "OpenKeyMouse",
+  "name": "__MSG_extensionName__",
   "version": "2.4.2",
-  "description": "本地优先、永久免费且无遥测的键盘网页导航扩展，基于 Vimium v2.4.2。",
+  "description": "__MSG_extensionDescription__",
+  "default_locale": "en",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
@@ -43,6 +44,14 @@
         "<all_urls>"
       ],
       "js": [
+        "lib/i18n.js",
+        "lib/open_key_mouse/command_invocation.js",
+        "lib/open_key_mouse/message_protocol.js",
+        "lib/open_key_mouse/settings_schema.js",
+        "lib/open_key_mouse/settings_validator.js",
+        "lib/open_key_mouse/site_rule_matcher.js",
+        "background_scripts/open_key_mouse/settings_migrations.js",
+        "background_scripts/open_key_mouse/settings_repository.js",
         "lib/types.js",
         "lib/utils.js",
         "lib/keyboard_utils.js",
@@ -63,7 +72,20 @@
         "content_scripts/mode_visual.js",
         "content_scripts/hud.js",
         "content_scripts/mode_normal.js",
-        "content_scripts/vimium_frontend.js"
+        "content_scripts/vimium_frontend.js",
+        "content_scripts/mouse/path_sampler.js",
+        "content_scripts/mouse/direction_quantizer.js",
+        "content_scripts/mouse/gesture_session.js",
+        "content_scripts/mouse/gesture_recognizer.js",
+        "content_scripts/mouse/gesture_overlay.js",
+        "content_scripts/mouse/context_menu_guard.js",
+        "content_scripts/mouse/frame_gesture_bridge.js",
+        "content_scripts/mouse/wheel_gesture_controller.js",
+        "content_scripts/mouse/rocker_gesture_controller.js",
+        "content_scripts/mouse/drag_context_classifier.js",
+        "content_scripts/mouse/super_drag_controller.js",
+        "content_scripts/mouse/cursor_controller.js",
+        "content_scripts/mouse/mouse_controller.js"
       ],
       "css": [
         "content_scripts/vimium.css"

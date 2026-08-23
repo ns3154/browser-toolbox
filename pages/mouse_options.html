@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="color-scheme" content="light dark">
+    <title>OpenKeyMouse</title>
+    <link rel="stylesheet" href="gesture_editor.css">
+    <script src="../lib/i18n.js"></script>
+    <script src="../lib/utils.js"></script>
+    <script src="../lib/settings.js"></script>
+    <script src="../lib/open_key_mouse/command_invocation.js"></script>
+    <script src="../lib/open_key_mouse/message_protocol.js"></script>
+    <script src="../lib/open_key_mouse/settings_schema.js"></script>
+    <script src="../lib/open_key_mouse/settings_validator.js"></script>
+    <script src="../lib/open_key_mouse/site_rule_matcher.js"></script>
+    <script src="../background_scripts/open_key_mouse/settings_migrations.js"></script>
+    <script src="../background_scripts/open_key_mouse/settings_repository.js"></script>
+    <script src="../content_scripts/mouse/direction_quantizer.js"></script>
+    <script src="../content_scripts/mouse/cursor_controller.js"></script>
+    <script src="gesture_editor.js"></script>
+    <script src="mouse_options.js" defer></script>
+  </head>
+  <body>
+    <div class="okm-layout">
+      <aside class="okm-sidebar">
+        <h1 data-i18n="openKeyMouse">OpenKeyMouse</h1>
+        <nav class="okm-nav" aria-label="Settings sections" data-i18n-aria-label="settingsSections">
+          <button data-section="general" aria-selected="true" data-i18n="general">General</button>
+          <button data-section="keyboard" aria-selected="false"
+            data-i18n="keyboard">Keyboard</button>
+          <button data-section="mouse" aria-selected="false"
+            data-i18n="mouseGestures">Mouse Gestures</button>
+          <button data-section="superDrag" aria-selected="false"
+            data-i18n="superDrag">Super Drag</button>
+          <button data-section="wheel" aria-selected="false"
+            data-i18n="wheelRocker">Wheel &amp; Rocker</button>
+          <button data-section="search" aria-selected="false"
+            data-i18n="searchSettings">Search</button>
+          <button data-section="appearance" aria-selected="false"
+            data-i18n="appearance">Appearance</button>
+          <button data-section="siteRules" aria-selected="false"
+            data-i18n="siteRules">Site Rules</button>
+          <button data-section="backup" aria-selected="false"
+            data-i18n="backupRestore">Backup &amp; Restore</button>
+          <button data-section="privacy" aria-selected="false" data-i18n="privacy">Privacy</button>
+          <button data-section="about" aria-selected="false"
+            data-i18n="aboutLicenses">About &amp; Licenses</button>
+        </nav>
+      </aside>
+      <main class="okm-main">
+        <section class="okm-panel" data-panel="general">
+          <h2 data-i18n="general">General</h2>
+          <div class="okm-grid">
+            <label
+              class="okm-check"><input id="general-enabled" type="checkbox"> <span data-i18n="enabled">Enabled</span></label>
+            <label
+              class="okm-field"><span data-i18n="language">Language</span><select id="language"><option value="auto" data-i18n="languageAuto">Follow browser</option><option value="en" data-i18n="languageEnglish">English</option><option value="zh_CN" data-i18n="languageChinese">简体中文</option></select></label>
+          </div>
+          <p class="okm-note"
+            data-i18n="noTelemetry">No telemetry, accounts, advertising, or paid features.</p>
+        </section>
+
+        <section class="okm-panel" data-panel="keyboard" hidden>
+          <h2 data-i18n="keyboard">Keyboard</h2>
+          <label
+            class="okm-field"><span data-i18n="keyMappings">Keyboard mappings</span><textarea id="key-mappings" rows="10" spellcheck="false"></textarea></label>
+          <p class="okm-note"
+            data-i18n="keyboardMappingNote">Vimium-compatible mappings are imported into the existing keyboard settings.</p>
+        </section>
+
+        <section class="okm-panel" data-panel="search" hidden>
+          <h2 data-i18n="searchSettings">Search</h2>
+          <label
+            class="okm-field"><span data-i18n="searchEngines">Search engines</span><textarea id="search-engines" rows="10" spellcheck="false"></textarea></label>
+          <p class="okm-note"
+            data-i18n="searchEngineNote">Searches are sent only when you explicitly invoke a search command.</p>
+        </section>
+
+        <section class="okm-panel" data-panel="appearance" hidden>
+          <h2 data-i18n="appearance">Appearance</h2>
+          <h3 data-i18n="cursor">Custom pointer</h3>
+          <div class="okm-grid">
+            <label
+              class="okm-check"><input id="cursor-enabled" type="checkbox"> <span data-i18n="enabled">Enabled</span></label>
+            <label
+              class="okm-field"><span data-i18n="cursorAsset">Local PNG pointer</span><input id="cursor-file" type="file" accept="image/png"></label>
+            <label
+              class="okm-field"><span data-i18n="cursorHotspotX">Hotspot X</span><input id="cursor-hotspot-x" type="number" min="0" max="127"></label>
+            <label
+              class="okm-field"><span data-i18n="cursorHotspotY">Hotspot Y</span><input id="cursor-hotspot-y" type="number" min="0" max="127"></label>
+          </div>
+          <div
+            class="okm-cursor-preview"><img id="cursor-preview" alt=""><span id="cursor-file-status" data-i18n="noCursorAsset">No local pointer selected.</span></div>
+          <div
+            class="okm-actions"><button id="reset-cursor" type="button" data-i18n="resetCursor">Remove local pointer</button></div>
+        </section>
+
+        <section class="okm-panel" data-panel="mouse" hidden>
+          <h2 data-i18n="mouseGestures">Mouse Gestures</h2>
+          <div class="okm-grid">
+            <label
+              class="okm-check"><input id="mouse-enabled" type="checkbox"> <span data-i18n="enabled">Enabled</span></label>
+            <label
+              class="okm-field"><span data-i18n="directionMode">Direction mode</span><select id="direction-mode"><option value="4-way" data-i18n="fourWay">Four directions</option><option value="8-way" data-i18n="eightWay">Eight directions</option></select></label>
+            <label
+              class="okm-field"><span data-i18n="activationDistance">Activation distance (px)</span><input id="activation-distance" type="number" min="1" max="200"></label>
+            <label
+              class="okm-check"><input id="show-trail" type="checkbox"> <span data-i18n="showTrail">Show gesture trail</span></label>
+            <label
+              class="okm-check"><input id="show-command-hud" type="checkbox"> <span data-i18n="showHud">Show command HUD</span></label>
+          </div>
+          <h3 data-i18n="pattern">Pattern</h3>
+          <canvas id="gesture-canvas" width="320" height="180" aria-label="Gesture editor"></canvas>
+          <div id="gesture-preview" aria-live="polite"></div>
+          <div
+            class="okm-actions"><button id="clear-gesture" data-i18n="reset">Reset</button><button id="add-gesture-binding" class="primary" data-i18n="addBinding">Add binding</button></div>
+          <div id="mouse-binding-error" class="okm-error" role="alert"></div>
+          <table class="okm-table">
+            <thead>
+              <tr>
+                <th data-i18n="pattern">Pattern</th>
+                <th data-i18n="command">Command</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="mouse-bindings"></tbody>
+          </table>
+        </section>
+
+        <section class="okm-panel" data-panel="superDrag" hidden>
+          <h2 data-i18n="superDrag">Super Drag</h2>
+          <label
+            class="okm-check"><input id="super-drag-enabled" type="checkbox"> <span data-i18n="enabled">Enabled</span></label>
+          <p class="okm-note"
+            data-i18n="superDragSafety">Alt always keeps native dragging. File uploads, editors, password fields, custom draggable widgets, and invalid URLs are not intercepted.</p>
+          <table class="okm-table">
+            <thead>
+              <tr>
+                <th data-i18n="context">Context</th>
+                <th data-i18n="pattern">Pattern</th>
+                <th data-i18n="command">Command</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="super-drag-bindings"></tbody>
+          </table>
+        </section>
+
+        <section class="okm-panel" data-panel="wheel" hidden>
+          <h2 data-i18n="wheelRocker">Wheel &amp; Rocker</h2>
+          <div class="okm-grid">
+            <label
+              class="okm-check"><input id="wheel-enabled" type="checkbox"> <span data-i18n="enabled">Enabled</span></label>
+            <label
+              class="okm-field"><span data-i18n="wheelThreshold">Wheel threshold</span><input id="wheel-threshold" type="number" min="10" max="2000"></label>
+            <label
+              class="okm-field"><span data-i18n="cooldown">Cooldown (ms)</span><input id="wheel-cooldown" type="number" min="0" max="5000"></label>
+          </div>
+          <table class="okm-table">
+            <thead>
+              <tr>
+                <th data-i18n="button">Button</th>
+                <th data-i18n="direction">Direction</th>
+                <th data-i18n="command">Command</th>
+              </tr>
+            </thead>
+            <tbody id="wheel-bindings"></tbody>
+          </table>
+          <h3 data-i18n="rocker">Rocker</h3>
+          <label
+            class="okm-check"><input id="rocker-enabled" type="checkbox"> <span data-i18n="enabled">Enabled</span></label>
+          <table class="okm-table">
+            <thead>
+              <tr>
+                <th data-i18n="sequence">Sequence</th>
+                <th data-i18n="command">Command</th>
+              </tr>
+            </thead>
+            <tbody id="rocker-bindings"></tbody>
+          </table>
+        </section>
+
+        <section class="okm-panel" data-panel="siteRules" hidden>
+          <h2 data-i18n="siteRules">Site Rules</h2>
+          <p class="okm-note"
+            data-i18n="siteRuleSpecificity">The most specific matching rule wins; the top-level page URL controls all frames.</p>
+          <table class="okm-table">
+            <thead>
+              <tr>
+                <th data-i18n="urlPattern">URL pattern</th>
+                <th data-i18n="modules">Modules</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="site-rules"></tbody>
+          </table>
+          <div
+            class="okm-actions"><button id="add-site-rule" data-i18n="addBinding">Add rule</button></div>
+        </section>
+
+        <section class="okm-panel" data-panel="backup" hidden>
+          <h2 data-i18n="backupRestore">Backup &amp; Restore</h2>
+          <p class="okm-note"
+            data-i18n="backupContents">Exports contain settings only. Page content, history, bookmarks, temporary gestures, and remote assets are never exported.</p>
+          <p class="okm-note"
+            data-i18n="vimiumBackup">You can also import a Vimium JSON backup. Recognized fields are copied to the compatible Vimium settings and OpenKeyMouse settings; unknown fields are reported and ignored.</p>
+          <div
+            class="okm-actions"><button id="export-settings" data-i18n="exportSettings">Export settings</button><label><span data-i18n="importSettings">Import settings</span><input id="import-settings" type="file" accept="application/json,.json"></label></div>
+        </section>
+
+        <section class="okm-panel" data-panel="privacy" hidden>
+          <h2 data-i18n="privacy">Privacy</h2>
+          <p data-i18n="noTelemetry">No telemetry, accounts, advertising, or paid features.</p>
+          <p
+            data-i18n="privacyImmutable">Telemetry, remote configuration, and background network access are permanently disabled.</p>
+          <p
+            data-i18n="privacyNetwork">Only user-initiated navigation, search, and local extension pages may cause network activity. No project server is contacted.</p>
+          <p><a href="privacy.html" target="_blank" data-i18n="privacy">Privacy policy</a> · <a href="../LICENSE" target="_blank" data-i18n="licenseGpl">GPL-3.0-or-later</a></p>
+        </section>
+
+        <section class="okm-panel" data-panel="about" hidden>
+          <h2 data-i18n="aboutLicenses">About &amp; Licenses</h2>
+          <p
+            data-i18n="aboutText">OpenKeyMouse is based on Vimium v2.4.2 and remains free and open source.</p>
+          <p
+            data-i18n="cleanRoomText">Vimium and shoulda.js notices are preserved in the repository. Mouse features are an independent clean-room implementation based only on public behavior descriptions.</p>
+          <p><a href="onboarding.html" target="_blank" data-i18n="openOnboarding">Open onboarding</a> · <a href="../THIRD_PARTY_NOTICES.md" target="_blank" data-i18n="thirdPartyNotices">Third-party notices</a></p>
+        </section>
+
+        <div
+          class="okm-actions"><button id="save-settings" class="primary" data-i18n="save">Save</button><span id="save-status" aria-live="polite"></span></div>
+        <div id="settings-error" class="okm-error" role="alert"></div>
+      </main>
+    </div>
+  </body>
+</html>

@@ -1,9 +1,22 @@
 # OpenKeyMouse — 本地优先的键盘网页导航
 
 OpenKeyMouse 当前以 Vimium v2.4.2（提交 eb737abd）为稳定键盘基线，提供本地优先的网页导航和
-浏览器控制能力。项目处于 Phase 0：鼠标轨迹、超级拖拽、滚轮、摇杆和统一命令层尚未实现。
+浏览器控制能力。鼠标轨迹、超级拖拽、滚轮、摇杆、标签页列表、自定义指针、统一命令层、站点规则
+和中英文设置界面已经落地到源码；发布验收仍以自动测试、隔离浏览器验证和兼容性矩阵为准。
 
 本项目永久免费、开源、无广告、无账户、无订阅、无付费功能、无遥测，也不代表 Vimium 官方。
+
+新增 OpenKeyMouse 模块只依据本项目设计文档和公开行为描述独立实现，不复制、反编译或移植 CrxMouse
+的闭源代码、图片、图标、文案和设置界面。运行时不请求项目服务器，不加载远程代码，
+自定义指针只保存为本地 PNG。
+
+设置页可从扩展按钮弹窗或 `chrome-extension://.../pages/mouse_options.html` 打开，支持 English
+和简体中文。完整开发约束、权限清单、隐私政策、测试命令和未完成项见：
+
+- [项目设计文档](OpenKeyMouse_Codex_可执行开发设计文档.md)
+- [权限说明](docs/permissions.md)
+- [功能对照矩阵](docs/feature-parity-matrix.md)
+- [发布检查表](docs/release-checklist.md)
 
 [Watch the demo video](https://www.youtube.com/watch?v=t67Sn0RGK54).
 
@@ -177,6 +190,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 See [CHANGELOG](CHANGELOG.md) for the major changes in each release.
 
-## License
+## 许可证
 
-Copyright (c) Phil Crosby, Ilya Sukhar. See [MIT-LICENSE.txt](MIT-LICENSE.txt) for details.
+OpenKeyMouse 项目代码使用 GPL-3.0-or-later；Vimium 与 shoulda.js 的原有部分及声明按其 MIT
+许可证保留。详见 [LICENSE](LICENSE)、[LICENSES/MIT-Vimium.txt](LICENSES/MIT-Vimium.txt)、
+[LICENSES/MIT-shoulda.txt](LICENSES/MIT-shoulda.txt) 和
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。

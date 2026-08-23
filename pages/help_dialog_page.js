@@ -1,6 +1,12 @@
 import "./all_content_scripts.js";
+import "../lib/i18n.js";
 import * as UIComponentMessenger from "./ui_component_messenger.js";
 import { allCommands } from "../background_scripts/all_commands.js";
+
+function commandDescription(command) {
+  const key = `command_${command.name.replaceAll(".", "_")}`;
+  return OpenKeyMouseI18n.hasMessage(key) ? OpenKeyMouseI18n.message(key) : command.desc;
+}
 
 // The ordering we show key bindings is alphanumerical, except that special keys sort to the end.
 function compareKeys(a, b) {
@@ -96,7 +102,7 @@ const HelpDialogPage = {
     const keysTemplate = document.querySelector("template#keys").content;
 
     const rowEl = rowTemplate.cloneNode(true);
-    rowEl.querySelector(".help-description").textContent = command.desc;
+    rowEl.querySelector(".help-description").textContent = commandDescription(command);
     if (isAdvancedCommand(command, options)) {
       rowEl.querySelector(".row").classList.add("advanced");
     }
@@ -109,14 +115,15 @@ const HelpDialogPage = {
 
     const maxLength = 40;
     const descEl = rowEl.querySelector(".help-description");
-    let desc = command.desc;
+    const localizedDescription = commandDescription(command);
+    let desc = localizedDescription;
     if (options != "") {
-      const optionsString = ellipsize(options, maxLength - command.desc.length);
+      const optionsString = ellipsize(options, maxLength - localizedDescription.length);
       desc += ` (${optionsString})`;
       const isTruncated = optionsString != options;
       if (isTruncated) {
         // Show the full option string on hover.
-        descEl.title = `${command.desc} (${options})`;
+        descEl.title = `${localizedDescription} (${options})`;
       }
     }
     descEl.textContent = desc;

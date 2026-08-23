@@ -1,0 +1,247 @@
+{
+  "extensionName": { "message": "OpenKeyMouse", "description": "Extension name" },
+  "extensionDescription": {
+    "message": "A free, local-first keyboard and mouse navigation extension with no telemetry.",
+    "description": "Extension description"
+  },
+  "openKeyMouse": { "message": "OpenKeyMouse", "description": "Project name" },
+  "save": { "message": "Save", "description": "Save button" },
+  "saved": { "message": "Saved", "description": "Saved status" },
+  "cancel": { "message": "Cancel", "description": "Cancel button" },
+  "close": { "message": "Close", "description": "Close button" },
+  "reset": { "message": "Reset", "description": "Reset button" },
+  "enabled": { "message": "Enabled", "description": "Enabled label" },
+  "disabled": { "message": "Disabled", "description": "Disabled label" },
+  "general": { "message": "General", "description": "General settings" },
+  "keyboard": { "message": "Keyboard", "description": "Keyboard settings" },
+  "mouseGestures": { "message": "Mouse Gestures", "description": "Mouse gesture settings" },
+  "superDrag": { "message": "Super Drag", "description": "Super drag settings" },
+  "wheelRocker": { "message": "Wheel & Rocker", "description": "Wheel and rocker settings" },
+  "rocker": { "message": "Rocker", "description": "Rocker settings" },
+  "siteRules": { "message": "Site Rules", "description": "Site rule settings" },
+  "backupRestore": { "message": "Backup & Restore", "description": "Backup settings" },
+  "privacy": { "message": "Privacy", "description": "Privacy settings" },
+  "aboutLicenses": { "message": "About & Licenses", "description": "About page" },
+  "openSettings": { "message": "Open settings", "description": "Open settings button" },
+  "openHelp": { "message": "Open help", "description": "Open help button" },
+  "currentSite": { "message": "Current site", "description": "Current site heading" },
+  "allModulesEnabled": {
+    "message": "All OpenKeyMouse modules are enabled on this site.",
+    "description": "Current site status"
+  },
+  "pageUnavailable": {
+    "message": "The browser does not allow extensions to run on this page.",
+    "description": "Restricted page message"
+  },
+  "noTelemetry": {
+    "message": "No telemetry, accounts, advertising, or paid features.",
+    "description": "Privacy promise"
+  },
+  "pattern": { "message": "Pattern", "description": "Gesture pattern label" },
+  "command": { "message": "Command", "description": "Command label" },
+  "addBinding": { "message": "Add binding", "description": "Add binding button" },
+  "removeBinding": { "message": "Remove binding", "description": "Remove binding button" },
+  "restoreDefaults": { "message": "Restore defaults", "description": "Restore defaults button" },
+  "importSettings": { "message": "Import settings", "description": "Import settings button" },
+  "exportSettings": { "message": "Export settings", "description": "Export settings button" },
+  "chooseFile": { "message": "Choose a file", "description": "File picker label" },
+  "invalidSettings": {
+    "message": "The settings file is invalid.",
+    "description": "Invalid settings message"
+  },
+  "gestureUnrecognized": { "message": "Gesture not recognized", "description": "Gesture feedback" },
+  "gestureCancelled": { "message": "Gesture cancelled", "description": "Gesture feedback" },
+  "browserRestriction": {
+    "message": "This page is restricted by the browser.",
+    "description": "Browser limitation"
+  },
+  "language": { "message": "Language", "description": "Language setting" },
+  "languageAuto": { "message": "Follow browser", "description": "Automatic language" },
+  "languageEnglish": { "message": "English", "description": "English language" },
+  "languageChinese": { "message": "简体中文", "description": "Simplified Chinese language" },
+  "directionMode": { "message": "Direction mode", "description": "Direction mode label" },
+  "fourWay": { "message": "Four directions", "description": "Four-way mode" },
+  "eightWay": { "message": "Eight directions", "description": "Eight-way mode" },
+  "activationDistance": {
+    "message": "Activation distance (px)",
+    "description": "Gesture threshold"
+  },
+  "showTrail": { "message": "Show gesture trail", "description": "Trail toggle" },
+  "showHud": { "message": "Show command HUD", "description": "HUD toggle" },
+  "privacyImmutable": {
+    "message": "Telemetry, remote configuration, and background network access are permanently disabled.",
+    "description": "Immutable privacy status"
+  },
+  "tabs": { "message": "Tabs", "description": "Tab list title" },
+  "cursor": { "message": "Custom pointer", "description": "Custom pointer section" },
+  "cursorAsset": { "message": "Local PNG pointer", "description": "Local pointer asset" },
+  "cursorHotspotX": { "message": "Hotspot X", "description": "Pointer hotspot X" },
+  "cursorHotspotY": { "message": "Hotspot Y", "description": "Pointer hotspot Y" },
+  "noCursorAsset": { "message": "No local pointer selected.", "description": "Pointer status" },
+  "resetCursor": { "message": "Remove local pointer", "description": "Remove pointer" },
+  "wheelThreshold": { "message": "Wheel threshold", "description": "Wheel threshold" },
+  "cooldown": { "message": "Cooldown (ms)", "description": "Wheel cooldown" },
+  "button": { "message": "Button", "description": "Mouse button" },
+  "direction": { "message": "Direction", "description": "Direction" },
+  "sequence": { "message": "Sequence", "description": "Rocker sequence" },
+  "urlPattern": { "message": "URL pattern", "description": "Site URL pattern" },
+  "modules": { "message": "Modules", "description": "Site modules" },
+  "context": { "message": "Context", "description": "Drag context" },
+  "openOnboarding": { "message": "Open onboarding", "description": "Onboarding link" },
+  "projectCharter": { "message": "Project Charter", "description": "Project charter link" },
+  "thirdPartyNotices": {
+    "message": "Third-party notices",
+    "description": "Third-party notices link"
+  },
+  "command_OpenKeyMouse_closeWindow": {
+    "message": "Close current window",
+    "description": "Command title"
+  },
+  "command_OpenKeyMouse_newWindow": {
+    "message": "Open a new window",
+    "description": "Command title"
+  },
+  "command_OpenKeyMouse_toggleFullscreen": {
+    "message": "Toggle fullscreen",
+    "description": "Command title"
+  },
+  "command_OpenKeyMouse_minimizeWindow": {
+    "message": "Minimize current window",
+    "description": "Command title"
+  },
+  "command_OpenKeyMouse_maximizeWindow": {
+    "message": "Maximize current window",
+    "description": "Command title"
+  },
+  "command_OpenKeyMouse_showTabList": {
+    "message": "Show tab list",
+    "description": "Command title"
+  },
+  "command_OpenKeyMouse_toggleKeyboard": {
+    "message": "Toggle keyboard navigation",
+    "description": "Command title"
+  },
+  "command_OpenKeyMouse_toggleMouseGestures": {
+    "message": "Toggle mouse gestures",
+    "description": "Command title"
+  },
+  "command_OpenKeyMouse_toggleSuperDrag": {
+    "message": "Toggle super drag",
+    "description": "Command title"
+  },
+  "command_OpenKeyMouse_copySelection": {
+    "message": "Copy selected text",
+    "description": "Command title"
+  },
+  "command_OpenKeyMouse_copyLinkText": {
+    "message": "Copy link text",
+    "description": "Command title"
+  },
+  "command_OpenKeyMouse_copyLinkUrl": {
+    "message": "Copy link URL",
+    "description": "Command title"
+  },
+  "command_OpenKeyMouse_copyImageUrl": {
+    "message": "Copy image URL",
+    "description": "Command title"
+  },
+  "command_OpenKeyMouse_searchSelection": {
+    "message": "Search selected text",
+    "description": "Command title"
+  },
+  "command_OpenKeyMouse_openLinkForeground": {
+    "message": "Open link in foreground",
+    "description": "Command title"
+  },
+  "command_OpenKeyMouse_openLinkBackground": {
+    "message": "Open link in background",
+    "description": "Command title"
+  },
+  "command_OpenKeyMouse_openImageForeground": {
+    "message": "Open image in foreground",
+    "description": "Command title"
+  },
+  "command_OpenKeyMouse_openImageBackground": {
+    "message": "Open image in background",
+    "description": "Command title"
+  },
+  "command_OpenKeyMouse_downloadImage": {
+    "message": "Download image",
+    "description": "Command title"
+  },
+  "settingsSections": { "message": "Settings sections", "description": "Settings navigation" },
+  "gestureEditor": { "message": "Gesture editor", "description": "Gesture editor label" },
+  "superDragSafety": {
+    "message": "Alt always keeps native dragging. File uploads, editors, password fields, custom draggable widgets, and invalid URLs are not intercepted.",
+    "description": "Super drag safety"
+  },
+  "siteRuleSpecificity": {
+    "message": "The most specific matching rule wins; the top-level page URL controls all frames.",
+    "description": "Site rule behavior"
+  },
+  "backupContents": {
+    "message": "Exports contain settings only. Page content, history, bookmarks, temporary gestures, and remote assets are never exported.",
+    "description": "Backup scope"
+  },
+  "privacyNetwork": {
+    "message": "Only user-initiated navigation, search, and local extension pages may cause network activity. No project server is contacted.",
+    "description": "Network privacy"
+  },
+  "licenseGpl": { "message": "GPL-3.0-or-later", "description": "License name" },
+  "aboutText": {
+    "message": "OpenKeyMouse is based on Vimium v2.4.2 and remains free and open source.",
+    "description": "About text"
+  },
+  "cleanRoomText": {
+    "message": "Vimium and shoulda.js notices are preserved in the repository. Mouse features are an independent clean-room implementation based only on public behavior descriptions.",
+    "description": "Clean-room statement"
+  },
+  "dataHandling": { "message": "Data handling", "description": "Privacy section" },
+  "privacyData": {
+    "message": "OpenKeyMouse does not send URLs, history, bookmarks, page content, selected text, search terms, keystrokes, mouse paths, pointer images, configuration, device identifiers, installation identifiers, or crash reports to a project server or third-party analytics service.",
+    "description": "Privacy data statement"
+  },
+  "localStorage": { "message": "Local storage", "description": "Storage section" },
+  "privacyStorage": {
+    "message": "Settings are stored in browser storage. Custom pointer assets, if enabled, remain in local storage and are not synchronized or uploaded.",
+    "description": "Storage privacy"
+  },
+  "security": { "message": "Security", "description": "Security link" },
+  "onboardingIntro": {
+    "message": "Keyboard navigation and independently implemented mouse controls for Chromium browsers.",
+    "description": "Onboarding introduction"
+  },
+  "onboardingGesture": {
+    "message": "Right-button gestures keep the native context menu until the activation threshold is crossed.",
+    "description": "Onboarding gesture"
+  },
+  "onboardingDrag": {
+    "message": "Super drag leaves file upload, editors, password fields, and custom draggable widgets alone.",
+    "description": "Onboarding drag"
+  },
+  "onboardingInvocation": {
+    "message": "Every action is routed through a validated command invocation.",
+    "description": "Onboarding invocation"
+  },
+  "search": { "message": "Search", "description": "Search label" },
+  "searchSettings": { "message": "Search", "description": "Search settings section" },
+  "appearance": { "message": "Appearance", "description": "Appearance section" },
+  "keyMappings": { "message": "Keyboard mappings", "description": "Keyboard mappings" },
+  "searchEngines": { "message": "Search engines", "description": "Search engines" },
+  "keyboardMappingNote": {
+    "message": "Vimium-compatible mappings are imported into the existing keyboard settings.",
+    "description": "Keyboard import note"
+  },
+  "searchEngineNote": {
+    "message": "Searches are sent only when you explicitly invoke a search command.",
+    "description": "Search privacy note"
+  },
+  "vimiumBackup": {
+    "message": "You can also import a Vimium JSON backup. Recognized fields are copied to the compatible Vimium settings and OpenKeyMouse settings; unknown fields are reported and ignored.",
+    "description": "Vimium import note"
+  },
+  "importSummary": { "message": "Import these settings", "description": "Import confirmation" },
+  "changedSettings": { "message": "Changed settings", "description": "Changed settings summary" },
+  "ignoredFields": { "message": "Ignored fields", "description": "Ignored fields summary" },
+  "none": { "message": "None", "description": "Empty summary" }
+}

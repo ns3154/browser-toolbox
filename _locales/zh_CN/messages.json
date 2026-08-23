@@ -1,0 +1,187 @@
+{
+  "extensionName": { "message": "OpenKeyMouse", "description": "扩展名称" },
+  "extensionDescription": {
+    "message": "永久免费、本地优先、无遥测的键盘与鼠标网页导航扩展。",
+    "description": "扩展说明"
+  },
+  "openKeyMouse": { "message": "OpenKeyMouse", "description": "项目名称" },
+  "save": { "message": "保存", "description": "保存按钮" },
+  "saved": { "message": "已保存", "description": "保存状态" },
+  "cancel": { "message": "取消", "description": "取消按钮" },
+  "close": { "message": "关闭", "description": "关闭按钮" },
+  "reset": { "message": "重置", "description": "重置按钮" },
+  "enabled": { "message": "已启用", "description": "启用标签" },
+  "disabled": { "message": "已禁用", "description": "禁用标签" },
+  "general": { "message": "常规", "description": "常规设置" },
+  "keyboard": { "message": "键盘", "description": "键盘设置" },
+  "mouseGestures": { "message": "鼠标轨迹", "description": "鼠标手势设置" },
+  "superDrag": { "message": "超级拖拽", "description": "超级拖拽设置" },
+  "wheelRocker": { "message": "滚轮与摇杆", "description": "滚轮和摇杆设置" },
+  "rocker": { "message": "摇杆", "description": "摇杆设置" },
+  "siteRules": { "message": "站点规则", "description": "站点规则设置" },
+  "backupRestore": { "message": "备份与恢复", "description": "备份设置" },
+  "privacy": { "message": "隐私", "description": "隐私设置" },
+  "aboutLicenses": { "message": "关于与许可证", "description": "关于页面" },
+  "openSettings": { "message": "打开设置", "description": "打开设置按钮" },
+  "openHelp": { "message": "打开帮助", "description": "打开帮助按钮" },
+  "currentSite": { "message": "当前站点", "description": "当前站点标题" },
+  "allModulesEnabled": {
+    "message": "当前站点已启用 OpenKeyMouse 的全部模块。",
+    "description": "当前站点状态"
+  },
+  "pageUnavailable": { "message": "浏览器不允许扩展在此页面运行。", "description": "受限页面提示" },
+  "noTelemetry": { "message": "无遥测、无账户、无广告、无付费功能。", "description": "隐私承诺" },
+  "pattern": { "message": "轨迹", "description": "手势轨迹标签" },
+  "command": { "message": "命令", "description": "命令标签" },
+  "addBinding": { "message": "添加绑定", "description": "添加绑定按钮" },
+  "removeBinding": { "message": "删除绑定", "description": "删除绑定按钮" },
+  "restoreDefaults": { "message": "恢复默认", "description": "恢复默认按钮" },
+  "importSettings": { "message": "导入设置", "description": "导入设置按钮" },
+  "exportSettings": { "message": "导出设置", "description": "导出设置按钮" },
+  "chooseFile": { "message": "选择文件", "description": "文件选择标签" },
+  "invalidSettings": { "message": "设置文件无效。", "description": "设置错误提示" },
+  "gestureUnrecognized": { "message": "未识别手势", "description": "手势反馈" },
+  "gestureCancelled": { "message": "手势已取消", "description": "手势反馈" },
+  "browserRestriction": { "message": "此页面受浏览器限制。", "description": "浏览器限制提示" },
+  "language": { "message": "语言", "description": "语言设置" },
+  "languageAuto": { "message": "跟随浏览器", "description": "自动语言" },
+  "languageEnglish": { "message": "English", "description": "英语" },
+  "languageChinese": { "message": "简体中文", "description": "简体中文" },
+  "directionMode": { "message": "方向模式", "description": "方向模式标签" },
+  "fourWay": { "message": "四方向", "description": "四方向模式" },
+  "eightWay": { "message": "八方向", "description": "八方向模式" },
+  "activationDistance": { "message": "激活距离（像素）", "description": "手势阈值" },
+  "showTrail": { "message": "显示手势轨迹", "description": "轨迹开关" },
+  "showHud": { "message": "显示命令 HUD", "description": "HUD 开关" },
+  "privacyImmutable": {
+    "message": "遥测、远程配置和后台网络访问永久关闭。",
+    "description": "不可变隐私状态"
+  },
+  "tabs": { "message": "标签页", "description": "标签页列表标题" },
+  "cursor": { "message": "自定义指针", "description": "自定义指针分区" },
+  "cursorAsset": { "message": "本地 PNG 指针", "description": "本地指针资源" },
+  "cursorHotspotX": { "message": "热点 X", "description": "指针热点 X" },
+  "cursorHotspotY": { "message": "热点 Y", "description": "指针热点 Y" },
+  "noCursorAsset": { "message": "尚未选择本地指针。", "description": "指针状态" },
+  "resetCursor": { "message": "移除本地指针", "description": "移除指针" },
+  "wheelThreshold": { "message": "滚轮阈值", "description": "滚轮阈值" },
+  "cooldown": { "message": "冷却时间（毫秒）", "description": "滚轮冷却时间" },
+  "button": { "message": "按键", "description": "鼠标按键" },
+  "direction": { "message": "方向", "description": "方向" },
+  "sequence": { "message": "顺序", "description": "摇杆顺序" },
+  "urlPattern": { "message": "网址匹配式", "description": "站点网址匹配式" },
+  "modules": { "message": "模块", "description": "站点模块" },
+  "context": { "message": "对象", "description": "拖拽对象" },
+  "openOnboarding": { "message": "打开入门说明", "description": "入门说明链接" },
+  "projectCharter": { "message": "项目章程", "description": "项目章程链接" },
+  "thirdPartyNotices": { "message": "第三方声明", "description": "第三方声明链接" },
+  "command_OpenKeyMouse_closeWindow": { "message": "关闭当前窗口", "description": "命令标题" },
+  "command_OpenKeyMouse_newWindow": { "message": "打开新窗口", "description": "命令标题" },
+  "command_OpenKeyMouse_toggleFullscreen": { "message": "切换全屏", "description": "命令标题" },
+  "command_OpenKeyMouse_minimizeWindow": { "message": "最小化当前窗口", "description": "命令标题" },
+  "command_OpenKeyMouse_maximizeWindow": { "message": "最大化当前窗口", "description": "命令标题" },
+  "command_OpenKeyMouse_showTabList": { "message": "显示标签页列表", "description": "命令标题" },
+  "command_OpenKeyMouse_toggleKeyboard": { "message": "切换键盘导航", "description": "命令标题" },
+  "command_OpenKeyMouse_toggleMouseGestures": {
+    "message": "切换鼠标手势",
+    "description": "命令标题"
+  },
+  "command_OpenKeyMouse_toggleSuperDrag": { "message": "切换超级拖拽", "description": "命令标题" },
+  "command_OpenKeyMouse_copySelection": { "message": "复制选中文本", "description": "命令标题" },
+  "command_OpenKeyMouse_copyLinkText": { "message": "复制链接文本", "description": "命令标题" },
+  "command_OpenKeyMouse_copyLinkUrl": { "message": "复制链接网址", "description": "命令标题" },
+  "command_OpenKeyMouse_copyImageUrl": { "message": "复制图片网址", "description": "命令标题" },
+  "command_OpenKeyMouse_searchSelection": { "message": "搜索选中文本", "description": "命令标题" },
+  "command_OpenKeyMouse_openLinkForeground": {
+    "message": "前台打开链接",
+    "description": "命令标题"
+  },
+  "command_OpenKeyMouse_openLinkBackground": {
+    "message": "后台打开链接",
+    "description": "命令标题"
+  },
+  "command_OpenKeyMouse_openImageForeground": {
+    "message": "前台打开图片",
+    "description": "命令标题"
+  },
+  "command_OpenKeyMouse_openImageBackground": {
+    "message": "后台打开图片",
+    "description": "命令标题"
+  },
+  "command_OpenKeyMouse_downloadImage": { "message": "下载图片", "description": "命令标题" },
+  "settingsSections": { "message": "设置分区", "description": "设置导航" },
+  "gestureEditor": { "message": "手势编辑器", "description": "手势编辑器标签" },
+  "superDragSafety": {
+    "message": "按住 Alt 始终保留原生拖拽。文件上传、编辑器、密码框、自定义 draggable 控件和无效网址不会被拦截。",
+    "description": "超级拖拽安全说明"
+  },
+  "siteRuleSpecificity": {
+    "message": "匹配度最高的规则优先；顶层页面网址控制所有框架。",
+    "description": "站点规则行为"
+  },
+  "backupContents": {
+    "message": "导出文件只包含设置，不包含页面内容、历史、书签、临时手势或远程资源。",
+    "description": "备份范围"
+  },
+  "privacyNetwork": {
+    "message": "只有用户主动发起的导航、搜索和本地扩展页面可能产生网络活动；项目不会连接服务器。",
+    "description": "网络隐私"
+  },
+  "licenseGpl": { "message": "GPL-3.0-or-later", "description": "许可证名称" },
+  "aboutText": {
+    "message": "OpenKeyMouse 基于 Vimium v2.4.2，保持免费和开源。",
+    "description": "关于文本"
+  },
+  "cleanRoomText": {
+    "message": "仓库保留 Vimium 与 shoulda.js 的声明。鼠标功能仅依据公开行为描述独立实现，不复制闭源代码、资产、文案或界面。",
+    "description": "洁净室声明"
+  },
+  "dataHandling": { "message": "数据处理", "description": "隐私分区" },
+  "privacyData": {
+    "message": "OpenKeyMouse 不会向项目服务器或第三方分析服务发送网址、历史、书签、页面内容、选中文本、搜索词、按键、鼠标轨迹、指针图片、配置、设备标识、安装标识或崩溃报告。",
+    "description": "隐私数据声明"
+  },
+  "localStorage": { "message": "本地存储", "description": "存储分区" },
+  "privacyStorage": {
+    "message": "设置保存在浏览器存储中。启用的自定义指针只保存在本地，不同步、不上传。",
+    "description": "存储隐私"
+  },
+  "security": { "message": "安全", "description": "安全链接" },
+  "onboardingIntro": {
+    "message": "面向 Chromium 浏览器的键盘导航与独立实现鼠标控制。",
+    "description": "入门说明"
+  },
+  "onboardingGesture": {
+    "message": "右键轨迹在越过激活阈值前保留原生右键菜单。",
+    "description": "入门手势"
+  },
+  "onboardingDrag": {
+    "message": "超级拖拽会避开文件上传、编辑器、密码框和自定义 draggable 控件。",
+    "description": "入门拖拽"
+  },
+  "onboardingInvocation": {
+    "message": "所有动作都经过校验后的命令调用协议。",
+    "description": "入门调用协议"
+  },
+  "search": { "message": "搜索", "description": "搜索标签" },
+  "searchSettings": { "message": "搜索", "description": "搜索设置分区" },
+  "appearance": { "message": "外观", "description": "外观分区" },
+  "keyMappings": { "message": "键盘映射", "description": "键盘映射" },
+  "searchEngines": { "message": "搜索引擎", "description": "搜索引擎" },
+  "keyboardMappingNote": {
+    "message": "兼容 Vimium 的键盘映射会导入现有键盘设置。",
+    "description": "键盘导入说明"
+  },
+  "searchEngineNote": {
+    "message": "只有你主动执行搜索命令时，搜索词才会发送给目标搜索引擎。",
+    "description": "搜索隐私说明"
+  },
+  "vimiumBackup": {
+    "message": "也可以导入 Vimium JSON 备份。兼容字段会写入 Vimium 设置和 OpenKeyMouse 设置，未知字段会列出并忽略。",
+    "description": "Vimium 导入说明"
+  },
+  "importSummary": { "message": "导入以下设置", "description": "导入确认" },
+  "changedSettings": { "message": "将修改的设置", "description": "修改设置摘要" },
+  "ignoredFields": { "message": "已忽略字段", "description": "忽略字段摘要" },
+  "none": { "message": "无", "description": "空摘要" }
+}

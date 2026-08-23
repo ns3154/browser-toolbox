@@ -58,3 +58,33 @@ footer {
 footer .options-message {
   flex-grow: 1;
 }
+
+#open-key-mouse-controls {
+  border-bottom: 1px solid #cbd5e1;
+  margin-bottom: 12px;
+  padding: 10px var(--padding);
+}
+
+#open-key-mouse-controls h1,
+#open-key-mouse-controls h2 {
+  margin: 4px 0 8px;
+  font-size: 15px;
+}
+
+.okm-action-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.okm-action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 0;
+}
+
+.okm-action-buttons a {
+  cursor: pointer;
+  color: #2563eb;
+}

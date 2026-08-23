@@ -133,3 +133,18 @@ chrome.runtime.openOptionsPage() 也返回 Could not create an options page。
 ## 基线运行时间
 
 基线命令均在 2026-08-23 本轮实际执行；完整输出保留在本轮工具日志中。
+
+## 后续实现验证补充
+
+后续一次性实现全部 OpenKeyMouse 模块后，使用独立临时 profile 启动 Chrome for Testing
+148.0.7778.96（不是用户正在使用的 Chrome），加载最终打包目录 `dist/vimium`，通过
+`chrome://extensions` 的“扩展程序选项”进入设置页。实际确认了以下内容：
+
+- 设置页中文侧栏、English 切换、保存后语言持久化，以及命令下拉中的 OpenKeyMouse 命令；
+- 真实扩展内容页中右键按下并移动时轨迹 Shadow DOM 显示，释放后隐藏，浏览器错误为空；
+- 上传本地 `icons/icon16.png` 后，真实内容页出现带 `data-open-key-mouse-cursor` 标记的本地 PNG
+  光标样式。
+
+这些证据只覆盖列出的子项。Super Drag、Wheel、Rocker 的真实命令效果、导入导出、站点规则、完整 Vimium
+手工矩阵和跨平台验证仍未完成；不能把它们写成已验证。此前系统 Chrome 的 unpacked content verification
+阻塞仍然有效，Chrome 151 仅作为自动 DOM 测试的浏览器覆盖。

@@ -5,10 +5,27 @@
     <link rel="stylesheet" type="text/css" href="options.css">
     <link rel="stylesheet" type="text/css" href="action.css">
     <link rel="stylesheet" type="text/css" href="../content_scripts/vimium.css">
+    <script src="../lib/i18n.js"></script>
     <script src="action.js" type="module"></script>
   </head>
 
   <body class="vimium-body">
+    <section id="open-key-mouse-controls" style="display: none">
+      <h1 data-i18n="openKeyMouse">OpenKeyMouse</h1>
+      <h2 data-i18n="currentSite">Current site</h2>
+      <p id="open-key-mouse-site-status" aria-live="polite"></p>
+      <div class="okm-action-grid">
+        <label><input id="okm-toggle-keyboard" type="checkbox"> <span data-i18n="keyboard">Keyboard</span></label>
+        <label><input id="okm-toggle-mouse" type="checkbox"> <span data-i18n="mouseGestures">Mouse Gestures</span></label>
+        <label><input id="okm-toggle-drag" type="checkbox"> <span data-i18n="superDrag">Super Drag</span></label>
+        <label><input id="okm-toggle-wheel" type="checkbox"> <span data-i18n="wheelRocker">Wheel &amp; Rocker</span></label>
+      </div>
+      <p class="okm-action-buttons">
+        <button id="okm-disable-session" data-i18n="disabled">Disable for this session</button>
+        <a id="okm-settings-link" target="_blank" data-i18n="openSettings">Open settings</a>
+      </p>
+    </section>
+
     <div id="not-enabled-error" style="display: none">
       <h1>
         Vimium is not allowed to run on this page.

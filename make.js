@@ -183,13 +183,19 @@ async function buildStorePackage() {
 }
 
 async function runUnitTests() {
-  // Import every test file.
+  // 递归导入所有单元测试，确保新增模块可以按目录组织而不被测试入口遗漏。
   const dir = path.join(projectPath, "tests/unit_tests");
-  const files = Array.from(Deno.readDirSync(dir)).map((f) => f.name).sort();
-  for (let f of files) {
-    if (f.endsWith("_test.js")) {
-      await import(path.join(dir, f));
+  const files = [];
+  const collect = (directory) => {
+    for (const entry of Deno.readDirSync(directory)) {
+      const file = path.join(directory, entry.name);
+      if (entry.isDirectory) collect(file);
+      else if (entry.name.endsWith("_test.js")) files.push(file);
     }
+  };
+  collect(dir);
+  for (const file of files.sort()) {
+    await import(file);
   }
 
   return await shoulda.run();

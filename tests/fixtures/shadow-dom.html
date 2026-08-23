@@ -1,0 +1,10 @@
+<!doctype html>
+<html>
+  <body>
+    <div id="host"></div>
+    <script>
+    document.querySelector("#host").attachShadow({ mode: "open" }).innerHTML =
+      '<a href="https://example.com">shadow link</a>';
+    </script>
+  </body>
+</html>

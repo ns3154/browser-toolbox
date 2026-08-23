@@ -48,6 +48,19 @@ class NormalMode extends KeyHandlerMode {
       if (!result) return;
     }
 
+    // OpenKeyMouse 新命令仍走统一 Dispatcher，键盘输入与鼠标输入共享同一执行入口。
+    if (registryEntry.command.startsWith("OpenKeyMouse.")) {
+      const invocation = OpenKeyMouseCommandInvocation.createInvocation(
+        registryEntry.command,
+        registryEntry.options || {},
+        { type: "keyboard" },
+        { pageUrl: globalThis.location?.href || "", topFrame: frameId === 0 },
+        count,
+      );
+      chrome.runtime.sendMessage({ handler: "openKeyMouse.invoke", invocation });
+      return;
+    }
+
     if (registryEntry.topFrame) {
       // We never return to a UI-component frame (e.g. the help dialog), it might have lost the
       // focus.

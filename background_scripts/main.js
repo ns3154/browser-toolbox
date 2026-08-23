@@ -1,9 +1,21 @@
 import "../lib/utils.js";
 import "../lib/settings.js";
 import "../lib/url_utils.js";
+import "../lib/i18n.js";
+import "../lib/open_key_mouse/command_invocation.js";
+import "../lib/open_key_mouse/message_protocol.js";
+import "../lib/open_key_mouse/settings_schema.js";
+import "../lib/open_key_mouse/settings_validator.js";
+import "../lib/open_key_mouse/site_rule_matcher.js";
 import "../background_scripts/tab_recency.js";
 import * as bgUtils from "../background_scripts/bg_utils.js";
 import "../background_scripts/all_commands.js";
+import "./open_key_mouse/settings_migrations.js";
+import "./open_key_mouse/settings_repository.js";
+import "./open_key_mouse/command_registry_adapter.js";
+import "./open_key_mouse/browser_command_adapter.js";
+import "./open_key_mouse/command_dispatcher.js";
+import "./open_key_mouse/gesture_frame_coordinator.js";
 import { Commands } from "../background_scripts/commands.js";
 import * as exclusions from "../background_scripts/exclusions.js";
 import "../background_scripts/completion/search_engines.js";
@@ -427,6 +439,42 @@ const BackgroundCommands = {
   },
 };
 
+const openKeyMouseSettingsRepository = globalThis.OpenKeyMouseSettingsRepositoryInstance;
+const openKeyMouseFrameCoordinator = globalThis.OpenKeyMouseGestureFrameCoordinatorInstance;
+const openKeyMouseBrowserAdapter = new globalThis.OpenKeyMouseBrowserCommandAdapter(
+  openKeyMouseSettingsRepository,
+);
+const openKeyMouseDispatcher = new globalThis.OpenKeyMouseCommandDispatcher({
+  registry: globalThis.OpenKeyMouseCommandRegistry,
+  browserAdapter: openKeyMouseBrowserAdapter,
+  backgroundCommands: BackgroundCommands,
+  gestureCoordinator: openKeyMouseFrameCoordinator,
+});
+
+chrome.runtime.onConnect.addListener((port) => {
+  if (port?.name !== "open-key-mouse-gesture") return;
+  const sender = port.sender || {};
+  const tabId = sender.tab?.id;
+  const frameId = sender.frameId;
+  port.onMessage?.addListener((message) => {
+    if (!message || typeof message.requestId !== "string") return;
+    switch (message.type) {
+      case "start":
+        openKeyMouseFrameCoordinator.start(tabId, frameId, message.requestId);
+        break;
+      case "update":
+        openKeyMouseFrameCoordinator.update(tabId, frameId, message.requestId, message.direction);
+        break;
+      case "finish":
+        openKeyMouseFrameCoordinator.finish(tabId, frameId, message.requestId);
+        break;
+      case "cancel":
+        openKeyMouseFrameCoordinator.cancel(tabId, message.requestId);
+        break;
+    }
+  });
+});
+
 async function forCountTabs(count, currentTab, callback) {
   const tabs = await chrome.tabs.query(visibleTabsQueryArgs);
   const activeTabIndex = getTabIndex(currentTab, tabs);
@@ -598,6 +646,39 @@ const HintCoordinator = {
 };
 
 const sendRequestHandlers = {
+  "openKeyMouse.commandRegistry"() {
+    return globalThis.OpenKeyMouseCommandRegistry.listCommands().map((command) => {
+      const copy = Object.assign({}, command);
+      delete copy.options;
+      delete copy.details;
+      return copy;
+    });
+  },
+  "openKeyMouse.effectiveSettings"(_request, sender) {
+    if (!sender?.tab?.url) return null;
+    return openKeyMouseSettingsRepository.getEffectiveSettings(sender.tab.url);
+  },
+  async "openKeyMouse.invoke"(request, sender) {
+    if (!globalThis.OpenKeyMouseMessageProtocol.isTrustedSender(sender, chrome.runtime.id)) {
+      return globalThis.OpenKeyMouseCommandInvocation.createResult(
+        false,
+        globalThis.OpenKeyMouseCommandInvocation.ERROR_CODES.PERMISSION_DENIED,
+      );
+    }
+    if (
+      !globalThis.OpenKeyMouseMessageProtocol.validate({
+        protocolVersion: globalThis.OpenKeyMouseCommandInvocation.PROTOCOL_VERSION,
+        type: "openKeyMouse.invoke",
+        invocation: request.invocation,
+      })
+    ) {
+      return globalThis.OpenKeyMouseCommandInvocation.createResult(
+        false,
+        globalThis.OpenKeyMouseCommandInvocation.ERROR_CODES.INVALID_OPTIONS,
+      );
+    }
+    return openKeyMouseDispatcher.dispatch(request.invocation, sender);
+  },
   runBackgroundCommand(request, sender) {
     return BackgroundCommands[request.registryEntry.command](request, sender);
   },
@@ -747,7 +828,7 @@ Utils.addChromeRuntimeOnMessageListener(
     Utils.debugLog(
       "main.js: onMessage:%ourl:%otab:%oframe:%o",
       request.handler,
-      sender.url.replace(/https?:\/\//, ""),
+      sender.url?.replace(/https?:\/\//, ""),
       sender.tab?.id,
       sender.frameId,
       // request // Often useful for debugging.
@@ -756,11 +837,14 @@ Utils.addChromeRuntimeOnMessageListener(
     // Firefox when the extension is first installed, domReady and initializeFrame messages come from
     // content scripts in about:blank URLs, which have a null sender.tab. I don't know what this
     // corresponds to. Since we expect a valid sender.tab, ignore those messages.
-    if (sender.tab == null) return;
+    if (
+      sender.tab == null &&
+      !["openKeyMouse.invoke", "openKeyMouse.commandRegistry"].includes(request.handler)
+    ) return;
     await Settings.onLoaded();
     request = Object.assign({ count: 1 }, request, {
       tab: sender.tab,
-      tabId: sender.tab.id,
+      tabId: sender.tab?.id,
     });
     const handler = sendRequestHandlers[request.handler];
     const result = handler ? await handler(request, sender) : null;
@@ -772,6 +856,7 @@ Utils.addChromeRuntimeOnMessageListener(
 // incognito-mode windows. Since the common case is that there are none to begin with, we first
 // check whether the key is set at all.
 chrome.tabs.onRemoved.addListener(function (tabId) {
+  openKeyMouseFrameCoordinator.clearTab(tabId);
   if (tabLoadedHandlers[tabId]) {
     delete tabLoadedHandlers[tabId];
   }
@@ -848,6 +933,7 @@ async function injectContentScriptsAndCSSIntoExistingTabs() {
 
 async function initializeExtension() {
   await Settings.onLoaded();
+  await openKeyMouseSettingsRepository.ensureLoaded(globalThis.OpenKeyMouseCommandRegistry);
   await Commands.init();
 }
 
@@ -883,6 +969,9 @@ Object.assign(globalThis, {
   BackgroundCommands,
   majorVersionHasIncreased,
   nextZoomLevel,
+  openKeyMouseDispatcher,
+  openKeyMouseSettingsRepository,
+  openKeyMouseFrameCoordinator,
 });
 
 // The chrome.runtime.onStartup and onInstalled events are not fired when disabling and then

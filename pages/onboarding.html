@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>OpenKeyMouse</title>
+    <script src="../lib/i18n.js"></script>
+  </head>
+  <body>
+    <main>
+      <h1 data-i18n="openKeyMouse">OpenKeyMouse</h1>
+      <p
+        data-i18n="onboardingIntro">Keyboard navigation and independently implemented mouse controls for Chromium browsers.</p>
+      <ul>
+        <li
+          data-i18n="onboardingGesture">Right-button gestures keep the native context menu until the activation threshold is crossed.</li>
+        <li
+          data-i18n="onboardingDrag">Super drag leaves file upload, editors, password fields, and custom draggable widgets alone.</li>
+        <li
+          data-i18n="onboardingInvocation">Every action is routed through a validated command invocation.</li>
+        <li data-i18n="noTelemetry">No telemetry, accounts, advertising, or paid features.</li>
+      </ul>
+      <p><a href="mouse_options.html" data-i18n="openSettings">Open settings</a></p>
+    </main>
+    <script>
+    document.addEventListener("DOMContentLoaded", () => OpenKeyMouseI18n.apply(document));
+    </script>
+  </body>
+</html>
