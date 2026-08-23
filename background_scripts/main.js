@@ -807,47 +807,6 @@ function majorVersionHasIncreased(previousVersion) {
   return Utils.compareVersions(currentMajorVersion, previousMajorVersion) == 1;
 }
 
-// Show notification on upgrade.
-async function showUpgradeMessageIfNecessary(onInstalledDetails) {
-  const currentVersion = Utils.getCurrentVersion();
-  // We do not show an upgrade message for patch/silent releases. Such releases have the same
-  // major and minor version numbers.
-  if (
-    !majorVersionHasIncreased(onInstalledDetails.previousVersion) ||
-    Settings.get("hideUpdateNotifications")
-  ) {
-    return;
-  }
-
-  // NOTE(philc): These notifications use the system notification UI. So, if you don't have
-  // notifications enabled from your browser (e.g. in Notification Settings in OSX), then
-  // chrome.notification.create will succeed, but you won't see it.
-  const notificationId = "VimiumUpgradeNotification";
-  await chrome.notifications.create(
-    notificationId,
-    {
-      type: "basic",
-      iconUrl: chrome.runtime.getURL("icons/icon128.png"),
-      title: "Vimium Upgrade",
-      message:
-        `Vimium has been upgraded to version ${currentVersion}. Click here for more information.`,
-      isClickable: true,
-    },
-  );
-  if (!chrome.runtime.lastError) {
-    chrome.notifications.onClicked.addListener(async function (id) {
-      if (id != notificationId) return;
-      const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-      const tab = tabs[0];
-      TabOperations.openUrlInNewTab({
-        tab,
-        tabId: tab.id,
-        url: "https://github.com/philc/vimium/blob/master/CHANGELOG.md",
-      });
-    });
-  }
-}
-
 async function injectContentScriptsAndCSSIntoExistingTabs() {
   const manifest = chrome.runtime.getManifest();
   const contentScriptConfig = manifest.content_scripts[0];
@@ -909,8 +868,6 @@ chrome.runtime.onInstalled.addListener(async (details) => {
     !bgUtils.isFirefox() &&
     (["chrome_update", "shared_module_update"].includes(details.reason));
   if (shouldInjectContentScripts) injectContentScriptsAndCSSIntoExistingTabs();
-
-  await showUpgradeMessageIfNecessary(details);
 });
 
 // Note that this event is not fired when an incognito profile is started.

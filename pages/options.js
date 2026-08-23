@@ -8,7 +8,6 @@ const options = {
   filterLinkHints: "boolean",
   grabBackFocus: "boolean",
   hideHud: "boolean",
-  hideUpdateNotifications: "boolean",
   ignoreKeyboardLayout: "boolean",
   keyMappings: "string",
   linkHintCharacters: "string",

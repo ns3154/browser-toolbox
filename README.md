@@ -1,19 +1,18 @@
-# Vimium - The Hacker's Browser
+# OpenKeyMouse — 本地优先的键盘网页导航
 
-Vimium is a browser extension that provides keyboard-based navigation and control of the web in the
-spirit of the Vim editor.
+OpenKeyMouse 当前以 Vimium v2.4.2（提交 eb737abd）为稳定键盘基线，提供本地优先的网页导航和
+浏览器控制能力。项目处于 Phase 0：鼠标轨迹、超级拖拽、滚轮、摇杆和统一命令层尚未实现。
+
+本项目永久免费、开源、无广告、无账户、无订阅、无付费功能、无遥测，也不代表 Vimium 官方。
 
 [Watch the demo video](https://www.youtube.com/watch?v=t67Sn0RGK54).
 
-**Installation instructions:**
+**当前安装说明：**
 
-- Chrome:
-  [Chrome web store](https://chromewebstore.google.com/detail/vimium/dbepggeogbaibhgnhhndojpepiihcmeb)
-- Edge:
-  [Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/vimium/djmieaghokpkpjfbpelnlkfgfjapaopa)
-- Firefox: [Firefox Add-ons](https://addons.mozilla.org/en-GB/firefox/addon/vimium-ff/)
+当前尚未发布商店版本。开发验证时请在 Chromium 浏览器的扩展管理页开启开发者模式，加载本仓库
+目录；浏览器内置页面和地址栏不属于网页注入范围。
 
-To install from source, see [here](CONTRIBUTING.md#installing-from-source).
+从源码安装的详细说明见 CONTRIBUTING.md 的 Installing From Source 小节。
 
 Vimium's Options page can be reached via a link on the help dialog (type `?`) or via the button next
 to Vimium on the extension pages of Chrome and Edge (`chrome://extensions`), or Firefox
