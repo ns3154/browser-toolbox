@@ -12,20 +12,20 @@
     ensure() {
       if (this.host || !this.document?.documentElement) return;
       this.host = this.document.createElement("div");
-      this.host.className = "okm-gesture-host";
+      this.host.className = "browser-toolbox-gesture-host";
       const shadow = this.host.attachShadow({ mode: "closed" });
       const style = this.document.createElement("style");
       style.textContent =
-        ".okm-root{position:fixed;inset:0;z-index:2147483646;pointer-events:none}.okm-svg{width:100%;height:100%}.okm-path{fill:none;stroke:#4f8cff;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 1px 2px #000)}.okm-hud{position:fixed;top:12px;left:50%;transform:translateX(-50%);padding:6px 10px;border-radius:6px;background:rgba(20,20,20,.86);color:#fff;font:13px system-ui,sans-serif;white-space:pre;display:none}";
+        ".browser-toolbox-root{position:fixed;inset:0;z-index:2147483646;pointer-events:none}.browser-toolbox-svg{width:100%;height:100%}.browser-toolbox-path{fill:none;stroke:#4f8cff;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 1px 2px #000)}.browser-toolbox-hud{position:fixed;top:12px;left:50%;transform:translateX(-50%);padding:6px 10px;border-radius:6px;background:rgba(20,20,20,.86);color:#fff;font:13px system-ui,sans-serif;white-space:pre;display:none}";
       const root = this.document.createElement("div");
-      root.className = "okm-root";
+      root.className = "browser-toolbox-root";
       this.svg = this.document.createElementNS("http://www.w3.org/2000/svg", "svg");
-      this.svg.classList.add("okm-svg");
+      this.svg.classList.add("browser-toolbox-svg");
       this.path = this.document.createElementNS("http://www.w3.org/2000/svg", "path");
-      this.path.classList.add("okm-path");
+      this.path.classList.add("browser-toolbox-path");
       this.svg.appendChild(this.path);
       this.hud = this.document.createElement("div");
-      this.hud.className = "okm-hud";
+      this.hud.className = "browser-toolbox-hud";
       root.append(this.svg, this.hud);
       shadow.append(style, root);
       this.document.documentElement.appendChild(this.host);
@@ -50,6 +50,7 @@
       if (!this.hud) return;
       this.hud.textContent = text;
       this.hud.style.display = visible ? "block" : "none";
+      if (this.host && visible) this.host.style.display = "block";
     }
 
     hide() {
@@ -68,5 +69,5 @@
     }
   }
 
-  globalThis.OpenKeyMouseGestureOverlay = GestureOverlay;
+  globalThis.BrowserToolboxGestureOverlay = GestureOverlay;
 })();

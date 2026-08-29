@@ -1,11 +1,21 @@
 import "./all_content_scripts.js";
 import "../lib/i18n.js";
+import "../background_scripts/browser_toolbox/settings_storage.js";
 import * as UIComponentMessenger from "./ui_component_messenger.js";
 import { allCommands } from "../background_scripts/all_commands.js";
 
+const browserToolboxModuleLabelKeys = Object.freeze({
+  keyboard: "keyboard",
+  mouse: "mouseGestures",
+  superDrag: "superDrag",
+  wheel: "wheelRocker",
+  rocker: "rocker",
+  cursor: "cursor",
+});
+
 function commandDescription(command) {
   const key = `command_${command.name.replaceAll(".", "_")}`;
-  return OpenKeyMouseI18n.hasMessage(key) ? OpenKeyMouseI18n.message(key) : command.desc;
+  return BrowserToolboxI18n.hasMessage(key) ? BrowserToolboxI18n.message(key) : command.desc;
 }
 
 // The ordering we show key bindings is alphanumerical, except that special keys sort to the end.
@@ -47,6 +57,7 @@ const HelpDialogPage = {
     if (this.dialogElement != null) {
       return;
     }
+    BrowserToolboxI18n.apply(document);
     this.dialogElement = document.querySelector("#dialog");
 
     const closeButton = this.dialogElement.querySelector("#close");
@@ -130,8 +141,54 @@ const HelpDialogPage = {
     return rowEl;
   },
 
-  async show() {
+  renderBrowserToolboxSummary(summary) {
+    const status = document.querySelector("#browser-toolbox-help-status");
+    const appliedRule = document.querySelector("#browser-toolbox-help-rule");
+    const noMatchingRule = document.querySelector("#browser-toolbox-help-no-rule");
+    const ruleValue = document.querySelector("#browser-toolbox-help-rule-value");
+    const vimiumExcluded = document.querySelector("#browser-toolbox-help-vimium-excluded");
+    if (!status || !appliedRule || !noMatchingRule || !ruleValue || !vimiumExcluded) return;
+
+    const stateAvailable = summary?.stateAvailable === true;
+    if (!stateAvailable) {
+      status.textContent = BrowserToolboxI18n.message("browserToolboxStatusUnavailable");
+      appliedRule.hidden = true;
+      noMatchingRule.hidden = true;
+      vimiumExcluded.hidden = true;
+      return;
+    }
+
+    const disabledModules = Array.isArray(summary.disabledModules)
+      ? summary.disabledModules
+        .map((id) => browserToolboxModuleLabelKeys[id])
+        .filter(Boolean)
+        .map((key) => BrowserToolboxI18n.message(key))
+      : [];
+    status.textContent = disabledModules.length > 0
+      ? `${BrowserToolboxI18n.message("browserToolboxDisabledModules")}: ${
+        disabledModules.join(", ")
+      }`
+      : BrowserToolboxI18n.message("browserToolboxAllModulesEnabled");
+
+    const pattern = summary.matchedRule?.pattern;
+    if (typeof pattern === "string" && pattern.length > 0) {
+      const matchType = summary.matchedRule.matchType === "regex"
+        ? BrowserToolboxI18n.message("siteRuleRegex")
+        : BrowserToolboxI18n.message("siteRuleGlob");
+      ruleValue.textContent = `${matchType} — ${pattern}`;
+      appliedRule.hidden = false;
+      noMatchingRule.hidden = true;
+    } else {
+      appliedRule.hidden = true;
+      noMatchingRule.hidden = false;
+    }
+    vimiumExcluded.hidden = summary.vimiumExcluded !== true;
+  },
+
+  async show(messageData = {}) {
+    await BrowserToolboxI18n.applyStoredLocale(document);
     document.getElementById("vimium-version").textContent = Utils.getCurrentVersion();
+    this.renderBrowserToolboxSummary(messageData.browserToolbox);
 
     const commandToOptionsToKeys =
       (await chrome.storage.session.get("commandToOptionsToKeys")).commandToOptionsToKeys;
@@ -174,7 +231,9 @@ const HelpDialogPage = {
   },
 
   showAdvancedCommands(visible) {
-    const caption = visible ? "Hide advanced commands" : "Show advanced commands";
+    const caption = BrowserToolboxI18n.message(
+      visible ? "hideAdvancedCommands" : "showAdvancedCommands",
+    );
     document.querySelector("#toggle-advanced a").textContent = caption;
     if (visible) {
       HelpDialogPage.dialogElement.classList.add("show-advanced");

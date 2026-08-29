@@ -2,20 +2,26 @@ import "../lib/utils.js";
 import "../lib/settings.js";
 import "../lib/url_utils.js";
 import "../lib/i18n.js";
-import "../lib/open_key_mouse/command_invocation.js";
-import "../lib/open_key_mouse/message_protocol.js";
-import "../lib/open_key_mouse/settings_schema.js";
-import "../lib/open_key_mouse/settings_validator.js";
-import "../lib/open_key_mouse/site_rule_matcher.js";
+import "../lib/browser_toolbox/value_utils.js";
+import "../lib/browser_toolbox/command_invocation.js";
+import "../lib/browser_toolbox/message_protocol.js";
+import "../lib/browser_toolbox/settings_schema.js";
+import "../lib/browser_toolbox/regex_safety.js";
+import "../lib/browser_toolbox/module_registry.js";
+import "../lib/browser_toolbox/settings_validator.js";
+import "../lib/browser_toolbox/site_rule_matcher.js";
 import "../background_scripts/tab_recency.js";
 import * as bgUtils from "../background_scripts/bg_utils.js";
 import "../background_scripts/all_commands.js";
-import "./open_key_mouse/settings_migrations.js";
-import "./open_key_mouse/settings_repository.js";
-import "./open_key_mouse/command_registry_adapter.js";
-import "./open_key_mouse/browser_command_adapter.js";
-import "./open_key_mouse/command_dispatcher.js";
-import "./open_key_mouse/gesture_frame_coordinator.js";
+import "./browser_toolbox/settings_migrations.js";
+import "./browser_toolbox/settings_storage.js";
+import "../lib/browser_toolbox/settings_policy.js";
+import "./browser_toolbox/vimium_settings_adapter.js";
+import "./browser_toolbox/settings_repository.js";
+import "./browser_toolbox/command_registry_adapter.js";
+import "./browser_toolbox/browser_command_adapter.js";
+import "./browser_toolbox/command_dispatcher.js";
+import "./browser_toolbox/gesture_frame_coordinator.js";
 import { Commands } from "../background_scripts/commands.js";
 import * as exclusions from "../background_scripts/exclusions.js";
 import "../background_scripts/completion/search_engines.js";
@@ -439,16 +445,47 @@ const BackgroundCommands = {
   },
 };
 
-const openKeyMouseSettingsRepository = globalThis.OpenKeyMouseSettingsRepositoryInstance;
-const openKeyMouseFrameCoordinator = globalThis.OpenKeyMouseGestureFrameCoordinatorInstance;
-const openKeyMouseBrowserAdapter = new globalThis.OpenKeyMouseBrowserCommandAdapter(
-  openKeyMouseSettingsRepository,
+const browserToolboxSettingsRepository = globalThis.BrowserToolboxSettingsRepositoryInstance;
+const browserToolboxFrameCoordinator = globalThis.BrowserToolboxGestureFrameCoordinatorInstance;
+
+// 设置页或同步设备修改配置后，只广播失效通知；每个 frame 再按自身生命周期读取一次有效快照。
+// 这样消息不携带完整配置，也不会把不同标签页的站点规则结果混用。
+let browserToolboxSettingsChangeBroadcastPending = false;
+async function broadcastBrowserToolboxSettingsChange() {
+  if (browserToolboxSettingsChangeBroadcastPending) return;
+  browserToolboxSettingsChangeBroadcastPending = true;
+  try {
+    const tabs = await chrome.tabs.query({});
+    const message = globalThis.BrowserToolboxMessageProtocol.create(
+      "browserToolbox.settingsChanged",
+    );
+    await Promise.all((tabs || []).map((tab) => {
+      if (tab?.id == null) return Promise.resolve();
+      try {
+        return Promise.resolve(chrome.tabs.sendMessage(tab.id, message)).catch(() => {});
+      } catch (_) {
+        return Promise.resolve();
+      }
+    }));
+  } catch (_) {
+    // 没有可访问的标签页时不影响配置保存；下一次内容脚本初始化会重新读取配置。
+  } finally {
+    browserToolboxSettingsChangeBroadcastPending = false;
+  }
+}
+
+browserToolboxSettingsRepository.addEventListener(() => {
+  broadcastBrowserToolboxSettingsChange();
+});
+
+const browserToolboxBrowserAdapter = new globalThis.BrowserToolboxBrowserCommandAdapter(
+  browserToolboxSettingsRepository,
 );
-const openKeyMouseDispatcher = new globalThis.OpenKeyMouseCommandDispatcher({
-  registry: globalThis.OpenKeyMouseCommandRegistry,
-  browserAdapter: openKeyMouseBrowserAdapter,
+const browserToolboxDispatcher = new globalThis.BrowserToolboxCommandDispatcher({
+  registry: globalThis.BrowserToolboxCommandRegistry,
+  browserAdapter: browserToolboxBrowserAdapter,
   backgroundCommands: BackgroundCommands,
-  gestureCoordinator: openKeyMouseFrameCoordinator,
+  gestureCoordinator: browserToolboxFrameCoordinator,
 });
 
 async function forCountTabs(count, currentTab, callback) {
@@ -631,21 +668,34 @@ function isValidGestureRequest(request, field = null) {
   return true;
 }
 
+const GESTURE_PORT_NAME = "browserToolbox.gesture";
+const GESTURE_PORT_HANDLERS = new Set([
+  "browserToolbox.gestureStart",
+  "browserToolbox.gestureUpdate",
+  "browserToolbox.gestureFinish",
+  "browserToolbox.gestureCancel",
+]);
+
 const sendRequestHandlers = {
-  "openKeyMouse.gestureStart"(request, sender) {
+  async "browserToolbox.gestureStart"(request, sender) {
     if (!isValidGestureRequest(request)) return { accepted: false };
+    await browserToolboxSettingsRepository.ensureLoaded(globalThis.BrowserToolboxCommandRegistry);
+    const settings = sender.tab?.url
+      ? browserToolboxSettingsRepository.getEffectiveSettings(sender.tab.url)
+      : null;
     return {
-      accepted: openKeyMouseFrameCoordinator.start(
+      accepted: browserToolboxFrameCoordinator.start(
         sender.tab?.id,
         sender.frameId,
         request.requestId,
+        settings?.mouse?.maxDurationMs,
       ),
     };
   },
-  "openKeyMouse.gestureUpdate"(request, sender) {
+  "browserToolbox.gestureUpdate"(request, sender) {
     if (!isValidGestureRequest(request, "direction")) return { accepted: false };
     return {
-      accepted: openKeyMouseFrameCoordinator.update(
+      accepted: browserToolboxFrameCoordinator.update(
         sender.tab?.id,
         sender.frameId,
         request.requestId,
@@ -653,51 +703,51 @@ const sendRequestHandlers = {
       ),
     };
   },
-  "openKeyMouse.gestureFinish"(request, sender) {
+  "browserToolbox.gestureFinish"(request, sender) {
     if (!isValidGestureRequest(request, "pattern")) return { accepted: false };
     return {
       accepted: Boolean(
-        openKeyMouseFrameCoordinator.finish(sender.tab?.id, sender.frameId, request.requestId),
+        browserToolboxFrameCoordinator.finish(sender.tab?.id, sender.frameId, request.requestId),
       ),
     };
   },
-  "openKeyMouse.gestureCancel"(request, sender) {
+  "browserToolbox.gestureCancel"(request, sender) {
     if (!isValidGestureRequest(request)) return { accepted: false };
-    openKeyMouseFrameCoordinator.cancel(sender.tab?.id, request.requestId);
+    browserToolboxFrameCoordinator.cancel(sender.tab?.id, request.requestId);
     return { accepted: true };
   },
-  "openKeyMouse.commandRegistry"() {
-    return globalThis.OpenKeyMouseCommandRegistry.listCommands().map((command) => {
+  "browserToolbox.commandRegistry"() {
+    return globalThis.BrowserToolboxCommandRegistry.listCommands().map((command) => {
       const copy = Object.assign({}, command);
-      delete copy.options;
       delete copy.details;
       return copy;
     });
   },
-  "openKeyMouse.effectiveSettings"(_request, sender) {
+  async "browserToolbox.effectiveSettings"(_request, sender) {
     if (!sender?.tab?.url) return null;
-    return openKeyMouseSettingsRepository.getEffectiveSettings(sender.tab.url);
+    await browserToolboxSettingsRepository.ensureLoaded(globalThis.BrowserToolboxCommandRegistry);
+    return browserToolboxSettingsRepository.getEffectiveSettings(sender.tab.url);
   },
-  async "openKeyMouse.invoke"(request, sender) {
-    if (!globalThis.OpenKeyMouseMessageProtocol.isTrustedSender(sender, chrome.runtime.id)) {
-      return globalThis.OpenKeyMouseCommandInvocation.createResult(
+  async "browserToolbox.invoke"(request, sender) {
+    if (!globalThis.BrowserToolboxMessageProtocol.isTrustedSender(sender, chrome.runtime.id)) {
+      return globalThis.BrowserToolboxCommandInvocation.createResult(
         false,
-        globalThis.OpenKeyMouseCommandInvocation.ERROR_CODES.PERMISSION_DENIED,
+        globalThis.BrowserToolboxCommandInvocation.ERROR_CODES.PERMISSION_DENIED,
       );
     }
     if (
-      !globalThis.OpenKeyMouseMessageProtocol.validate({
-        protocolVersion: globalThis.OpenKeyMouseCommandInvocation.PROTOCOL_VERSION,
-        type: "openKeyMouse.invoke",
+      !globalThis.BrowserToolboxMessageProtocol.validate({
+        protocolVersion: globalThis.BrowserToolboxCommandInvocation.PROTOCOL_VERSION,
+        type: "browserToolbox.invoke",
         invocation: request.invocation,
       })
     ) {
-      return globalThis.OpenKeyMouseCommandInvocation.createResult(
+      return globalThis.BrowserToolboxCommandInvocation.createResult(
         false,
-        globalThis.OpenKeyMouseCommandInvocation.ERROR_CODES.INVALID_OPTIONS,
+        globalThis.BrowserToolboxCommandInvocation.ERROR_CODES.INVALID_OPTIONS,
       );
     }
-    return openKeyMouseDispatcher.dispatch(request.invocation, sender);
+    return browserToolboxDispatcher.dispatch(request.invocation, sender);
   },
   runBackgroundCommand(request, sender) {
     return BackgroundCommands[request.registryEntry.command](request, sender);
@@ -842,9 +892,80 @@ const sendRequestHandlers = {
   },
 };
 
+// 手势 Port 只接受固定的四类消息，并在连接断开时清理对应的 Service Worker 会话。
+chrome.runtime.onConnect.addListener((port) => {
+  if (port.name !== GESTURE_PORT_NAME) return;
+  const sender = port.sender || {};
+  if (!globalThis.BrowserToolboxMessageProtocol.isTrustedSender(sender, chrome.runtime.id)) {
+    port.disconnect();
+    return;
+  }
+  let requestId = null;
+  let disconnected = false;
+  let messageQueue = Promise.resolve();
+
+  const postResult = (result) => {
+    if (disconnected) return;
+    try {
+      port.postMessage(result || { accepted: false });
+    } catch (_) {
+      // Port 可能刚好在异步处理期间断开；onDisconnect 会负责清理会话。
+    }
+  };
+
+  const handleGesturePortMessage = async (request) => {
+    if (!GESTURE_PORT_HANDLERS.has(request?.handler)) return;
+    if (request.handler === "browserToolbox.gestureStart") {
+      if (requestId || !isValidGestureRequest(request)) {
+        postResult({ accepted: false });
+        return;
+      }
+      requestId = request.requestId;
+      const result = await sendRequestHandlers[request.handler](request, sender);
+      if (disconnected) {
+        browserToolboxFrameCoordinator.cancel(sender.tab?.id, requestId);
+        requestId = null;
+        return;
+      }
+      if (result?.accepted !== true) requestId = null;
+      postResult(result);
+      return;
+    }
+
+    if (!requestId || request.requestId !== requestId) {
+      postResult({ accepted: false });
+      return;
+    }
+    const result = await sendRequestHandlers[request.handler](request, sender);
+    if (
+      request.handler === "browserToolbox.gestureFinish" ||
+      request.handler === "browserToolbox.gestureCancel"
+    ) requestId = null;
+    postResult(result);
+  };
+
+  port.onMessage.addListener((request) => {
+    // 启动需要异步读取配置；串行处理可以避免 update 抢在 start 建立会话前执行。
+    messageQueue = messageQueue.then(() => handleGesturePortMessage(request)).catch(() => {
+      if (requestId) browserToolboxFrameCoordinator.cancel(sender.tab?.id, requestId);
+      requestId = null;
+      postResult({ accepted: false });
+    });
+  });
+
+  port.onDisconnect.addListener(() => {
+    disconnected = true;
+    if (requestId) browserToolboxFrameCoordinator.cancel(sender.tab?.id, requestId);
+    requestId = null;
+  });
+});
+
 Utils.addChromeRuntimeOnMessageListener(
   Object.keys(sendRequestHandlers),
   async function (request, sender) {
+    if (!globalThis.BrowserToolboxMessageProtocol.isTrustedSender(sender, chrome.runtime.id)) {
+      return;
+    }
     Utils.debugLog(
       "main.js: onMessage:%ourl:%otab:%oframe:%o",
       request.handler,
@@ -859,7 +980,7 @@ Utils.addChromeRuntimeOnMessageListener(
     // corresponds to. Since we expect a valid sender.tab, ignore those messages.
     if (
       sender.tab == null &&
-      !["openKeyMouse.invoke", "openKeyMouse.commandRegistry"].includes(request.handler)
+      !["browserToolbox.invoke", "browserToolbox.commandRegistry"].includes(request.handler)
     ) return;
     await Settings.onLoaded();
     request = Object.assign({ count: 1 }, request, {
@@ -876,7 +997,7 @@ Utils.addChromeRuntimeOnMessageListener(
 // incognito-mode windows. Since the common case is that there are none to begin with, we first
 // check whether the key is set at all.
 chrome.tabs.onRemoved.addListener(function (tabId) {
-  openKeyMouseFrameCoordinator.clearTab(tabId);
+  browserToolboxFrameCoordinator.clearTab(tabId);
   if (tabLoadedHandlers[tabId]) {
     delete tabLoadedHandlers[tabId];
   }
@@ -953,7 +1074,7 @@ async function injectContentScriptsAndCSSIntoExistingTabs() {
 
 async function initializeExtension() {
   await Settings.onLoaded();
-  await openKeyMouseSettingsRepository.ensureLoaded(globalThis.OpenKeyMouseCommandRegistry);
+  await browserToolboxSettingsRepository.ensureLoaded(globalThis.BrowserToolboxCommandRegistry);
   await Commands.init();
 }
 
@@ -989,9 +1110,9 @@ Object.assign(globalThis, {
   BackgroundCommands,
   majorVersionHasIncreased,
   nextZoomLevel,
-  openKeyMouseDispatcher,
-  openKeyMouseSettingsRepository,
-  openKeyMouseFrameCoordinator,
+  browserToolboxDispatcher,
+  browserToolboxSettingsRepository,
+  browserToolboxFrameCoordinator,
 });
 
 // The chrome.runtime.onStartup and onInstalled events are not fired when disabling and then

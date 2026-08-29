@@ -8,6 +8,7 @@ import "../lib/types.js";
 import "../lib/utils.js";
 import "../lib/url_utils.js";
 import "../lib/settings.js";
+import "../lib/i18n.js";
 import "../lib/keyboard_utils.js";
 import "../lib/dom_utils.js";
 import "../lib/handler_stack.js";
@@ -24,6 +25,7 @@ export function reset() {
 export async function activate(options) {
   Utils.assertType(VomnibarShowOptions, options || {});
   await Settings.onLoaded();
+  await BrowserToolboxI18n.applyStoredLocale(document);
   userSearchEngines.set(Settings.get("searchEngines"));
 
   const defaults = {
@@ -76,10 +78,26 @@ class VomnibarUI {
   }
   setForceNewTab(forceNewTab) {
     this.forceNewTab = forceNewTab;
+    this.updateChrome();
   }
   setCompleterName(name) {
     this.completerName = name;
+    this.updateChrome();
     this.reset();
+  }
+
+  updateChrome() {
+    const copy = {
+      bookmarks: ["vomnibarSearchBookmarks", "vomnibarPlaceholderBookmarks"],
+      tabs: ["vomnibarSearchTabs", "vomnibarPlaceholderTabs"],
+      omni: ["vomnibarSearchOrOpen", "vomnibarPlaceholderOmni"],
+    }[this.completerName] || ["vomnibarSearchOrOpen", "vomnibarPlaceholderOmni"];
+    const label = BrowserToolboxI18n.message(copy[0]);
+    this.modeLabel.textContent = label;
+    this.input.placeholder = BrowserToolboxI18n.message(copy[1]);
+    this.input.setAttribute("aria-label", label);
+    this.dispositionLabel.textContent = BrowserToolboxI18n.message("vomnibarNewTab");
+    this.dispositionLabel.hidden = !this.forceNewTab;
   }
 
   // True if the user has entered the keyword of one of their custom search engines.
@@ -141,9 +159,14 @@ class VomnibarUI {
     }
 
     // Highlight the selected entry.
-    for (const [i, el] of Object.entries(this.completionList.children)) {
-      el.className = i == this.selection ? "selected" : "";
+    for (const [index, element] of [...this.completionList.children].entries()) {
+      const selected = index === this.selection;
+      element.className = selected ? "selected" : "";
+      element.setAttribute("aria-selected", String(selected));
     }
+    const selectedId = this.completionList.children[this.selection]?.id;
+    if (selectedId) this.input.setAttribute("aria-activedescendant", selectedId);
+    else this.input.removeAttribute("aria-activedescendant");
   }
 
   // Returns the user's action ("up", "down", "tab", etc, or null) based on their keypress. We
@@ -341,8 +364,11 @@ class VomnibarUI {
   }
 
   renderCompletions(completions) {
-    this.completionList.innerHTML = completions.map((c) => `<li>${c.html}</li>`).join("");
+    this.completionList.innerHTML = completions.map((completion, index) =>
+      `<li id="vomnibar-completion-${index}" role="option" aria-selected="false">${completion.html}</li>`
+    ).join("");
     this.completionList.style.display = completions.length > 0 ? "block" : "";
+    this.input.setAttribute("aria-expanded", String(completions.length > 0));
   }
 
   refreshCompletions() {
@@ -425,6 +451,8 @@ class VomnibarUI {
     this.box = document.getElementById("vomnibar");
 
     this.input = this.box.querySelector("input");
+    this.modeLabel = this.box.querySelector("#vomnibar-mode-label");
+    this.dispositionLabel = this.box.querySelector("#vomnibar-disposition");
     this.input.addEventListener("input", this.onInput);
     this.input.addEventListener("keydown", this.onKeyEvent);
     this.input.addEventListener("keypress", this.onKeyEvent);
@@ -470,6 +498,7 @@ const testEnv = globalThis.window == null ||
 if (!testEnv) {
   document.addEventListener("DOMContentLoaded", async () => {
     await Settings.onLoaded();
+    await BrowserToolboxI18n.applyStoredLocale(document);
     DomUtils.injectUserCss(); // Manually inject custom user styles.
   });
   init();

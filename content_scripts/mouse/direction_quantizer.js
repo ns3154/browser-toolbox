@@ -70,7 +70,7 @@
     );
   }
 
-  globalThis.OpenKeyMouseDirectionQuantizer = Object.freeze({
+  globalThis.BrowserToolboxDirectionQuantizer = Object.freeze({
     DIRECTIONS,
     quantize,
     quantizePoints,

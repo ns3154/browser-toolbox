@@ -56,7 +56,7 @@ h1 {
   margin: 4px 0;
 }
 
-h1 .vim {
+.browser-toolbox-help-brand {
   color: #2f508e;
 }
 
@@ -132,6 +132,54 @@ footer {
   font-size: 10px;
 }
 
+#browser-toolbox-help {
+  margin-top: 4px;
+}
+
+#browser-toolbox-help h3 {
+  margin: 6px 0 2px;
+  font-size: 14px;
+}
+
+#browser-toolbox-help p {
+  margin: 3px 0;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.browser-toolbox-help-status {
+  border-left: 3px solid #2f508e;
+  padding-left: 8px;
+}
+
+#browser-toolbox-help-status {
+  font-weight: bold;
+}
+
+.browser-toolbox-help-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 16px;
+}
+
+.browser-toolbox-help-grid section {
+  min-width: 0;
+}
+
+.browser-toolbox-help-links {
+  margin-top: 8px !important;
+}
+
+.browser-toolbox-help-limit {
+  opacity: 0.8;
+}
+
+@media (max-width: 700px) {
+  .browser-toolbox-help-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Dark Mode CSS for Help Dialog */
 @media (prefers-color-scheme: dark) {
   #container {
@@ -153,7 +201,7 @@ footer {
     color: white;
   }
 
-  h1 .vim {
+  .browser-toolbox-help-brand {
     color: var(--vimium-link-color);
   }
 

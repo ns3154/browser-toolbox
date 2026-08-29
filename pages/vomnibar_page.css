@@ -1,194 +1,361 @@
-ul {
-  list-style: none;
-  display: none;
-  margin: 0;
-  padding: 0;
+:root {
+  color-scheme: light dark;
+  --vomnibar-surface: #ffffff;
+  --vomnibar-surface-subtle: #f8faff;
+  --vomnibar-text: #172033;
+  --vomnibar-muted: #68758b;
+  --vomnibar-border: #dce4ef;
+  --vomnibar-border-strong: #c6d2e3;
+  --vomnibar-accent: #2563eb;
+  --vomnibar-accent-soft: #e8f0ff;
+  font: 14px/1.5 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
-#vomnibar {
-  display: block;
-  position: fixed;
-  width: calc(100% - 20px); /* adjusted to keep border radius and box-shadow visible*/
-  top: 8px;
-  left: 8px;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-
-  background: #f1f1f1;
-  text-align: left;
-  border-radius: 4px;
-  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.8);
-  border: 1px solid #aaa;
-  /* One less than hint markers and the help dialog (see ../content_scripts/vimium.css). */
-  z-index: 2139999999;
-}
-
-#vomnibar input {
-  font-size: 20px;
-  height: 34px;
-  margin-bottom: 0;
-  padding: 4px;
-  background-color: white;
-  color: black;
-  border-radius: 3px;
-  border: 1px solid #e8e8e8;
-  box-shadow: #444 0px 0px 1px;
-  width: 100%;
-  outline: none;
+* {
   box-sizing: border-box;
 }
 
-#vomnibar-search-area {
-  display: block;
-  padding: 10px;
-  border-radius: 4px 4px 0 0;
-  border-bottom: 1px solid #c6c9ce;
+html,
+body {
+  min-width: 0;
+  margin: 0;
+  background: transparent;
+  color: var(--vomnibar-text);
 }
 
-#vomnibar ul {
-  border-radius: 0 0 4px 4px;
+ul {
+  display: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-#vomnibar li {
-  border-bottom: 1px solid #ddd;
-  line-height: 1.1em;
-  padding: 7px 10px;
-  font-size: 16px;
-  color: black;
-  position: relative;
-  display: list-item;
-  margin: auto;
-}
-
-#vomnibar li:last-of-type {
-  border-bottom: none;
-}
-
-#vomnibar li .top-half, #vomnibar li .bottom-half {
-  display: block;
-  overflow: hidden;
-}
-
-#vomnibar li .bottom-half {
-  font-size: 15px;
-  margin-top: 3px;
-  padding: 2px 0;
-}
-
-#vomnibar li .icon {
-  padding: 0 13px 0 6px;
-  vertical-align: bottom;
-}
-
-#vomnibar li .source {
-  color: #777;
-  margin-right: 4px;
-}
-#vomnibar li .relevancy {
+.browser-toolbox-visually-hidden {
   position: absolute;
-  right: 0;
-  top: 0;
-  padding: 5px;
-  color: black;
-  font-family: monospace;
-  width: 100px;
+  width: 1px;
+  height: 1px;
+  padding: 0;
   overflow: hidden;
-}
-
-#vomnibar li .url {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
   white-space: nowrap;
-  color: #224684;
+  border: 0;
 }
 
-#vomnibar li .match {
-  font-weight: bold;
-  color: black;
+#vomnibar {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  display: block;
+  width: calc(100% - 16px);
+  overflow: hidden;
+  border: 1px solid var(--vomnibar-border);
+  border-radius: 14px;
+  background: var(--vomnibar-surface);
+  box-shadow:
+    0 24px 64px rgb(15 23 42 / 22%),
+    0 4px 14px rgb(15 23 42 / 10%);
+  text-align: left;
+  /* 比提示标记和帮助对话框低一层。 */
+  z-index: 2139999999;
 }
 
-#vomnibar li em, #vomnibar li .title {
-  color: black;
-  margin-left: 4px;
-}
-#vomnibar li em {
-  font-style: italic;
-}
-#vomnibar li em .match, #vomnibar li .title .match {
-  color: #333;
+#vomnibar-header {
+  display: flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px 4px;
 }
 
-#vomnibar li.selected {
-  background-color: #bbcee9;
+#vomnibar-mode {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+}
+
+#vomnibar-mode-label {
+  overflow: hidden;
+  color: var(--vomnibar-text);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#vomnibar-disposition {
+  flex: 0 0 auto;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--vomnibar-accent-soft);
+  color: var(--vomnibar-accent);
+  font-size: 11px;
+  font-weight: 680;
+  line-height: 1.45;
+}
+
+#vomnibar-disposition[hidden] {
+  display: none;
+}
+
+#vomnibar kbd {
+  display: inline-flex;
+  min-width: 24px;
+  min-height: 22px;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 6px;
+  border: 1px solid var(--vomnibar-border-strong);
+  border-radius: 6px;
+  background: var(--vomnibar-surface-subtle);
+  box-shadow: 0 1px 0 var(--vomnibar-border-strong);
+  color: var(--vomnibar-muted);
+  font: 600 11px/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+#vomnibar-search-area {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 11px;
+  margin: 6px 12px 12px;
+  padding: 0 14px;
+  border: 1px solid var(--vomnibar-border-strong);
+  border-radius: 10px;
+  background: var(--vomnibar-surface-subtle);
+  transition: border-color 140ms ease, box-shadow 140ms ease, background-color 140ms ease;
+}
+
+#vomnibar-search-area:focus-within {
+  border-color: var(--vomnibar-accent);
+  background: var(--vomnibar-surface);
+  box-shadow: 0 0 0 3px rgb(37 99 235 / 14%);
+}
+
+#vomnibar-search-icon {
+  width: 21px;
+  height: 21px;
+  fill: none;
+  stroke: var(--vomnibar-muted);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+#vomnibar input {
+  width: 100%;
+  min-width: 0;
+  height: 52px;
+  padding: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--vomnibar-text);
+  font: 500 18px/1.35 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  letter-spacing: -0.01em;
+}
+
+#vomnibar input::placeholder {
+  color: var(--vomnibar-muted);
+  opacity: 0.9;
 }
 
 #vomnibar input::selection {
-  /* This is the light grey color of the vomnibar border. */
-  /* background-color: #F1F1F1; */
+  background: var(--vomnibar-accent-soft);
+  color: var(--vomnibar-text);
+}
 
-  /* This is the light blue color of the vomnibar selected item. */
-  /* background-color: #BBCEE9; */
+#vomnibar-completions {
+  max-height: 478px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  border-top: 1px solid var(--vomnibar-border);
+  scrollbar-color: var(--vomnibar-border-strong) transparent;
+  scrollbar-width: thin;
+}
 
-  /* This is a considerably lighter blue than Vimium blue, which seems softer
-   * on the eye for this purpose. */
-  background-color: #e6eefb;
+#vomnibar li {
+  position: relative;
+  display: list-item;
+  min-height: 62px;
+  margin: 0;
+  padding: 10px 46px 10px 16px;
+  border-bottom: 1px solid var(--vomnibar-border);
+  border-left: 3px solid transparent;
+  color: var(--vomnibar-text);
+  font-size: 15px;
+  line-height: 1.35;
+}
+
+#vomnibar li:last-of-type {
+  border-bottom: 0;
+}
+
+#vomnibar li .top-half,
+#vomnibar li .bottom-half {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#vomnibar li .bottom-half {
+  margin-top: 4px;
+  padding: 0;
+  color: var(--vomnibar-muted);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+#vomnibar li .icon {
+  padding: 0 10px 0 1px;
+  vertical-align: -2px;
+}
+
+#vomnibar li .source {
+  margin-right: 5px;
+  color: var(--vomnibar-muted);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+#vomnibar li .relevancy {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 30px;
+  overflow: hidden;
+  color: var(--vomnibar-muted);
+  font: 11px/1.3 ui-monospace, SFMono-Regular, Menlo, monospace;
+  text-align: right;
+}
+
+#vomnibar li .url {
+  color: var(--vomnibar-accent);
+  white-space: nowrap;
+}
+
+#vomnibar li .match {
+  color: var(--vomnibar-text);
+  font-weight: 750;
+}
+
+#vomnibar li em,
+#vomnibar li .title {
+  margin-left: 4px;
+  color: var(--vomnibar-text);
+}
+
+#vomnibar li em {
+  font-style: normal;
+}
+
+#vomnibar li.selected {
+  border-left-color: var(--vomnibar-accent);
+  background: var(--vomnibar-accent-soft);
+}
+
+#vomnibar-footer {
+  display: flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  padding: 7px 14px 9px;
+  border-top: 1px solid var(--vomnibar-border);
+  background: var(--vomnibar-surface-subtle);
+  color: var(--vomnibar-muted);
+  font-size: 11px;
+}
+
+#vomnibar-footer > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+#vomnibar-footer kbd + kbd {
+  margin-left: -3px;
 }
 
 .no-insert-text {
   visibility: hidden;
 }
 
-/* Dark Vomnibar */
-
-@media (prefers-color-scheme: dark) {
+@media (max-width: 640px) {
   #vomnibar {
-    background-color: var(--vimium-background-color);
-    color: var(--vimium-background-text-color);
-    border-radius: 6px;
-    border: 1px solid var(--vimium-foreground-color);
+    border-radius: 12px;
+  }
+
+  #vomnibar-header {
+    padding-inline: 12px;
   }
 
   #vomnibar-search-area {
-    border-bottom: 1px solid var(--vimium-foreground-color);
+    margin-inline: 10px;
+    padding-inline: 12px;
   }
 
   #vomnibar input {
-    background-color: var(--vimium-foreground-color);
-    color: var(--vimium-foreground-text-color);
-    border: none;
+    height: 48px;
+    font-size: 17px;
   }
 
-  /* Ensure selected text is visible in dark mode. */
-  #vomnibar input::selection {
-    color: var(--vimium-foreground-color);
-    background-color: var(--vimium-foreground-text-color);
+  #vomnibar-footer {
+    justify-content: flex-start;
+    gap: 10px;
+    overflow: hidden;
+    padding-inline: 12px;
   }
 
   #vomnibar li {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-inline: 13px 38px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --vomnibar-surface: #172033;
+    --vomnibar-surface-subtle: #111a2b;
+    --vomnibar-text: #edf2fb;
+    --vomnibar-muted: #a8b4c8;
+    --vomnibar-border: #334158;
+    --vomnibar-border-strong: #4a5a72;
+    --vomnibar-accent: #78a8ff;
+    --vomnibar-accent-soft: #1d3154;
+  }
+
+  #vomnibar {
+    box-shadow:
+      0 24px 64px rgb(0 0 0 / 48%),
+      0 4px 14px rgb(0 0 0 / 30%);
+  }
+}
+
+@media (prefers-contrast: more), (forced-colors: active) {
+  #vomnibar,
+  #vomnibar-search-area,
+  #vomnibar kbd {
+    border-color: CanvasText;
   }
 
   #vomnibar li.selected {
-    background-color: #37383a;
+    border-left-color: HighlightText;
+    background: Highlight;
+    color: HighlightText;
   }
 
-  #vomnibar li .url {
-    white-space: nowrap;
-    color: #5ca1f7;
+  #vomnibar li.selected * {
+    color: HighlightText;
   }
+}
 
-  #vomnibar li em,
-  #vomnibar li .title {
-    color: white;
-  }
-
-  #vomnibar li .source {
-    color: #9aa0a6;
-  }
-
-  #vomnibar li .match {
-    color: white;
-  }
-
-  #vomnibar li em .match,
-  #vomnibar li .title .match {
-    color: white;
+@media (prefers-reduced-motion: reduce) {
+  #vomnibar-search-area {
+    transition: none;
   }
 }

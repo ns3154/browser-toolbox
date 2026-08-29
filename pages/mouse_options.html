@@ -3,130 +3,161 @@
   <head>
     <meta charset="UTF-8">
     <meta name="color-scheme" content="light dark">
-    <title>OpenKeyMouse</title>
+    <title data-i18n="browserToolbox">Browser Toolbox</title>
     <link rel="stylesheet" href="gesture_editor.css">
     <script src="../lib/i18n.js"></script>
     <script src="../lib/utils.js"></script>
     <script src="../lib/settings.js"></script>
-    <script src="../lib/open_key_mouse/command_invocation.js"></script>
-    <script src="../lib/open_key_mouse/message_protocol.js"></script>
-    <script src="../lib/open_key_mouse/settings_schema.js"></script>
-    <script src="../lib/open_key_mouse/settings_validator.js"></script>
-    <script src="../lib/open_key_mouse/site_rule_matcher.js"></script>
-    <script src="../background_scripts/open_key_mouse/settings_migrations.js"></script>
-    <script src="../background_scripts/open_key_mouse/settings_repository.js"></script>
+    <script src="../lib/browser_toolbox/value_utils.js"></script>
+    <script src="../lib/browser_toolbox/command_invocation.js"></script>
+    <script src="../lib/browser_toolbox/message_protocol.js"></script>
+    <script src="../lib/browser_toolbox/settings_schema.js"></script>
+    <script src="../lib/browser_toolbox/regex_safety.js"></script>
+    <script src="../lib/browser_toolbox/module_registry.js"></script>
+    <script src="../lib/browser_toolbox/settings_validator.js"></script>
+    <script src="../lib/browser_toolbox/site_rule_matcher.js"></script>
+    <script src="../lib/browser_toolbox/settings_policy.js"></script>
+    <script src="../background_scripts/browser_toolbox/settings_migrations.js"></script>
+    <script src="../background_scripts/browser_toolbox/settings_storage.js"></script>
+    <script src="../background_scripts/browser_toolbox/vimium_settings_adapter.js"></script>
+    <script src="../background_scripts/browser_toolbox/settings_repository.js"></script>
     <script src="../content_scripts/mouse/direction_quantizer.js"></script>
     <script src="../content_scripts/mouse/cursor_controller.js"></script>
     <script src="gesture_editor.js"></script>
+    <script src="settings_draft.js"></script>
+    <script src="settings_commit_coordinator.js"></script>
+    <script src="../lib/browser_toolbox/settings_application_service.js"></script>
+    <script src="settings_sections.js"></script>
+    <script src="settings_navigation.js"></script>
+    <script src="settings_change_summary.js"></script>
+    <script src="site_rules_editor.js"></script>
+    <script src="binding_editor.js"></script>
     <script src="mouse_options.js" defer></script>
   </head>
   <body>
-    <div class="okm-layout">
-      <aside class="okm-sidebar">
-        <h1 id="open-key-mouse-title" data-i18n="openKeyMouse">OpenKeyMouse</h1>
-        <nav class="okm-nav" role="tablist" aria-orientation="vertical"
-          aria-label="Settings sections" data-i18n-aria-label="settingsSections">
-          <button data-section="general" aria-selected="true" data-i18n="general">General</button>
-          <button data-section="keyboard" aria-selected="false"
-            data-i18n="keyboard">Keyboard</button>
-          <button data-section="mouse" aria-selected="false"
-            data-i18n="mouseGestures">Mouse Gestures</button>
-          <button data-section="superDrag" aria-selected="false"
-            data-i18n="superDrag">Super Drag</button>
-          <button data-section="wheel" aria-selected="false"
-            data-i18n="wheelRocker">Wheel &amp; Rocker</button>
-          <button data-section="search" aria-selected="false"
-            data-i18n="searchSettings">Search</button>
-          <button data-section="appearance" aria-selected="false"
-            data-i18n="appearance">Appearance</button>
-          <button data-section="siteRules" aria-selected="false"
-            data-i18n="siteRules">Site Rules</button>
-          <button data-section="backup" aria-selected="false"
-            data-i18n="backupRestore">Backup &amp; Restore</button>
-          <button data-section="privacy" aria-selected="false" data-i18n="privacy">Privacy</button>
-          <button data-section="about" aria-selected="false"
-            data-i18n="aboutLicenses">About &amp; Licenses</button>
-        </nav>
+    <div class="browser-toolbox-layout">
+      <aside class="browser-toolbox-sidebar">
+        <div class="browser-toolbox-brand">
+          <img src="../icons/icon48.png" alt="" aria-hidden="true">
+          <h1 id="browser-toolbox-title" data-i18n="browserToolbox">Browser Toolbox</h1>
+        </div>
+        <label class="browser-toolbox-settings-search" for="settings-section-search">
+          <span data-i18n="settingsSearch">Search settings</span>
+          <input id="settings-section-search" type="search" autocomplete="off"
+            data-i18n-placeholder="settingsSearchHint"
+            aria-controls="browser-toolbox-settings-nav"
+            aria-describedby="settings-search-status">
+        </label>
+        <p id="settings-search-status" class="browser-toolbox-search-status" role="status"
+          aria-live="polite"></p>
+        <nav id="browser-toolbox-settings-nav" class="browser-toolbox-nav" role="navigation"
+          aria-label="Settings sections" data-i18n-aria-label="settingsSections"></nav>
       </aside>
-      <main class="okm-main" aria-labelledby="open-key-mouse-title">
-        <section class="okm-panel" data-panel="general">
+      <main class="browser-toolbox-main" aria-labelledby="browser-toolbox-title">
+        <section class="browser-toolbox-panel" data-panel="general">
           <h2 data-i18n="general">General</h2>
-          <div class="okm-grid">
+          <div class="browser-toolbox-grid">
             <label
-              class="okm-check"><input id="general-enabled" type="checkbox"> <span data-i18n="enabled">Enabled</span></label>
+              class="browser-toolbox-check"><input id="general-enabled" type="checkbox"> <span data-i18n="enabled">Enabled</span></label>
             <label
-              class="okm-field"><span data-i18n="language">Language</span><select id="language"><option value="auto" data-i18n="languageAuto">Follow browser</option><option value="en" data-i18n="languageEnglish">English</option><option value="zh_CN" data-i18n="languageChinese">简体中文</option></select></label>
+              class="browser-toolbox-check"><input id="global-show-hud" type="checkbox"> <span data-i18n="globalShowHud">Show toolbox command hints</span></label>
+            <label
+              class="browser-toolbox-check"><input id="browser-sync-enabled" type="checkbox"> <span data-i18n="browserSyncEnabled">Sync settings with the browser</span></label>
+            <label
+              class="browser-toolbox-field"><span data-i18n="language">Language</span><select id="language"><option value="auto" data-i18n="languageAuto">Follow browser</option><option value="en" data-i18n="languageEnglish">English</option><option value="zh_CN" data-i18n="languageChinese">简体中文</option></select></label>
           </div>
-          <p class="okm-note"
+          <p class="browser-toolbox-note"
+            data-i18n="browserSyncNote">When disabled, settings stay in this browser's local storage and are not synchronized.</p>
+          <p class="browser-toolbox-note"
             data-i18n="noTelemetry">No telemetry, accounts, advertising, or paid features.</p>
         </section>
 
-        <section class="okm-panel" data-panel="keyboard" hidden>
+        <section class="browser-toolbox-panel" data-panel="keyboard" hidden>
           <h2 data-i18n="keyboard">Keyboard</h2>
           <label
-            class="okm-field"><span data-i18n="keyMappings">Keyboard mappings</span><textarea id="key-mappings" rows="10" spellcheck="false"></textarea></label>
-          <p class="okm-note"
+            class="browser-toolbox-check"><input id="keyboard-enabled" type="checkbox"> <span data-i18n="enabled">Enabled</span></label>
+          <label
+            class="browser-toolbox-field"><span data-i18n="keyMappings">Keyboard mappings</span><textarea id="key-mappings" rows="10" spellcheck="false"></textarea></label>
+          <p class="browser-toolbox-note"
             data-i18n="keyboardMappingNote">Vimium-compatible mappings are imported into the existing keyboard settings.</p>
         </section>
 
-        <section class="okm-panel" data-panel="search" hidden>
+        <section class="browser-toolbox-panel" data-panel="search" hidden>
           <h2 data-i18n="searchSettings">Search</h2>
           <label
-            class="okm-field"><span data-i18n="searchEngines">Search engines</span><textarea id="search-engines" rows="10" spellcheck="false"></textarea></label>
-          <p class="okm-note"
+            class="browser-toolbox-field"><span data-i18n="searchEngines">Search engines</span><textarea id="search-engines" rows="10" spellcheck="false"></textarea></label>
+          <p class="browser-toolbox-note"
             data-i18n="searchEngineNote">Searches are sent only when you explicitly invoke a search command.</p>
         </section>
 
-        <section class="okm-panel" data-panel="appearance" hidden>
+        <section class="browser-toolbox-panel" data-panel="appearance" hidden>
           <h2 data-i18n="appearance">Appearance</h2>
           <h3 data-i18n="cursor">Custom pointer</h3>
-          <div class="okm-grid">
+          <div class="browser-toolbox-grid">
             <label
-              class="okm-check"><input id="cursor-enabled" type="checkbox"> <span data-i18n="enabled">Enabled</span></label>
+              class="browser-toolbox-check"><input id="cursor-enabled" type="checkbox"> <span data-i18n="enabled">Enabled</span></label>
             <label
-              class="okm-field"><span data-i18n="cursorAsset">Local PNG pointer</span><input id="cursor-file" type="file" accept="image/png"></label>
+              class="browser-toolbox-field"><span data-i18n="cursorAsset">Local PNG pointer</span><input id="cursor-file" type="file" accept="image/png"></label>
             <label
-              class="okm-field"><span data-i18n="cursorHotspotX">Hotspot X</span><input id="cursor-hotspot-x" type="number" min="0" max="127"></label>
+              class="browser-toolbox-field"><span data-i18n="cursorHotspotX">Hotspot X</span><input id="cursor-hotspot-x" type="number" min="0" max="127"></label>
             <label
-              class="okm-field"><span data-i18n="cursorHotspotY">Hotspot Y</span><input id="cursor-hotspot-y" type="number" min="0" max="127"></label>
+              class="browser-toolbox-field"><span data-i18n="cursorHotspotY">Hotspot Y</span><input id="cursor-hotspot-y" type="number" min="0" max="127"></label>
           </div>
           <div
-            class="okm-cursor-preview"><img id="cursor-preview" alt=""><span id="cursor-file-status" data-i18n="noCursorAsset">No local pointer selected.</span></div>
+            class="browser-toolbox-cursor-preview"><img id="cursor-preview" alt=""><span id="cursor-file-status" data-i18n="noCursorAsset">No local pointer selected.</span></div>
           <div
-            class="okm-actions"><button id="reset-cursor" type="button" data-i18n="resetCursor">Remove local pointer</button></div>
+            class="browser-toolbox-actions"><button id="reset-cursor" type="button" data-i18n="resetCursor">Remove local pointer</button></div>
         </section>
 
-        <section class="okm-panel" data-panel="mouse" hidden>
+        <section class="browser-toolbox-panel" data-panel="mouse" hidden>
           <h2 data-i18n="mouseGestures">Mouse Gestures</h2>
-          <div class="okm-grid">
+          <div class="browser-toolbox-grid">
             <label
-              class="okm-check"><input id="mouse-enabled" type="checkbox"> <span data-i18n="enabled">Enabled</span></label>
+              class="browser-toolbox-check"><input id="mouse-enabled" type="checkbox"> <span data-i18n="enabled">Enabled</span></label>
             <label
-              class="okm-field"><span data-i18n="directionMode">Direction mode</span><select id="direction-mode"><option value="4-way" data-i18n="fourWay">Four directions</option><option value="8-way" data-i18n="eightWay">Eight directions</option></select></label>
+              class="browser-toolbox-field"><span data-i18n="triggerButton">Gesture trigger button</span><select id="trigger-button"><option value="0" data-i18n="leftButton">Left button</option><option value="1" data-i18n="middleButton">Middle button</option><option value="2" data-i18n="rightButton">Right button</option></select></label>
             <label
-              class="okm-field"><span data-i18n="activationDistance">Activation distance (px)</span><input id="activation-distance" type="number" min="1" max="200"></label>
+              class="browser-toolbox-field"><span data-i18n="directionMode">Direction mode</span><select id="direction-mode"><option value="4-way" data-i18n="fourWay">Four directions</option><option value="8-way" data-i18n="eightWay">Eight directions</option></select></label>
             <label
-              class="okm-check"><input id="show-trail" type="checkbox"> <span data-i18n="showTrail">Show gesture trail</span></label>
+              class="browser-toolbox-field"><span data-i18n="activationDistance">Activation distance (px)</span><input id="activation-distance" type="number" min="1" max="200"></label>
             <label
-              class="okm-check"><input id="show-command-hud" type="checkbox"> <span data-i18n="showHud">Show command HUD</span></label>
+              class="browser-toolbox-field"><span data-i18n="sampleDistance">Sample distance (px)</span><input id="sample-distance" type="number" min="1" max="100"></label>
+            <label
+              class="browser-toolbox-field"><span data-i18n="minimumSegmentDistance">Minimum segment (px)</span><input id="minimum-segment-distance" type="number" min="2" max="500"></label>
+            <label
+              class="browser-toolbox-field"><span data-i18n="turnHysteresis">Turn hysteresis (degrees)</span><input id="turn-hysteresis" type="number" min="0" max="45"></label>
+            <label
+              class="browser-toolbox-field"><span data-i18n="maxSegments">Maximum segments</span><input id="max-segments" type="number" min="1" max="8"></label>
+            <label
+              class="browser-toolbox-field"><span data-i18n="maxDuration">Maximum duration (ms)</span><input id="max-duration" type="number" min="100" max="10000"></label>
+            <label
+              class="browser-toolbox-check"><input id="show-trail" type="checkbox"> <span data-i18n="showTrail">Show gesture trail</span></label>
+            <label
+              class="browser-toolbox-check"><input id="show-command-hud" type="checkbox"> <span data-i18n="showHud">Show command HUD</span></label>
+            <label
+              class="browser-toolbox-check"><input id="suppress-context-menu" type="checkbox"> <span data-i18n="suppressContextMenu">Suppress context menu during gestures</span></label>
           </div>
+          <p class="browser-toolbox-note"
+            data-i18n="mouseTriggerButtonHint">The gesture button takes priority over super drag and rocker input when they use the same button. With the right button, menu suppression starts on button-down to prevent Chromium context-menu conflicts; disabling it keeps the native menu but may conflict with gestures.</p>
           <h3 data-i18n="pattern">Pattern</h3>
           <canvas id="gesture-canvas" width="320" height="180" tabindex="0"
             aria-label="Gesture editor" data-i18n-aria-label="gestureEditor"></canvas>
-          <label class="okm-field okm-pattern-input">
+          <label class="browser-toolbox-field browser-toolbox-pattern-input">
             <span data-i18n="patternInput">Pattern text (for example, L&gt;R)</span>
             <input id="gesture-pattern-input" type="text" autocomplete="off" spellcheck="false"
               aria-describedby="gesture-preview">
           </label>
           <div id="gesture-preview" aria-live="polite"></div>
           <div
-            class="okm-actions"><button id="clear-gesture" data-i18n="reset">Reset</button><button id="add-gesture-binding" class="primary" data-i18n="addBinding">Add binding</button></div>
-          <div id="mouse-binding-error" class="okm-error" role="alert"></div>
-          <table class="okm-table">
+            class="browser-toolbox-actions"><button id="clear-gesture" data-i18n="reset">Reset</button><button id="add-gesture-binding" class="primary" data-i18n="addBinding">Add binding</button></div>
+          <div id="mouse-binding-error" class="browser-toolbox-error" role="alert"></div>
+          <table class="browser-toolbox-table">
             <thead>
               <tr>
                 <th data-i18n="pattern">Pattern</th>
                 <th data-i18n="command">Command</th>
+                <th data-i18n="enabled">Enabled</th>
+                <th data-i18n="options">Options</th>
                 <th></th>
               </tr>
             </thead>
@@ -134,88 +165,143 @@
           </table>
         </section>
 
-        <section class="okm-panel" data-panel="superDrag" hidden>
+        <section class="browser-toolbox-panel" data-panel="superDrag" hidden>
           <h2 data-i18n="superDrag">Super Drag</h2>
           <label
-            class="okm-check"><input id="super-drag-enabled" type="checkbox"> <span data-i18n="enabled">Enabled</span></label>
-          <p class="okm-note"
-            data-i18n="superDragSafety">Alt always keeps native dragging. File uploads, editors, password fields, custom draggable widgets, and invalid URLs are not intercepted.</p>
-          <table class="okm-table">
+            class="browser-toolbox-check"><input id="super-drag-enabled" type="checkbox"> <span data-i18n="enabled">Enabled</span></label>
+          <label
+            class="browser-toolbox-field"><span data-i18n="nativeBypassModifier">Native drag bypass modifier</span><select id="native-bypass-modifier"><option value="Alt" data-i18n="modifierAlt">Alt</option><option value="Control" data-i18n="modifierControl">Control</option><option value="Meta" data-i18n="modifierMeta">Command / Meta</option><option value="Shift" data-i18n="modifierShift">Shift</option></select></label>
+          <p class="browser-toolbox-note"
+            data-i18n="superDragSafety">The selected bypass modifier always keeps native dragging. File uploads, editors, password fields, custom draggable widgets, and invalid URLs are not intercepted.</p>
+          <table class="browser-toolbox-table">
             <thead>
               <tr>
                 <th data-i18n="context">Context</th>
                 <th data-i18n="pattern">Pattern</th>
                 <th data-i18n="command">Command</th>
+                <th data-i18n="enabled">Enabled</th>
+                <th data-i18n="options">Options</th>
                 <th></th>
               </tr>
             </thead>
             <tbody id="super-drag-bindings"></tbody>
           </table>
+          <div
+            class="browser-toolbox-actions"><button id="add-super-drag-binding" type="button" data-i18n="addBinding">Add binding</button></div>
         </section>
 
-        <section class="okm-panel" data-panel="wheel" hidden>
+        <section class="browser-toolbox-panel" data-panel="wheel" hidden>
           <h2 data-i18n="wheelRocker">Wheel &amp; Rocker</h2>
-          <div class="okm-grid">
+          <div class="browser-toolbox-grid">
             <label
-              class="okm-check"><input id="wheel-enabled" type="checkbox"> <span data-i18n="enabled">Enabled</span></label>
+              class="browser-toolbox-check"><input id="wheel-enabled" type="checkbox"> <span data-i18n="enabled">Enabled</span></label>
             <label
-              class="okm-field"><span data-i18n="wheelThreshold">Wheel threshold</span><input id="wheel-threshold" type="number" min="10" max="2000"></label>
+              class="browser-toolbox-field"><span data-i18n="wheelThreshold">Wheel threshold</span><input id="wheel-threshold" type="number" min="10" max="2000"></label>
             <label
-              class="okm-field"><span data-i18n="cooldown">Cooldown (ms)</span><input id="wheel-cooldown" type="number" min="0" max="5000"></label>
+              class="browser-toolbox-field"><span data-i18n="cooldown">Cooldown (ms)</span><input id="wheel-cooldown" type="number" min="0" max="5000"></label>
+            <label
+              class="browser-toolbox-check"><input id="wheel-continuous" type="checkbox"> <span data-i18n="continuousTabSwitching">Continuous tab switching</span></label>
           </div>
-          <table class="okm-table">
+          <table class="browser-toolbox-table">
             <thead>
               <tr>
                 <th data-i18n="button">Button</th>
                 <th data-i18n="direction">Direction</th>
                 <th data-i18n="command">Command</th>
+                <th data-i18n="enabled">Enabled</th>
+                <th data-i18n="options">Options</th>
+                <th></th>
               </tr>
             </thead>
             <tbody id="wheel-bindings"></tbody>
           </table>
+          <div
+            class="browser-toolbox-actions"><button id="add-wheel-binding" type="button" data-i18n="addBinding">Add binding</button></div>
           <h3 data-i18n="rocker">Rocker</h3>
           <label
-            class="okm-check"><input id="rocker-enabled" type="checkbox"> <span data-i18n="enabled">Enabled</span></label>
-          <table class="okm-table">
+            class="browser-toolbox-check"><input id="rocker-enabled" type="checkbox"> <span data-i18n="enabled">Enabled</span></label>
+          <table class="browser-toolbox-table">
             <thead>
               <tr>
                 <th data-i18n="sequence">Sequence</th>
                 <th data-i18n="command">Command</th>
+                <th data-i18n="enabled">Enabled</th>
+                <th data-i18n="options">Options</th>
+                <th></th>
               </tr>
             </thead>
             <tbody id="rocker-bindings"></tbody>
           </table>
         </section>
 
-        <section class="okm-panel" data-panel="siteRules" hidden>
-          <h2 data-i18n="siteRules">Site Rules</h2>
-          <p class="okm-note"
-            data-i18n="siteRuleSpecificity">The most specific matching rule wins; the top-level page URL controls all frames.</p>
-          <table class="okm-table">
+        <section class="browser-toolbox-panel browser-toolbox-site-rules-panel"
+          data-panel="siteRules" hidden>
+          <div class="browser-toolbox-page-header">
+            <div class="browser-toolbox-page-heading">
+              <h2 data-i18n="siteRules">Site Rules</h2>
+              <div class="browser-toolbox-page-description">
+                <p class="browser-toolbox-note"
+                  data-i18n="siteRuleSpecificity">The most specific matching rule wins; the top-level page URL controls all frames.</p>
+                <p id="site-rule-module-help" class="browser-toolbox-note"
+                  data-i18n="siteRuleModuleHint">Check a module to disable it on this site.</p>
+                <p class="browser-toolbox-note"
+                  data-i18n="siteRuleDefaultHint">Built-in high-conflict site rules disable mouse modules by default. You can edit or remove them.</p>
+              </div>
+            </div>
+            <button id="add-site-rule" class="primary browser-toolbox-add-rule" type="button">
+              <span aria-hidden="true">+</span>
+              <span data-i18n="addRule">Add rule</span>
+            </button>
+          </div>
+          <table class="browser-toolbox-table browser-toolbox-site-rules-table">
             <thead>
               <tr>
+                <th data-i18n="siteRuleMatchType">Match type</th>
                 <th data-i18n="urlPattern">URL pattern</th>
-                <th data-i18n="modules">Modules</th>
-                <th></th>
+                <th data-i18n="siteRuleEnabled">Enable toolbox on this site</th>
+                <th data-i18n="siteRuleDisableModules">Disable modules on this site</th>
+                <th data-i18n="siteRuleActions">Actions</th>
               </tr>
             </thead>
             <tbody id="site-rules"></tbody>
           </table>
-          <div
-            class="okm-actions"><button id="add-site-rule" data-i18n="addBinding">Add rule</button></div>
+          <div class="browser-toolbox-site-rule-test">
+            <div class="browser-toolbox-site-rule-test-copy">
+              <label for="site-rule-test-url" data-i18n="siteRuleTestUrl">URL to test</label>
+              <span id="site-rule-test-help" class="browser-toolbox-note"
+                data-i18n="siteRuleTestUrlHelp">Enter a URL; this field is not saved.</span>
+            </div>
+            <div class="browser-toolbox-site-rule-test-controls">
+              <input id="site-rule-test-url" type="text" inputmode="url" autocomplete="off"
+                data-i18n-placeholder="siteRuleTestUrlHint"
+                aria-describedby="site-rule-test-help">
+              <button id="test-site-rules" type="button"
+                data-i18n="testSiteUrl">Test URL</button>
+              <span id="site-rule-test-result" role="status" aria-live="polite"></span>
+            </div>
+            <section id="site-rule-test-explanation"
+              class="browser-toolbox-site-rule-explanation"
+              aria-labelledby="site-rule-test-explanation-title" hidden>
+              <h3 id="site-rule-test-explanation-title" data-i18n="siteRuleExplanationTitle">
+                Why this result applies
+              </h3>
+              <ol id="site-rule-test-matches"></ol>
+              <p id="site-rule-test-effective" class="browser-toolbox-note"></p>
+            </section>
+          </div>
         </section>
 
-        <section class="okm-panel" data-panel="backup" hidden>
+        <section class="browser-toolbox-panel" data-panel="backup" hidden>
           <h2 data-i18n="backupRestore">Backup &amp; Restore</h2>
-          <p class="okm-note"
+          <p class="browser-toolbox-note"
             data-i18n="backupContents">Exports contain settings only. Page content, history, bookmarks, temporary gestures, and remote assets are never exported.</p>
-          <p class="okm-note"
-            data-i18n="vimiumBackup">You can also import a Vimium JSON backup. Recognized fields are copied to the compatible Vimium settings and OpenKeyMouse settings; unknown fields are reported and ignored.</p>
+          <p class="browser-toolbox-note"
+            data-i18n="vimiumBackup">You can also import a Vimium JSON backup. Recognized fields are copied to the compatible Vimium settings and Browser Toolbox settings; unknown fields are reported and ignored.</p>
           <div
-            class="okm-actions"><button id="export-settings" data-i18n="exportSettings">Export settings</button><label><span data-i18n="importSettings">Import settings</span><input id="import-settings" type="file" accept="application/json,.json"></label></div>
+            class="browser-toolbox-actions"><button id="restore-defaults" type="button" data-i18n="restoreDefaults">Restore defaults</button><button id="export-settings" type="button" data-i18n="exportSettings">Export settings</button><label><span data-i18n="importSettings">Import settings</span><input id="import-settings" type="file" accept="application/json,.json"></label></div>
         </section>
 
-        <section class="okm-panel" data-panel="privacy" hidden>
+        <section class="browser-toolbox-panel" data-panel="privacy" hidden>
           <h2 data-i18n="privacy">Privacy</h2>
           <p data-i18n="noTelemetry">No telemetry, accounts, advertising, or paid features.</p>
           <p
@@ -225,19 +311,56 @@
           <p><a href="privacy.html" target="_blank" data-i18n="privacy">Privacy policy</a> · <a href="../LICENSE" target="_blank" data-i18n="licenseGpl">GPL-3.0-or-later</a></p>
         </section>
 
-        <section class="okm-panel" data-panel="about" hidden>
+        <section class="browser-toolbox-panel" data-panel="about" hidden>
           <h2 data-i18n="aboutLicenses">About &amp; Licenses</h2>
           <p
-            data-i18n="aboutText">OpenKeyMouse is based on Vimium v2.4.2 and remains free and open source.</p>
+            data-i18n="aboutText">Browser Toolbox uses Vimium v2.4.2 as its keyboard baseline and remains free and open source.</p>
           <p
             data-i18n="cleanRoomText">Vimium and shoulda.js notices are preserved in the repository. Mouse features are an independent clean-room implementation based only on public behavior descriptions.</p>
-          <p><a href="onboarding.html" target="_blank" data-i18n="openOnboarding">Open onboarding</a> · <a href="../THIRD_PARTY_NOTICES.md" target="_blank" data-i18n="thirdPartyNotices">Third-party notices</a></p>
+          <p><a href="onboarding.html" target="_blank" data-i18n="openOnboarding">Open onboarding</a> · <a href="third_party_notices.html" target="_blank" data-i18n="thirdPartyNotices">Third-party notices</a></p>
         </section>
 
-        <div
-          class="okm-actions"><button id="save-settings" class="primary" data-i18n="save">Save</button><span id="save-status" aria-live="polite"></span></div>
-        <div id="settings-error" class="okm-error" role="alert"></div>
+        <div class="browser-toolbox-save-bar">
+          <span id="dirty-status" role="status" aria-live="polite"></span>
+          <div class="browser-toolbox-actions">
+            <button id="discard-changes" type="button" data-i18n="discardChanges"
+              disabled>Discard changes</button>
+            <button id="save-settings" class="primary" data-i18n="save" disabled>Save</button>
+            <span id="save-status" aria-live="polite"></span>
+          </div>
+        </div>
+        <div id="settings-error" class="browser-toolbox-error" role="alert"></div>
       </main>
     </div>
+    <dialog id="import-preview-dialog" class="browser-toolbox-import-dialog" aria-modal="true"
+      aria-labelledby="import-preview-title"
+      aria-describedby="import-preview-description">
+      <h2 id="import-preview-title" data-i18n="importPreviewTitle">Review settings import</h2>
+      <p id="import-preview-description" data-i18n="importPreviewDescription">
+        Review the changes before anything is written.
+      </p>
+      <section aria-labelledby="import-preview-added-title">
+        <h3 id="import-preview-added-title" data-i18n="importPreviewAdded">Added</h3>
+        <ul id="import-preview-added"></ul>
+      </section>
+      <section aria-labelledby="import-preview-changed-title">
+        <h3 id="import-preview-changed-title" data-i18n="importPreviewChanged">Changed</h3>
+        <ul id="import-preview-changed"></ul>
+      </section>
+      <section aria-labelledby="import-preview-removed-title">
+        <h3 id="import-preview-removed-title" data-i18n="importPreviewRemoved">Removed</h3>
+        <ul id="import-preview-removed"></ul>
+      </section>
+      <p id="import-preview-ignored" class="browser-toolbox-note" hidden></p>
+      <p id="import-preview-unrecognized" class="browser-toolbox-note" hidden></p>
+      <p id="import-preview-truncated" class="browser-toolbox-note" hidden
+        data-i18n="importPreviewTruncated">Some detailed changes are omitted from this preview.</p>
+      <div class="browser-toolbox-actions">
+        <button id="import-preview-cancel" type="button"
+          data-i18n="importPreviewCancel">Cancel import</button>
+        <button id="import-preview-confirm" class="primary" type="button"
+          data-i18n="importPreviewConfirm">Import these changes</button>
+      </div>
+    </dialog>
   </body>
 </html>

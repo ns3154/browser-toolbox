@@ -1,10 +1,11 @@
 import "./all_content_scripts.js";
 import "../lib/i18n.js";
+import "../background_scripts/browser_toolbox/settings_storage.js";
 import { allCommands } from "../background_scripts/all_commands.js";
 
 function commandDescription(command) {
   const key = `command_${command.name.replaceAll(".", "_")}`;
-  return OpenKeyMouseI18n.hasMessage(key) ? OpenKeyMouseI18n.message(key) : command.desc;
+  return BrowserToolboxI18n.hasMessage(key) ? BrowserToolboxI18n.message(key) : command.desc;
 }
 
 // The ordering we show key bindings is alphanumerical, except that special keys sort to the end.
@@ -29,6 +30,7 @@ function replaceBackticksWithCodeTags(str) {
 }
 
 async function populatePage() {
+  await BrowserToolboxI18n.applyStoredLocale(document);
   const h2s = document.querySelectorAll("h2");
   const byGroup = Object.groupBy(allCommands, (el) => el.group);
   const commandToOptionsToKeys =

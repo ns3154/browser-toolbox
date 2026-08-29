@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="UTF-8">
+    <title data-i18n="actionPageTitle">Browser Toolbox</title>
     <link rel="stylesheet" type="text/css" href="options.css">
     <link rel="stylesheet" type="text/css" href="action.css">
     <link rel="stylesheet" type="text/css" href="../content_scripts/vimium.css">
@@ -10,19 +11,23 @@
   </head>
 
   <body class="vimium-body">
-    <section id="open-key-mouse-controls" style="display: none">
-      <h1 data-i18n="openKeyMouse">OpenKeyMouse</h1>
+    <section id="browser-toolbox-controls" style="display: none">
+      <h1 data-i18n="browserToolbox">Browser Toolbox</h1>
       <h2 data-i18n="currentSite">Current site</h2>
-      <p id="open-key-mouse-site-status" aria-live="polite"></p>
-      <div class="okm-action-grid">
-        <label><input id="okm-toggle-keyboard" type="checkbox"> <span data-i18n="keyboard">Keyboard</span></label>
-        <label><input id="okm-toggle-mouse" type="checkbox"> <span data-i18n="mouseGestures">Mouse Gestures</span></label>
-        <label><input id="okm-toggle-drag" type="checkbox"> <span data-i18n="superDrag">Super Drag</span></label>
-        <label><input id="okm-toggle-wheel" type="checkbox"> <span data-i18n="wheelRocker">Wheel &amp; Rocker</span></label>
+      <p id="browser-toolbox-site-status" aria-live="polite"></p>
+      <div class="browser-toolbox-action-grid">
+        <label><input id="browser-toolbox-toggle-keyboard" type="checkbox"> <span data-i18n="keyboard">Keyboard</span></label>
+        <label><input id="browser-toolbox-toggle-mouse" type="checkbox"> <span data-i18n="mouseGestures">Mouse Gestures</span></label>
+        <label><input id="browser-toolbox-toggle-drag" type="checkbox"> <span data-i18n="superDrag">Super Drag</span></label>
+        <label><input id="browser-toolbox-toggle-wheel" type="checkbox"> <span data-i18n="wheelRocker">Wheel &amp; Rocker</span></label>
       </div>
-      <p class="okm-action-buttons">
-        <button id="okm-disable-session" data-i18n="disabled">Disable for this session</button>
-        <a id="okm-settings-link" target="_blank" data-i18n="openSettings">Open settings</a>
+      <p class="browser-toolbox-action-buttons">
+        <button id="browser-toolbox-disable-session"
+          data-i18n="disabled">Disable for this session</button>
+        <a id="browser-toolbox-settings-link" target="_blank"
+          data-i18n="openSettings">Open settings</a>
+        <button id="browser-toolbox-open-help" type="button"
+          data-i18n="openHelp">Open help</button>
       </p>
     </section>
 
@@ -32,39 +37,39 @@
     </div>
 
     <div id="firefox-missing-permissions-error" style="display: none">
-      <h1>
+      <h1 data-i18n="firefoxMissingHostsPermission">
         Vimium is missing the "all hosts" permission.
       </h1>
-      <p>
-        Firefox requires users to manually grant this permission to extensions. You can enable it
-        via the button below:
+      <p data-i18n="firefoxPermissionHelp">
+        Firefox requires users to grant this permission manually. You can enable it with the button below:
       </p>
 
       <p>
-        <button id="grant-hosts-permission">Enable all hosts permission</button>
+        <button id="grant-hosts-permission"
+          data-i18n="grantHostsPermission">Enable all hosts permission</button>
       </p>
 
-      <p>
-        Or by navigating to:
-      </p>
+      <p data-i18n="firefoxPermissionPathIntro">Or navigate to:</p>
 
-      <p>
-        about:addons > Vimium > Manage (click the 3 dot menu) > Permissions > <br> Enable the
-        "Access your data for all websites" permission.
+      <p data-i18n="firefoxPermissionPath">
+        about:addons &gt; Vimium &gt; Manage (three-dot menu) &gt; Permissions &gt; enable
+        "Access your data for all websites".
       </p>
       <p>
-        <a href="https://github.com/philc/vimium/wiki/Permissions">See here</a> for more info about
-        this permission.
+        <a href="https://github.com/philc/vimium/wiki/Permissions"
+          data-i18n="seePermissionsHelp">See permissions help</a>
       </p>
     </div>
 
     <div id="dialog-body">
       <div>
-        <span id="how-many-enabled">All</span> Vimium keys are enabled on this page.
+        <span id="how-many-enabled" data-i18n="allKeys">All</span>
+        <span data-i18n="vimiumKeysEnabledOnPage">Vimium keys are enabled on this page.</span>
       </div>
 
       <div id="add-first-rule-container">
-        <button id="add-first-rule">Exclude Vimium keys on this page</button>
+        <button id="add-first-rule"
+          data-i18n="excludeKeysOnPage">Exclude Vimium keys on this page</button>
       </div>
 
       <div id="exclusions-container" style="display: none">
@@ -73,39 +78,44 @@
             <thead>
               <tr>
                 <td>
-                  <span class="exclusion-header-text">Patterns matching the current page</span>
+                  <span class="exclusion-header-text"
+                    data-i18n="matchingPatterns">Patterns matching the current page</span>
                 </td>
-                <td><span class="exclusion-header-text">Keys to exclude</span></td>
+                <td><span class="exclusion-header-text" data-i18n="keysToExclude">Keys to exclude</span></td>
               </tr>
             </thead>
           </table>
         </div>
 
-        <button id="exclusion-add-button">Add rule</button>
+        <button id="exclusion-add-button" type="button" data-i18n="addRule">Add rule</button>
       </div>
     </div>
 
     <footer>
       <div class="options-message">
-        See all exclusion rules on the <a id="optionsLink" target="_blank">Options</a> page.
+        <span data-i18n="seeExclusionRules">See all exclusion rules on the</span>
+        <a id="optionsLink" target="_blank" data-i18n="optionsPage">Options</a>
+        <span data-i18n="page">page.</span>
       </div>
       <div>
-        <button id="cancel">Cancel</button>
-        <button id="save" disabled="true">No changes</button>
+        <button id="cancel" type="button" data-i18n="cancel">Cancel</button>
+        <button id="save" type="button" disabled="true" data-i18n="noChanges">No changes</button>
       </div>
     </footer>
 
     <template id="exclusion-rule-template">
       <tr class="rule">
         <td>
-          <input type="text" name="pattern" spellcheck="false" placeholder="URL pattern" />
+          <input type="text" name="pattern" spellcheck="false" data-i18n-placeholder="urlPattern"
+            data-i18n-aria-label="urlPattern" />
           <div class="validationMessage"></div>
         </td>
         <td>
-          <input type="text" name="passKeys" spellcheck="false" placeholder="All" />
+          <input type="text" name="passKeys" spellcheck="false" data-i18n-placeholder="allKeys"
+            data-i18n-aria-label="keysToExclude" />
         </td>
         <td>
-          <input type="button" class="remove" value="&#x2716;" />
+          <input type="button" class="remove" value="&#x2716;" data-i18n-aria-label="removeRule" />
         </td>
       </tr>
     </template>

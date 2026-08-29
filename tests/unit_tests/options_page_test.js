@@ -1,5 +1,6 @@
 import * as testHelper from "./test_helper.js";
 import "../../tests/unit_tests/test_chrome_stubs.js";
+import "../../lib/i18n.js";
 import * as optionsPage from "../../pages/options.js";
 
 context("options page", () => {
@@ -9,7 +10,17 @@ context("options page", () => {
   });
 
   teardown(async () => {
+    BrowserToolboxI18n.setLocale("auto");
     await Settings.clear();
+  });
+
+  should("localize the Browser Toolbox entry point", () => {
+    BrowserToolboxI18n.setLocale("zh_CN");
+    BrowserToolboxI18n.apply(document);
+    assert.equal(
+      "浏览器工具箱的鼠标、拖拽、滚轮和隐私设置",
+      document.querySelector('a[href="mouse_options.html"]').textContent,
+    );
   });
 
   should("populate the form fields with the settings", () => {

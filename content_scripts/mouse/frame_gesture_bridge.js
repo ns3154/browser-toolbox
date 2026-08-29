@@ -1,15 +1,22 @@
-// Frame 只发送方向摘要，不发送鼠标坐标；每次消息都带 requestId 以绑定短生命周期会话。
+// Frame 只发送方向摘要，不发送鼠标坐标；手势期间使用短生命周期 Port 绑定会话。
 (function () {
+  const GESTURE_PORT_NAME = "browserToolbox.gesture";
+
   class FrameGestureBridge {
-    constructor() {
+    constructor({ runtimeApi = globalThis.chrome?.runtime } = {}) {
+      this.runtimeApi = runtimeApi;
       this.requestId = null;
       this.lastDirection = null;
+      this.port = null;
       this.readyPromise = Promise.resolve(true);
       this.resolveReady = null;
       this.readyTimer = null;
+      this.messageListener = (message) => this.handleMessage(message);
+      this.disconnectListener = () => this.handleDisconnect();
     }
 
     start(requestId) {
+      this.close();
       this.requestId = requestId;
       this.lastDirection = null;
       this.readyPromise = new Promise((resolve) => {
@@ -17,19 +24,21 @@
         this.readyTimer = setTimeout(() => this.finishReady(false), 500);
       });
       try {
-        chrome.runtime.sendMessage({
-          handler: "openKeyMouse.gestureStart",
+        const port = this.runtimeApi?.connect?.({ name: GESTURE_PORT_NAME });
+        if (
+          !port?.postMessage ||
+          !port.onMessage?.addListener ||
+          !port.onDisconnect?.addListener
+        ) throw new Error("Gesture Port is unavailable.");
+        this.port = port;
+        port.onMessage.addListener(this.messageListener);
+        port.onDisconnect.addListener(this.disconnectListener);
+        port.postMessage({
+          handler: "browserToolbox.gestureStart",
           requestId,
-        }).then((result) => {
-          const accepted = result?.accepted === true;
-          this.finishReady(accepted);
-          return accepted;
-        }).catch(() => {
-          this.finishReady(false);
-          return false;
         });
       } catch (_) {
-        this.finishReady(false);
+        this.close();
       }
     }
 
@@ -38,35 +47,66 @@
     }
 
     update(direction) {
-      if (!this.requestId || direction === this.lastDirection) return;
+      if (!this.requestId || !this.port || direction === this.lastDirection) return;
       this.lastDirection = direction;
-      chrome.runtime.sendMessage({
-        handler: "openKeyMouse.gestureUpdate",
-        requestId: this.requestId,
-        direction,
-      }).catch(() => {});
+      try {
+        this.port.postMessage({
+          handler: "browserToolbox.gestureUpdate",
+          requestId: this.requestId,
+          direction,
+        });
+      } catch (_) {
+        this.close();
+      }
     }
 
     finish(pattern) {
-      if (!this.requestId) return;
-      chrome.runtime.sendMessage({
-        handler: "openKeyMouse.gestureFinish",
-        requestId: this.requestId,
-        pattern,
-      }).catch(() => {});
+      if (!this.requestId || !this.port) return;
+      try {
+        this.port.postMessage({
+          handler: "browserToolbox.gestureFinish",
+          requestId: this.requestId,
+          pattern,
+        });
+      } catch (_) {
+        // Port 已失效时仍需关闭本地引用，避免下次手势复用旧会话。
+      }
       this.close();
     }
 
     cancel() {
-      if (!this.requestId) return;
-      chrome.runtime.sendMessage({
-        handler: "openKeyMouse.gestureCancel",
-        requestId: this.requestId,
-      }).catch(() => {});
+      if (!this.requestId || !this.port) return;
+      try {
+        this.port.postMessage({
+          handler: "browserToolbox.gestureCancel",
+          requestId: this.requestId,
+        });
+      } catch (_) {
+        // Port 已失效时 Service Worker 会通过 onDisconnect 清理对应会话。
+      }
       this.close();
     }
 
     close() {
+      this.finishReady(false);
+      const port = this.port;
+      this.port = null;
+      this.requestId = null;
+      this.lastDirection = null;
+      try {
+        port?.disconnect?.();
+      } catch (_) {
+        // 关闭失效 Port 不应阻断本地手势状态清理。
+      }
+    }
+
+    handleMessage(message) {
+      if (!this.requestId || !message || typeof message !== "object") return;
+      if (typeof message.accepted === "boolean") this.finishReady(message.accepted);
+    }
+
+    handleDisconnect() {
+      this.port = null;
       this.finishReady(false);
       this.requestId = null;
       this.lastDirection = null;
@@ -82,5 +122,5 @@
     }
   }
 
-  globalThis.OpenKeyMouseFrameGestureBridge = FrameGestureBridge;
+  globalThis.BrowserToolboxFrameGestureBridge = FrameGestureBridge;
 })();

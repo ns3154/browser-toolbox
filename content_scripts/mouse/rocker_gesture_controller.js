@@ -35,5 +35,5 @@
     }
   }
 
-  globalThis.OpenKeyMouseRockerGestureController = RockerGestureController;
+  globalThis.BrowserToolboxRockerGestureController = RockerGestureController;
 })();

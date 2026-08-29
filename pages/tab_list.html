@@ -2,14 +2,15 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <title>OpenKeyMouse Tabs</title>
+    <title data-i18n="tabs">Browser Toolbox Tabs</title>
     <script src="../lib/i18n.js"></script>
-    <script src="tab_list.js" defer></script>
+    <script type="module" src="tab_list.js"></script>
   </head>
   <body>
     <main>
       <h1 data-i18n="tabs">Tabs</h1>
-      <label><span data-i18n="search">Search</span><input id="query" type="search" autofocus></label>
+      <label><span data-i18n="search">Search</span><input id="query" type="search" autofocus
+        aria-label="Search" data-i18n-aria-label="search"></label>
       <ul id="tabs" aria-live="polite"></ul>
     </main>
   </body>

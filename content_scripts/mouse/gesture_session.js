@@ -1,7 +1,7 @@
-// 轨迹手势状态机。PENDING 阶段不阻止普通右键菜单，只有 ACTIVE 才接管事件。
+// 轨迹手势状态机。PENDING 阶段不执行命令；菜单是否抑制由控制器按浏览器事件顺序处理。
 (function () {
-  const samplerApi = globalThis.OpenKeyMousePathSampler;
-  const quantizer = globalThis.OpenKeyMouseDirectionQuantizer;
+  const samplerApi = globalThis.BrowserToolboxPathSampler;
+  const quantizer = globalThis.BrowserToolboxDirectionQuantizer;
 
   class GestureSession {
     constructor(options = {}) {
@@ -49,7 +49,14 @@
       return this.snapshot(activated);
     }
 
-    end() {
+    end(now = Date.now()) {
+      // 没有新的 pointermove 时也要在抬键瞬间复核超时，避免已过期的 ACTIVE 会话执行命令。
+      if (
+        (this.state === "PENDING" || this.state === "ACTIVE") &&
+        now - this.startedAt > this.options.maxDurationMs
+      ) {
+        this.cancel("timeout");
+      }
       const result = this.snapshot(false);
       if (this.state === "ACTIVE") this.state = "COMPLETED";
       else if (this.state === "PENDING") this.state = "NATIVE_CONTEXT_MENU";
@@ -79,5 +86,5 @@
     }
   }
 
-  globalThis.OpenKeyMouseGestureSession = GestureSession;
+  globalThis.BrowserToolboxGestureSession = GestureSession;
 })();

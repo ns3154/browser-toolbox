@@ -19,7 +19,7 @@ async function shell(procName, argsArray = []) {
   if (Deno.build.os == "windows") {
     // if win32, prefix arguments with "/c {original command}"
     // e.g. "mkdir c:\git\vimium" becomes "cmd.exe /c mkdir c:\git\vimium"
-    optArray.unshift("/c", procName);
+    argsArray.unshift("/c", procName);
     procName = "cmd.exe";
   }
   const p = Deno.run({ cmd: [procName].concat(argsArray) });
@@ -367,6 +367,11 @@ task("test-dom", [], testDom);
 
 desc("Run unit and DOM tests");
 task("test", ["test-unit", "test-dom"]);
+
+desc("运行浏览器工具箱性能回归测量");
+task("test-performance", [], async () => {
+  await shell("deno", ["run", "-A", "scripts/benchmark_browser_toolbox.js"]);
+});
 
 desc("Builds a zip file for submission to the Chrome and Firefox stores. The output is in dist/");
 task("package", ["write-command-listing"], async () => {

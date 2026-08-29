@@ -29,5 +29,5 @@ make.js 和 deno.json 使用 Deno、Drake、Puppeteer、jsdom、json5、deno-dom
 
 ## 项目自有内容
 
-OpenKeyMouse 新增的项目文档、治理文件和未来新增代码，除另有明确声明外，按根目录 LICENSE 的
+浏览器工具箱新增的项目文档、治理文件和未来新增代码，除另有明确声明外，按根目录 LICENSE 的
 GPL-3.0-or-later 发行。没有从 CrxMouse 复制代码、图片、图标、文案或设置界面。

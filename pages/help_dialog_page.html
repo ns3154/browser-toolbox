@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>Vimium Help</title>
+    <title data-i18n="browserToolboxHelpTitle">Browser Toolbox Help</title>
     <meta name="color-scheme" content="light dark">
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="../content_scripts/vimium.css" />
@@ -15,18 +15,26 @@
     <!-- Note that the command placeholders (data-group=navigation) will be replaced by the
          background page with the user's key bindings when the dialog is shown. -->
     <div id="container">
-      <div id="dialog">
+      <div
+        id="dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="browser-toolbox-help-dialog-title"
+        aria-describedby="browser-toolbox-help-intro"
+      >
         <header>
-          <h1>
-            <span class="vim">Vim</span>ium Help
+          <h1 id="browser-toolbox-help-dialog-title">
+            <span class="browser-toolbox-help-brand"
+              data-i18n="browserToolbox">Browser Toolbox</span>
+            <span data-i18n="help">Help</span>
             <span id="help-dialog-title"></span>
           </h1>
 
           <!-- These buttons are wrapped in a div so they vertically center more evenly. -->
           <div>
-            <a id="options-page" href="#">Options</a>
-            <a href="https://github.com/philc/vimium/wiki" target="_blank">Wiki</a>
-            <a id="close" href="#">&times;</a>
+            <a id="options-page" href="#" data-i18n="optionsPage">Options</a>
+            <a href="https://github.com/philc/vimium/wiki" target="_blank" data-i18n="wiki">Wiki</a>
+            <a id="close" href="#" data-i18n-aria-label="close" aria-label="Close">&times;</a>
           </div>
         </header>
 
@@ -35,70 +43,164 @@
         <div id="commands-section">
           <div class="column">
             <div></div>
-            <h2>Navigating the page</h2>
+            <h2 data-i18n="navigatingThePage">Navigating the page</h2>
             <div data-group="navigation"></div>
           </div>
 
           <div class="column">
             <div></div>
-            <h2>Using the Vomnibar</h2>
+            <h2 data-i18n="usingTheVomnibar">Using the Vomnibar</h2>
             <div data-group="vomnibar"></div>
 
             <div></div>
-            <h2>Using find</h2>
+            <h2 data-i18n="usingFind">Using find</h2>
             <div data-group="find"></div>
 
             <div></div>
-            <h2>Navigating history</h2>
+            <h2 data-i18n="navigatingHistory">Navigating history</h2>
             <div data-group="history"></div>
 
             <div></div>
-            <h2>Manipulating tabs</h2>
+            <h2 data-i18n="manipulatingTabs">Manipulating tabs</h2>
             <div data-group="tabs"></div>
 
             <div></div>
-            <h2>Links and selections</h2>
+            <h2 data-i18n="linksAndSelections">Links and selections</h2>
             <div data-group="links"></div>
 
             <div></div>
-            <h2>Windows</h2>
+            <h2 data-i18n="windows">Windows</h2>
             <div data-group="windows"></div>
 
             <div></div>
-            <h2>OpenKeyMouse settings</h2>
+            <h2 data-i18n="browserToolboxSettings">Browser Toolbox settings</h2>
             <div data-group="settings"></div>
 
             <div></div>
-            <h2>Miscellaneous</h2>
+            <h2 data-i18n="miscellaneous">Miscellaneous</h2>
             <div data-group="misc"></div>
           </div>
         </div>
 
+        <section id="browser-toolbox-help" aria-labelledby="browser-toolbox-help-title">
+          <div class="divider"></div>
+          <h2 id="browser-toolbox-help-title" data-i18n="browserToolboxHelpTitle">
+            Browser Toolbox Help
+          </h2>
+          <p id="browser-toolbox-help-intro" data-i18n="browserToolboxHelpIntro">
+            Keyboard navigation uses the Vimium baseline; this section summarizes Browser Toolbox
+            modules and the current page state.
+          </p>
+
+          <section class="browser-toolbox-help-status"
+            aria-labelledby="browser-toolbox-current-page">
+            <h3 id="browser-toolbox-current-page" data-i18n="browserToolboxCurrentPage">
+              Current page state
+            </h3>
+            <p id="browser-toolbox-help-status" role="status" aria-live="polite"
+              data-i18n="browserToolboxStatusUnavailable">
+              The current page state is not available.
+            </p>
+            <p id="browser-toolbox-help-rule" hidden>
+              <span data-i18n="browserToolboxAppliedRule">Applied site rule</span>:
+              <code id="browser-toolbox-help-rule-value"></code>
+            </p>
+            <p id="browser-toolbox-help-no-rule" hidden data-i18n="browserToolboxNoMatchingRule">
+              No Browser Toolbox site rule matches this page.
+            </p>
+            <p id="browser-toolbox-help-vimium-excluded" hidden
+              data-i18n="browserToolboxVimiumExcluded">
+              A Vimium page rule excludes keyboard navigation here.
+            </p>
+          </section>
+
+          <div class="browser-toolbox-help-grid">
+            <section aria-labelledby="browser-toolbox-mouse-help-title">
+              <h3 id="browser-toolbox-mouse-help-title"
+                data-i18n="mouseGestures">Mouse Gestures</h3>
+              <p data-i18n="browserToolboxMouseHelp">
+                Draw a configured path with the gesture button. When menu suppression is enabled,
+                Chromium context menus are blocked from button-down to prevent right-button
+                gesture conflicts; disabling it keeps the native menu but may conflict with
+                gestures.
+              </p>
+            </section>
+
+            <section aria-labelledby="browser-toolbox-drag-help-title">
+              <h3 id="browser-toolbox-drag-help-title" data-i18n="superDrag">Super Drag</h3>
+              <p data-i18n="browserToolboxSuperDragHelp">
+                Drag links, text, or images to run configured actions. File uploads, editors,
+                password fields, and draggable widgets remain native.
+              </p>
+            </section>
+
+            <section aria-labelledby="browser-toolbox-wheel-help-title">
+              <h3 id="browser-toolbox-wheel-help-title"
+                data-i18n="wheelRocker">Wheel &amp; Rocker</h3>
+              <p data-i18n="browserToolboxWheelHelp">
+                Use the configured mouse button with the wheel to run a thresholded action without
+                changing ordinary scrolling.
+              </p>
+              <p data-i18n="browserToolboxRockerHelp">
+                Hold one mouse button and click the other to run a configured rocker action;
+                unbound combinations remain ordinary clicks.
+              </p>
+            </section>
+
+            <section aria-labelledby="browser-toolbox-rules-help-title">
+              <h3 id="browser-toolbox-rules-help-title" data-i18n="siteRules">Site Rules</h3>
+              <p data-i18n="browserToolboxSiteRulesHelp">
+                Configure each module per site with Glob or regular-expression rules. The top-level
+                page controls all frames.
+              </p>
+            </section>
+
+            <section aria-labelledby="browser-toolbox-privacy-help-title">
+              <h3 id="browser-toolbox-privacy-help-title" data-i18n="privacy">Privacy</h3>
+              <p data-i18n="browserToolboxPrivacyHelp">
+                No telemetry, accounts, advertising, paid features, remote code, or project-server
+                requests are part of Browser Toolbox.
+              </p>
+              <p data-i18n="browserToolboxLicenseHelp">
+                The project code is available under GPL-3.0-or-later.
+              </p>
+            </section>
+          </div>
+
+          <p class="browser-toolbox-help-links">
+            <a href="mouse_options.html" data-i18n="openBrowserToolboxSettingsPage">
+              Open Browser Toolbox settings
+            </a>
+            · <a href="privacy.html" data-i18n="openPrivacyPolicy">Privacy policy</a>
+            · <a href="../LICENSE" data-i18n="openLicense">License</a>
+          </p>
+          <p class="browser-toolbox-help-limit" data-i18n="browserToolboxBrowserLimit">
+            Some browser-managed pages do not allow extensions to run; controls may be unavailable
+            there.
+          </p>
+        </section>
+
         <div id="toggle-advanced">
-          <a href="#">Show advanced commands</a>
+          <a href="#" data-i18n="showAdvancedCommands">Show advanced commands</a>
         </div>
 
         <div class="divider"></div>
 
         <footer>
           <div>
-            Enjoying Vimium?
-            <a
-              target="_blank"
-              href="https://chrome.google.com/webstore/detail/vimium/dbepggeogbaibhgnhhndojpepiihcmeb/reviews"
-            >Leave us feedback</a>.<br>
-            Found a bug? <a
-              target="_blank"
-              href="https://github.com/philc/vimium/issues"
-            >Report it here</a>.
+            <span data-i18n="keyboardBaselineNotice">
+              Keyboard navigation baseline: Vimium v2.4.2.
+            </span><br>
+            <a href="https://github.com/philc/vimium/wiki" target="_blank" data-i18n="wiki">Wiki</a>
           </div>
 
           <div class="version-info">
-            Version <span id="vimium-version"></span>
+            <span data-i18n="version">Version</span> <span id="vimium-version"></span>
             <br>
             <a
               href="https://github.com/philc/vimium/blob/master/CHANGELOG.md"
               target="_blank"
+              data-i18n="whatsNew"
             >What's new?</a>
           </div>
         </footer>

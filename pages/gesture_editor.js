@@ -25,7 +25,7 @@
       if (!this.drawing) return;
       this.points.push({ x: event.offsetX, y: event.offsetY });
       this.draw();
-      const pattern = globalThis.OpenKeyMouseDirectionQuantizer.quantizePoints(this.points, {
+      const pattern = globalThis.BrowserToolboxDirectionQuantizer.quantizePoints(this.points, {
         directionMode: "8-way",
         minimumSegmentDistancePx: 12,
         sampleDistancePx: 2,
@@ -59,5 +59,5 @@
     }
   }
 
-  globalThis.OpenKeyMouseGestureEditor = GestureEditor;
+  globalThis.BrowserToolboxGestureEditor = GestureEditor;
 })();

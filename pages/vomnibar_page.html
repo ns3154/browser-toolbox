@@ -10,10 +10,30 @@
   </head>
   <body>
     <div id="vomnibar">
-      <div id="vomnibar-search-area">
-        <input type="text" autocomplete="off">
+      <div id="vomnibar-header">
+        <div id="vomnibar-mode">
+          <span id="vomnibar-mode-label">Search or open</span>
+          <span id="vomnibar-disposition" data-i18n="vomnibarNewTab" hidden>New tab</span>
+        </div>
+        <kbd aria-label="Escape">Esc</kbd>
       </div>
-      <ul></ul>
+      <div id="vomnibar-search-area">
+        <svg id="vomnibar-search-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="10.75" cy="10.75" r="6.25"></circle>
+          <path d="m15.5 15.5 4 4"></path>
+        </svg>
+        <label class="browser-toolbox-visually-hidden" for="vomnibar-search"
+          data-i18n="vomnibarSearchOrOpen">Search or open</label>
+        <input id="vomnibar-search" type="text" autocomplete="off" role="combobox"
+          aria-autocomplete="list" aria-controls="vomnibar-completions" aria-expanded="false"
+          data-i18n-placeholder="vomnibarPlaceholderOmni">
+      </div>
+      <ul id="vomnibar-completions" role="listbox"></ul>
+      <div id="vomnibar-footer" aria-hidden="true">
+        <span><kbd>↑</kbd><kbd>↓</kbd> <span data-i18n="vomnibarHintSelect">Select</span></span>
+        <span><kbd>Enter</kbd> <span data-i18n="vomnibarHintOpen">Open</span></span>
+        <span><kbd>Esc</kbd> <span data-i18n="vomnibarHintClose">Close</span></span>
+      </div>
     </div>
   </body>
 </html>

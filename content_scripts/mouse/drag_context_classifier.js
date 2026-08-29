@@ -19,9 +19,9 @@
 
   function safeUrl(value) {
     try {
-      const url = new URL(value, globalThis.location?.href || "https://openkeymouse.invalid/");
+      const url = new URL(value, globalThis.location?.href || "https://browsertoolbox.invalid/");
       if (blockedProtocols.has(url.protocol)) return null;
-      if (!globalThis.OpenKeyMouseCommandInvocation?.isAllowedUrl(url.href)) return null;
+      if (!globalThis.BrowserToolboxCommandInvocation?.isAllowedUrl(url.href)) return null;
       return url.href;
     } catch (_) {
       return null;
@@ -74,7 +74,7 @@
     return { type: "UNSUPPORTED_NATIVE_DRAG", reason: "no-supported-object" };
   }
 
-  globalThis.OpenKeyMouseDragContextClassifier = Object.freeze({
+  globalThis.BrowserToolboxDragContextClassifier = Object.freeze({
     classify,
     safeUrl,
     isProtectedTarget,

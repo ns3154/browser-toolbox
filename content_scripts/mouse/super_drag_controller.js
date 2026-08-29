@@ -1,8 +1,8 @@
 // 超级拖拽控制器只在移动超过阈值后接管 Pointer 事件。
 (function () {
-  const classifier = globalThis.OpenKeyMouseDragContextClassifier;
-  const Session = globalThis.OpenKeyMouseGestureSession;
-  const recognizer = globalThis.OpenKeyMouseGestureRecognizer;
+  const classifier = globalThis.BrowserToolboxDragContextClassifier;
+  const Session = globalThis.BrowserToolboxGestureSession;
+  const recognizer = globalThis.BrowserToolboxGestureRecognizer;
 
   class SuperDragController {
     constructor(settings = {}) {
@@ -16,9 +16,20 @@
       this.settings = settings || {};
     }
 
+    hasBypassModifier(event) {
+      const modifier = this.settings.nativeBypassModifier || "Alt";
+      const keys = {
+        Alt: "altKey",
+        Control: "ctrlKey",
+        Meta: "metaKey",
+        Shift: "shiftKey",
+      };
+      return event?.[keys[modifier]] === true;
+    }
+
     pointerDown(event, selectedText, dataTransfer) {
       if (!this.settings.enabled || event.button !== 0) return false;
-      if (event.altKey && this.settings.nativeBypassModifier === "Alt") return false;
+      if (this.hasBypassModifier(event)) return false;
       const context = classifier.classify(
         event.target,
         selectedText,
@@ -49,19 +60,20 @@
       return result;
     }
 
-    pointerUp() {
+    pointerUp(now = Date.now()) {
       if (!this.session) return null;
-      const result = this.session.end();
+      const result = this.session.end(now);
       const bindingResult = recognizer.find(
         result.pattern,
         this.settings.bindings,
         this.context.type,
       );
+      const completed = result.state === "COMPLETED";
       const output = {
-        active: this.active,
+        active: completed,
         context: this.context,
         pattern: result.pattern,
-        binding: bindingResult.exact,
+        binding: completed ? bindingResult.exact : null,
       };
       this.clear();
       return output;
@@ -79,5 +91,5 @@
     }
   }
 
-  globalThis.OpenKeyMouseSuperDragController = SuperDragController;
+  globalThis.BrowserToolboxSuperDragController = SuperDragController;
 })();

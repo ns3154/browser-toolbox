@@ -42,6 +42,24 @@ context("vomnibar page", () => {
     assert.equal("", ui.input.value);
   });
 
+  should("expose localized mode copy and combobox semantics", () => {
+    ui.setCompleterName("bookmarks");
+    ui.setForceNewTab(true);
+
+    assert.equal(
+      BrowserToolboxI18n.message("vomnibarSearchBookmarks"),
+      ui.modeLabel.textContent,
+    );
+    assert.equal(
+      BrowserToolboxI18n.message("vomnibarPlaceholderBookmarks"),
+      ui.input.placeholder,
+    );
+    assert.equal("combobox", ui.input.getAttribute("role"));
+    assert.equal("vomnibar-completions", ui.input.getAttribute("aria-controls"));
+    assert.equal("false", ui.input.getAttribute("aria-expanded"));
+    assert.equal(false, ui.dispositionLabel.hidden);
+  });
+
   should("edit a completion's URL when ctrl-enter is pressed", async () => {
     stub(chrome.runtime, "sendMessage", async (message) => {
       if (message.handler == "filterCompletions") {

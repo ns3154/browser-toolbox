@@ -28,6 +28,7 @@ const options = {
 
 export async function init() {
   await Settings.onLoaded();
+  await BrowserToolboxI18n.applyStoredLocale(document);
 
   const shortcutLabel = document.querySelector("#shortcut-to-save-all");
   shortcutLabel.textContent = KeyboardUtils.platform == "Mac" ? "Cmd-Enter" : "Ctrl-Enter";

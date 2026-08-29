@@ -2,7 +2,7 @@ import "./test_helper.js";
 import "../../lib/settings.js";
 
 context("settings", () => {
-  context("OpenKeyMouse pre-release version", () => {
+  context("BrowserToolbox pre-release version", () => {
     teardown(async () => {
       await Settings.clear();
     });

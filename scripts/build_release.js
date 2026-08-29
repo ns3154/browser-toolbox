@@ -9,9 +9,27 @@ if ((manifest.permissions || []).includes("notifications")) {
   errors.push("不应恢复 notifications 权限");
 }
 if ((manifest.permissions || []).includes("downloads")) errors.push("downloads 权限需要单独 ADR");
-for await (const entry of Deno.readDir(".")) {
-  if (!entry.isFile) continue;
-  if (/\.pem$|\.key$|\.p12$|\.env$/.test(entry.name)) errors.push(`疑似秘密文件: ${entry.name}`);
+
+const secretFilePattern = /(?:^|\.)(?:env|pem|key|p12)$/i;
+async function findSecretFiles(directory, relativeDirectory = ".") {
+  const secretFiles = [];
+  for await (const entry of Deno.readDir(directory)) {
+    if ([".git", "dist", "node_modules"].includes(entry.name)) continue;
+    const filePath = `${directory}/${entry.name}`;
+    const relativePath = relativeDirectory === "."
+      ? entry.name
+      : `${relativeDirectory}/${entry.name}`;
+    if (entry.isDirectory) {
+      secretFiles.push(...await findSecretFiles(filePath, relativePath));
+    } else if (entry.isFile && secretFilePattern.test(entry.name)) {
+      secretFiles.push(relativePath);
+    }
+  }
+  return secretFiles;
+}
+
+for (const file of await findSecretFiles(".")) {
+  errors.push(`疑似秘密文件: ${file}`);
 }
 if (errors.length > 0) {
   console.error(errors.join("\n"));
@@ -31,37 +49,94 @@ if (!networkAudit.success) {
   console.error(new TextDecoder().decode(networkAudit.stderr));
   Deno.exit(networkAudit.code || 1);
 }
-console.log(`发布检查通过：OpenKeyMouse ${manifest.version}`);
+const technicalRenameAudit = await new Deno.Command("deno", {
+  args: ["run", "-A", "scripts/audit_technical_rename.js"],
+}).output();
+if (!technicalRenameAudit.success) {
+  console.error(new TextDecoder().decode(technicalRenameAudit.stderr));
+  Deno.exit(technicalRenameAudit.code || 1);
+}
+console.log(`发布检查通过：BrowserToolbox ${manifest.version}`);
 
 if (Deno.args.includes("--package")) {
-  const outputDir = "dist/open-key-mouse";
-  await Deno.mkdir(outputDir, { recursive: true });
-  const zipName = `dist/open-key-mouse-${manifest.version}.zip`;
-  const result = await new Deno.Command("zip", {
+  async function removeExistingArchive(filePath) {
+    try {
+      await Deno.remove(filePath);
+    } catch (error) {
+      if (!(error instanceof Deno.errors.NotFound)) throw error;
+    }
+  }
+
+  await Deno.mkdir("dist", { recursive: true });
+  const zipName = `dist/browser-toolbox-${manifest.version}.zip`;
+  // 归档目标可能来自旧的排除规则；先删除精确目标，避免旧条目影响可复现性。
+  await removeExistingArchive(zipName);
+  const runtimeResult = await new Deno.Command("zip", {
     args: [
       "-r",
       "-X",
       "-q",
+      "--filesync",
       zipName,
       ".",
       "-x",
+      "./.git",
       "./.git/*",
+      "./dist",
       "./dist/*",
+      "./tests",
       "./tests/*",
+      "./test_harnesses",
       "./test_harnesses/*",
       "./*.md",
       "./make.js",
       "./deno.json",
       "./deno.lock",
-      // 这些审计日志会记录当前归档的哈希；保留在 Git，但排除以避免源码包自引用哈希。
-      "./docs/baseline.md",
-      "./docs/codex-progress.md",
-      "./docs/release-checklist.md",
+      "./docs",
+      "./docs/*",
+      "./scripts",
+      "./scripts/*",
+      ".*",
+      "./.*",
     ],
   }).output();
-  if (!result.success) {
-    console.error(new TextDecoder().decode(result.stderr));
-    Deno.exit(result.code || 1);
+  if (!runtimeResult.success) {
+    console.error(new TextDecoder().decode(runtimeResult.stderr));
+    Deno.exit(runtimeResult.code || 1);
   }
-  console.log(`已生成发布包: ${zipName}`);
+  console.log(`已生成运行时包: ${zipName}`);
+
+  const sourceZipName = `dist/browser-toolbox-source-${manifest.version}.zip`;
+  await removeExistingArchive(sourceZipName);
+  const sourceExcludes = [
+    "./.git",
+    "./.git/*",
+    "./dist",
+    "./dist/*",
+    "./node_modules",
+    "./node_modules/*",
+    "./**/.DS_Store",
+    // 这些文件是会随每轮验收变化的审计记录，不能进入可重复的源码快照。
+    "./docs/baseline.md",
+    "./docs/codex-progress.md",
+    "./docs/release-checklist.md",
+    "./docs/feature-parity-matrix.md",
+  ];
+  const sourceResult = await new Deno.Command("zip", {
+    args: [
+      "-r",
+      "-X",
+      "-q",
+      "--filesync",
+      sourceZipName,
+      ".",
+      "-x",
+      ...sourceExcludes,
+    ],
+  }).output();
+  if (!sourceResult.success) {
+    console.error(new TextDecoder().decode(sourceResult.stderr));
+    Deno.exit(sourceResult.code || 1);
+  }
+  console.log(`已生成源码包: ${sourceZipName}`);
 }

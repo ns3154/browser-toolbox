@@ -35,5 +35,5 @@
     }
   }
 
-  globalThis.OpenKeyMousePathSampler = Object.freeze({ PathSampler, distance });
+  globalThis.BrowserToolboxPathSampler = Object.freeze({ PathSampler, distance });
 })();

@@ -1,18 +1,27 @@
 {
-  "extensionName": { "message": "OpenKeyMouse", "description": "扩展名称" },
+  "extensionName": { "message": "浏览器工具箱", "description": "扩展名称" },
   "extensionDescription": {
-    "message": "永久免费、本地优先、无遥测的键盘与鼠标网页导航扩展。",
+    "message": "永久免费、开源、本地优先的浏览器工作流工具箱，用键盘和鼠标执行网页导航与标签页操作；无广告、无账户、无遥测。",
     "description": "扩展说明"
   },
-  "openKeyMouse": { "message": "OpenKeyMouse", "description": "项目名称" },
+  "browserToolbox": { "message": "浏览器工具箱", "description": "产品名称" },
   "save": { "message": "保存", "description": "保存按钮" },
   "saved": { "message": "已保存", "description": "保存状态" },
+  "saving": { "message": "正在保存……", "description": "保存进行中" },
+  "saveChanges": { "message": "保存修改", "description": "保存修改状态" },
+  "noChanges": { "message": "没有修改", "description": "没有修改状态" },
   "cancel": { "message": "取消", "description": "取消按钮" },
   "close": { "message": "关闭", "description": "关闭按钮" },
   "reset": { "message": "重置", "description": "重置按钮" },
   "enabled": { "message": "已启用", "description": "启用标签" },
   "disabled": { "message": "已禁用", "description": "禁用标签" },
   "general": { "message": "常规", "description": "常规设置" },
+  "globalShowHud": { "message": "显示工具箱命令提示", "description": "工具箱全局 HUD" },
+  "browserSyncEnabled": { "message": "使用浏览器同步设置", "description": "浏览器同步开关" },
+  "browserSyncNote": {
+    "message": "关闭后，设置只保存在此浏览器的本地存储中，不会同步。",
+    "description": "浏览器同步说明"
+  },
   "keyboard": { "message": "键盘", "description": "键盘设置" },
   "mouseGestures": { "message": "鼠标轨迹", "description": "鼠标手势设置" },
   "superDrag": { "message": "超级拖拽", "description": "超级拖拽设置" },
@@ -21,27 +30,200 @@
   "siteRules": { "message": "站点规则", "description": "站点规则设置" },
   "backupRestore": { "message": "备份与恢复", "description": "备份设置" },
   "privacy": { "message": "隐私", "description": "隐私设置" },
+  "privacyTitle": { "message": "浏览器工具箱隐私", "description": "隐私页面标题" },
   "aboutLicenses": { "message": "关于与许可证", "description": "关于页面" },
   "openSettings": { "message": "打开设置", "description": "打开设置按钮" },
+  "openBrowserToolboxSettings": {
+    "message": "浏览器工具箱的鼠标、拖拽、滚轮和隐私设置",
+    "description": "Vimium 选项页中的浏览器工具箱入口"
+  },
+  "browserToolboxSettings": {
+    "message": "浏览器工具箱设置",
+    "description": "浏览器工具箱命令分组标题"
+  },
+  "browserToolboxHelpTitle": { "message": "浏览器工具箱帮助", "description": "帮助标题" },
+  "browserToolboxHelpIntro": {
+    "message": "键盘导航以 Vimium 为基线；这里汇总浏览器工具箱模块和当前页面状态。",
+    "description": "帮助介绍"
+  },
+  "browserToolboxCurrentPage": { "message": "当前页面状态", "description": "帮助页面状态标题" },
+  "browserToolboxAllModulesEnabled": {
+    "message": "当前页面已启用浏览器工具箱的全部模块。",
+    "description": "全部模块状态"
+  },
+  "browserToolboxDisabledModules": {
+    "message": "当前页面停用的模块",
+    "description": "停用模块状态"
+  },
+  "browserToolboxStatusUnavailable": {
+    "message": "当前页面状态暂时不可用。",
+    "description": "页面状态不可用"
+  },
+  "browserToolboxAppliedRule": { "message": "生效的站点规则", "description": "生效规则标签" },
+  "browserToolboxNoMatchingRule": {
+    "message": "当前页面没有匹配的浏览器工具箱站点规则。",
+    "description": "无匹配规则"
+  },
+  "browserToolboxVimiumExcluded": {
+    "message": "Vimium 页面排除规则已在此处停用键盘导航。",
+    "description": "Vimium 排除状态"
+  },
+  "browserToolboxBrowserLimit": {
+    "message": "部分浏览器管理页面不允许扩展运行，控件在这些页面上可能不可用。",
+    "description": "浏览器限制说明"
+  },
+  "browserToolboxMouseHelp": {
+    "message": "使用手势按键画出已配置的轨迹。启用菜单抑制时会从按下手势按键开始拦截浏览器菜单，避免右键轨迹冲突；关闭后保留原生菜单，但右键轨迹可能与菜单冲突。",
+    "description": "鼠标手势帮助"
+  },
+  "browserToolboxSuperDragHelp": {
+    "message": "拖拽链接、文字或图片即可执行配置的动作；文件上传、编辑器、密码框和 draggable 控件仍保持原生行为。",
+    "description": "超级拖拽帮助"
+  },
+  "browserToolboxWheelHelp": {
+    "message": "使用配置的鼠标按键配合滚轮，在达到阈值后执行动作，不改变普通滚动。",
+    "description": "滚轮帮助"
+  },
+  "browserToolboxRockerHelp": {
+    "message": "按住一个鼠标按键再点击另一个按键即可执行摇杆动作；未绑定组合仍保持普通点击。",
+    "description": "摇杆帮助"
+  },
+  "browserToolboxSiteRulesHelp": {
+    "message": "可以用 Glob 或正则表达式为每个站点分别配置模块；所有框架统一使用顶层页面。",
+    "description": "站点规则帮助"
+  },
+  "browserToolboxPrivacyHelp": {
+    "message": "浏览器工具箱不包含遥测、账号、广告、付费功能、远程代码或项目服务器请求。",
+    "description": "隐私帮助"
+  },
+  "browserToolboxLicenseHelp": {
+    "message": "项目代码使用 GPL-3.0-or-later 许可证。",
+    "description": "许可证帮助"
+  },
+  "openBrowserToolboxSettingsPage": {
+    "message": "打开浏览器工具箱设置",
+    "description": "帮助设置链接"
+  },
+  "openPrivacyPolicy": { "message": "隐私政策", "description": "隐私政策链接" },
+  "openLicense": { "message": "许可证", "description": "许可证链接" },
+  "keyboardBaselineNotice": {
+    "message": "键盘导航基线：Vimium v2.4.2。",
+    "description": "键盘基线说明"
+  },
+  "help": { "message": "帮助", "description": "帮助标签" },
+  "wiki": { "message": "Wiki", "description": "Wiki 链接" },
+  "navigatingThePage": { "message": "页面导航", "description": "帮助分区标题" },
+  "usingTheVomnibar": { "message": "使用 Vomnibar", "description": "帮助分区标题" },
+  "usingFind": { "message": "使用查找", "description": "帮助分区标题" },
+  "navigatingHistory": { "message": "浏览历史", "description": "帮助分区标题" },
+  "manipulatingTabs": { "message": "操作标签页", "description": "帮助分区标题" },
+  "linksAndSelections": { "message": "链接和选择", "description": "帮助分区标题" },
+  "windows": { "message": "窗口", "description": "帮助分区标题" },
+  "miscellaneous": { "message": "其他", "description": "帮助分区标题" },
+  "showAdvancedCommands": { "message": "显示高级命令", "description": "高级命令切换" },
+  "hideAdvancedCommands": { "message": "隐藏高级命令", "description": "高级命令切换" },
+  "whatsNew": { "message": "更新内容", "description": "更新日志链接" },
+  "version": { "message": "版本", "description": "版本标签" },
   "openHelp": { "message": "打开帮助", "description": "打开帮助按钮" },
   "currentSite": { "message": "当前站点", "description": "当前站点标题" },
   "allModulesEnabled": {
-    "message": "当前站点已启用 OpenKeyMouse 的全部模块。",
+    "message": "当前站点已启用浏览器工具箱的全部模块。",
     "description": "当前站点状态"
   },
   "pageUnavailable": { "message": "浏览器不允许扩展在此页面运行。", "description": "受限页面提示" },
+  "actionPageTitle": { "message": "浏览器工具箱", "description": "动作页标题" },
+  "firefoxMissingHostsPermission": {
+    "message": "Vimium 缺少“所有网站”权限。",
+    "description": "Firefox 权限标题"
+  },
+  "firefoxPermissionHelp": {
+    "message": "Firefox 要求用户手动授予此权限。你可以使用下面的按钮启用：",
+    "description": "Firefox 权限说明"
+  },
+  "grantHostsPermission": { "message": "启用所有网站权限", "description": "授予网站权限" },
+  "firefoxPermissionPathIntro": {
+    "message": "或者按以下路径操作：",
+    "description": "Firefox 权限路径引导"
+  },
+  "firefoxPermissionPath": {
+    "message": "about:addons > Vimium > 管理（三点菜单）> 权限 > 启用“访问所有网站上的数据”。",
+    "description": "Firefox 权限路径"
+  },
+  "seePermissionsHelp": { "message": "查看权限帮助", "description": "权限帮助链接" },
+  "vimiumKeysEnabledOnPage": {
+    "message": "Vimium 按键已在此页面启用。",
+    "description": "键位启用状态"
+  },
+  "excludeKeysOnPage": { "message": "在此页面停用 Vimium 按键", "description": "添加页面排除规则" },
+  "matchingPatterns": { "message": "匹配当前页面的规则", "description": "排除规则表头" },
+  "keysToExclude": { "message": "要停用的键", "description": "排除键表头" },
+  "seeExclusionRules": { "message": "查看全部排除规则，前往", "description": "排除规则链接前缀" },
+  "optionsPage": { "message": "选项", "description": "选项页面链接" },
+  "page": { "message": "页面。", "description": "页面后缀" },
   "noTelemetry": { "message": "无遥测、无账户、无广告、无付费功能。", "description": "隐私承诺" },
   "pattern": { "message": "轨迹", "description": "手势轨迹标签" },
   "patternInput": { "message": "轨迹文本（例如 L>R）", "description": "键盘手势轨迹输入" },
   "gestureEditor": { "message": "手势编辑区", "description": "手势绘制区域" },
   "command": { "message": "命令", "description": "命令标签" },
+  "options": { "message": "选项", "description": "命令选项" },
+  "optionsDefault": { "message": "默认", "description": "命令选项默认值" },
+  "optionsHint": { "message": "JSON 对象；保存前会校验内容。", "description": "命令选项提示" },
+  "dangerousCommandWarning": {
+    "message": "可能关闭标签页或窗口。",
+    "description": "危险命令提示"
+  },
   "addBinding": { "message": "添加绑定", "description": "添加绑定按钮" },
+  "addRule": { "message": "添加规则", "description": "添加站点规则按钮" },
   "removeBinding": { "message": "删除绑定", "description": "删除绑定按钮" },
+  "removeRule": { "message": "删除规则", "description": "删除站点规则按钮" },
+  "moveUp": { "message": "上移", "description": "上移站点规则" },
+  "moveDown": { "message": "下移", "description": "下移站点规则" },
+  "duplicateRule": { "message": "复制规则", "description": "复制站点规则" },
+  "discardChanges": { "message": "放弃修改", "description": "放弃设置草稿" },
+  "unsavedChanges": { "message": "有未保存的修改。", "description": "未保存设置状态" },
   "restoreDefaults": { "message": "恢复默认", "description": "恢复默认按钮" },
+  "restoreDefaultsConfirm": {
+    "message": "要将浏览器工具箱设置恢复为默认值吗？",
+    "description": "恢复默认确认"
+  },
   "importSettings": { "message": "导入设置", "description": "导入设置按钮" },
   "exportSettings": { "message": "导出设置", "description": "导出设置按钮" },
   "chooseFile": { "message": "选择文件", "description": "文件选择标签" },
   "invalidSettings": { "message": "设置文件无效。", "description": "设置错误提示" },
+  "settingsConflict": {
+    "message": "这些设置已在其他浏览器工具箱页面或设备上修改，请重新加载页面后再保存。",
+    "description": "并发设置修改提示"
+  },
+  "settingsConflictFields": {
+    "message": "冲突字段",
+    "description": "并发设置冲突字段标签"
+  },
+  "settingsConflictMore": {
+    "message": "其余字段已省略",
+    "description": "并发设置省略字段标签"
+  },
+  "settingsRecoveryFailed": {
+    "message": "保存失败，自动恢复未完全成功。请重新加载页面后再继续编辑。",
+    "description": "设置恢复警告"
+  },
+  "validationUnknownCommand": { "message": "未知命令", "description": "设置校验错误" },
+  "validationUnsupportedInput": {
+    "message": "此输入方式不支持该命令",
+    "description": "设置校验错误"
+  },
+  "validationInvalidOptions": { "message": "命令选项无效", "description": "设置校验错误" },
+  "validationDuplicate": { "message": "重复绑定", "description": "设置校验错误" },
+  "validationInvalidPattern": { "message": "手势轨迹无效", "description": "设置校验错误" },
+  "validationInvalidRegex": { "message": "正则表达式无效", "description": "设置校验错误" },
+  "validationRegexComplexity": { "message": "正则表达式过于复杂", "description": "设置校验错误" },
+  "siteRuleDuplicateWarning": {
+    "message": "此匹配式也被其他规则使用；发生字段重叠时，配置顺序靠后的规则优先。",
+    "description": "重复站点规则提示"
+  },
+  "validationInvalidSiteRule": { "message": "站点规则无效", "description": "设置校验错误" },
+  "validationOutOfRange": { "message": "数值超出允许范围", "description": "设置校验错误" },
+  "validationPrivacy": { "message": "隐私保证不可修改", "description": "设置校验错误" },
+  "validationSchema": { "message": "设置版本不受支持", "description": "设置校验错误" },
   "gestureUnrecognized": { "message": "未识别手势", "description": "手势反馈" },
   "gestureCancelled": { "message": "手势已取消", "description": "手势反馈" },
   "browserRestriction": { "message": "此页面受浏览器限制。", "description": "浏览器限制提示" },
@@ -49,12 +231,26 @@
   "languageAuto": { "message": "跟随浏览器", "description": "自动语言" },
   "languageEnglish": { "message": "English", "description": "英语" },
   "languageChinese": { "message": "简体中文", "description": "简体中文" },
+  "triggerButton": { "message": "手势触发按键", "description": "手势触发按键" },
+  "mouseTriggerButtonHint": {
+    "message": "手势按键与超级拖拽或摇杆使用同一按键时，手势优先。手势按键为右键时，菜单抑制会从按下开始，避免 Chromium 菜单抢占轨迹；关闭后保留原生菜单，但右键轨迹可能冲突。",
+    "description": "手势按键冲突行为"
+  },
   "directionMode": { "message": "方向模式", "description": "方向模式标签" },
   "fourWay": { "message": "四方向", "description": "四方向模式" },
   "eightWay": { "message": "八方向", "description": "八方向模式" },
   "activationDistance": { "message": "激活距离（像素）", "description": "手势阈值" },
+  "sampleDistance": { "message": "采样距离（像素）", "description": "手势采样距离" },
+  "minimumSegmentDistance": { "message": "最小分段距离（像素）", "description": "手势分段阈值" },
+  "turnHysteresis": { "message": "转向滞后角度（度）", "description": "手势转向滞后" },
+  "maxSegments": { "message": "最大分段数", "description": "手势分段上限" },
+  "maxDuration": { "message": "最大持续时间（毫秒）", "description": "手势持续时间上限" },
   "showTrail": { "message": "显示手势轨迹", "description": "轨迹开关" },
   "showHud": { "message": "显示命令 HUD", "description": "HUD 开关" },
+  "suppressContextMenu": {
+    "message": "手势期间抑制原生菜单",
+    "description": "手势期间原生菜单抑制"
+  },
   "privacyImmutable": {
     "message": "遥测、远程配置和后台网络访问永久关闭。",
     "description": "不可变隐私状态"
@@ -68,57 +264,166 @@
   "resetCursor": { "message": "移除本地指针", "description": "移除指针" },
   "wheelThreshold": { "message": "滚轮阈值", "description": "滚轮阈值" },
   "cooldown": { "message": "冷却时间（毫秒）", "description": "滚轮冷却时间" },
+  "continuousTabSwitching": { "message": "连续切换标签页", "description": "滚轮标签页切换模式" },
   "button": { "message": "按键", "description": "鼠标按键" },
   "direction": { "message": "方向", "description": "方向" },
   "sequence": { "message": "顺序", "description": "摇杆顺序" },
+  "leftButton": { "message": "左键", "description": "鼠标按键" },
+  "rightButton": { "message": "右键", "description": "鼠标按键" },
+  "middleButton": { "message": "中键", "description": "鼠标按键" },
+  "up": { "message": "向上", "description": "滚轮方向" },
+  "down": { "message": "向下", "description": "滚轮方向" },
+  "holdRightThenClickLeft": { "message": "按住右键再点左键", "description": "摇杆顺序" },
+  "holdLeftThenClickRight": { "message": "按住左键再点右键", "description": "摇杆顺序" },
   "urlPattern": { "message": "网址匹配式", "description": "站点网址匹配式" },
   "modules": { "message": "模块", "description": "站点模块" },
+  "siteRuleMatchType": { "message": "匹配方式", "description": "站点规则匹配方式" },
+  "siteRuleGlob": { "message": "Glob 通配式", "description": "Glob 站点规则" },
+  "siteRuleRegex": { "message": "正则表达式", "description": "正则表达式站点规则" },
+  "siteRuleEnabled": { "message": "在此站点启用工具箱", "description": "站点规则总开关" },
+  "siteRuleDisableModules": { "message": "在此站点停用模块", "description": "站点规则模块开关" },
+  "siteRuleModuleHint": {
+    "message": "勾选模块即可在此站点停用它。",
+    "description": "站点规则模块开关说明"
+  },
+  "siteRuleDefaultHint": {
+    "message": "内置高冲突站点规则默认停用鼠标相关模块，你可以编辑或删除它们。",
+    "description": "内置高冲突站点规则说明"
+  },
+  "siteRuleGlobHint": {
+    "message": "示例：https://*.example.com/*",
+    "description": "Glob 站点规则示例"
+  },
+  "siteRuleRegexHint": {
+    "message": "示例：^https://(www\\.)?example\\.com/",
+    "description": "正则表达式站点规则示例"
+  },
+  "siteRulePriority": { "message": "优先级", "description": "站点规则优先级" },
+  "siteRuleOrder": { "message": "配置顺序", "description": "站点规则配置顺序" },
+  "siteRulePrecedence": { "message": "匹配顺序", "description": "站点规则匹配顺序" },
+  "siteRuleActions": { "message": "操作", "description": "站点规则操作" },
+  "siteRuleNoRules": {
+    "message": "还没有站点规则。添加一条规则来配置网址。",
+    "description": "空站点规则状态"
+  },
+  "testSiteUrl": { "message": "测试网址", "description": "用输入的网址测试站点规则" },
+  "siteRuleTestUrl": { "message": "待测试网址", "description": "网址测试字段标签" },
+  "siteRuleTestUrlHint": {
+    "message": "https://example.com/path",
+    "description": "网址测试字段占位提示"
+  },
+  "siteRuleTestUrlHelp": {
+    "message": "请输入网址；此字段不会保存。",
+    "description": "网址测试字段说明"
+  },
+  "siteRuleEnterTestUrl": { "message": "请输入要测试的网址。", "description": "缺少测试网址" },
+  "siteRuleInvalidTestUrl": { "message": "请输入有效的网址。", "description": "测试网址无效" },
+  "siteRuleMatched": { "message": "该网址匹配到站点规则：", "description": "站点规则匹配结果" },
+  "siteRuleNotMatched": {
+    "message": "该网址没有匹配任何站点规则。",
+    "description": "站点规则未匹配结果"
+  },
+  "siteRuleEffectiveState": { "message": "最终模块状态", "description": "站点规则最终状态" },
+  "siteRuleDisabledModules": { "message": "已停用模块", "description": "站点已停用模块" },
+  "siteRuleAllModulesEnabled": { "message": "所有模块均已启用", "description": "站点已启用模块" },
+  "siteRuleExplanationTitle": {
+    "message": "为什么会得到这个结果",
+    "description": "站点规则解释标题"
+  },
+  "siteRuleNoMatchingRules": {
+    "message": "没有浏览器工具箱站点规则匹配此网址。",
+    "description": "站点规则解释未匹配项"
+  },
+  "patternDoesNotMatch": { "message": "匹配式与当前网址不匹配", "description": "当前网址校验" },
+  "untitledTab": { "message": "（无标题）", "description": "无标题标签页名称" },
+  "allKeys": { "message": "全部", "description": "全部键位说明" },
+  "noKeys": { "message": "无", "description": "无键位说明" },
+  "someKeys": { "message": "部分", "description": "部分键位说明" },
   "context": { "message": "对象", "description": "拖拽对象" },
+  "contextLink": { "message": "链接", "description": "拖拽对象" },
+  "contextSelection": { "message": "选中文本", "description": "拖拽对象" },
+  "contextImage": { "message": "图片", "description": "拖拽对象" },
   "openOnboarding": { "message": "打开入门说明", "description": "入门说明链接" },
   "projectCharter": { "message": "项目章程", "description": "项目章程链接" },
   "thirdPartyNotices": { "message": "第三方声明", "description": "第三方声明链接" },
-  "command_OpenKeyMouse_closeWindow": { "message": "关闭当前窗口", "description": "命令标题" },
-  "command_OpenKeyMouse_newWindow": { "message": "打开新窗口", "description": "命令标题" },
-  "command_OpenKeyMouse_toggleFullscreen": { "message": "切换全屏", "description": "命令标题" },
-  "command_OpenKeyMouse_minimizeWindow": { "message": "最小化当前窗口", "description": "命令标题" },
-  "command_OpenKeyMouse_maximizeWindow": { "message": "最大化当前窗口", "description": "命令标题" },
-  "command_OpenKeyMouse_showTabList": { "message": "显示标签页列表", "description": "命令标题" },
-  "command_OpenKeyMouse_toggleKeyboard": { "message": "切换键盘导航", "description": "命令标题" },
-  "command_OpenKeyMouse_toggleMouseGestures": {
+  "command_BrowserToolbox_closeWindow": { "message": "关闭当前窗口", "description": "命令标题" },
+  "command_BrowserToolbox_newWindow": { "message": "打开新窗口", "description": "命令标题" },
+  "command_BrowserToolbox_toggleFullscreen": { "message": "切换全屏", "description": "命令标题" },
+  "command_BrowserToolbox_minimizeWindow": {
+    "message": "最小化当前窗口",
+    "description": "命令标题"
+  },
+  "command_BrowserToolbox_maximizeWindow": {
+    "message": "最大化当前窗口",
+    "description": "命令标题"
+  },
+  "command_BrowserToolbox_showTabList": { "message": "显示标签页列表", "description": "命令标题" },
+  "command_BrowserToolbox_toggleKeyboard": { "message": "切换键盘导航", "description": "命令标题" },
+  "command_BrowserToolbox_toggleMouseGestures": {
     "message": "切换鼠标手势",
     "description": "命令标题"
   },
-  "command_OpenKeyMouse_toggleSuperDrag": { "message": "切换超级拖拽", "description": "命令标题" },
-  "command_OpenKeyMouse_copySelection": { "message": "复制选中文本", "description": "命令标题" },
-  "command_OpenKeyMouse_copyLinkText": { "message": "复制链接文本", "description": "命令标题" },
-  "command_OpenKeyMouse_copyLinkUrl": { "message": "复制链接网址", "description": "命令标题" },
-  "command_OpenKeyMouse_copyImageUrl": { "message": "复制图片网址", "description": "命令标题" },
-  "command_OpenKeyMouse_searchSelection": { "message": "搜索选中文本", "description": "命令标题" },
-  "command_OpenKeyMouse_openLinkForeground": {
+  "command_BrowserToolbox_toggleSuperDrag": {
+    "message": "切换超级拖拽",
+    "description": "命令标题"
+  },
+  "command_BrowserToolbox_copySelection": { "message": "复制选中文本", "description": "命令标题" },
+  "command_BrowserToolbox_copyLinkText": { "message": "复制链接文本", "description": "命令标题" },
+  "command_BrowserToolbox_copyLinkUrl": { "message": "复制链接网址", "description": "命令标题" },
+  "command_BrowserToolbox_copyImageUrl": { "message": "复制图片网址", "description": "命令标题" },
+  "command_BrowserToolbox_searchSelection": {
+    "message": "搜索选中文本",
+    "description": "命令标题"
+  },
+  "command_BrowserToolbox_openLinkForeground": {
     "message": "前台打开链接",
     "description": "命令标题"
   },
-  "command_OpenKeyMouse_openLinkBackground": {
+  "command_BrowserToolbox_openLinkBackground": {
     "message": "后台打开链接",
     "description": "命令标题"
   },
-  "command_OpenKeyMouse_openImageForeground": {
+  "command_BrowserToolbox_openImageForeground": {
     "message": "前台打开图片",
     "description": "命令标题"
   },
-  "command_OpenKeyMouse_openImageBackground": {
+  "command_BrowserToolbox_openImageBackground": {
     "message": "后台打开图片",
     "description": "命令标题"
   },
-  "command_OpenKeyMouse_downloadImage": { "message": "下载图片", "description": "命令标题" },
+  "command_BrowserToolbox_downloadImage": { "message": "下载图片", "description": "命令标题" },
   "settingsSections": { "message": "设置分区", "description": "设置导航" },
+  "settingsSearch": { "message": "搜索设置", "description": "设置导航搜索" },
+  "settingsSearchHint": {
+    "message": "筛选设置分区……",
+    "description": "设置导航搜索提示"
+  },
+  "settingsSearchMatches": {
+    "message": "匹配分区数",
+    "description": "设置导航结果标签"
+  },
+  "settingsSearchNoResults": {
+    "message": "没有匹配的设置分区。",
+    "description": "设置导航无结果提示"
+  },
+  "navigationKeyboard": { "message": "导航与键盘", "description": "设置一级分类" },
+  "mouseDrag": { "message": "鼠标与拖拽", "description": "设置一级分类" },
+  "searchTabs": { "message": "搜索与标签", "description": "设置一级分类" },
+  "appearanceBehavior": { "message": "外观与行为", "description": "设置一级分类" },
+  "sitePrivacy": { "message": "站点与隐私", "description": "设置一级分类" },
+  "backupAbout": { "message": "备份与关于", "description": "设置一级分类" },
   "gestureEditor": { "message": "手势编辑器", "description": "手势编辑器标签" },
   "superDragSafety": {
-    "message": "按住 Alt 始终保留原生拖拽。文件上传、编辑器、密码框、自定义 draggable 控件和无效网址不会被拦截。",
+    "message": "按住所选旁路修饰键始终保留原生拖拽。文件上传、编辑器、密码框、自定义 draggable 控件和无效网址不会被拦截。",
     "description": "超级拖拽安全说明"
   },
+  "nativeBypassModifier": { "message": "原生拖拽旁路修饰键", "description": "超级拖拽旁路修饰键" },
+  "modifierAlt": { "message": "Alt", "description": "修饰键选项" },
+  "modifierControl": { "message": "Control", "description": "修饰键选项" },
+  "modifierMeta": { "message": "Command / Meta", "description": "修饰键选项" },
+  "modifierShift": { "message": "Shift", "description": "修饰键选项" },
   "siteRuleSpecificity": {
-    "message": "匹配度最高的规则优先；顶层页面网址控制所有框架。",
+    "message": "Glob 通配式按匹配度优先；匹配度相同时后面的规则优先。也支持显式正则表达式。顶层页面网址控制所有框架。",
     "description": "站点规则行为"
   },
   "backupContents": {
@@ -131,7 +436,7 @@
   },
   "licenseGpl": { "message": "GPL-3.0-or-later", "description": "许可证名称" },
   "aboutText": {
-    "message": "OpenKeyMouse 基于 Vimium v2.4.2，保持免费和开源。",
+    "message": "浏览器工具箱以 Vimium v2.4.2 为键盘基线，保持免费和开源。",
     "description": "关于文本"
   },
   "cleanRoomText": {
@@ -140,7 +445,7 @@
   },
   "dataHandling": { "message": "数据处理", "description": "隐私分区" },
   "privacyData": {
-    "message": "OpenKeyMouse 不会向项目服务器或第三方分析服务发送网址、历史、书签、页面内容、选中文本、搜索词、按键、鼠标轨迹、指针图片、配置、设备标识、安装标识或崩溃报告。",
+    "message": "浏览器工具箱不会向项目服务器或第三方分析服务发送网址、历史、书签、页面内容、选中文本、搜索词、按键、鼠标轨迹、指针图片、配置、设备标识、安装标识或崩溃报告。",
     "description": "隐私数据声明"
   },
   "localStorage": { "message": "本地存储", "description": "存储分区" },
@@ -149,12 +454,40 @@
     "description": "存储隐私"
   },
   "security": { "message": "安全", "description": "安全链接" },
+  "charterFree": {
+    "message": "浏览器工具箱永久免费、开源，并向所有用户提供同一套完整功能。",
+    "description": "项目章程可用性"
+  },
+  "charterPrivacy": {
+    "message": "项目不加入遥测、账号、广告、付费功能、远程配置或后台数据收集。",
+    "description": "项目章程隐私"
+  },
+  "securityBoundary": {
+    "message": "浏览器工具箱把浏览器数据和用户输入留在本地浏览器内，不加载远程代码，也不信任网页直接调用高权限动作。",
+    "description": "安全边界"
+  },
+  "securityImport": {
+    "message": "导入设置会先解析、校验、预览并确认后才写入；导入文件不会作为 HTML 或脚本执行。",
+    "description": "导入安全"
+  },
+  "securityReport": {
+    "message": "请不要在公开 issue 中提交凭证、Cookie、Token、个人资料或完整浏览数据。",
+    "description": "安全报告提示"
+  },
+  "vimiumLicenseNotice": {
+    "message": "Vimium v2.4.2 代码和资源：MIT 许可证",
+    "description": "Vimium 第三方许可证声明"
+  },
+  "shouldaLicenseNotice": {
+    "message": "shoulda.js 测试框架：MIT 许可证",
+    "description": "shoulda.js 第三方许可证声明"
+  },
   "onboardingIntro": {
-    "message": "面向 Chromium 浏览器的键盘导航与独立实现鼠标控制。",
+    "message": "面向 Chromium 浏览器的本地工作流工具箱，包含键盘导航和独立实现的鼠标输入模块。",
     "description": "入门说明"
   },
   "onboardingGesture": {
-    "message": "右键轨迹在越过激活阈值前保留原生右键菜单。",
+    "message": "启用菜单抑制时，右键轨迹从按下开始拦截冲突的原生菜单；关闭后保留原生菜单，但可能与轨迹冲突。",
     "description": "入门手势"
   },
   "onboardingDrag": {
@@ -167,6 +500,25 @@
   },
   "search": { "message": "搜索", "description": "搜索标签" },
   "searchSettings": { "message": "搜索", "description": "搜索设置分区" },
+  "vomnibarSearchOrOpen": { "message": "搜索或打开", "description": "Vomnibar 综合模式标题" },
+  "vomnibarSearchBookmarks": { "message": "搜索书签", "description": "Vomnibar 书签模式标题" },
+  "vomnibarSearchTabs": { "message": "搜索标签页", "description": "Vomnibar 标签页模式标题" },
+  "vomnibarPlaceholderOmni": {
+    "message": "输入搜索词或网址",
+    "description": "Vomnibar 综合输入提示"
+  },
+  "vomnibarPlaceholderBookmarks": {
+    "message": "输入书签标题或网址",
+    "description": "Vomnibar 书签输入提示"
+  },
+  "vomnibarPlaceholderTabs": {
+    "message": "输入标签页标题或网址",
+    "description": "Vomnibar 标签页输入提示"
+  },
+  "vomnibarNewTab": { "message": "新标签页", "description": "Vomnibar 新标签页提示" },
+  "vomnibarHintSelect": { "message": "选择", "description": "Vomnibar 键盘提示" },
+  "vomnibarHintOpen": { "message": "打开", "description": "Vomnibar 键盘提示" },
+  "vomnibarHintClose": { "message": "关闭", "description": "Vomnibar 键盘提示" },
   "appearance": { "message": "外观", "description": "外观分区" },
   "keyMappings": { "message": "键盘映射", "description": "键盘映射" },
   "searchEngines": { "message": "搜索引擎", "description": "搜索引擎" },
@@ -179,11 +531,33 @@
     "description": "搜索隐私说明"
   },
   "vimiumBackup": {
-    "message": "也可以导入 Vimium JSON 备份。兼容字段会写入 Vimium 设置和 OpenKeyMouse 设置，未知字段会列出并忽略。",
+    "message": "也可以导入 Vimium JSON 备份。兼容字段会写入 Vimium 设置和浏览器工具箱设置；未知字段会列出，能保留的设置字段会保留，其余字段会忽略。",
     "description": "Vimium 导入说明"
   },
   "importSummary": { "message": "导入以下设置", "description": "导入确认" },
   "changedSettings": { "message": "将修改的设置", "description": "修改设置摘要" },
   "ignoredFields": { "message": "已忽略字段", "description": "忽略字段摘要" },
+  "unrecognizedFields": {
+    "message": "未识别设置（已保留）",
+    "description": "导入时保留未识别的设置字段"
+  },
+  "importPreviewTitle": { "message": "确认导入设置", "description": "导入预览标题" },
+  "importPreviewDescription": {
+    "message": "请先检查变更，确认后才会写入设置。",
+    "description": "导入预览说明"
+  },
+  "importPreviewAdded": { "message": "新增", "description": "导入预览新增设置" },
+  "importPreviewChanged": { "message": "修改", "description": "导入预览修改设置" },
+  "importPreviewRemoved": { "message": "删除", "description": "导入预览删除设置" },
+  "importPreviewConfirm": { "message": "导入这些变更", "description": "导入预览确认按钮" },
+  "importPreviewCancel": { "message": "取消导入", "description": "导入预览取消按钮" },
+  "importPreviewNoChanges": {
+    "message": "不会修改浏览器工具箱设置。",
+    "description": "导入预览无变更"
+  },
+  "importPreviewTruncated": {
+    "message": "部分详细变更已省略。",
+    "description": "导入预览省略提示"
+  },
   "none": { "message": "无", "description": "空摘要" }
 }

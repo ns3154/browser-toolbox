@@ -50,7 +50,16 @@ class UIComponent {
     // Fetch "content_scripts/vimium.css" from chrome.storage.session; the background page caches
     // it there.
     chrome.storage.session.get("vimiumCSSInChromeStorage")
-      .then((items) => styleSheet.innerHTML = items.vimiumCSSInChromeStorage);
+      .then(async (items) => {
+        let cssText = items.vimiumCSSInChromeStorage;
+        if (!cssText) {
+          // 首次打开可能早于后台会话缓存写入；只回退读取扩展自身 CSS，避免组件裸样式显示。
+          const response = await fetch(chrome.runtime.getURL("content_scripts/vimium.css"));
+          if (response.ok) cssText = await response.text();
+        }
+        if (cssText) styleSheet.textContent = cssText;
+      })
+      .catch(() => {});
 
     this.iframeElement.className = className;
 

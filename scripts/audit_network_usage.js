@@ -1,7 +1,7 @@
 // 审计新增模块的网络调用。上游 Vimium 的既有搜索和本地资源读取不在本脚本范围内。
 const roots = [
-  "lib/open_key_mouse",
-  "background_scripts/open_key_mouse",
+  "lib/browser_toolbox",
+  "background_scripts/browser_toolbox",
   "content_scripts/mouse",
   "pages/mouse_options.js",
   "pages/tab_list.js",
@@ -16,12 +16,18 @@ const patterns = [
   [/\bhttps?:\/\//, "http(s) URL"],
 ];
 const allowed = [
+  // 站点规则中的 URL 是匹配数据，不是网络调用；保持文件和文本双重精确匹配，避免放宽真正的网络审计。
+  { file: "lib/browser_toolbox/settings_schema.js", text: "https://docs.google.com/*" },
+  { file: "lib/browser_toolbox/settings_schema.js", text: "https://*.notion.so/*" },
+  { file: "lib/browser_toolbox/settings_schema.js", text: "https://stackblitz.com/*" },
+  { file: "lib/browser_toolbox/settings_schema.js", text: "https://codesandbox.io/*" },
+  { file: "lib/browser_toolbox/settings_schema.js", text: "https://codepen.io/*" },
   {
-    file: "background_scripts/open_key_mouse/browser_command_adapter.js",
+    file: "background_scripts/browser_toolbox/browser_command_adapter.js",
     text: "www.google.com/search",
   },
-  { file: "lib/open_key_mouse/command_invocation.js", text: "openkeymouse.invalid" },
-  { file: "content_scripts/mouse/drag_context_classifier.js", text: "openkeymouse.invalid" },
+  { file: "lib/browser_toolbox/command_invocation.js", text: "browsertoolbox.invalid" },
+  { file: "content_scripts/mouse/drag_context_classifier.js", text: "browsertoolbox.invalid" },
   { file: "content_scripts/mouse/gesture_overlay.js", text: "www.w3.org/2000/svg" },
   { file: "pages/mouse_options.js", text: "https://example.com/*" },
 ];

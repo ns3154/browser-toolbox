@@ -39,7 +39,7 @@
       this.clear();
       if (!settings?.enabled || !isSafeAsset(asset)) return false;
       this.style = this.document.createElement("style");
-      this.style.dataset.openKeyMouseCursor = "true";
+      this.style.dataset.browserToolboxCursor = "true";
       const metadata = readPngAsset(asset);
       const x = Math.max(0, Math.min(metadata.width - 1, Number(settings.hotspotX) || 0));
       const y = Math.max(0, Math.min(metadata.height - 1, Number(settings.hotspotY) || 0));
@@ -54,8 +54,8 @@
     }
   }
 
-  globalThis.OpenKeyMouseCursorController = CursorController;
-  globalThis.OpenKeyMouseCursorAsset = Object.freeze({
+  globalThis.BrowserToolboxCursorController = CursorController;
+  globalThis.BrowserToolboxCursorAsset = Object.freeze({
     isSafeAsset,
     readPngAsset,
     MAX_BYTES,

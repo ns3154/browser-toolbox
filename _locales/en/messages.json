@@ -1,18 +1,30 @@
 {
-  "extensionName": { "message": "OpenKeyMouse", "description": "Extension name" },
+  "extensionName": { "message": "Browser Toolbox", "description": "Extension name" },
   "extensionDescription": {
-    "message": "A free, local-first keyboard and mouse navigation extension with no telemetry.",
+    "message": "Free, local-first browser toolbox for keyboard and mouse navigation, page actions, and tab control. No ads, accounts, or telemetry.",
     "description": "Extension description"
   },
-  "openKeyMouse": { "message": "OpenKeyMouse", "description": "Project name" },
+  "browserToolbox": { "message": "Browser Toolbox", "description": "Product name" },
   "save": { "message": "Save", "description": "Save button" },
   "saved": { "message": "Saved", "description": "Saved status" },
+  "saving": { "message": "Saving…", "description": "Save in progress" },
+  "saveChanges": { "message": "Save changes", "description": "Save changes status" },
+  "noChanges": { "message": "No changes", "description": "No changes status" },
   "cancel": { "message": "Cancel", "description": "Cancel button" },
   "close": { "message": "Close", "description": "Close button" },
   "reset": { "message": "Reset", "description": "Reset button" },
   "enabled": { "message": "Enabled", "description": "Enabled label" },
   "disabled": { "message": "Disabled", "description": "Disabled label" },
   "general": { "message": "General", "description": "General settings" },
+  "globalShowHud": { "message": "Show toolbox command hints", "description": "Global toolbox HUD" },
+  "browserSyncEnabled": {
+    "message": "Sync settings with the browser",
+    "description": "Browser sync toggle"
+  },
+  "browserSyncNote": {
+    "message": "When disabled, settings stay in this browser's local storage and are not synchronized.",
+    "description": "Browser sync explanation"
+  },
   "keyboard": { "message": "Keyboard", "description": "Keyboard settings" },
   "mouseGestures": { "message": "Mouse Gestures", "description": "Mouse gesture settings" },
   "superDrag": { "message": "Super Drag", "description": "Super drag settings" },
@@ -21,18 +33,169 @@
   "siteRules": { "message": "Site Rules", "description": "Site rule settings" },
   "backupRestore": { "message": "Backup & Restore", "description": "Backup settings" },
   "privacy": { "message": "Privacy", "description": "Privacy settings" },
+  "privacyTitle": { "message": "Browser Toolbox Privacy", "description": "Privacy page title" },
   "aboutLicenses": { "message": "About & Licenses", "description": "About page" },
   "openSettings": { "message": "Open settings", "description": "Open settings button" },
+  "openBrowserToolboxSettings": {
+    "message": "Browser Toolbox mouse, drag, wheel and privacy settings",
+    "description": "Browser Toolbox link from the Vimium options page"
+  },
+  "browserToolboxSettings": {
+    "message": "Browser Toolbox settings",
+    "description": "Browser Toolbox command group heading"
+  },
+  "browserToolboxHelpTitle": { "message": "Browser Toolbox Help", "description": "Help title" },
+  "browserToolboxHelpIntro": {
+    "message": "Keyboard navigation uses the Vimium baseline; this section summarizes Browser Toolbox modules and the current page state.",
+    "description": "Help introduction"
+  },
+  "browserToolboxCurrentPage": {
+    "message": "Current page state",
+    "description": "Help page state heading"
+  },
+  "browserToolboxAllModulesEnabled": {
+    "message": "All Browser Toolbox modules are enabled on this page.",
+    "description": "All modules status"
+  },
+  "browserToolboxDisabledModules": {
+    "message": "Disabled modules on this page",
+    "description": "Disabled modules status"
+  },
+  "browserToolboxStatusUnavailable": {
+    "message": "The current page state is not available.",
+    "description": "Unavailable page state"
+  },
+  "browserToolboxAppliedRule": {
+    "message": "Applied site rule",
+    "description": "Applied site rule label"
+  },
+  "browserToolboxNoMatchingRule": {
+    "message": "No Browser Toolbox site rule matches this page.",
+    "description": "No matching site rule"
+  },
+  "browserToolboxVimiumExcluded": {
+    "message": "A Vimium page rule excludes keyboard navigation here.",
+    "description": "Vimium exclusion status"
+  },
+  "browserToolboxBrowserLimit": {
+    "message": "Some browser-managed pages do not allow extensions to run; controls may be unavailable there.",
+    "description": "Browser limitation note"
+  },
+  "browserToolboxMouseHelp": {
+    "message": "Draw a configured path with the gesture button. When menu suppression is enabled, Chromium context menus are blocked from button-down to prevent right-button gesture conflicts; disabling it keeps the native menu but may conflict with gestures.",
+    "description": "Mouse gesture help"
+  },
+  "browserToolboxSuperDragHelp": {
+    "message": "Drag links, text, or images to run configured actions. File uploads, editors, password fields, and draggable widgets remain native.",
+    "description": "Super drag help"
+  },
+  "browserToolboxWheelHelp": {
+    "message": "Use the configured mouse button with the wheel to run a thresholded action without changing ordinary scrolling.",
+    "description": "Wheel help"
+  },
+  "browserToolboxRockerHelp": {
+    "message": "Hold one mouse button and click the other to run a configured rocker action; unbound combinations remain ordinary clicks.",
+    "description": "Rocker help"
+  },
+  "browserToolboxSiteRulesHelp": {
+    "message": "Configure each module per site with Glob or regular-expression rules. The top-level page controls all frames.",
+    "description": "Site rules help"
+  },
+  "browserToolboxPrivacyHelp": {
+    "message": "No telemetry, accounts, advertising, paid features, remote code, or project-server requests are part of Browser Toolbox.",
+    "description": "Privacy help"
+  },
+  "browserToolboxLicenseHelp": {
+    "message": "The project code is available under GPL-3.0-or-later.",
+    "description": "License help"
+  },
+  "openBrowserToolboxSettingsPage": {
+    "message": "Open Browser Toolbox settings",
+    "description": "Help settings link"
+  },
+  "openPrivacyPolicy": { "message": "Privacy policy", "description": "Privacy policy link" },
+  "openLicense": { "message": "License", "description": "License link" },
+  "keyboardBaselineNotice": {
+    "message": "Keyboard navigation baseline: Vimium v2.4.2.",
+    "description": "Keyboard baseline notice"
+  },
+  "help": { "message": "Help", "description": "Help label" },
+  "wiki": { "message": "Wiki", "description": "Wiki link" },
+  "navigatingThePage": { "message": "Navigating the page", "description": "Help section heading" },
+  "usingTheVomnibar": { "message": "Using the Vomnibar", "description": "Help section heading" },
+  "usingFind": { "message": "Using find", "description": "Help section heading" },
+  "navigatingHistory": { "message": "Navigating history", "description": "Help section heading" },
+  "manipulatingTabs": { "message": "Manipulating tabs", "description": "Help section heading" },
+  "linksAndSelections": {
+    "message": "Links and selections",
+    "description": "Help section heading"
+  },
+  "windows": { "message": "Windows", "description": "Help section heading" },
+  "miscellaneous": { "message": "Miscellaneous", "description": "Help section heading" },
+  "showAdvancedCommands": {
+    "message": "Show advanced commands",
+    "description": "Advanced command toggle"
+  },
+  "hideAdvancedCommands": {
+    "message": "Hide advanced commands",
+    "description": "Advanced command toggle"
+  },
+  "whatsNew": { "message": "What's new?", "description": "Changelog link" },
+  "version": { "message": "Version", "description": "Version label" },
   "openHelp": { "message": "Open help", "description": "Open help button" },
   "currentSite": { "message": "Current site", "description": "Current site heading" },
   "allModulesEnabled": {
-    "message": "All OpenKeyMouse modules are enabled on this site.",
+    "message": "All Browser Toolbox modules are enabled on this site.",
     "description": "Current site status"
   },
   "pageUnavailable": {
     "message": "The browser does not allow extensions to run on this page.",
     "description": "Restricted page message"
   },
+  "actionPageTitle": { "message": "Browser Toolbox", "description": "Action page title" },
+  "firefoxMissingHostsPermission": {
+    "message": "Vimium is missing the \"all hosts\" permission.",
+    "description": "Firefox permission heading"
+  },
+  "firefoxPermissionHelp": {
+    "message": "Firefox requires users to grant this permission manually. You can enable it with the button below:",
+    "description": "Firefox permission help"
+  },
+  "grantHostsPermission": {
+    "message": "Enable all hosts permission",
+    "description": "Grant hosts permission"
+  },
+  "firefoxPermissionPathIntro": {
+    "message": "Or navigate to:",
+    "description": "Firefox permission path intro"
+  },
+  "firefoxPermissionPath": {
+    "message": "about:addons > Vimium > Manage (three-dot menu) > Permissions > enable \"Access your data for all websites\".",
+    "description": "Firefox permission path"
+  },
+  "seePermissionsHelp": {
+    "message": "See permissions help",
+    "description": "Permissions help link"
+  },
+  "vimiumKeysEnabledOnPage": {
+    "message": "Vimium keys are enabled on this page.",
+    "description": "Enabled keys status"
+  },
+  "excludeKeysOnPage": {
+    "message": "Exclude Vimium keys on this page",
+    "description": "Add page exclusion"
+  },
+  "matchingPatterns": {
+    "message": "Patterns matching the current page",
+    "description": "Exclusion pattern header"
+  },
+  "keysToExclude": { "message": "Keys to exclude", "description": "Excluded keys header" },
+  "seeExclusionRules": {
+    "message": "See all exclusion rules on the",
+    "description": "Exclusion rules link prefix"
+  },
+  "optionsPage": { "message": "Options", "description": "Options page link" },
+  "page": { "message": "page.", "description": "Page suffix" },
   "noTelemetry": {
     "message": "No telemetry, accounts, advertising, or paid features.",
     "description": "Privacy promise"
@@ -44,15 +207,97 @@
   },
   "gestureEditor": { "message": "Gesture editor", "description": "Gesture drawing area" },
   "command": { "message": "Command", "description": "Command label" },
+  "options": { "message": "Options", "description": "Command options" },
+  "optionsDefault": { "message": "Default", "description": "Default command option value" },
+  "optionsHint": {
+    "message": "JSON object; values are validated before saving.",
+    "description": "Command options hint"
+  },
+  "dangerousCommandWarning": {
+    "message": "May close tabs or windows.",
+    "description": "Dangerous command warning"
+  },
   "addBinding": { "message": "Add binding", "description": "Add binding button" },
+  "addRule": { "message": "Add rule", "description": "Add site rule button" },
   "removeBinding": { "message": "Remove binding", "description": "Remove binding button" },
+  "removeRule": { "message": "Remove rule", "description": "Remove site rule button" },
+  "moveUp": { "message": "Move up", "description": "Move site rule up" },
+  "moveDown": { "message": "Move down", "description": "Move site rule down" },
+  "duplicateRule": { "message": "Duplicate rule", "description": "Duplicate site rule" },
+  "discardChanges": { "message": "Discard changes", "description": "Discard draft settings" },
+  "unsavedChanges": {
+    "message": "You have unsaved changes.",
+    "description": "Unsaved settings status"
+  },
   "restoreDefaults": { "message": "Restore defaults", "description": "Restore defaults button" },
+  "restoreDefaultsConfirm": {
+    "message": "Restore Browser Toolbox settings to their defaults?",
+    "description": "Restore defaults confirmation"
+  },
   "importSettings": { "message": "Import settings", "description": "Import settings button" },
   "exportSettings": { "message": "Export settings", "description": "Export settings button" },
   "chooseFile": { "message": "Choose a file", "description": "File picker label" },
   "invalidSettings": {
     "message": "The settings file is invalid.",
     "description": "Invalid settings message"
+  },
+  "settingsConflict": {
+    "message": "These settings changed in another Browser Toolbox page or device. Reload before saving.",
+    "description": "Concurrent settings edit message"
+  },
+  "settingsConflictFields": {
+    "message": "Conflicting fields",
+    "description": "Concurrent settings conflict fields label"
+  },
+  "settingsConflictMore": {
+    "message": "more fields omitted",
+    "description": "Concurrent settings omitted fields label"
+  },
+  "settingsRecoveryFailed": {
+    "message": "The save failed and automatic recovery was incomplete. Reload before editing further.",
+    "description": "Settings recovery warning"
+  },
+  "validationUnknownCommand": { "message": "Unknown command", "description": "Validation error" },
+  "validationUnsupportedInput": {
+    "message": "This command is not available for this input",
+    "description": "Validation error"
+  },
+  "validationInvalidOptions": {
+    "message": "Invalid command options",
+    "description": "Validation error"
+  },
+  "validationDuplicate": { "message": "Duplicate binding", "description": "Validation error" },
+  "validationInvalidPattern": {
+    "message": "Invalid gesture pattern",
+    "description": "Validation error"
+  },
+  "validationInvalidRegex": {
+    "message": "Invalid regular expression",
+    "description": "Validation error"
+  },
+  "validationRegexComplexity": {
+    "message": "Regular expression is too complex",
+    "description": "Validation error"
+  },
+  "siteRuleDuplicateWarning": {
+    "message": "This matching pattern is used by another rule; the later configured rule takes precedence for overlapping fields.",
+    "description": "Duplicate site rule warning"
+  },
+  "validationInvalidSiteRule": {
+    "message": "Invalid site rule",
+    "description": "Validation error"
+  },
+  "validationOutOfRange": {
+    "message": "Value is outside the allowed range",
+    "description": "Validation error"
+  },
+  "validationPrivacy": {
+    "message": "Privacy guarantees cannot be changed",
+    "description": "Validation error"
+  },
+  "validationSchema": {
+    "message": "Unsupported settings schema",
+    "description": "Validation error"
   },
   "gestureUnrecognized": { "message": "Gesture not recognized", "description": "Gesture feedback" },
   "gestureCancelled": { "message": "Gesture cancelled", "description": "Gesture feedback" },
@@ -64,6 +309,11 @@
   "languageAuto": { "message": "Follow browser", "description": "Automatic language" },
   "languageEnglish": { "message": "English", "description": "English language" },
   "languageChinese": { "message": "简体中文", "description": "Simplified Chinese language" },
+  "triggerButton": { "message": "Gesture trigger button", "description": "Gesture trigger button" },
+  "mouseTriggerButtonHint": {
+    "message": "The gesture button takes priority over super drag and rocker input when they use the same button. With the right button, menu suppression starts on button-down to prevent Chromium context-menu conflicts; disabling it keeps the native menu but may conflict with gestures.",
+    "description": "Gesture button conflict behavior"
+  },
   "directionMode": { "message": "Direction mode", "description": "Direction mode label" },
   "fourWay": { "message": "Four directions", "description": "Four-way mode" },
   "eightWay": { "message": "Eight directions", "description": "Eight-way mode" },
@@ -71,8 +321,26 @@
     "message": "Activation distance (px)",
     "description": "Gesture threshold"
   },
+  "sampleDistance": {
+    "message": "Sample distance (px)",
+    "description": "Gesture sampling distance"
+  },
+  "minimumSegmentDistance": {
+    "message": "Minimum segment distance (px)",
+    "description": "Gesture segment threshold"
+  },
+  "turnHysteresis": {
+    "message": "Turn hysteresis (degrees)",
+    "description": "Gesture turn hysteresis"
+  },
+  "maxSegments": { "message": "Maximum segments", "description": "Gesture segment limit" },
+  "maxDuration": { "message": "Maximum duration (ms)", "description": "Gesture duration limit" },
   "showTrail": { "message": "Show gesture trail", "description": "Trail toggle" },
   "showHud": { "message": "Show command HUD", "description": "HUD toggle" },
+  "suppressContextMenu": {
+    "message": "Suppress context menu during gestures",
+    "description": "Context menu suppression during gesture sessions"
+  },
   "privacyImmutable": {
     "message": "Telemetry, remote configuration, and background network access are permanently disabled.",
     "description": "Immutable privacy status"
@@ -86,102 +354,247 @@
   "resetCursor": { "message": "Remove local pointer", "description": "Remove pointer" },
   "wheelThreshold": { "message": "Wheel threshold", "description": "Wheel threshold" },
   "cooldown": { "message": "Cooldown (ms)", "description": "Wheel cooldown" },
+  "continuousTabSwitching": {
+    "message": "Continuous tab switching",
+    "description": "Wheel tab switching mode"
+  },
   "button": { "message": "Button", "description": "Mouse button" },
   "direction": { "message": "Direction", "description": "Direction" },
   "sequence": { "message": "Sequence", "description": "Rocker sequence" },
+  "leftButton": { "message": "Left button", "description": "Mouse button" },
+  "rightButton": { "message": "Right button", "description": "Mouse button" },
+  "middleButton": { "message": "Middle button", "description": "Mouse button" },
+  "up": { "message": "Up", "description": "Wheel direction" },
+  "down": { "message": "Down", "description": "Wheel direction" },
+  "holdRightThenClickLeft": {
+    "message": "Hold right, click left",
+    "description": "Rocker sequence"
+  },
+  "holdLeftThenClickRight": {
+    "message": "Hold left, click right",
+    "description": "Rocker sequence"
+  },
   "urlPattern": { "message": "URL pattern", "description": "Site URL pattern" },
   "modules": { "message": "Modules", "description": "Site modules" },
+  "siteRuleMatchType": { "message": "Match type", "description": "Site rule match type" },
+  "siteRuleGlob": { "message": "Glob", "description": "Glob site rule" },
+  "siteRuleRegex": {
+    "message": "Regular expression",
+    "description": "Regular expression site rule"
+  },
+  "siteRuleEnabled": {
+    "message": "Enable toolbox on this site",
+    "description": "Site rule overall switch"
+  },
+  "siteRuleDisableModules": {
+    "message": "Disable modules on this site",
+    "description": "Site rule module switches"
+  },
+  "siteRuleModuleHint": {
+    "message": "Check a module to disable it on this site.",
+    "description": "Site rule module switch help"
+  },
+  "siteRuleDefaultHint": {
+    "message": "Built-in high-conflict site rules disable mouse modules by default. You can edit or remove them.",
+    "description": "Built-in high-conflict site rule explanation"
+  },
+  "siteRuleGlobHint": {
+    "message": "Example: https://*.example.com/*",
+    "description": "Glob site rule example"
+  },
+  "siteRuleRegexHint": {
+    "message": "Example: ^https://(www\\.)?example\\.com/",
+    "description": "Regular expression site rule example"
+  },
+  "siteRulePriority": { "message": "Priority", "description": "Site rule priority" },
+  "siteRuleOrder": {
+    "message": "Configuration order",
+    "description": "Site rule configuration order"
+  },
+  "siteRulePrecedence": {
+    "message": "Match precedence",
+    "description": "Site rule match precedence"
+  },
+  "siteRuleActions": { "message": "Actions", "description": "Site rule actions" },
+  "siteRuleNoRules": {
+    "message": "No site rules yet. Add one to configure a URL.",
+    "description": "Empty site rule state"
+  },
+  "testSiteUrl": { "message": "Test URL", "description": "Test site rule against an entered URL" },
+  "siteRuleTestUrl": { "message": "URL to test", "description": "URL test field label" },
+  "siteRuleTestUrlHint": {
+    "message": "https://example.com/path",
+    "description": "URL test field placeholder"
+  },
+  "siteRuleTestUrlHelp": {
+    "message": "Enter a URL; this field is not saved.",
+    "description": "URL test field help"
+  },
+  "siteRuleEnterTestUrl": {
+    "message": "Enter a URL to test.",
+    "description": "Missing URL test input"
+  },
+  "siteRuleInvalidTestUrl": {
+    "message": "Enter a valid URL.",
+    "description": "Invalid URL test input"
+  },
+  "siteRuleMatched": {
+    "message": "The URL matches a site rule:",
+    "description": "Site rule match result"
+  },
+  "siteRuleNotMatched": {
+    "message": "The URL does not match any site rule.",
+    "description": "Site rule no-match result"
+  },
+  "siteRuleEffectiveState": {
+    "message": "Effective modules",
+    "description": "Effective site rule state"
+  },
+  "siteRuleDisabledModules": {
+    "message": "Disabled modules",
+    "description": "Disabled site modules"
+  },
+  "siteRuleAllModulesEnabled": {
+    "message": "All modules are enabled",
+    "description": "Enabled site modules"
+  },
+  "siteRuleExplanationTitle": {
+    "message": "Why this result applies",
+    "description": "Site rule explanation heading"
+  },
+  "siteRuleNoMatchingRules": {
+    "message": "No Browser Toolbox site rule matches this URL.",
+    "description": "Site rule explanation no-match item"
+  },
+  "patternDoesNotMatch": {
+    "message": "Pattern does not match the current URL",
+    "description": "Current URL validation"
+  },
+  "untitledTab": { "message": "(untitled)", "description": "Untitled tab label" },
+  "allKeys": { "message": "All", "description": "All keys enabled caption" },
+  "noKeys": { "message": "No", "description": "No keys enabled caption" },
+  "someKeys": { "message": "Some", "description": "Some keys enabled caption" },
   "context": { "message": "Context", "description": "Drag context" },
+  "contextLink": { "message": "Link", "description": "Drag context" },
+  "contextSelection": { "message": "Selected text", "description": "Drag context" },
+  "contextImage": { "message": "Image", "description": "Drag context" },
   "openOnboarding": { "message": "Open onboarding", "description": "Onboarding link" },
   "projectCharter": { "message": "Project Charter", "description": "Project charter link" },
   "thirdPartyNotices": {
     "message": "Third-party notices",
     "description": "Third-party notices link"
   },
-  "command_OpenKeyMouse_closeWindow": {
+  "command_BrowserToolbox_closeWindow": {
     "message": "Close current window",
     "description": "Command title"
   },
-  "command_OpenKeyMouse_newWindow": {
+  "command_BrowserToolbox_newWindow": {
     "message": "Open a new window",
     "description": "Command title"
   },
-  "command_OpenKeyMouse_toggleFullscreen": {
+  "command_BrowserToolbox_toggleFullscreen": {
     "message": "Toggle fullscreen",
     "description": "Command title"
   },
-  "command_OpenKeyMouse_minimizeWindow": {
+  "command_BrowserToolbox_minimizeWindow": {
     "message": "Minimize current window",
     "description": "Command title"
   },
-  "command_OpenKeyMouse_maximizeWindow": {
+  "command_BrowserToolbox_maximizeWindow": {
     "message": "Maximize current window",
     "description": "Command title"
   },
-  "command_OpenKeyMouse_showTabList": {
+  "command_BrowserToolbox_showTabList": {
     "message": "Show tab list",
     "description": "Command title"
   },
-  "command_OpenKeyMouse_toggleKeyboard": {
+  "command_BrowserToolbox_toggleKeyboard": {
     "message": "Toggle keyboard navigation",
     "description": "Command title"
   },
-  "command_OpenKeyMouse_toggleMouseGestures": {
+  "command_BrowserToolbox_toggleMouseGestures": {
     "message": "Toggle mouse gestures",
     "description": "Command title"
   },
-  "command_OpenKeyMouse_toggleSuperDrag": {
+  "command_BrowserToolbox_toggleSuperDrag": {
     "message": "Toggle super drag",
     "description": "Command title"
   },
-  "command_OpenKeyMouse_copySelection": {
+  "command_BrowserToolbox_copySelection": {
     "message": "Copy selected text",
     "description": "Command title"
   },
-  "command_OpenKeyMouse_copyLinkText": {
+  "command_BrowserToolbox_copyLinkText": {
     "message": "Copy link text",
     "description": "Command title"
   },
-  "command_OpenKeyMouse_copyLinkUrl": {
+  "command_BrowserToolbox_copyLinkUrl": {
     "message": "Copy link URL",
     "description": "Command title"
   },
-  "command_OpenKeyMouse_copyImageUrl": {
+  "command_BrowserToolbox_copyImageUrl": {
     "message": "Copy image URL",
     "description": "Command title"
   },
-  "command_OpenKeyMouse_searchSelection": {
+  "command_BrowserToolbox_searchSelection": {
     "message": "Search selected text",
     "description": "Command title"
   },
-  "command_OpenKeyMouse_openLinkForeground": {
+  "command_BrowserToolbox_openLinkForeground": {
     "message": "Open link in foreground",
     "description": "Command title"
   },
-  "command_OpenKeyMouse_openLinkBackground": {
+  "command_BrowserToolbox_openLinkBackground": {
     "message": "Open link in background",
     "description": "Command title"
   },
-  "command_OpenKeyMouse_openImageForeground": {
+  "command_BrowserToolbox_openImageForeground": {
     "message": "Open image in foreground",
     "description": "Command title"
   },
-  "command_OpenKeyMouse_openImageBackground": {
+  "command_BrowserToolbox_openImageBackground": {
     "message": "Open image in background",
     "description": "Command title"
   },
-  "command_OpenKeyMouse_downloadImage": {
+  "command_BrowserToolbox_downloadImage": {
     "message": "Download image",
     "description": "Command title"
   },
   "settingsSections": { "message": "Settings sections", "description": "Settings navigation" },
+  "settingsSearch": { "message": "Search settings", "description": "Settings navigation search" },
+  "settingsSearchHint": {
+    "message": "Filter settings sections…",
+    "description": "Settings navigation search hint"
+  },
+  "settingsSearchMatches": {
+    "message": "Matching sections",
+    "description": "Settings navigation result label"
+  },
+  "settingsSearchNoResults": {
+    "message": "No matching settings sections.",
+    "description": "Settings navigation empty result"
+  },
+  "navigationKeyboard": { "message": "Navigation & Keyboard", "description": "Settings category" },
+  "mouseDrag": { "message": "Mouse & Drag", "description": "Settings category" },
+  "searchTabs": { "message": "Search & Tabs", "description": "Settings category" },
+  "appearanceBehavior": { "message": "Appearance & Behavior", "description": "Settings category" },
+  "sitePrivacy": { "message": "Sites & Privacy", "description": "Settings category" },
+  "backupAbout": { "message": "Backup & About", "description": "Settings category" },
   "gestureEditor": { "message": "Gesture editor", "description": "Gesture editor label" },
   "superDragSafety": {
-    "message": "Alt always keeps native dragging. File uploads, editors, password fields, custom draggable widgets, and invalid URLs are not intercepted.",
+    "message": "The selected bypass modifier always keeps native dragging. File uploads, editors, password fields, custom draggable widgets, and invalid URLs are not intercepted.",
     "description": "Super drag safety"
   },
+  "nativeBypassModifier": {
+    "message": "Native drag bypass modifier",
+    "description": "Super drag bypass modifier"
+  },
+  "modifierAlt": { "message": "Alt", "description": "Modifier option" },
+  "modifierControl": { "message": "Control", "description": "Modifier option" },
+  "modifierMeta": { "message": "Command / Meta", "description": "Modifier option" },
+  "modifierShift": { "message": "Shift", "description": "Modifier option" },
   "siteRuleSpecificity": {
-    "message": "The most specific matching rule wins; the top-level page URL controls all frames.",
+    "message": "Glob rules with the most specific pattern win; for equal priority, the later rule wins. Regular expressions are supported explicitly. The top-level page URL controls all frames.",
     "description": "Site rule behavior"
   },
   "backupContents": {
@@ -194,7 +607,7 @@
   },
   "licenseGpl": { "message": "GPL-3.0-or-later", "description": "License name" },
   "aboutText": {
-    "message": "OpenKeyMouse is based on Vimium v2.4.2 and remains free and open source.",
+    "message": "Browser Toolbox uses Vimium v2.4.2 as its keyboard baseline and remains free and open source.",
     "description": "About text"
   },
   "cleanRoomText": {
@@ -203,7 +616,7 @@
   },
   "dataHandling": { "message": "Data handling", "description": "Privacy section" },
   "privacyData": {
-    "message": "OpenKeyMouse does not send URLs, history, bookmarks, page content, selected text, search terms, keystrokes, mouse paths, pointer images, configuration, device identifiers, installation identifiers, or crash reports to a project server or third-party analytics service.",
+    "message": "Browser Toolbox does not send URLs, history, bookmarks, page content, selected text, search terms, keystrokes, mouse paths, pointer images, configuration, device identifiers, installation identifiers, or crash reports to a project server or third-party analytics service.",
     "description": "Privacy data statement"
   },
   "localStorage": { "message": "Local storage", "description": "Storage section" },
@@ -212,12 +625,40 @@
     "description": "Storage privacy"
   },
   "security": { "message": "Security", "description": "Security link" },
+  "charterFree": {
+    "message": "Browser Toolbox is free, open source, and provides the same complete feature set to every user.",
+    "description": "Project charter availability"
+  },
+  "charterPrivacy": {
+    "message": "The project does not add telemetry, accounts, advertising, paid features, remote configuration, or background data collection.",
+    "description": "Project charter privacy"
+  },
+  "securityBoundary": {
+    "message": "Browser Toolbox keeps browser data and user input in the local browser. It does not load remote code or trust web pages to invoke privileged actions.",
+    "description": "Security boundary"
+  },
+  "securityImport": {
+    "message": "Imported settings are parsed, validated, previewed, and confirmed before they are written. Import files are never executed as HTML or script.",
+    "description": "Import security"
+  },
+  "securityReport": {
+    "message": "Do not include credentials, cookies, tokens, personal data, or complete browsing data in a public issue.",
+    "description": "Security report guidance"
+  },
+  "vimiumLicenseNotice": {
+    "message": "Vimium v2.4.2 code and assets: MIT license",
+    "description": "Vimium third-party license notice"
+  },
+  "shouldaLicenseNotice": {
+    "message": "shoulda.js test framework: MIT license",
+    "description": "shoulda.js third-party license notice"
+  },
   "onboardingIntro": {
-    "message": "Keyboard navigation and independently implemented mouse controls for Chromium browsers.",
+    "message": "A local browser workflow toolbox for Chromium browsers, with keyboard navigation and independent mouse input modules.",
     "description": "Onboarding introduction"
   },
   "onboardingGesture": {
-    "message": "Right-button gestures keep the native context menu until the activation threshold is crossed.",
+    "message": "When menu suppression is enabled, right-button gestures block conflicting native menus from button-down; disabling it keeps the native menu but may conflict with gestures.",
     "description": "Onboarding gesture"
   },
   "onboardingDrag": {
@@ -230,6 +671,31 @@
   },
   "search": { "message": "Search", "description": "Search label" },
   "searchSettings": { "message": "Search", "description": "Search settings section" },
+  "vomnibarSearchOrOpen": {
+    "message": "Search or open",
+    "description": "Vomnibar omni mode title"
+  },
+  "vomnibarSearchBookmarks": {
+    "message": "Search bookmarks",
+    "description": "Vomnibar bookmarks mode title"
+  },
+  "vomnibarSearchTabs": { "message": "Search tabs", "description": "Vomnibar tabs mode title" },
+  "vomnibarPlaceholderOmni": {
+    "message": "Enter a search term or URL",
+    "description": "Vomnibar omni input placeholder"
+  },
+  "vomnibarPlaceholderBookmarks": {
+    "message": "Enter a bookmark title or URL",
+    "description": "Vomnibar bookmark input placeholder"
+  },
+  "vomnibarPlaceholderTabs": {
+    "message": "Enter a tab title or URL",
+    "description": "Vomnibar tab input placeholder"
+  },
+  "vomnibarNewTab": { "message": "New tab", "description": "Vomnibar new tab indicator" },
+  "vomnibarHintSelect": { "message": "Select", "description": "Vomnibar keyboard hint" },
+  "vomnibarHintOpen": { "message": "Open", "description": "Vomnibar keyboard hint" },
+  "vomnibarHintClose": { "message": "Close", "description": "Vomnibar keyboard hint" },
   "appearance": { "message": "Appearance", "description": "Appearance section" },
   "keyMappings": { "message": "Keyboard mappings", "description": "Keyboard mappings" },
   "searchEngines": { "message": "Search engines", "description": "Search engines" },
@@ -242,11 +708,48 @@
     "description": "Search privacy note"
   },
   "vimiumBackup": {
-    "message": "You can also import a Vimium JSON backup. Recognized fields are copied to the compatible Vimium settings and OpenKeyMouse settings; unknown fields are reported and ignored.",
+    "message": "You can also import a Vimium JSON backup. Recognized fields are copied to the compatible Vimium settings and Browser Toolbox settings; unknown fields are reported, preserved when possible, and otherwise ignored.",
     "description": "Vimium import note"
   },
   "importSummary": { "message": "Import these settings", "description": "Import confirmation" },
   "changedSettings": { "message": "Changed settings", "description": "Changed settings summary" },
   "ignoredFields": { "message": "Ignored fields", "description": "Ignored fields summary" },
+  "unrecognizedFields": {
+    "message": "Unrecognized settings (preserved)",
+    "description": "Unrecognized settings fields preserved during import"
+  },
+  "importPreviewTitle": {
+    "message": "Review settings import",
+    "description": "Import preview title"
+  },
+  "importPreviewDescription": {
+    "message": "Review the changes before anything is written.",
+    "description": "Import preview description"
+  },
+  "importPreviewAdded": { "message": "Added", "description": "Import preview added settings" },
+  "importPreviewChanged": {
+    "message": "Changed",
+    "description": "Import preview changed settings"
+  },
+  "importPreviewRemoved": {
+    "message": "Removed",
+    "description": "Import preview removed settings"
+  },
+  "importPreviewConfirm": {
+    "message": "Import these changes",
+    "description": "Import preview confirm button"
+  },
+  "importPreviewCancel": {
+    "message": "Cancel import",
+    "description": "Import preview cancel button"
+  },
+  "importPreviewNoChanges": {
+    "message": "No Browser Toolbox settings will change.",
+    "description": "Import preview no changes"
+  },
+  "importPreviewTruncated": {
+    "message": "Some detailed changes are omitted from this preview.",
+    "description": "Import preview truncation notice"
+  },
   "none": { "message": "None", "description": "Empty summary" }
 }

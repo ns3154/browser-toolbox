@@ -30,7 +30,7 @@ const createStorageAPI = (areaName) => {
         return result;
       } else {
         const result = {};
-        for (key of keysArg) {
+        for (const key of keysArg) {
           result[key] = globalThis.structuredClone(this.store[key]);
         }
         return result;
@@ -42,7 +42,7 @@ const createStorageAPI = (areaName) => {
       if (key in this.store) {
         delete this.store[key];
       }
-      globalThis.chrome.storage.onChanged.callEmpty(key);
+      globalThis.chrome.storage.onChanged.callEmpty(key, areaName);
     },
 
     async clear() {
@@ -202,7 +202,7 @@ globalThis.chrome = {
         this.func = func;
       },
 
-      // Fake a callback from chrome.storage.sync.
+      // Fake a callback from a storage area.
       call(key, value, area) {
         chrome.runtime.lastError = undefined;
         const key_value = {};
@@ -210,17 +210,17 @@ globalThis.chrome = {
         if (this.func) return this.func(key_value, area);
       },
 
-      callEmpty(key) {
+      callEmpty(key, area = "sync") {
         chrome.runtime.lastError = undefined;
         if (this.func) {
           const items = {};
           items[key] = {};
-          this.func(items, "sync");
+          this.func(items, area);
         }
       },
     },
 
-    local: createStorageAPI("sync"),
+    local: createStorageAPI("local"),
     sync: createStorageAPI("sync"),
     session: createStorageAPI("session"),
   },

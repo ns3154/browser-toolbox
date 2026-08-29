@@ -1,10 +1,10 @@
 // 鼠标输入总控制器。它只识别输入并生成 Invocation，不直接调用 tabs/windows API。
 (function () {
-  const invocationApi = globalThis.OpenKeyMouseCommandInvocation;
-  const protocol = globalThis.OpenKeyMouseMessageProtocol;
-  const schema = globalThis.OpenKeyMouseSettingsSchema;
-  const repository = globalThis.OpenKeyMouseSettingsRepositoryInstance;
-  const recognizer = globalThis.OpenKeyMouseGestureRecognizer;
+  const invocationApi = globalThis.BrowserToolboxCommandInvocation;
+  const protocol = globalThis.BrowserToolboxMessageProtocol;
+  const repository = globalThis.BrowserToolboxSettingsRepositoryInstance;
+  const runtimeSettings = globalThis.BrowserToolboxSettingsRuntimeClientInstance;
+  const recognizer = globalThis.BrowserToolboxGestureRecognizer;
 
   function trusted(event) {
     return globalThis.isUnitTests || event.isTrusted === true;
@@ -43,7 +43,7 @@
     const entry = Object.assign({
       command: invocation.commandName,
       options: invocation.options || {},
-    }, globalThis.OpenKeyMouseCommandRegistry?.getCommand?.(invocation.commandName) || {});
+    }, globalThis.BrowserToolboxCommandRegistry?.getCommand?.(invocation.commandName) || {});
     const count = invocation.count || 1;
     const command = globalThis.NormalModeCommands?.[invocation.commandName];
     if (typeof command === "function") {
@@ -52,14 +52,14 @@
     }
     const context = invocation.context || {};
     switch (invocation.commandName) {
-      case "OpenKeyMouse.copySelection":
+      case "BrowserToolbox.copySelection":
         return copyText(globalThis.getSelection?.()?.toString() || context.selectedText || "");
-      case "OpenKeyMouse.copyLinkText":
+      case "BrowserToolbox.copyLinkText":
         return copyText(context.linkText || "");
-      case "OpenKeyMouse.copyLinkUrl":
-      case "OpenKeyMouse.copyImageUrl":
+      case "BrowserToolbox.copyLinkUrl":
+      case "BrowserToolbox.copyImageUrl":
         return copyText(context.linkUrl || context.imageUrl || "");
-      case "OpenKeyMouse.downloadImage": {
+      case "BrowserToolbox.downloadImage": {
         const url = context.imageUrl;
         if (!invocationApi.isAllowedUrl(url)) {
           return invocationApi.createResult(
@@ -96,9 +96,10 @@
       this.rocker = null;
       this.bridge = null;
       this.cursor = null;
-      this.repositoryListener = null;
+      this.settingsListener = null;
       this.nativeDragTarget = null;
       this.nativeDragAttribute = null;
+      this.gestureTimeoutId = null;
       this.pageshowListener = () => {
         if (!this.initialized || this.listeners.length === 0) this.init();
       };
@@ -117,22 +118,24 @@
       ) return;
       if (this.initialized) this.destroy();
       this.document = currentDocument;
-      if (!repository || !this.document?.addEventListener) return;
+      if ((!repository && !runtimeSettings) || !this.document?.addEventListener) return;
       this.initializing = true;
       this.initialized = true;
       try {
-        await repository.ensureLoaded();
         await this.refreshSettings();
-        this.overlay = new globalThis.OpenKeyMouseGestureOverlay(this.document);
-        this.guard = new globalThis.OpenKeyMouseContextMenuGuard();
-        this.wheel = new globalThis.OpenKeyMouseWheelGestureController();
-        this.rocker = new globalThis.OpenKeyMouseRockerGestureController();
-        this.cursor = new globalThis.OpenKeyMouseCursorController(this.document);
+        this.overlay = new globalThis.BrowserToolboxGestureOverlay(this.document);
+        this.guard = new globalThis.BrowserToolboxContextMenuGuard();
+        this.wheel = new globalThis.BrowserToolboxWheelGestureController();
+        this.rocker = new globalThis.BrowserToolboxRockerGestureController();
+        this.cursor = new globalThis.BrowserToolboxCursorController(this.document);
         this.installListeners();
-        this.repositoryListener = () => {
-          this.refreshSettings().then(() => this.applyCursor()).catch(() => {});
+        this.settingsListener = (settings) => {
+          this.settings = settings;
+          this.drag?.updateSettings(this.settings.superDrag);
+          this.applyCursor().catch(() => {});
         };
-        repository.addEventListener(this.repositoryListener);
+        if (runtimeSettings) runtimeSettings.addEventListener(this.settingsListener);
+        else repository.addEventListener(this.settingsListener);
         this.applyCursor();
       } finally {
         this.initializing = false;
@@ -141,26 +144,28 @@
 
     async refreshSettings() {
       const url = globalThis.location?.href || "";
-      this.settings = repository.getEffectiveSettings(url);
-      this.drag?.updateSettings(this.settings.superDrag);
-      try {
-        const remote = await Promise.race([
-          chrome.runtime.sendMessage({ handler: "openKeyMouse.effectiveSettings" }),
-          new Promise((resolve) => setTimeout(() => resolve(null), 500)),
-        ]);
-        if (remote?.effectiveModules) {
-          this.settings = remote;
-          this.drag?.updateSettings(this.settings.superDrag);
-        }
-      } catch (_) {
-        // 单元测试和浏览器受限页面可能没有可用的 Service Worker，保留本地配置。
+      if (runtimeSettings) this.settings = await runtimeSettings.ensureLoaded(url);
+      else if (repository) {
+        await repository.ensureLoaded();
+        this.settings = repository.getEffectiveSettings(url);
       }
+      this.drag?.updateSettings(this.settings?.superDrag);
       return this.settings;
     }
 
     effective(moduleName) {
       return this.settings?.effectiveModules?.[moduleName] !== false &&
         this.settings?.general?.enabled !== false;
+    }
+
+    showCommandHud() {
+      return this.settings?.general?.showHud !== false &&
+        this.settings?.mouse?.showCommandHud !== false;
+    }
+
+    gestureButton() {
+      const button = this.settings?.mouse?.triggerButton;
+      return Number.isInteger(button) && [0, 1, 2].includes(button) ? button : 2;
     }
 
     installListeners() {
@@ -193,11 +198,30 @@
 
     onPointerDown(event) {
       if (!trusted(event) || event.pointerType && event.pointerType !== "mouse") return;
-      if (event.button === 2 && this.effective("mouse")) {
-        this.gesture = new globalThis.OpenKeyMouseGestureSession(this.settings.mouse);
+      if (!this.gesture) {
+        // 上一次已完成轨迹可能等待浏览器补发 contextmenu；新的鼠标输入开始时丢弃过期的一次性保护。
+        this.guard?.clearPending();
+      }
+      const gestureButton = this.gestureButton();
+      if (
+        this.gesture?.isActive() &&
+        (event.button === gestureButton || event.button === 0 || event.button === 2)
+      ) {
+        // ACTIVE 轨迹已经接管输入，避免第二个鼠标键再启动超级拖拽或其他组合。
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
+      if (event.button === gestureButton && this.effective("mouse")) {
+        this.clearGestureTimeout();
+        this.gesture = new globalThis.BrowserToolboxGestureSession(this.settings.mouse);
         this.gesture.start({ x: event.clientX, y: event.clientY }, event.timeStamp || Date.now());
+        if (this.settings.mouse.suppressContextMenuAfterActivation !== false) {
+          // Chromium 可能在首次 pointermove 之前派发 contextmenu；先接管会话，避免菜单抢走轨迹输入。
+          this.guard.activate();
+        }
         if (this.settings.mouse.showTrail) this.overlay.show();
-        this.bridge = new globalThis.OpenKeyMouseFrameGestureBridge();
+        this.bridge = new globalThis.BrowserToolboxFrameGestureBridge();
         const invocation = invocationApi.createInvocation(
           "__gesture__",
           {},
@@ -207,11 +231,12 @@
         );
         this.gestureRequestId = invocation.requestId;
         this.bridge.start(invocation.requestId);
+        this.scheduleGestureTimeout();
         return;
       }
-      if (event.button === 0 && this.effective("superDrag")) {
+      if (event.button === 0 && gestureButton !== 0 && this.effective("superDrag")) {
         const selection = this.document.defaultView?.getSelection?.()?.toString() || "";
-        this.drag = new globalThis.OpenKeyMouseSuperDragController(this.settings.superDrag);
+        this.drag = new globalThis.BrowserToolboxSuperDragController(this.settings.superDrag);
         if (!this.drag.pointerDown(event, selection, event.dataTransfer)) {
           this.drag = null;
         } else {
@@ -226,7 +251,18 @@
     }
 
     onMouseDown(event) {
-      if (!trusted(event) || !this.effective("rocker")) return;
+      if (!trusted(event)) return;
+      const gestureButton = this.gestureButton();
+      if (
+        this.gesture?.isActive() &&
+        (event.button === gestureButton || event.button === 0 || event.button === 2)
+      ) {
+        // ACTIVE 轨迹已经接管输入；此时第二个鼠标键不能再触发摇杆组合。
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
+      if (!this.effective("rocker")) return;
       const sequence = this.rocker.pointerDown(event.button);
       if (!sequence) return;
       const binding = this.settings.rocker.bindings.find((item) =>
@@ -251,7 +287,9 @@
           event.timeStamp || Date.now(),
         );
         if (result.activated) {
-          this.guard.activate();
+          if (this.settings.mouse.suppressContextMenuAfterActivation !== false) {
+            this.guard.activate();
+          }
           event.preventDefault();
           event.stopPropagation();
         }
@@ -260,7 +298,7 @@
           event.stopPropagation();
           if (this.settings.mouse.showTrail) this.overlay.draw(result.points);
           const text = recognizer.format(result.pattern) || "…";
-          if (this.settings.mouse.showCommandHud) this.overlay.setHud(text, true);
+          if (this.showCommandHud()) this.overlay.setHud(text, true);
           this.bridge?.update(result.pattern.at(-1));
         }
       }
@@ -271,15 +309,22 @@
           event.stopPropagation();
           this.overlay.show();
           this.overlay.draw(result.points);
-          if (result.pattern?.length) this.overlay.setHud(recognizer.format(result.pattern), true);
+          if (result.pattern?.length && this.showCommandHud()) {
+            this.overlay.setHud(recognizer.format(result.pattern), true);
+          }
         }
       }
     }
 
     async onPointerUp(event) {
       if (!trusted(event)) return;
-      if (this.gesture && event.button === 2) {
-        const result = this.gesture.end();
+      this.wheel?.release(event.button);
+      if (this.gesture && event.button === this.gestureButton()) {
+        this.clearGestureTimeout();
+        const result = this.gesture.end(event.timeStamp || Date.now());
+        if (this.settings.mouse.suppressContextMenuAfterActivation !== false) {
+          this.guard.armForContextMenu();
+        }
         if (result.state === "COMPLETED") {
           event.preventDefault();
           event.stopPropagation();
@@ -297,11 +342,13 @@
           } else if (!bridgeReady) {
             this.bridge?.cancel();
           } else {
-            this.overlay.setHud(
-              globalThis.OpenKeyMouseI18n?.message("gestureUnrecognized") ||
-                "Gesture not recognized",
-              true,
-            );
+            if (this.showCommandHud()) {
+              this.overlay.setHud(
+                globalThis.BrowserToolboxI18n?.message("gestureUnrecognized") ||
+                  "Gesture not recognized",
+                true,
+              );
+            }
           }
           this.bridge?.finish(result.pattern);
         } else {
@@ -313,7 +360,7 @@
         this.overlay.hide();
       }
       if (this.drag && event.button === 0) {
-        const result = this.drag.pointerUp();
+        const result = this.drag.pointerUp(event.timeStamp || Date.now());
         if (result.active) {
           event.preventDefault();
           event.stopPropagation();
@@ -333,6 +380,7 @@
     }
 
     onMouseUp(event) {
+      this.wheel?.release(event.button);
       if (!trusted(event) || !this.rocker?.pointerUp(event.button)) return;
       event.preventDefault();
       event.stopPropagation();
@@ -342,6 +390,7 @@
       if (this.guard?.shouldSuppress()) {
         event.preventDefault();
         event.stopPropagation();
+        this.guard.consume();
       }
     }
 
@@ -404,6 +453,7 @@
     }
 
     cancelAll(reason, { preserveRocker = false } = {}) {
+      this.clearGestureTimeout();
       this.gesture?.cancel(reason);
       this.drag?.cancel();
       this.restoreNativeDrag();
@@ -418,6 +468,22 @@
       this.overlay?.hide();
     }
 
+    scheduleGestureTimeout() {
+      this.clearGestureTimeout();
+      const maxDurationMs = this.settings?.mouse?.maxDurationMs;
+      if (!Number.isFinite(maxDurationMs) || typeof globalThis.setTimeout !== "function") return;
+      this.gestureTimeoutId = globalThis.setTimeout(() => {
+        this.gestureTimeoutId = null;
+        if (this.gesture) this.cancelAll("timeout");
+      }, maxDurationMs);
+    }
+
+    clearGestureTimeout() {
+      if (this.gestureTimeoutId == null) return;
+      globalThis.clearTimeout?.(this.gestureTimeoutId);
+      this.gestureTimeoutId = null;
+    }
+
     async dispatchBinding(binding, sourceType, context, requestId = null) {
       const invocation = invocationApi.createInvocation(
         binding.commandName,
@@ -428,7 +494,7 @@
       );
       if (requestId) invocation.requestId = requestId;
       try {
-        return await chrome.runtime.sendMessage({ handler: "openKeyMouse.invoke", invocation });
+        return await chrome.runtime.sendMessage({ handler: "browserToolbox.invoke", invocation });
       } catch (_) {
         return invocationApi.createResult(false, invocationApi.ERROR_CODES.EXTENSION_CONTEXT_LOST);
       }
@@ -454,10 +520,11 @@
 
     async applyCursor() {
       this.cursor?.clear();
-      if (!this.settings?.cursor?.enabled || !this.settings.cursor.localAssetId) return false;
+      if (!repository || !this.settings?.cursor?.enabled || !this.settings.cursor.localAssetId) {
+        return false;
+      }
       try {
-        const items = await chrome.storage.local.get(this.settings.cursor.localAssetId);
-        const asset = items[this.settings.cursor.localAssetId];
+        const asset = await repository.readLocalAsset(this.settings.cursor.localAssetId);
         return this.cursor?.apply(this.settings.cursor, asset) || false;
       } catch (_) {
         return false;
@@ -468,19 +535,20 @@
       this.cancelAll("destroy");
       for (const remove of this.listeners) remove();
       this.listeners = [];
-      repository?.removeEventListener?.(this.repositoryListener);
-      this.repositoryListener = null;
+      if (runtimeSettings) runtimeSettings.removeEventListener(this.settingsListener);
+      else repository?.removeEventListener?.(this.settingsListener);
+      this.settingsListener = null;
       this.overlay?.destroy();
       this.initialized = false;
     }
   }
 
-  globalThis.OpenKeyMousePageExecutor = executePageInvocation;
-  globalThis.OpenKeyMouseMouseController = MouseController;
+  globalThis.BrowserToolboxPageExecutor = executePageInvocation;
+  globalThis.BrowserToolboxMouseController = MouseController;
 
   if (chrome.runtime?.onMessage?.addListener) {
     chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-      if (message?.type !== "openKeyMouse.executePageCommand" || !protocol.validate(message)) {
+      if (message?.type !== "browserToolbox.executePageCommand" || !protocol.validate(message)) {
         return false;
       }
       executePageInvocation(message.invocation).then(sendResponse).catch((error) => {
@@ -499,7 +567,7 @@
   if (
     !globalThis.vimiumDomTestsAreRunning && !globalThis.location?.search?.includes("dom_tests=true")
   ) {
-    globalThis.OpenKeyMouseMouseControllerInstance ||= new MouseController();
-    globalThis.OpenKeyMouseMouseControllerInstance.init();
+    globalThis.BrowserToolboxMouseControllerInstance ||= new MouseController();
+    globalThis.BrowserToolboxMouseControllerInstance.init();
   }
 })();

@@ -1,6 +1,6 @@
 // 手势只在松开时执行精确匹配，不使用最长前缀自动执行，降低误操作风险。
 (function () {
-  const quantizer = globalThis.OpenKeyMouseDirectionQuantizer;
+  const quantizer = globalThis.BrowserToolboxDirectionQuantizer;
 
   function key(pattern, context = "") {
     return `${context}:${quantizer.normalizePattern(pattern).join(">")}`;
@@ -26,5 +26,5 @@
     return quantizer.normalizePattern(pattern).join(">");
   }
 
-  globalThis.OpenKeyMouseGestureRecognizer = Object.freeze({ find, format, key });
+  globalThis.BrowserToolboxGestureRecognizer = Object.freeze({ find, format, key });
 })();

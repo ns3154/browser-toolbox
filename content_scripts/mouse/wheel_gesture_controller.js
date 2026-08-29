@@ -9,6 +9,16 @@
     return null;
   }
 
+  function buttonName(button) {
+    return button === 0
+      ? "LEFT_BUTTON"
+      : button === 1
+      ? "MIDDLE_BUTTON"
+      : button === 2
+      ? "RIGHT_BUTTON"
+      : null;
+  }
+
   class WheelGestureController {
     constructor() {
       this.accumulated = new Map();
@@ -18,7 +28,11 @@
     handle({ buttons, deltaY, now = Date.now(), settings }) {
       if (!settings?.enabled) return null;
       const button = heldButton(buttons);
-      if (!button || !Number.isFinite(deltaY)) return null;
+      if (!button) {
+        this.reset();
+        return null;
+      }
+      if (!Number.isFinite(deltaY)) return null;
       const value = (this.accumulated.get(button) || 0) + deltaY;
       this.accumulated.set(button, value);
       const threshold = settings.threshold;
@@ -31,12 +45,20 @@
       return { button, direction: value < 0 ? "UP" : "DOWN" };
     }
 
+    release(button) {
+      const name = buttonName(button);
+      if (!name) return;
+      this.accumulated.delete(name);
+      this.lastTriggerAt.delete(name);
+    }
+
     reset() {
       this.accumulated.clear();
       this.lastTriggerAt.clear();
     }
   }
 
-  globalThis.OpenKeyMouseWheelGestureController = WheelGestureController;
-  globalThis.OpenKeyMouseWheelButtons = BUTTONS;
+  globalThis.BrowserToolboxWheelGestureController = WheelGestureController;
+  globalThis.BrowserToolboxWheelButtons = BUTTONS;
+  globalThis.BrowserToolboxWheelButtonName = buttonName;
 })();

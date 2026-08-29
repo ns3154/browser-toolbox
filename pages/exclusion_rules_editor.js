@@ -34,12 +34,27 @@ const ExclusionRulesEditor = {
 
     const patternEl = rowEl.querySelector("[name=pattern]");
     patternEl.value = pattern ?? "";
+    const i18n = globalThis.BrowserToolboxI18n;
+    if (i18n) {
+      patternEl.placeholder = i18n.message("urlPattern");
+      patternEl.setAttribute("aria-label", i18n.message("urlPattern"));
+    }
     patternEl.addEventListener("input", () => this.dispatchEvent("input"));
 
     const keysEl = rowEl.querySelector("[name=passKeys]");
     keysEl.value = passKeys ?? "";
+    if (i18n) {
+      keysEl.placeholder = i18n.message("allKeys");
+      keysEl.setAttribute("aria-label", i18n.message("keysToExclude"));
+    }
     keysEl.addEventListener("input", () => this.dispatchEvent("input"));
 
+    if (i18n) {
+      rowEl.querySelector(".remove")?.setAttribute(
+        "aria-label",
+        i18n.message("removeRule"),
+      );
+    }
     rowEl.querySelector(".remove").addEventListener("click", (e) => {
       e.target.closest("tr").remove();
       this.dispatchEvent("input");

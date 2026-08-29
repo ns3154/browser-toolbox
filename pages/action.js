@@ -2,27 +2,37 @@ import "../lib/utils.js";
 import "../lib/dom_utils.js";
 import "../lib/settings.js";
 import "../lib/i18n.js";
-import "../lib/open_key_mouse/command_invocation.js";
-import "../lib/open_key_mouse/message_protocol.js";
-import "../lib/open_key_mouse/settings_schema.js";
-import "../lib/open_key_mouse/settings_validator.js";
-import "../lib/open_key_mouse/site_rule_matcher.js";
-import "../background_scripts/open_key_mouse/settings_migrations.js";
-import "../background_scripts/open_key_mouse/settings_repository.js";
+import "../lib/browser_toolbox/value_utils.js";
+import "../lib/browser_toolbox/command_invocation.js";
+import "../lib/browser_toolbox/message_protocol.js";
+import "../lib/browser_toolbox/settings_schema.js";
+import "../lib/browser_toolbox/regex_safety.js";
+import "../lib/browser_toolbox/module_registry.js";
+import "../lib/browser_toolbox/settings_validator.js";
+import "../lib/browser_toolbox/site_rule_matcher.js";
+import "../lib/browser_toolbox/settings_policy.js";
+import "../background_scripts/browser_toolbox/settings_migrations.js";
+import "../background_scripts/browser_toolbox/settings_storage.js";
+import "../background_scripts/browser_toolbox/vimium_settings_adapter.js";
+import "../background_scripts/browser_toolbox/settings_repository.js";
 
 import * as bgUtils from "../background_scripts/bg_utils.js";
 import { ExclusionRulesEditor } from "./exclusion_rules_editor.js";
 
+const vimiumSettings = globalThis.BrowserToolboxVimiumSettingsAdapterInstance;
+const moduleRegistry = globalThis.BrowserToolboxModuleRegistry;
+
 const ActionPage = {
   async init() {
-    OpenKeyMouseI18n.apply(document);
+    await this.loadLocalePreference();
+    BrowserToolboxI18n.apply(document);
     // Is it possible for the current tab's URL to change while this action popup is open?
     const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
     const activeTab = tabs[0];
     this.tabUrl = activeTab?.url || "";
 
     const hideUI = () => {
-      document.querySelector("#open-key-mouse-controls").style.display = "none";
+      document.querySelector("#browser-toolbox-controls").style.display = "none";
       document.querySelector("#dialog-body").style.display = "none";
       document.querySelector("footer").style.display = "none";
     };
@@ -55,7 +65,7 @@ const ActionPage = {
       return;
     }
 
-    await this.initOpenKeyMouseControls(activeTab);
+    await this.initBrowserToolboxControls(activeTab);
 
     document.querySelector("#optionsLink").href = chrome.runtime.getURL("pages/options.html");
 
@@ -66,7 +76,7 @@ const ActionPage = {
 
     const onUpdated = () => {
       saveButton.disabled = false;
-      saveButton.textContent = "Save changes";
+      saveButton.textContent = BrowserToolboxI18n.message("saveChanges");
       this.syncEnabledKeysCaption();
       this.showValidationErrors();
     };
@@ -85,7 +95,7 @@ const ActionPage = {
     ExclusionRulesEditor.defaultPatternForNewRules = defaultPatternForNewRules;
     ExclusionRulesEditor.init();
     ExclusionRulesEditor.addEventListener("input", onUpdated);
-    const rules = Settings.get("exclusionRules").filter((r) =>
+    const rules = vimiumSettings.get("exclusionRules").filter((r) =>
       this.tabUrl.match(this.getPatternRegExp(r.pattern))
     );
     ExclusionRulesEditor.setForm(rules);
@@ -94,65 +104,125 @@ const ActionPage = {
     if (rules.length > 0) this.showExclusionRulesEditor();
   },
 
-  async initOpenKeyMouseControls(activeTab) {
-    const container = document.querySelector("#open-key-mouse-controls");
+  async loadLocalePreference() {
+    try {
+      const locale = await globalThis.BrowserToolboxSettingsRepositoryInstance.getStoredLocale();
+      BrowserToolboxI18n.setLocale(locale);
+    } catch (_) {
+      // 存储不可用时继续使用浏览器界面语言，不影响动作页打开。
+    }
+  },
+
+  async initBrowserToolboxControls(activeTab) {
+    const container = document.querySelector("#browser-toolbox-controls");
     if (!container || !activeTab) return;
-    const repository = globalThis.OpenKeyMouseSettingsRepositoryInstance;
+    const repository = globalThis.BrowserToolboxSettingsRepositoryInstance;
     await repository.ensureLoaded();
     const settings = repository.getEffectiveSettings(activeTab.url || "");
-    OpenKeyMouseI18n.setLocale(settings.general.language);
-    OpenKeyMouseI18n.apply(document);
-    const modules = settings.effectiveModules || {};
+    BrowserToolboxI18n.setLocale(settings.general.language);
+    BrowserToolboxI18n.apply(document);
     container.style.display = "block";
-    document.querySelector("#okm-settings-link").href = chrome.runtime.getURL(
+    document.querySelector("#browser-toolbox-settings-link").href = chrome.runtime.getURL(
       "pages/mouse_options.html",
     );
-    const status = document.querySelector("#open-key-mouse-site-status");
-    status.textContent = modules.enabled === false
-      ? (OpenKeyMouseI18n.message("disabled"))
-      : OpenKeyMouseI18n.message("allModulesEnabled");
+    document.querySelector("#browser-toolbox-open-help")?.addEventListener(
+      "click",
+      async () => {
+        try {
+          // 复用现有的顶层 showHelp 路由，让帮助页在当前网页中正确建立 UIComponent 通道。
+          await chrome.tabs.sendMessage(
+            activeTab.id,
+            {
+              handler: "runInTopFrame",
+              sourceFrameId: 0,
+              registryEntry: { command: "showHelp", options: {} },
+            },
+            { frameId: 0 },
+          );
+        } finally {
+          globalThis.close();
+        }
+      },
+    );
+    const status = document.querySelector("#browser-toolbox-site-status");
     const controls = [
-      ["#okm-toggle-keyboard", "keyboard", "OpenKeyMouse.toggleKeyboard"],
-      ["#okm-toggle-mouse", "mouse", "OpenKeyMouse.toggleMouseGestures"],
-      ["#okm-toggle-drag", "superDrag", "OpenKeyMouse.toggleSuperDrag"],
-      ["#okm-toggle-wheel", "wheel", null],
+      ["#browser-toolbox-toggle-keyboard", "keyboard", "BrowserToolbox.toggleKeyboard"],
+      ["#browser-toolbox-toggle-mouse", "mouse", "BrowserToolbox.toggleMouseGestures"],
+      ["#browser-toolbox-toggle-drag", "superDrag", "BrowserToolbox.toggleSuperDrag"],
+      ["#browser-toolbox-toggle-wheel", "wheel", null],
     ];
+    const renderStatus = (effectiveSettings) => {
+      const effectiveModules = effectiveSettings?.effectiveModules || {};
+      const disabled = moduleRegistry.entries({ siteRule: true })
+        .filter((module) => effectiveModules[module.id] === false)
+        .map((module) => BrowserToolboxI18n.message(module.labelKey));
+      status.textContent = disabled.length > 0
+        ? `${BrowserToolboxI18n.message("siteRuleDisabledModules")}: ${disabled.join(", ")}`
+        : BrowserToolboxI18n.message("allModulesEnabled");
+      for (const [selector, moduleName] of controls) {
+        const input = document.querySelector(selector);
+        if (!input) continue;
+        input.checked = moduleName === "wheel"
+          ? effectiveModules.wheel !== false && effectiveModules.rocker !== false
+          : effectiveModules[moduleName] !== false;
+      }
+    };
+    renderStatus(settings);
+    repository.addEventListener(() =>
+      renderStatus(repository.getEffectiveSettings(activeTab.url || ""))
+    );
     for (const [selector, moduleName, commandName] of controls) {
       const input = document.querySelector(selector);
-      input.checked = modules[moduleName] !== false;
       input.addEventListener("change", async () => {
+        let reportedEnabled;
         if (commandName) {
-          const invocation = OpenKeyMouseCommandInvocation.createInvocation(
+          const invocation = BrowserToolboxCommandInvocation.createInvocation(
             commandName,
             {},
             { type: "ui" },
             { tabId: activeTab.id, pageUrl: activeTab.url || "", topFrame: true },
           );
-          await chrome.runtime.sendMessage({ handler: "openKeyMouse.invoke", invocation });
+          const result = await chrome.runtime.sendMessage({
+            handler: "browserToolbox.invoke",
+            invocation,
+          });
+          if (typeof result?.data?.enabled === "boolean") reportedEnabled = result.data.enabled;
         } else {
+          const enabled = input.checked;
           await repository.setSessionOverrides(Object.assign({}, repository.sessionOverrides, {
-            wheel: input.checked,
+            wheel: enabled,
+            rocker: enabled,
           }));
         }
         const refreshed = repository.getEffectiveSettings(activeTab.url || "");
-        status.textContent = refreshed.effectiveModules?.[moduleName] === false
-          ? OpenKeyMouseI18n.message("disabled")
-          : OpenKeyMouseI18n.message("enabled");
+        if (typeof reportedEnabled === "boolean") {
+          refreshed.effectiveModules[moduleName] = reportedEnabled;
+          if (moduleName === "wheel") refreshed.effectiveModules.rocker = reportedEnabled;
+        }
+        renderStatus(refreshed);
+        const moduleEnabled = moduleName === "wheel"
+          ? refreshed.effectiveModules?.wheel !== false &&
+            refreshed.effectiveModules?.rocker !== false
+          : refreshed.effectiveModules?.[moduleName] !== false;
+        const actualEnabled = reportedEnabled ?? moduleEnabled;
+        input.checked = actualEnabled;
       });
     }
-    document.querySelector("#okm-disable-session").addEventListener("click", async () => {
-      await repository.setSessionOverrides({
-        enabled: false,
-        keyboard: false,
-        mouse: false,
-        superDrag: false,
-        wheel: false,
-        rocker: false,
-        cursor: false,
-      });
-      for (const [selector] of controls) document.querySelector(selector).checked = false;
-      status.textContent = OpenKeyMouseI18n.message("disabled");
-    });
+    document.querySelector("#browser-toolbox-disable-session").addEventListener(
+      "click",
+      async () => {
+        await repository.setSessionOverrides({
+          enabled: false,
+          keyboard: false,
+          mouse: false,
+          superDrag: false,
+          wheel: false,
+          rocker: false,
+          cursor: false,
+        });
+        renderStatus(repository.getEffectiveSettings(activeTab.url || ""));
+      },
+    );
   },
 
   async isVimiumInstalledInTab(tabId) {
@@ -179,7 +249,7 @@ const ActionPage = {
         validationEl.textContent = "";
       } else {
         row.classList.add("validationError");
-        validationEl.textContent = "Pattern does not match the current URL";
+        validationEl.textContent = BrowserToolboxI18n.message("patternDoesNotMatch");
       }
     }
   },
@@ -190,24 +260,26 @@ const ActionPage = {
   },
 
   syncEnabledKeysCaption() {
-    let caption = "All";
+    let caption = BrowserToolboxI18n.message("allKeys");
     const rules = ExclusionRulesEditor.getRules();
     if (rules.length > 0) {
       const hasBlankPassKeysRule = rules.find((r) => r.passKeys.length == 0);
-      caption = hasBlankPassKeysRule ? "No" : "Some";
+      caption = hasBlankPassKeysRule
+        ? BrowserToolboxI18n.message("noKeys")
+        : BrowserToolboxI18n.message("someKeys");
     }
     document.querySelector("#how-many-enabled").textContent = caption;
   },
 
   async onSave() {
-    let rules = await Settings.get("exclusionRules");
+    let rules = await vimiumSettings.get("exclusionRules");
     // Remove any rules which match the current URL, and replace them with the contents of this dialog.
     rules = rules.filter((r) => !this.tabUrl.match(this.getPatternRegExp(r.pattern)));
     rules = rules.concat(ExclusionRulesEditor.getRules());
-    Settings.set("exclusionRules", rules);
+    await vimiumSettings.set("exclusionRules", rules);
     const el = document.querySelector("#save");
     el.disabled = true;
-    el.textContent = "Saved";
+    el.textContent = BrowserToolboxI18n.message("saved");
   },
 
   getPatternRegExp(patternStr) {
@@ -236,6 +308,6 @@ const ActionPage = {
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
-  await Settings.onLoaded();
+  await vimiumSettings.onLoaded();
   ActionPage.init();
 });

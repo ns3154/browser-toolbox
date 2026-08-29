@@ -2,20 +2,50 @@
 
 ## 代码与测试
 
-- [x] `./make.js test` 通过，或所有上游失败项有明确基线证据。当前 macOS 环境为单元 309/309、DOM 109/109，总计 418/418。
-- [x] 设计文档规定的 `deno test -A tests/open_key_mouse/` 通过；独立入口运行 shoulda 测试 `64/64`。
+- [x] 使用项目已验证的系统 Chrome 路径运行 `PUPPETEER_EXECUTABLE_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" ./make.js test`；当前 checkout 单元 434/434、DOM 109/109，总计 543/543。
+- [x] 设计文档规定的 `deno test -A tests/browser_toolbox/` 通过；独立入口运行 shoulda 测试 `184/184`。
 - [x] `deno run -A scripts/audit_permissions.js` 通过。
-- [x] `deno run -A scripts/audit_network_usage.js` 通过。
+- [x] `deno run -A scripts/audit_network_usage.js` 通过；当前扫描 34 个新增模块文件。
 - [x] 新算法、配置、Dispatcher 和关键 UI 流程有自动测试。
 - [x] Service Worker 终止后可以重新初始化。
-- [x] 独立 Chrome for Testing 148.0.7778.96 临时 profile 的增强扩展 E2E 通过，覆盖核心手势、Super Drag、原生安全、跨 frame、设置迁移、键盘无障碍语义、高对比度媒体和窄视口布局。
-- [x] 动作页在扩展页面自身等受限上下文中显示本地化浏览器限制提示，并隐藏 OpenKeyMouse 操作控件；CFT 148 与 Linux ARM64 Chromium E2E 均实际断言通过。
+- [x] E-048 针对 E-047 存储提交协调器变更的 Windows 11 ARM64 Chrome Stable 151.0.7922.174 隔离 E2E 通过；使用 Extensions.loadUnpacked、临时 profile、设置迁移、正则网站规则、核心输入、超级拖拽下载、滚轮/摇杆、跨 frame、fixtures、恢复默认和 Service Worker 重启；远程 CDP 无法代授剪贴板权限，断言跳过，不替代 Windows 手工矩阵。
+- [x] E-051 针对待保存资源脏状态修正的 Windows 11 ARM64 Chrome Stable 151.0.7922.174 隔离 E2E 通过；覆盖设置保存、旧版导出格式迁移、旧版存储键与指针资源迁移、正则网站规则、核心输入、超级拖拽下载、滚轮/摇杆、跨 frame、fixtures、恢复默认和 Service Worker 重启；远程 CDP 无法代授剪贴板权限，断言跳过，不替代 Windows 手工矩阵。
+- [x] E-052 针对标签页搜索边界和设置页初始化同步修正的当前归档隔离 E2E 通过：macOS Chrome Stable、Windows 11 ARM64 Chrome Stable 151.0.7922.174、Debian amd64 Chromium 151.0.7922.169 均覆盖标签页列表、设置迁移、网站规则、核心输入、超级拖拽、滚轮/摇杆、跨 frame、fixtures 和 Service Worker 重启；Windows 远程 CDP 无法代授剪贴板权限，断言跳过，不替代三平台手工矩阵。
+- [x] E-053 针对 Edge 用户态启动和扩展页搜索边界修正的当前归档隔离 E2E 通过：macOS Chrome Stable、Windows 11 ARM64 Chrome Stable 151.0.7922.174、Windows Edge Stable 151.0.4129.101、Debian amd64 Chromium 151.0.7922.169 均通过标签页列表、设置迁移、网站规则、核心输入、超级拖拽、滚轮/摇杆、跨 frame、fixtures 和 Service Worker 重启；Windows 远程 CDP 无法代授剪贴板权限，断言跳过，不替代四平台手工矩阵。
+- [x] E-055 针对模块能力注册表收敛的当前归档隔离 E2E 通过：macOS Chrome Stable、Debian amd64 Chromium 151.0.7922.169、Windows 11 ARM64 Chrome Stable 151.0.7922.174、Windows Edge Stable 151.0.4129.101 均通过完整 BrowserToolbox E2E；Windows 远程 CDP 无法代授剪贴板权限，断言跳过，不替代四平台手工矩阵。
+- [x] E-056 针对共享配置值工具收敛的当前归档隔离 E2E 通过：macOS Chrome Stable 与 Debian amd64 Chromium 151.0.7922.169 均通过完整 BrowserToolbox E2E；Windows 隔离 VM 本轮停在 Sysprep/OOBE，未形成当前 checkout 的 Windows Chrome/Edge E2E 证据，不把 E-055 旧结果前移替代。
+- [x] E-057 针对设置策略/存储分层与旧版导出解析收敛的当前 checkout 隔离 E2E 通过：macOS Chrome Stable 与 Debian amd64 Chromium 151.0.7922.169 均通过完整 BrowserToolbox E2E；Windows Chrome/Edge 本轮未重跑，不以 E-055 历史结果替代。
+- [x] E-058 针对高冲突站点默认规则与当前目录回归的当前 checkout 隔离 E2E 通过：macOS Chrome Stable 与宿主 arm64 上临时 Debian amd64 Chromium 151.0.7922.169 均通过内置规则删除持久化、旧版设置/导出迁移、网站规则、核心手势、跨 frame、fixtures 和 Service Worker 重启；这仍是隔离自动化，不替代 Windows/Edge/Linux/macOS 人工矩阵。
+- [x] E-059 针对设置同步配额 UTF-8 字节修正的当前 checkout 隔离 E2E 通过：macOS Chrome Stable 与宿主 arm64 上临时 Debian amd64 Chromium 151.0.7922.169 均通过完整 BrowserToolbox E2E；shoulda 115/115、单元/DOM 360/360 与 109/109，不替代人工矩阵。
+- [x] E-060 同 ID 外部 CRX 升级语义隔离验证通过：临时同一 RSA 测试密钥将旧归档与临时 `0.1.1` 当前归档打包，在 Debian amd64 Chromium 151.0.7922.169 外部扩展目录中先安装 `0.1.0`，再通过 `chrome://extensions` Update 控件升级到活动目录 `0.1.1_0`；该证据不替代生产签名、真实旧用户 profile、商店更新通道或人工安装更新验收，`O-005` 仍为 `IN_PROGRESS`。
+- [x] E-061 设置分区搜索与产品页标题国际化的当前 checkout 回归通过：macOS Chrome Stable 与宿主 arm64 上临时 Debian amd64 Chromium 151.0.7922.169 均通过搜索筛选、Esc 清空、标题本地化及完整 BrowserToolbox E2E；单元/DOM 364/364 与 109/109、shoulda 119/119；不替代人工矩阵、屏幕阅读器、认证态站点或生产 CRX 验收。
+- [x] E-062 多级导航焦点分层与跨分类键盘展开的当前 checkout 回归通过：macOS Chrome Stable 与宿主 arm64 上临时 Debian amd64 Chromium 151.0.7922.169 均通过跨分类 Home/End/方向键、目标分类自动展开及完整 BrowserToolbox E2E；单元/DOM 365/365 与 109/109、shoulda 120/120；不替代人工矩阵、屏幕阅读器、认证态站点或生产 CRX 验收。
+- [x] E-063 导入预览焦点恢复与搜索导航语义收口的当前 checkout 回归通过：macOS Chrome Stable 与宿主 arm64 上临时 Debian amd64 Chromium 151.0.7922.169 均通过可见备份页面的取消导入焦点恢复、搜索 `aria-controls` 和完整 BrowserToolbox E2E；单元/DOM 365/365 与 109/109、shoulda 120/120；不替代人工矩阵、屏幕阅读器、认证态站点或生产 CRX 验收。
+- [x] E-064 导入焦点竞态保护与最终隔离回归通过：macOS Chrome Stable 与宿主 arm64 上临时 Debian amd64 Chromium 151.0.7922.169 均通过导入取消、焦点恢复和完整 BrowserToolbox E2E；单元/DOM 365/365 与 109/109、shoulda 120/120；不替代人工矩阵、屏幕阅读器、认证态站点或生产 CRX 验收。
+- [x] E-065 设置字段搜索与跨页面保存保护通过：macOS Chrome Stable 与临时 Debian amd64 Chromium 151.0.7922.169 当前 checkout 完整隔离 E2E 已验证本地化字段搜索和外部 Vimium 无关字段保留；单元/DOM 366/366 与 109/109、shoulda 121/121；不替代 Windows/Edge 当前 checkout、人工矩阵、屏幕阅读器、认证态站点或生产 CRX 验收。
+- [x] E-066 Vimium 集成页面 Browser Toolbox 文案国际化通过：选项页入口、命令列表和帮助弹窗均使用中英文消息资源；macOS Chrome Stable 与临时 Debian amd64 Chromium 151.0.7922.169 当前 checkout 隔离 E2E 通过；单元/DOM 369/369 与 109/109、shoulda 121/121；不替代 Windows/Edge 当前 checkout、人工矩阵、屏幕阅读器、认证态站点或生产 CRX 验收。
+- [x] E-067 Vimium 集成页面跟随用户语言偏好通过：选项页入口、命令列表和帮助弹窗读取规范 `browserToolboxSettings.general.language`，无效值回退浏览器界面语言；macOS Chrome Stable 与临时 Debian amd64 Chromium 151.0.7922.169 当前 checkout 隔离 E2E 通过；单元/DOM 370/370 与 109/109、shoulda 122/122；不替代 Windows/Edge 当前 checkout、人工矩阵、屏幕阅读器、认证态站点或生产 CRX 验收。
+- [x] E-069 集成页面旧语言偏好兼容读取通过：命令列表和帮助弹窗复用存储兼容层读取旧 `openKeyMouseSettings.general.language`，不触发写入；macOS Chrome Stable 与临时 Debian amd64 Chromium 151.0.7922.169 当前 checkout 隔离 E2E 通过；单元/DOM 371/371 与 109/109、shoulda 123/123；不替代 Windows/Edge 当前 checkout、人工矩阵、屏幕阅读器、认证态站点或生产 CRX 验收。
+- [x] E-070 正则安全模块已进入 Manifest V3 内容脚本加载序列，并由权限审计固定顺序；当前 checkout 的 macOS Chrome Stable 与临时 Debian amd64 Chromium 151.0.7922.169 隔离 E2E 均通过；单元/DOM 371/371 与 109/109、shoulda 123/123；不替代 Windows/Edge 当前 checkout、人工矩阵、屏幕阅读器、认证态站点或生产 CRX 验收。
+- [x] E-071 动作页和标签页列表入口补齐正则安全依赖，并由权限审计固定页面加载顺序；macOS Chrome Stable 当前 checkout 隔离 E2E 通过，Linux 本轮安装未进入新的 E2E，不把它写成通过；单元/DOM 371/371 与 109/109、shoulda 123/123；不替代 Windows/Edge 当前 checkout、人工矩阵、屏幕阅读器、认证态站点或生产 CRX 验收。
+- [x] E-072 自定义指针本地资源读写删除统一经过 Storage/Repository 分层；macOS Chrome Stable 当前 checkout 隔离 E2E 通过本地 PNG 指针及迁移链路，Linux 本轮未形成新的 E2E，不把它写成通过；单元/DOM 373/373 与 109/109、shoulda 125/125；不替代 Windows/Edge 当前 checkout、人工矩阵、屏幕阅读器、认证态站点或生产 CRX 验收。
+- [x] E-073 站点规则编辑器增加行级正则语法/复杂度提示和 aria-invalid 反馈；macOS Chrome Stable 当前 checkout 隔离 E2E 通过，Linux 本轮未形成新的 E2E，不把它写成通过；单元/DOM 376/376 与 109/109、shoulda 128/128；不替代 Windows/Edge 当前 checkout、人工矩阵、屏幕阅读器、认证态站点或生产 CRX 验收。
+- [x] E-074 新增可替换的 Vimium 设置适配层并由权限审计固定适配层/仓库加载顺序；macOS Chrome Stable 当前 checkout 隔离 E2E 通过，Linux 本轮未形成新的 E2E，不把它写成通过；单元/DOM 378/378 与 109/109、shoulda 130/130；不替代 Windows/Edge 当前 checkout、人工矩阵、屏幕阅读器、认证态站点或生产 CRX 验收。
+- [x] E-075 动作页和设置页的 Vimium 设置读写、加载和迁移路径统一经过可替换适配层，并由审计禁止直接依赖全局 `Settings`；macOS Chrome Stable 当前 checkout 隔离 E2E 通过，Linux 本轮未形成新的 E2E，不把它写成通过；单元/DOM 378/378 与 109/109、shoulda 130/130；不替代 Windows/Edge 当前 checkout、人工矩阵、屏幕阅读器、认证态站点或生产 CRX 验收。
+- [x] E-076 迁移前旧 CRX 与旧设置/会话/本地资源在临时 Debian amd64 Chromium 中完成同 ID 升级和当前迁移读取；使用临时测试密钥/临时 profile，不代表生产签名、真实用户 profile、商店更新通道或人工验收，相关发布门禁仍未完成。
+- [x] E-077 当前 checkout 在临时 Debian amd64 Chromium 151.0.7922.169 中完成完整 BrowserToolbox 隔离 E2E，覆盖设置迁移、网站规则、核心输入、跨 frame、Service Worker 重启和设计文档 fixtures；容器已清理，不代表 Linux Chrome Stable 人工验收或完整平台/辅助技术矩阵。
+- [x] E-078 当前 checkout 门禁复核通过：单元/DOM `378/378`、`109/109`，shoulda `130/130`，权限审计 9 项、网络审计扫描 32 个新增模块、打包和连续两次发布检查均通过；四个未发布归档哈希与上次一致。该复核不改变未提交工作区、人工矩阵和辅助技术门禁未完成的状态。
+- [x] 当前 checkout 使用 macOS Chrome Stable 临时 profile 的 `Extensions.loadUnpacked` 增强扩展 E2E 通过，覆盖标签页列表、核心手势、八方向轨迹、Super Drag、原生安全、跨 frame、设置迁移、网站规则完整命中解释和设置页语义；不替代人工矩阵。
+- [x] E-046 曾在 Windows 11 ARM64 Chrome Stable `151.0.7922.174` 隔离环境通过远程 CDP `Extensions.loadUnpacked` 自动 E2E，覆盖动态多级导航、网站规则解释、标签页列表、设置迁移、核心输入、下载、跨 frame、fixtures 和 Service Worker 重启；该证据早于 E-047 存储提交协调器变更，远程 CDP 无法代授剪贴板权限，剪贴板断言跳过，不替代 Windows 手工矩阵。
+- [x] E-047 当时的 macOS Chrome Stable 隔离 E2E 通过设置保存、旧版导入迁移、网站规则、核心手势、超级拖拽、滚轮/摇杆、跨 frame、设计文档 fixtures 和 Service Worker 重启；Windows 隔离 E2E 后由 E-048 补齐。
+- [x] Chrome for Testing 148.0.7778.96 的增强扩展 E2E 是历史隔离基线证据，不作为当前 checkout 的人工或屏幕阅读器验收。
+- [x] 动作页在扩展页面自身等受限上下文中显示本地化浏览器限制提示，并隐藏浏览器工具箱操作控件；CFT 148 与 Linux ARM64 Chromium E2E 均实际断言通过。
 - [x] 设计文档 §18.2 的 8 个仓库 fixture 均由真实扩展 E2E 加载并完成结构断言。
-- [x] Linux ARM64 Debian Chromium 151 隔离环境的完整基线 `418/418` 和增强扩展 E2E 通过；该项不替代 Linux + Chrome Stable 手工矩阵。
-- [x] 官方 Google Chrome Stable `151.0.7922.173` Linux amd64 隔离环境的完整基线 `418/418` 和通过 `Extensions.loadUnpacked` 加载本项目后的完整 E2E 通过；该项仍不替代 Linux + Chrome Stable 手工矩阵。
-- [x] 官方 Microsoft Edge Linux 151.0.4129.101 amd64 隔离环境的完整基线 `418/418` 和增强扩展 E2E 通过；该项不替代 Windows Edge 手工矩阵。
+- [x] Linux ARM64 Debian Chromium 151 隔离环境的完整基线 `418/418` 和增强扩展 E2E 是历史自动证据；不替代 Linux + Chrome Stable 手工矩阵。
+- [x] 官方 Google Chrome Stable `151.0.7922.173` Linux amd64 隔离环境的完整基线 `418/418` 和 `Extensions.loadUnpacked` E2E 是历史自动证据；不替代 Linux + Chrome Stable 手工矩阵。
+- [x] 官方 Microsoft Edge Linux 151.0.4129.101 amd64 隔离环境的完整基线 `418/418` 和增强扩展 E2E 是历史自动证据；不替代 Windows Edge 手工矩阵。
 - [x] 覆盖率门槛通过：新增纯算法模块行覆盖率均不低于 90%，配置模块和 Dispatcher 行覆盖率均不低于 85%；当前新增运行时模块范围汇总行覆盖率 98.8%。
-- [x] 设置页自动化无障碍语义、键盘替代录入、强制颜色和窄视口冒烟通过；不替代屏幕阅读器和人工可访问性验收。
+- [x] 设置页自动化无障碍语义、键盘替代录入、强制颜色、低动效和窄视口冒烟通过；不替代屏幕阅读器和人工可访问性验收。
 - [x] 9 个真实站点的隔离内容脚本注入冒烟通过；该项不替代登录态业务流程和 §18.4 手工矩阵。
 
 ## 隐私与安全
@@ -25,15 +55,69 @@
 - [x] 导入配置只接受 JSON，不执行 HTML 或脚本；有效/非法 JSON 导入 E2E 通过。
 - [x] 自定义指针只进入 `storage.local`，已有设置页与本地资源验证。
 - [x] `docs/feature-parity-matrix.md` 没有未解释的 TODO；未完成项均保留 `IN_PROGRESS` 和说明。
+- [x] 人工验收操作清单已建立并链接到 README；清单只规定执行方法，不把自动化、隔离 profile 或历史结果写成人工通过。
 
 ## 开源与产物
 
 - [x] GPL-3.0-or-later、Vimium MIT 和 shoulda MIT 通知完整；发布检查通过。
-- [x] `deno run -A scripts/build_release.js --package` 已生成源码发布包，并完成归档内容审计。
-- [x] 预发布版本使用 `0.1.0`；Vimium `2.4.2` 仅作为键盘与设置迁移兼容基线。
-- [x] 源码、发布包和 SHA-256 对应同一提交；本地检查点提交后已重新生成并核对 Chrome 包 SHA-256，最终值记录在本轮交付报告。
-- [x] 当前 `0.1.0` 重建产物 SHA-256：Chrome 商店 `162c01666c97320ece953ab0ad5388a1f1b39ef05f7546e504b633d37c9f3c5d`；Firefox `ed3b903cac7a0e34f4ebb6bbe78689d758f666cdbf915e9cb294e2a5c661f8d2`；Canary `95c958cff0208d9b8d5c29f1f60d6fa7f48b23869a1882fddb6d3425c2ff04ef`；源码 `4fa08dd01c30cb490d130d79023a3cd561356b61406091aa3ea3d0b0bbfc0763`。
-- [x] 当前 checkout 连续两次运行 `./make.js package` 和 `deno run -A scripts/build_release.js --package`，对应产物 SHA-256 完全一致。
+- [x] `deno run -A scripts/build_release.js --package` 已生成运行时包 `dist/browser-toolbox-0.1.0.zip`，并完成归档内容审计。
+- [x] 预发布版本使用 `0.1.0`；当前技术包仍保留 `BrowserToolbox` 内部标识，Vimium `2.4.2` 仅作为键盘与设置迁移兼容基线。
+- [ ] 当前工作区存在未提交修改，尚不能声称源码、发布包和 SHA-256 对应同一提交；项目暂不发布。
+- [x] E-079 图标替换后按顺序运行两次 `deno run -A scripts/build_release.js --package`，四个未发布归档 SHA-256 保持一致：BrowserToolbox `112c71a2e288745f58f9e1659123f615798a3986e1dddc833c5366024c3c6825`、Chrome `f9301c524afd42e64ef217cdbcec837f614d2ba12d2f6d63e7f2d3b58adad478`、Firefox `ee25bd6e43bdb2b7ae923e5acba79389c880a06fdc03a8678cc07a93916f4a8e`、Chrome Canary `f373371df0ab3014e63c057c08d77dd8979e2c6a6d35714e094ae817f61ac9f1`；这不改变未提交工作区和未完成发布人工门禁。
+- [x] E-080 设置应用服务、字段级冲突路径、站点规则顺序文案和 schema 驱动参数控件变更后，当前 checkout 单元/DOM `387/387`、`109/109`，shoulda `139/139`，权限审计 9 项、网络审计 33 个新增模块、打包、连续两次发布检查和 macOS Chrome Stable 隔离 E2E 均通过；参数控件与冲突字段诊断有单测，兼容 JSON 入口有单测与 E2E；四个未发布归档 SHA-256 为 BrowserToolbox `fda8de920ca7ab676fdfe5bec40eefa790dc0790ab3f58e1cf52cb8c7b9311b8`、Chrome `5b038fc084385dc0024cbc684a906b3df81c3b2df2d6a16a8314bee600769a1e`、Firefox `95210dbdf81ae89c2814f766628ebab968020bfeb978364c59ea267401c0793f`、Chrome Canary `c6158ef5e9d502a3b4762819960e88f4938194c68c76eeaef618b392fddb26ef`；不改变未提交工作区和未完成发布人工门禁。
+- [x] E-081 运行时配置客户端、同上下文并发加载去重和 Service Worker 失效通知变更后，当前 checkout 单元/DOM `393/393`、`109/109`，shoulda `145/145`，权限审计 9 项、网络审计 34 个新增模块、打包、连续两次发布检查和 macOS Chrome Stable 隔离 E2E 均通过；E2E 新增验证设置页写入后已打开页面的运行时客户端和鼠标控制器同步全局停用状态，并覆盖跨 frame、Service Worker 重启、旧版迁移和设计文档 fixtures；四个未发布归档 SHA-256 为 BrowserToolbox `be80c04e4779cbbc3d68779cef3e9958db316c0cf55fad31e015de37f7395721`、Chrome `5f77bae2b289b56baaf2aef1f41dae0334f3ceed76cd4ce2ab98210be08e2752`、Firefox `f80348211f08bf9c150a2af16ee37e6f147fb5972b08892cbc841ec8e2e95d78`、Chrome Canary `3642a020126cf9325c6c7beef592955369039613388ce7470c0cab336dbc406e`；不改变未提交工作区和未完成发布人工门禁。
+- [x] E-082 站点规则完全重复匹配式诊断、动作页当前停用模块状态和动作页开关初始化回归修复后，当前 checkout 单元/DOM `396/396`、`109/109`，shoulda `148/148`，权限审计 9 项、网络审计 34 个新增模块、目标文件格式/类型检查、打包和 macOS Chrome Stable 隔离 E2E 均通过；E2E 覆盖动作页会话开关、站点规则、设置迁移、导入导出、核心手势、跨 frame、fixtures 和 Service Worker 重启；四个未发布归档 SHA-256 为 BrowserToolbox `e2f7f3de2d499898ec2936a46fc5657977effa0949f256d299d13496cee26c2b`、Chrome `ea3be17632e0647568874b49630f4894c5d04030275f25c870452bd09103ffa1`、Firefox `5db567318b04aa00353167eb7b98199ad574107efff321543a6f3249c496d9b9`、Chrome Canary `9c4a1fe878168151dd24bc45fb9d87a9c81f10e3073018dd1f196061d884daac`；工作区仍未提交，人工平台/辅助技术/生产升级门禁仍未完成，项目暂不发布。
+- [x] E-083 发布脚本现在同时生成独立源码包 `dist/browser-toolbox-source-0.1.0.zip` 和运行时包；源码包包含源码、测试、fixtures、开发脚本与 ADR，运行时包排除文档、测试、fixtures、脚本和隐藏仓库文件；两次源码/运行时包构建哈希一致，源码包 `de908230450e00ce55371ebc75d64d9acfe5883ce6ba895716fdb6106fd22315`、运行时包 `5b691d6ce7fae9883b5051b9f5f0b22cf7ded3fee5ed000fb350bd4946f7b467`；内容禁入路径审计通过。该项不改变未提交工作区和未完成人工平台、辅助技术、生产升级门禁的状态。
+- [x] E-084 动作页滚轮/摇杆合并开关现在按两个模块的实际生效状态显示；站点规则只停用摇杆时，动作页显示关闭并明确列出摇杆。当前 checkout 单元/DOM 396/396、109/109，shoulda 148/148，权限/网络审计、打包和 macOS Chrome Stable 隔离 E2E 均通过；该项仍不替代 Windows/Edge/macOS/Linux 人工矩阵、屏幕阅读器、认证态站点、完整 Vimium 手工回归或生产 CRX/真实用户 profile 验收。
+- [x] E-085 国际化回退和旧会话覆盖清除修复后，当前 checkout 单元/DOM `398/398`、`109/109`，shoulda `150/150`，权限/网络审计、打包和 macOS Chrome Stable 隔离 E2E 均通过；源码包、运行时包禁入路径审计通过，当前归档 SHA-256 已记录在 `docs/codex-progress.md`。该项仍不替代 Windows/Edge/macOS/Linux 人工矩阵、屏幕阅读器、高对比度/缩放、认证态站点、完整 Vimium 手工回归或生产 CRX/真实用户 profile 验收。
+- [x] E-086 轨迹手势在抬键时复核超时、控制器定时器清理且 `ACTIVE` 轨迹优先于摇杆/超级拖拽；当前 checkout 单元/DOM `399/399`、`109/109`，shoulda `151/151`，权限/网络审计、打包和 macOS Chrome Stable `Extensions.loadUnpacked` 隔离 E2E 均通过；两次发布检查的五个归档 SHA-256 一致，禁入路径审计通过。该项仍不替代 Windows/Edge/macOS/Linux 人工矩阵、屏幕阅读器、高对比度/缩放、认证态站点、完整 Vimium 手工回归或生产 CRX/真实用户 profile 验收。
+- [x] E-087 触发按键配置已贯通运行时和设置页，Service Worker 手势会话按有效配置使用最大持续时间；当前 checkout 单元/DOM `400/400`、`109/109`，shoulda `152/152`，权限/网络审计、打包和 macOS Chrome Stable `Extensions.loadUnpacked` 隔离 E2E 均通过；连续两次发布检查归档哈希一致，禁入路径审计通过。该项仍不替代 Windows/Edge/macOS/Linux 人工矩阵、屏幕阅读器、高对比度/缩放、认证态站点、完整 Vimium 手工回归或生产 CRX/真实用户 profile 验收。
+- [x] E-088 子 frame 在 Service Worker 不可用且无法安全取得顶层配置时 fail-closed，左键/中键/右键触发均有当前 checkout 隔离 E2E；当前 checkout 单元/DOM `401/401`、`109/109`，shoulda `153/153`，权限/网络审计、打包和 macOS Chrome Stable `Extensions.loadUnpacked` 隔离 E2E 均通过；连续两次发布检查五个归档 SHA-256 一致，禁入路径审计通过。该项仍不替代 Windows/Edge/macOS/Linux 人工矩阵、屏幕阅读器、高对比度/缩放、认证态站点、完整 Vimium 手工回归或生产 CRX/真实用户 profile 验收。
+- [x] E-089 GestureFrameCoordinator 超过 8 个不同方向摘要时立即取消会话，不留下可继续通过活动状态校验的超长会话；当前 checkout 单元/DOM `401/401`、`109/109`，shoulda `153/153`，权限/网络审计、打包和 macOS Chrome Stable `Extensions.loadUnpacked` 隔离 E2E 均通过；连续两次发布检查五个归档 SHA-256 一致，禁入路径审计通过。该项仍不替代 Windows/Edge/macOS/Linux 人工矩阵、屏幕阅读器、高对比度/缩放、认证态站点、完整 Vimium 手工回归或生产 CRX/真实用户 profile 验收。
+- [x] E-090 手势跨 frame 使用短生命周期 `runtime.connect` Port，Port 消息串行处理并在断开时清理会话；当前 checkout 单元/DOM `403/403`、`109/109`，shoulda `155/155`，权限/网络审计、打包和 macOS Chrome Stable `Extensions.loadUnpacked` 隔离 E2E 均通过；连续两次发布检查五个归档 SHA-256 一致，禁入路径审计通过。首次 E2E 暴露的跨 frame 消息竞态已修复，仍不替代 Windows/Edge/macOS/Linux 人工矩阵、屏幕阅读器、高对比度/缩放、认证态站点、完整 Vimium 手工回归或生产 CRX/真实用户 profile 验收。
+- [x] E-091 设计文档 Phase 6 的 `about:blank`、`srcdoc` 与跨域 iframe 真实注入检查通过；子 frame 配置请求窗口调整为有限 2 秒并保持 Service Worker 不可用时 fail-closed。当前 checkout 单元/DOM `403/403`、`109/109`，shoulda `155/155`，权限/网络审计、打包和 macOS Chrome Stable `Extensions.loadUnpacked` 隔离 E2E 连续两次通过；两次发布检查五个归档 SHA-256 一致，禁入路径审计无匹配。该项仍不替代 Windows/Edge/macOS/Linux 人工矩阵、屏幕阅读器、高对比度/缩放、认证态站点、完整 Vimium 手工回归或生产 CRX/真实用户 profile 验收。
+- [x] E-092 中文站点规则无匹配提示统一使用“浏览器工具箱”，并补充中文回退文案单元断言；当前 checkout 单元/DOM `403/403`、`109/109`，shoulda `155/155`，权限/网络审计、打包和 macOS Chrome Stable `Extensions.loadUnpacked` 隔离 E2E 均通过；连续两次发布检查五个归档 SHA-256 一致，源码包和运行时包旧技术标识禁入路径审计无匹配。该项仍不替代 Windows/Edge/macOS/Linux 人工矩阵、屏幕阅读器、高对比度/缩放、认证态站点、完整 Vimium 手工回归或生产 CRX/真实用户 profile 验收。
+- [x] E-081 变更后当前未发布本地产物连续两次运行 `deno run -A scripts/build_release.js --package` 的 BrowserToolbox SHA-256 一致：`be80c04e4779cbbc3d68779cef3e9958db316c0cf55fad31e015de37f7395721`；当前 Chrome、Firefox、Chrome Canary 归档 SHA-256 分别为 `5f77bae2b289b56baaf2aef1f41dae0334f3ceed76cd4ce2ab98210be08e2752`、`f80348211f08bf9c150a2af16ee37e6f147fb5972b08892cbc841ec8e2e95d78`、`3642a020126cf9325c6c7beef592955369039613388ce7470c0cab336dbc406e`。
+- [x] E-082 后当前未发布本地产物连续两次运行 `deno run -A scripts/build_release.js --package` 的四个归档 SHA-256 一致：BrowserToolbox `e2f7f3de2d499898ec2936a46fc5657977effa0949f256d299d13496cee26c2b`、Chrome `ea3be17632e0647568874b49630f4894c5d04030275f25c870452bd09103ffa1`、Firefox `5db567318b04aa00353167eb7b98199ad574107efff321543a6f3249c496d9b9`、Chrome Canary `9c4a1fe878168151dd24bc45fb9d87a9c81f10e3073018dd1f196061d884daac`；这不改变未提交工作区和未完成人工发布门禁。
+- [x] 当前工作区归档和发布包检查已重复运行并保持可复现；这不改变“未固定提交、暂不发布”的状态。
 - [x] 发布包不含测试、调试日志、个人路径、测试密钥或本机凭证；`make.js` 已排除 `docs/` 和
       `scripts/`，并通过 `unzip -l dist/chrome-store/vimium-chrome-store-0.1.0.zip` 的禁入路径审计。
+- [x] E-094 扩展页面显式固定为 `script-src 'self'; object-src 'self'`，权限审计现在强制校验完整 CSP；当前 checkout 单元/DOM `403/403`、`109/109`，shoulda `155/155`，权限/网络审计、打包和 macOS Chrome Stable 隔离 E2E 均通过，发布归档连续构建结果一致。该项只记录自动安全门禁，不替代人工平台、屏幕阅读器或发布签名验收。
+- [x] E-096 Runtime 消息和手势 Port 入口现在严格校验 `sender.id === chrome.runtime.id`；当前 checkout 单元/DOM `403/403`、`109/109`，shoulda `155/155`，权限/网络审计、打包和 macOS Chrome Stable 隔离 E2E 均通过，发布归档连续构建结果一致。该项只记录自动安全门禁，不替代人工平台、屏幕阅读器或生产升级验收。
+- [x] E-098 设置导入的绑定 `pattern` 和统一命令调用的 `context/options` 非法输入现在返回拒绝结果而不是让校验器抛错；当前 checkout 单元/DOM `405/405`、`109/109`，shoulda `157/157`，权限/网络审计、打包、macOS Chrome Stable `Extensions.loadUnpacked` 隔离 E2E 和连续两次发布检查均通过，五个归档 SHA-256 一致。该项只记录自动安全门禁，不替代人工平台、屏幕阅读器或生产升级验收。
+- [x] E-099 超级拖拽自定义搜索引擎与 Vimium 设置缓存一致性修复后，当前 checkout 单元/DOM `407/407`、`109/109`，shoulda `159/159`，权限/网络审计、打包、macOS Chrome Stable `Extensions.loadUnpacked` 隔离 E2E 和连续两次发布检查均通过；源码、运行时、Chrome、Firefox、Canary 归档 SHA-256 已在 `docs/codex-progress.md` 记录并保持一致。该项只记录自动安全门禁，不替代人工平台、屏幕阅读器或生产升级验收。
+- [x] E-100 绑定编辑器字符串选项同步回归及真实设置页配置链路通过后，当前 checkout 单元/DOM `408/408`、`109/109`，shoulda `160/160`，权限/网络审计、打包和 macOS Chrome Stable `Extensions.loadUnpacked` 隔离 E2E 均通过；该项只记录自动门禁，平台矩阵、屏幕阅读器和生产升级验收仍未完成。
+- [x] E-101 当前归档与迁移前归档在 Debian amd64 Chromium 隔离 profile 中完成同 ID CRX 更新语义复核，活动版本由 `0.1.0` 切换为临时 `0.1.1` 且 Service Worker 扩展 ID 不变；该项仅为临时测试密钥/profile 的自动化证据，不代表生产签名、真实用户 profile、商店更新通道或人工安装更新验收。
+- [x] E-102 当前归档连续两次构建退出码均为 0，源码、运行时、Chrome、Firefox、Canary 五个 SHA-256 保持一致；源码包含人工验收清单，运行时包 manifest 含最小 CSP。该项只记录可复现构建与内容审计，不代表已提交 SHA、人工平台/辅助技术或生产发布验收。
+- [x] E-103 规范/旧版设置导入对未知字段、本地资源和可保留设置的预览与结果报告通过；当前 checkout 单元/DOM `409/409`、`109/109`，shoulda `161/161`，权限/网络审计、打包和 macOS Chrome Stable `Extensions.loadUnpacked` 隔离 E2E 均通过；清洁目标归档后连续两次构建的源码、运行时、Chrome、Firefox、Canary 五个 SHA-256 一致。该项只记录自动门禁，平台矩阵、屏幕阅读器和生产升级验收仍未完成。
+- [x] E-104 按设计文档 §4.4 为 BrowserToolbox 分层、设置页辅助层、隔离 E2E 和新增测试补充中文 JSDoc 输入输出说明；42 个目标文件格式/类型检查通过，当前 checkout 单元/DOM `409/409`、`109/109`，shoulda `161/161`，权限/网络审计、打包、连续两次五包哈希复核和 macOS Chrome Stable `Extensions.loadUnpacked` 隔离 E2E 均通过。该项只记录代码质量与自动门禁，不改变平台矩阵、屏幕阅读器和生产升级验收未完成状态。
+- [x] E-105 覆盖率审计补齐正则安全、运行时设置客户端和配置值工具边界测试；V8 coverage 的 `test-unit` 为 `420/420`，新增正则安全模块 `100%`、运行时设置客户端 `96.639%`、配置值工具 `96.190%`，完整单元/DOM `420/420`、`109/109`、shoulda `172/172`，权限/网络审计、打包、连续两次五包哈希复核和 macOS Chrome Stable `Extensions.loadUnpacked` 隔离 E2E 均通过。该项只记录自动门禁，不改变平台矩阵、屏幕阅读器和生产升级验收未完成状态。
+- [x] E-106 补齐设置页已有键盘模块的全局启用开关；目标文件格式/类型检查、当前 checkout 单元/DOM `420/420`、`109/109`、shoulda `172/172`、权限/网络审计、打包、连续两次五包哈希复核和重新打包后的 macOS Chrome Stable `Extensions.loadUnpacked` 隔离 E2E 均通过。该项只记录自动门禁，不改变平台矩阵、屏幕阅读器和生产升级验收未完成状态。
+- [x] E-107 为网站规则编辑器补充注册表驱动的六模块停用开关覆盖断言；目标文件格式/类型检查、当前 checkout 单元/DOM `421/421`、`109/109`、shoulda `173/173`、权限/网络审计、打包、连续两次五包哈希复核和 macOS Chrome Stable `Extensions.loadUnpacked` 隔离 E2E 均通过。该项只记录自动门禁，不改变平台矩阵、屏幕阅读器和生产升级验收未完成状态。
+- [x] E-108 补齐设置页全局 HUD、同步/本地存储切换和超级拖拽旁路修饰键；设置仓库为跨区域与旧键事件增加排队重载，当前 checkout 单元/DOM `427/427`、`109/109`、shoulda `179/179`、权限/网络审计、打包、连续两次五包哈希复核和 macOS Chrome Stable `Extensions.loadUnpacked` 隔离 E2E 均通过。该项只记录自动门禁，不改变平台矩阵、屏幕阅读器和生产升级验收未完成状态。
+- [x] E-109 为跨存储区域规范键写入增加失败回滚并补充回归测试；当前 checkout 单元/DOM `428/428`、`109/109`、shoulda `180/180`、权限/网络审计、打包、连续两次五包哈希复核和最新 macOS Chrome Stable `Extensions.loadUnpacked` 隔离 E2E 均通过。该项只记录自动门禁，不改变平台矩阵、屏幕阅读器和生产升级验收未完成状态。
+- [x] E-110 新增性能回归入口和标签页列表事件委托；当前 checkout 单元/DOM `430/430`、`109/109`、shoulda `182/182`，`./make.js test-performance` 记录空闲输入、100 次手势 DOM/Port/定时器清理、100 次初始化销毁监听器清理、长滚动、多 frame 和 50 标签页搜索；权限/网络审计、打包、连续两次发布检查和最新 macOS Chrome Stable 隔离 E2E 均通过。性能结果来自合成环境，不替代人工平台、屏幕阅读器或完整 Vimium 手工回归，项目仍暂不发布。
+- [x] E-111 当前 checkout 在 Parallels Windows 11 ARM64 临时 profile 中使用 Chrome Stable `151.0.7922.174` 与 Edge Stable `151.0.4129.101` 完成远程 CDP `Extensions.loadUnpacked` 隔离 E2E，均覆盖设置导入导出、旧版迁移、正则网站规则、核心输入、超级拖拽下载、滚轮、摇杆、跨 frame、fixtures、恢复默认和 Service Worker 重启；远程 CDP 无法代授剪贴板权限，相关断言明确跳过。该项是当前归档的自动化证据，不替代 Windows/Edge 手工矩阵、屏幕阅读器或生产升级验收，项目仍暂不发布。
+- [x] E-112 跨存储区域清理异常的双侧回滚修复及回归测试通过；当前 checkout 单元/DOM `431/431`、`109/109`，shoulda `183/183`，性能、权限/网络审计、打包和连续两次发布检查通过，最新 macOS Chrome Stable、Windows Chrome Stable `151.0.7922.174` 与 Windows Edge Stable `151.0.4129.101` 当前归档隔离 E2E 均通过；Windows 远程剪贴板断言跳过。该项只记录自动门禁，不替代 Windows/Edge/macOS/Linux 人工矩阵、屏幕阅读器、认证态站点、完整 Vimium 手工回归或真实用户 profile/旧 CRX 升级验收，项目仍暂不发布。
+- [x] E-113 补充双区域已有规范副本在清理先删除后报错时的回滚回归；当前 checkout 单元/DOM `432/432`、`109/109`，shoulda `184/184`，重新打包和连续两次发布检查通过，运行时四包哈希与 E-112 一致。该项只记录测试覆盖和产物复核，不替代人工平台/辅助技术/认证站点/真实 profile 验收，项目仍暂不发布。
+- [x] E-114 修正 `make.js` Windows `shell` 分支对未定义 `optArray` 的引用，改用 `argsArray`；当前 checkout 单元/DOM `432/432`、`109/109`，shoulda `184/184`，性能、权限/网络审计、打包和连续两次发布检查通过。Windows 分支本轮仅做源码静态断言，未写成 Windows 实机结果；人工平台/辅助技术/认证站点/真实 profile 验收仍未完成，项目仍暂不发布。
+- [x] E-115 补齐动作页“打开帮助”入口：通过当前标签页顶层 `runInTopFrame/showHelp` 路由打开既有帮助 UI，并由 macOS Chrome Stable 当前 checkout 隔离 E2E 验证按钮文案、帮助显示和弹窗关闭后的会话开关；单元/DOM `432/432`、`109/109`，shoulda `184/184`，性能、权限/网络审计、打包和连续构建哈希复核通过。Computer Use 客户端与服务端版本不匹配，本轮没有形成 macOS 人工或 VoiceOver 结果；Windows/Edge/Linux 人工矩阵、认证态站点、完整 Vimium 手工回归和真实 profile/旧 CRX 验收仍未完成，项目仍暂不发布。
+- [x] E-116 帮助页补齐浏览器工具箱模块说明、当前页面有效状态、命中网站规则、隐私/许可证入口和中英文本地化；顶层内容脚本只传递状态摘要，帮助页以 textContent 渲染规则文本。当前 checkout 单元/DOM `433/433`、`109/109`，shoulda `184/184`，权限/网络审计、性能、打包和 macOS Chrome Stable 当前 checkout 隔离 E2E 均通过；该项仍不替代平台/辅助技术/认证站点/真实 profile 人工验收，项目仍暂不发布。
+- [x] E-117 为帮助页补齐 `dialog`、模态状态、可访问名称/描述和 `status` 播报语义，并增加中文关闭控件、区域标题关联的单元/E2E 断言；当前 checkout 单元/DOM `434/434`、`109/109`，shoulda `184/184`，权限/网络审计、性能、打包和 macOS Chrome Stable 当前 checkout 隔离 E2E 均通过。本项仍不替代平台/辅助技术/认证站点/真实 profile 人工验收，项目仍暂不发布。
+- [x] E-118 增加技术标识迁移审计并接入发布检查；当前 checkout 单元/DOM `434/434`、`109/109`，shoulda `184/184`，技术标识、权限/网络审计、连续两次归档构建和 macOS Chrome Stable 当前 checkout 隔离 E2E 均通过。旧标识仍仅保留在兼容层、兼容测试/fixture 和历史文档；本项不替代平台/辅助技术/认证站点/真实 profile 人工验收，项目仍暂不发布。
+- [x] E-119 复核 Windows 隔离 VM：VM 可启动但来宾 `cmd.exe` 执行通道两次均以退出码 2 且无版本输出，随后已停止；本轮未形成 Windows E2E 或人工验收证据，不能替代 Windows/Edge 手工矩阵。
+- [x] E-120 技术标识审计负向路径自测通过：临时哨兵文件出现在非兼容位置时审计按预期以退出码 1 拒绝，删除哨兵后重新审计以退出码 0 通过；未修改产品代码，不替代平台、辅助技术、真实旧 CRX 或人工验收门禁。
+- [x] E-121 跨存储区域切换异步回归复核通过：撤回会在“先写新区域、再删旧区域”窗口误写旧值的重复副本清理尝试，并保留旧区域最终删除断言；当前 checkout 单元/DOM `434/434`、`109/109`，shoulda `184/184`，权限/网络/技术标识审计、打包和 macOS Chrome Stable 当前归档隔离 E2E 均通过。该项不替代真实旧 CRX、平台人工矩阵或屏幕阅读器验收。
+- [x] E-122 当前目录重命名后的旧 CRX 与当前 CRX 同 ID/持久化设置升级隔离复核通过：Debian amd64 Chromium 151.0.7922.173 临时 profile 先加载旧 `0.1.0`，再重启同一 profile 载入临时升版本 `0.1.1`，活动目录从 `0.1.0_0` 变为 `0.1.1_0`；当前包读到 schema 4、`BrowserToolbox` 命令名、旧指针资源和旧迁移备份。浏览器重启清空 `storage.session`，本轮不把会话跨重启写成通过；临时密钥/profile/外部 JSON 证据不替代生产签名、真实旧用户 profile、商店更新通道或人工安装更新验收，`O-005` 仍为 `IN_PROGRESS`。
+- [x] E-123 记录 macOS Computer Use 人工操作尝试：`sky.get_app_state({ app: "com.google.Chrome" })` 因客户端与服务端版本不匹配返回错误，没有可访问界面，也没有出现或点击文件导入“允许”提示；该记录不改变 Chrome、Edge、Windows、macOS、Linux 手工矩阵、VoiceOver、认证站点或完整 Vimium 手工回归仍未完成的状态，项目仍暂不发布。
+- [x] E-124 当前 checkout 重新生成并复核五个 0.1.0 归档，两次 `deno run -A scripts/build_release.js --package` 哈希一致，发布检查通过；该项只记录可复现产物，不改变未提交、未发布以及平台/辅助技术/真实旧 CRX 人工门禁未完成的状态。
+- [x] E-125 当前归档使用 macOS Chrome Stable `Extensions.loadUnpacked` 隔离 E2E 复核通过，覆盖设置页语义、全部输入模块、正则网站规则、导入导出/旧版迁移、本地资源、跨 frame、fixtures 和 Service Worker 重启；该项是 CDP 自动化证据，不替代 Chrome、Edge、Windows、macOS、Linux 手工矩阵、屏幕阅读器或真实旧 CRX 用户环境验收。
+- [x] E-126 重启后再次尝试 Chrome 临时 profile 人工验收；Computer Use 仍报告客户端/服务端版本不匹配，Chrome 浏览器连接通道仅发现 Codex In-app Browser，未点击任何提示；只读诊断确认 Chrome 与 Default profile 中的 ChatGPT 扩展/原生连接配置存在，但未执行会打开日常 `Default` profile 的启动命令。该项不构成人工通过，平台/辅助技术/真实旧 CRX 人工门禁仍未完成，项目仍暂不发布。
+- [x] E-127 直接连接 Mac Chrome 成功并读取到新开的 `about:blank`，但访问 `chrome://extensions` 被浏览器安全策略拒绝；未安装、启用或点击任何扩展/权限提示，也未使用绕过手段。该项不构成人工通过，Chrome 扩展加载、平台/辅助技术/真实旧 CRX 人工门禁仍未完成，项目仍暂不发布。
+- [x] E-128 用户手动加载当前扩展后，Mac Chrome 新建测试标签页中的链接提示、Super Drag 后台打开、普通输入框与 contenteditable 原生按键保护、跨 frame 提示/取消均取得实时 UI smoke-check 结果；代理操作和本地 fixture 结果不替代扩展设置页、屏幕阅读器或四平台人工矩阵，人工门禁仍未完成，项目仍暂不发布。
+- [x] E-129 用户手动打开当前扩展 Options 页面后，Chrome 连接通道能看到 `Vimium Options` 标签，但读取 `chrome-extension://` 页面 DOM 被浏览器安全策略拒绝；未点击设置控件，也未使用绕过方式。该项不构成人工通过，设置页及平台/辅助技术/真实旧 CRX 人工门禁仍未完成，项目仍暂不发布。
+- [x] E-133 修复 Chromium 在首次 `pointermove` 前派发 `contextmenu` 导致右键轨迹冲突的问题：菜单抑制开启时从手势会话开始保护并覆盖 `pointerup` 后事件间隙，关闭开关时保留原生菜单但提示可能冲突；当前 checkout 单元/DOM `437/437`、`109/109`，shoulda `187/187`，权限/网络/技术标识审计、打包和 macOS Chrome Stable 临时 profile 隔离 E2E 均通过。该项不替代日常 profile、真实旧 CRX 更新、Chrome/Edge/Windows/macOS/Linux 人工矩阵或屏幕阅读器验收，项目仍暂不发布。
+- [x] E-132 当前 checkout 使用 `Extensions.loadUnpacked` 和临时 Chrome profile 的隔离 E2E 复核通过，覆盖设置导出、有效导入取消/确认、非法 JSON、未知字段、旧版导出格式、旧版存储键/会话覆盖/本地指针资源迁移、正则网站规则、核心输入、超级拖拽、滚轮/摇杆、跨 frame、fixtures 和 Service Worker 重启；该项不替代真实用户 profile 的旧 CRX 更新、人工导入确认、四平台人工矩阵或屏幕阅读器验收。
+- [x] E-131 Computer Use 恢复后在当前 Mac Chrome 的可见扩展页完成实时 UI 核对：多级设置导航、分区搜索、站点规则 Glob/正则选项、匹配解释、备份入口和导入文件选择器均可见；当前窗口不是临时 profile，未选择或导入文件，也未保存配置。该项是代理实时 UI 证据，不构成人工矩阵、屏幕阅读器或真实旧 CRX 导入更新通过，项目仍暂不发布。
+- [x] E-130 用户要求再次调用 Computer Use；`sky.get_app_state({ app: "com.google.Chrome" })` 再次返回客户端/服务端版本不匹配，未获得界面树、截图或点击能力。该项不构成人工通过，设置页及平台/辅助技术/真实旧 CRX 人工门禁仍未完成，项目仍暂不发布。
 - [ ] Chrome、Edge、Windows、macOS、Linux 的手工矩阵已记录实际结果。

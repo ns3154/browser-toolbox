@@ -40,4 +40,20 @@ context("UIComponent", () => {
     c.show();
     assert.equal(c.iframeElement.getRootNode().host, document.activeElement);
   });
+
+  should("load local component CSS when the session cache is not ready", async () => {
+    stub(chrome.storage.session, "get", async () => ({}));
+    stub(globalThis, "fetch", async () => ({
+      ok: true,
+      text: async () => "iframe.example-class { width: 920px; }",
+    }));
+
+    c = new UIComponent("testing.html", "example-class");
+    await c.load("example.html", "example-class");
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    assert.isTrue(
+      c.shadowDOM.querySelector("style").textContent.includes("width: 920px"),
+    );
+  });
 });

@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "__MSG_extensionName__",
+  "name": "__MSG_extensionName__", // 正式对外产品名由本地化消息提供；运行时技术标识统一为 BrowserToolbox。
   "version": "0.1.0",
   "description": "__MSG_extensionDescription__",
   "default_locale": "en",
@@ -38,6 +38,9 @@
     "webNavigation",
     "search"
   ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
   "content_scripts": [
     {
       "matches": [
@@ -45,13 +48,20 @@
       ],
       "js": [
         "lib/i18n.js",
-        "lib/open_key_mouse/command_invocation.js",
-        "lib/open_key_mouse/message_protocol.js",
-        "lib/open_key_mouse/settings_schema.js",
-        "lib/open_key_mouse/settings_validator.js",
-        "lib/open_key_mouse/site_rule_matcher.js",
-        "background_scripts/open_key_mouse/settings_migrations.js",
-        "background_scripts/open_key_mouse/settings_repository.js",
+        "lib/browser_toolbox/value_utils.js",
+        "lib/browser_toolbox/command_invocation.js",
+        "lib/browser_toolbox/message_protocol.js",
+        "lib/browser_toolbox/settings_schema.js",
+        "lib/browser_toolbox/regex_safety.js",
+        "lib/browser_toolbox/module_registry.js",
+        "lib/browser_toolbox/settings_validator.js",
+        "lib/browser_toolbox/site_rule_matcher.js",
+        "lib/browser_toolbox/settings_policy.js",
+        "background_scripts/browser_toolbox/settings_migrations.js",
+        "background_scripts/browser_toolbox/settings_storage.js",
+        "background_scripts/browser_toolbox/vimium_settings_adapter.js",
+        "background_scripts/browser_toolbox/settings_repository.js",
+        "lib/browser_toolbox/settings_runtime_client.js",
         "lib/types.js",
         "lib/utils.js",
         "lib/keyboard_utils.js",

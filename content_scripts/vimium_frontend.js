@@ -4,7 +4,7 @@
 
 let isEnabledForUrl = true;
 let vimiumEnabledForUrl = true;
-let openKeyMouseKeyboardListenerInstalled = false;
+let browserToolboxKeyboardListenerInstalled = false;
 let normalMode = null;
 
 // This is set by initializeFrame. We can only get this frame's ID from the background page.
@@ -436,20 +436,32 @@ async function checkIfEnabledForUrl() {
   const [response, ...unused] = await Promise.all(promises);
 
   vimiumEnabledForUrl = response.isEnabledForUrl;
-  const openKeyMouseRepository = globalThis.OpenKeyMouseSettingsRepositoryInstance;
-  if (openKeyMouseRepository) {
-    await openKeyMouseRepository.ensureLoaded();
-    const updateOpenKeyMouseKeyboardState = () => {
-      const effective = openKeyMouseRepository.getEffectiveSettings(document.location.href);
-      isEnabledForUrl = vimiumEnabledForUrl && effective.effectiveModules?.keyboard !== false;
-      if (!isEnabledForUrl) HUD.hide(true, false);
-    };
-    if (!openKeyMouseKeyboardListenerInstalled) {
-      openKeyMouseKeyboardListenerInstalled = true;
-      openKeyMouseRepository.addEventListener(updateOpenKeyMouseKeyboardState);
+  const browserToolboxRepository = globalThis.BrowserToolboxSettingsRepositoryInstance;
+  const browserToolboxRuntimeSettings = globalThis.BrowserToolboxSettingsRuntimeClientInstance;
+  let effective;
+  const updateBrowserToolboxKeyboardState = (settings) => {
+    effective = settings;
+    isEnabledForUrl = vimiumEnabledForUrl && effective?.effectiveModules?.keyboard !== false;
+    if (!isEnabledForUrl) HUD.hide(true, false);
+  };
+  if (browserToolboxRuntimeSettings) {
+    effective = await browserToolboxRuntimeSettings.ensureLoaded(document.location.href);
+    if (!browserToolboxKeyboardListenerInstalled) {
+      browserToolboxKeyboardListenerInstalled = true;
+      browserToolboxRuntimeSettings.addEventListener(updateBrowserToolboxKeyboardState);
+    }
+  } else if (browserToolboxRepository) {
+    await browserToolboxRepository.ensureLoaded();
+    effective = browserToolboxRepository.getEffectiveSettings(document.location.href);
+    if (!browserToolboxKeyboardListenerInstalled) {
+      browserToolboxKeyboardListenerInstalled = true;
+      browserToolboxRepository.addEventListener(() => {
+        updateBrowserToolboxKeyboardState(
+          browserToolboxRepository.getEffectiveSettings(document.location.href),
+        );
+      });
     }
   }
-  const effective = openKeyMouseRepository?.getEffectiveSettings(document.location.href);
   isEnabledForUrl = vimiumEnabledForUrl && effective?.effectiveModules?.keyboard !== false;
 
   // This browser info is used by other content scripts, but can only be determinted by the
@@ -464,6 +476,57 @@ async function checkIfEnabledForUrl() {
   normalMode.setPassKeys(response.passKeys);
   // Hide the HUD if we're not enabled.
   if (!isEnabledForUrl) HUD.hide(true, false);
+}
+
+// 帮助页需要知道当前页面的有效模块状态，但不应自行读取或修改设置；这里沿用内容脚本
+// 已经使用的只读运行时客户端，并只把可展示的摘要传给扩展页面。
+async function getBrowserToolboxHelpContext() {
+  const runtime = globalThis.BrowserToolboxSettingsRuntimeClientInstance;
+  const repository = globalThis.BrowserToolboxSettingsRepositoryInstance;
+  const moduleRegistry = globalThis.BrowserToolboxModuleRegistry;
+  const matcher = globalThis.BrowserToolboxSiteRuleMatcher;
+  let effective = null;
+  try {
+    if (runtime?.ensureLoaded) {
+      effective = await runtime.ensureLoaded(document.location.href);
+    } else if (repository) {
+      await repository.ensureLoaded(globalThis.BrowserToolboxCommandRegistry);
+      effective = repository.getEffectiveSettings(document.location.href);
+    }
+  } catch (_) {
+    // 帮助页不是运行时开关的依赖；状态读取失败时仍显示静态使用说明。
+  }
+
+  const moduleIds = moduleRegistry?.ids?.({ siteRule: true }) || [
+    "keyboard",
+    "mouse",
+    "superDrag",
+    "wheel",
+    "rocker",
+    "cursor",
+  ];
+  const modules = effective?.effectiveModules || {};
+  let matchedRule = null;
+  if (Array.isArray(effective?.siteRules) && matcher?.explain) {
+    const defaults = {
+      enabled: effective.general?.enabled !== false,
+      ...(moduleRegistry?.enabledDefaults?.(effective) || {}),
+    };
+    const explanation = matcher.explain(effective.siteRules, document.location.href, defaults);
+    if (explanation.effectiveRule) {
+      matchedRule = {
+        matchType: explanation.effectiveRule.matchType || "glob",
+        pattern: explanation.effectiveRule.pattern,
+      };
+    }
+  }
+
+  return {
+    stateAvailable: Boolean(effective),
+    disabledModules: moduleIds.filter((id) => modules[id] === false),
+    matchedRule,
+    vimiumExcluded: vimiumEnabledForUrl === false,
+  };
 }
 
 // If this content script is running in the help dialog's iframe, then use the HelpDialogPage's
@@ -496,8 +559,9 @@ const HelpDialog = {
     if (this.isShowing()) {
       this.helpUI.hide();
     } else {
+      const browserToolbox = await getBrowserToolboxHelpContext();
       return this.helpUI.show(
-        { name: "show" },
+        { name: "show", browserToolbox },
         { focus: true, sourceFrameId: request.sourceFrameId },
       );
     }
@@ -513,6 +577,8 @@ if (!testEnv) {
 
 Object.assign(globalThis, {
   HelpDialog,
+  // Exported only for tests and the help-dialog integration path.
+  getBrowserToolboxHelpContext,
   handlerStack,
   windowIsFocused,
   // These are exported for normal mode and link-hints mode.
