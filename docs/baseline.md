@@ -1,6 +1,7 @@
 # Vimium v2.4.2 基线记录
 
-> 产品定位说明：本历史基线记录中的 `OpenKeyMouse` 是仓库和运行时技术标识。当前正式对外产品名确定为“浏览器工具箱”，
+> 产品定位说明：本历史基线记录中的 `OpenKeyMouse`
+> 是仓库和运行时技术标识。当前正式对外产品名确定为“浏览器工具箱”，
 > 不改变本记录中的上游提交、测试命令、构建产物或已实际验证的事实。
 
 - 记录日期：2026-08-23
@@ -188,16 +189,16 @@ Reddit/在线编辑器等真实站点矩阵，也不能替代完整 Vimium 原�
 
 ## Linux ARM64 Chromium 补充验证（2026-08-23）
 
-为补充非 macOS 证据，使用 Docker `linux/arm64` 的 Debian 13 容器、Chromium
-151.0.7922.169 和独立临时 profile 执行。完整基线测试在容器内以非 root 用户运行；容器额外使用
+为补充非 macOS 证据，使用 Docker `linux/arm64` 的 Debian 13 容器、Chromium 151.0.7922.169 和独立临时
+profile 执行。完整基线测试在容器内以非 root 用户运行；容器额外使用
 `--security-opt seccomp=unconfined` 以满足 Chromium 的 namespace 启动条件，不改变宿主机浏览器或仓库
 配置。增强扩展 E2E 使用脚本自身声明的 `--no-sandbox`，只访问本地 fixture 服务。
 
 实际结果：
 
 - `./make.js test` 退出码 0；单元测试 `282/282`，DOM 测试 `109/109`，总计 `391/391`；
-- `scripts/e2e_open_key_mouse.js` 退出码 0，页面错误为空，设置导入导出、站点规则、核心手势、
-  Super Drag、Wheel、Rocker、跨 frame 和 Service Worker 重启均通过；
+- `scripts/e2e_open_key_mouse.js` 退出码 0，页面错误为空，设置导入导出、站点规则、核心手势、 Super
+  Drag、Wheel、Rocker、跨 frame 和 Service Worker 重启均通过；
 - 该项是 Linux ARM64 Chromium 自动/隔离补充证据，不是设计文档 §18.4 要求的 Linux + Chrome Stable
   手工矩阵，因此不将 `V-002`、`O-001` 至 `O-005` 或 `C-001` 至 `C-003` 改为 `DONE`。
 
@@ -209,7 +210,8 @@ Reddit/在线编辑器等真实站点矩阵，也不能替代完整 Vimium 原�
 - 设置页导航为垂直 `tablist`，11 个 tab 与 11 个 tabpanel 的 `id`、`aria-controls`、
   `aria-labelledby` 对应关系，以及 roving `tabindex`；
 - 侧栏通过 `ArrowUp`/`ArrowDown`/`Home`/`End` 键盘切换，所有表单控件都有可计算名称；
-- 在没有依赖画布拖动的情况下，通过文本框输入 `L>R` 并用键盘提交绑定；
+- 在没有依赖画布拖动的情况下，通过文本框输入旧格式 `L>R`，确认界面自动规范化为 `← · →`
+  并可用键盘提交绑定；
 - 通过 CDP 检查 `forced-colors: active` 与 `prefers-contrast: more`，并在 480px 窄视口确认
   设置页退化为单列布局。
 
@@ -223,17 +225,17 @@ Reddit/在线编辑器等真实站点矩阵，也不能替代完整 Vimium 原�
 `chrome.scripting.executeScript` 的 `ISOLATED` world 检查内容脚本状态。每个站点均返回 HTTP 200，
 `controller` 和 `initialized` 均为 `true`，监听器数量为 13，页面错误为空：
 
-| 站点类别 | 实际地址或结果 |
-| --- | --- |
-| 静态网页 | `https://example.com/` |
-| GitHub | `https://github.com/` |
-| Gmail | 跳转到 Google 登录页，未使用登录态 |
+| 站点类别    | 实际地址或结果                          |
+| ----------- | --------------------------------------- |
+| 静态网页    | `https://example.com/`                  |
+| GitHub      | `https://github.com/`                   |
+| Gmail       | 跳转到 Google 登录页，未使用登录态      |
 | Google Docs | 跳转到 Google Docs 登录页，未使用登录态 |
-| Notion | 跳转到 `https://www.notion.com/` |
-| YouTube | `https://www.youtube.com/` |
-| Reddit | 返回 Reddit challenge 页面，未绕过验证 |
-| 在线编辑器 | `https://stackblitz.com/` |
-| 长列表 | Wikipedia 编程语言列表页 |
+| Notion      | 跳转到 `https://www.notion.com/`        |
+| YouTube     | `https://www.youtube.com/`              |
+| Reddit      | 返回 Reddit challenge 页面，未绕过验证  |
+| 在线编辑器  | `https://stackblitz.com/`               |
+| 长列表      | Wikipedia 编程语言列表页                |
 
 该结果只证明这些页面上的内容脚本隔离注入和初始化冒烟通过，不证明已登录 Gmail/Docs/Notion 或在线
 编辑器中的手势功能，也不替代真实站点人工操作、跨 frame、长列表和 Windows/Edge/Linux Chrome Stable
@@ -247,21 +249,21 @@ checkout 执行完整自动门禁：
 - macOS arm64 系统 Chrome 151 覆盖下，`./make.js test` 通过：单元 `308/308`、DOM `109/109`，总计
   `417/417`；系统 Chrome 的扩展命令行加载仍被 Google Chrome 明确拒绝，因此该结果只作为 Vimium
   基线测试覆盖，不作为系统 Chrome Stable unpacked 扩展手工证据；
-- macOS arm64 Chrome for Testing `148.0.7778.96` 独立临时 profile 的增强扩展 E2E 通过，页面错误为空，
-  覆盖设置、无障碍语义、核心手势、Super Drag、Wheel、Rocker、跨 frame、站点规则、导入导出和
-  Service Worker 重启；
+- macOS arm64 Chrome for Testing `148.0.7778.96` 独立临时 profile 的增强扩展 E2E
+  通过，页面错误为空， 覆盖设置、无障碍语义、核心手势、Super Drag、Wheel、Rocker、跨
+  frame、站点规则、导入导出和 Service Worker 重启；
 - Docker `linux/arm64`、Debian 13、Chromium `151.0.7922.169`，以非 root 用户在临时容器中重跑当前
-  checkout：`./make.js test` 为 `417/417`，增强扩展 E2E 退出码为 0，页面错误为空；这仍不是
-  §18.4 要求的 Linux + Chrome Stable 手工矩阵。
+  checkout：`./make.js test` 为 `417/417`，增强扩展 E2E 退出码为 0，页面错误为空；这仍不是 §18.4
+  要求的 Linux + Chrome Stable 手工矩阵。
 
 覆盖率使用 Deno V8 coverage 对 `test-unit` 实际采集：
 
-| 范围 | 行覆盖率结果 |
-| --- | ---: |
-| 新增纯算法模块（方向量化、手势识别、拖拽分类、轨迹、滚轮、摇杆、超级拖拽、光标） | `95.2%`–`100%` |
-| 配置模块（schema、validator、migrations、repository） | `98.1%`–`99.7%` |
-| Command Dispatcher | `100%` |
-| 本轮纳入范围总计 | `97.6%` |
+| 范围                                                                             |    行覆盖率结果 |
+| -------------------------------------------------------------------------------- | --------------: |
+| 新增纯算法模块（方向量化、手势识别、拖拽分类、轨迹、滚轮、摇杆、超级拖拽、光标） |  `95.2%`–`100%` |
+| 配置模块（schema、validator、migrations、repository）                            | `98.1%`–`99.7%` |
+| Command Dispatcher                                                               |          `100%` |
+| 本轮纳入范围总计                                                                 |         `97.6%` |
 
 此外，权限审计仍为 9 项权限且无禁止权限/远程脚本，网络审计扫描 26 个新增模块且无后台或隐式网络调用，
 `deno check`、`scripts/build_release.js`、商店包重建和 `git diff --check` 均通过。Windows、Edge、
@@ -280,12 +282,12 @@ checkout 执行完整自动门禁：
 
 - macOS arm64 系统 Chrome 151 覆盖下，`./make.js test` 通过：单元 `308/308`、DOM `109/109`，总计
   `417/417`；系统 Chrome 的扩展命令行加载限制仍不作为手工扩展证据。
-- macOS arm64 Chrome for Testing `148.0.7778.96` 独立临时 profile 的增强扩展 E2E 退出码为 0，页面错误为空；
-  动作页受限分支实际确认提示可见、OpenKeyMouse 操作控件隐藏，原有手势、设置、站点规则、导入导出、迁移、
-  跨 frame 和 Service Worker 重启继续通过。
+- macOS arm64 Chrome for Testing `148.0.7778.96` 独立临时 profile 的增强扩展 E2E 退出码为
+  0，页面错误为空； 动作页受限分支实际确认提示可见、OpenKeyMouse
+  操作控件隐藏，原有手势、设置、站点规则、导入导出、迁移、 跨 frame 和 Service Worker 重启继续通过。
 - Docker `linux/arm64` Debian 13、Chromium `151.0.7922.169` 非 root 临时容器中，`./make.js test` 为
-  `417/417`，增强扩展 E2E 退出码为 0；动作页受限分支同样通过。该证据仍不是 §18.4 要求的 Linux + Chrome
-  Stable 手工矩阵。
+  `417/417`，增强扩展 E2E 退出码为 0；动作页受限分支同样通过。该证据仍不是 §18.4 要求的 Linux +
+  Chrome Stable 手工矩阵。
 - Deno V8 coverage 的 `test-unit` 为 `308/308`，本轮纳入范围行覆盖率 `97.6%`；新增纯算法模块为
   `95.2%`–`100%`，配置模块为 `98.1%`–`99.7%`，Dispatcher 为 `100%`。
 - 权限审计通过 9 项权限，网络审计扫描 26 个新增模块且无后台或隐式网络调用；`deno check`、定向
@@ -298,13 +300,14 @@ checkout 执行完整自动门禁：
 `9e7424adfbbd3791161b7155ac9fb56e18f3f5b91a8d7023a3163d2f3fa114cd`。
 
 系统 Chrome 的隔离 UI 尝试实际确认“加载已解压”会进入浏览器原生文件选择器，Puppeteer/CDP 无法代替用户
-选择目录；命令行扩展加载参数也被 Google Chrome 拒绝。Windows、Edge、Linux Chrome Stable、认证态真实站点、
-屏幕阅读器、人工高对比度/缩放和完整 Vimium 手工回归没有可复核证据，功能矩阵仍保持 `IN_PROGRESS`，本轮不
-宣称这些项目完成。
+选择目录；命令行扩展加载参数也被 Google Chrome 拒绝。Windows、Edge、Linux Chrome
+Stable、认证态真实站点、 屏幕阅读器、人工高对比度/缩放和完整 Vimium
+手工回归没有可复核证据，功能矩阵仍保持 `IN_PROGRESS`，本轮不 宣称这些项目完成。
 
 ## 当前 checkout 设计文档 fixtures 补充门禁（2026-08-24）
 
-新增真实扩展 E2E 对设计文档 §18.2 的 8 个仓库 fixture 做结构冒烟：`basic-links.html`、`inputs.html`、
+新增真实扩展 E2E 对设计文档 §18.2 的 8 个仓库 fixture
+做结构冒烟：`basic-links.html`、`inputs.html`、
 `scroll-containers.html`、`iframes.html`、`shadow-dom.html`、`drag-drop-app.html`、`contenteditable.html`、
 `images.html`。图片资源在本地测试服务内改写为本地 PNG，避免测试过程产生第三方图片请求。
 
@@ -313,75 +316,81 @@ Chrome for Testing 148 macOS 与 Linux ARM64 Debian Chromium 151 均退出码 0�
 `ff7bae3401955da6b99a4eb656f2060446c73e617a0bea460f54cae995186e23`；Firefox 包
 `6b918bbf93cf443f3f4a5e16b94ffba0ecedaafa9d641db6ba2d3c929b85c355`；Canary 包
 `b51a656cdc6bdefaed42ba128d0034ed55fad281694acdfee7a884fba25d38e8`；源码包
-`9c9e2a157638225a2efd85c1ebb7787a387f80e68cba36b0fffa0a9d43279a5f`。
-这仍是自动化 fixture 证据，不替代设计文档 §18.4 的 Windows、Edge、Chrome Stable 人工矩阵。
+`9c9e2a157638225a2efd85c1ebb7787a387f80e68cba36b0fffa0a9d43279a5f`。 这仍是自动化 fixture
+证据，不替代设计文档 §18.4 的 Windows、Edge、Chrome Stable 人工矩阵。
 
 ## 当前 checkout 预发布版本与设置迁移补充门禁（2026-08-24）
 
 为满足设计文档 Phase 8 的预发布要求，扩展版本从上游继承的 `2.4.2` 改为 OpenKeyMouse `0.1.0`；Vimium
-设置迁移单独固定使用兼容版本 `2.4.2`，避免预发布版本号触发上游旧版新标签页迁移。新增单元测试覆盖该边界。
+设置迁移单独固定使用兼容版本
+`2.4.2`，避免预发布版本号触发上游旧版新标签页迁移。新增单元测试覆盖该边界。
 
 当前 checkout 实际验证：macOS 系统 Chrome `./make.js test` 为单元 `309/309`、DOM `109/109`，总计
 `418/418`；macOS Chrome for Testing 148 增强扩展 E2E 退出码 0；Linux ARM64 Debian 13 Chromium 151
-基线为 `309/309`、`109/109`、总计 `418/418`，增强 E2E 退出码 0；官方 Microsoft Edge
-`151.0.4129.101` Debian amd64 隔离环境同样为 `418/418`，增强 E2E 退出码 0。
+基线为 `309/309`、`109/109`、总计 `418/418`，增强 E2E 退出码 0；官方 Microsoft Edge `151.0.4129.101`
+Debian amd64 隔离环境同样为 `418/418`，增强 E2E 退出码 0。
 
-本轮 `deno run -A scripts/build_release.js --package` 生成 [源码包](/Users/yang/project/plugin/open-key-mouse/dist/open-key-mouse-0.1.0.zip)，
-四类产物 SHA-256：Chrome 商店
-`162c01666c97320ece953ab0ad5388a1f1b39ef05f7546e504b633d37c9f3c5d`；Firefox
+本轮 `deno run -A scripts/build_release.js --package` 生成
+[源码包](/Users/yang/project/plugin/open-key-mouse/dist/open-key-mouse-0.1.0.zip)， 四类产物
+SHA-256：Chrome 商店 `162c01666c97320ece953ab0ad5388a1f1b39ef05f7546e504b633d37c9f3c5d`；Firefox
 `ed3b903cac7a0e34f4ebb6bbe78689d758f666cdbf915e9cb294e2a5c661f8d2`；Canary
 `95c958cff0208d9b8d5c29f1f60d6fa7f48b23869a1882fddb6d3425c2ff04ef`；源码
 `4fa08dd01c30cb490d130d79023a3cd561356b61406091aa3ea3d0b0bbfc0763`。
-版本号修复只证明自动化和隔离运行时兼容，不替代 Windows、Chrome Stable、Edge Stable 人工矩阵。
-当前 checkout 连续两次运行商店包和源码包构建，四类产物 SHA-256 均完全一致；该结果补足本机重复构建可复现性证据。
+版本号修复只证明自动化和隔离运行时兼容，不替代 Windows、Chrome Stable、Edge Stable 人工矩阵。 当前
+checkout 连续两次运行商店包和源码包构建，四类产物 SHA-256
+均完全一致；该结果补足本机重复构建可复现性证据。
 
 ## 当前 checkout Edge 自动兼容性补充（2026-08-24）
 
-官方 Microsoft Edge `151.0.4129.101` 在 Debian amd64 隔离容器中以非 root 用户运行；`./make.js test` 为
-`308/308` 单元、`109/109` DOM，增强扩展 E2E 退出码 0，并通过 8 个设计文档 fixture、受限动作页和 Service
-Worker 重启。该证据不等同于 Windows Edge Stable 手工矩阵，未据此改变功能矩阵状态。
+官方 Microsoft Edge `151.0.4129.101` 在 Debian amd64 隔离容器中以非 root 用户运行；`./make.js test`
+为 `308/308` 单元、`109/109` DOM，增强扩展 E2E 退出码 0，并通过 8 个设计文档 fixture、受限动作页和
+Service Worker 重启。该证据不等同于 Windows Edge Stable 手工矩阵，未据此改变功能矩阵状态。
 
 ## 当前 checkout 官方 Linux Chrome Stable 自动基线补充（2026-08-24）
 
-在 Docker `linux/amd64`、Debian 13 隔离容器中安装官方 Google Chrome Stable `151.0.7922.173`，以非 root
-用户、`seccomp=unconfined`、临时浏览器 profile 和显式 `PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome` 运行：
-`./make.js test` 实际通过，单元 `309/309`、DOM `109/109`，总计 `418/418`。
+在 Docker `linux/amd64`、Debian 13 隔离容器中安装官方 Google Chrome Stable `151.0.7922.173`，以非
+root 用户、`seccomp=unconfined`、临时浏览器 profile 和显式
+`PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome` 运行： `./make.js test` 实际通过，单元
+`309/309`、DOM `109/109`，总计 `418/418`。
 
-同环境执行设计文档 §18.3 unpacked E2E 时，Chrome Stable 没有出现本项目的 `background_scripts/main.js` 或
-`service_worker.js` 目标，目标列表只出现 Chrome 内置 Google Network Speech 组件扩展，因此脚本在扩展页面探针
-处超时退出。该结果证明 Chrome Stable 的基线测试通过，但不证明 unpacked 扩展已加载，也不替代 Linux + Chrome
-Stable 人工矩阵；功能矩阵和发布检查表继续保留未完成状态。
+同环境执行设计文档 §18.3 unpacked E2E 时，Chrome Stable 没有出现本项目的
+`background_scripts/main.js` 或 `service_worker.js` 目标，目标列表只出现 Chrome 内置 Google Network
+Speech 组件扩展，因此脚本在扩展页面探针 处超时退出。该结果证明 Chrome Stable
+的基线测试通过，但不证明 unpacked 扩展已加载，也不替代 Linux + Chrome Stable
+人工矩阵；功能矩阵和发布检查表继续保留未完成状态。
 
 ## 当前 checkout 官方 Chrome Stable CDP 加载补充（2026-08-24）
 
-为保留 Chrome Stable 的真实品牌浏览器覆盖，同时绕开其禁用 `--load-extension` 的命令行行为，E2E 启动器新增
-显式环境开关 `OPEN_KEY_MOUSE_E2E_LOAD_UNPACKED_VIA_CDP=true`，通过 Chrome DevTools Protocol 的
-`Extensions.loadUnpacked` 加载本地 `dist/vimium`，默认 CFT/Chromium 启动路径不变。
+为保留 Chrome Stable 的真实品牌浏览器覆盖，同时绕开其禁用 `--load-extension` 的命令行行为，E2E
+启动器新增 显式环境开关 `OPEN_KEY_MOUSE_E2E_LOAD_UNPACKED_VIA_CDP=true`，通过 Chrome DevTools
+Protocol 的 `Extensions.loadUnpacked` 加载本地 `dist/vimium`，默认 CFT/Chromium 启动路径不变。
 
-macOS Chrome Stable `151.0.7922.173` 和 Linux amd64 Debian 13 Chrome Stable `151.0.7922.173` 均实际加载
-OpenKeyMouse Service Worker，并完成完整 `scripts/e2e_open_key_mouse.js`：核心手势、Super Drag、Wheel、Rocker、
-跨 frame、设置导入导出、站点规则、设计文档 fixtures、受限动作页和 Service Worker 重启均退出码 0。Linux
-同环境 `./make.js test` 仍为单元 `309/309`、DOM `109/109`，总计 `418/418`。
+macOS Chrome Stable `151.0.7922.173` 和 Linux amd64 Debian 13 Chrome Stable `151.0.7922.173`
+均实际加载 OpenKeyMouse Service Worker，并完成完整 `scripts/e2e_open_key_mouse.js`：核心手势、Super
+Drag、Wheel、Rocker、 跨 frame、设置导入导出、站点规则、设计文档 fixtures、受限动作页和 Service
+Worker 重启均退出码 0。Linux 同环境 `./make.js test` 仍为单元 `309/309`、DOM `109/109`，总计
+`418/418`。
 
-这是 Chrome Stable 的 CDP 自动化证据，不是 §18.4 的人工平台矩阵；Windows Chrome、Windows Edge、Linux Chrome
-Stable 人工操作、认证态站点、屏幕阅读器和完整 Vimium 手工回归仍未验证。
+这是 Chrome Stable 的 CDP 自动化证据，不是 §18.4 的人工平台矩阵；Windows Chrome、Windows Edge、Linux
+Chrome Stable 人工操作、认证态站点、屏幕阅读器和完整 Vimium 手工回归仍未验证。
 
 ## 当前主机 Windows 与可见 UI 环境探测（2026-08-24）
 
 只读探测确认：Parallels Desktop `26.4.1-57516` 已安装，且本机有一个 Windows ARM64 安装 ISO
-(`/Users/yang/Library/Parallels/Downloads/26200.8875.260711-1836.25h2_ge_release_svc_refresh_CLIENTCONSUMER_RET_A64FRE_zh-cn.iso`，约 6.4 GiB)，
-但 `prlctl list --all` 没有注册虚拟机，`/Users/yang/Parallels` 没有 `.pvm`，本机 Docker 只有 Linux 镜像；因此仍没有可直接运行的 Windows Chrome/Edge 环境。
+(`/Users/yang/Library/Parallels/Downloads/26200.8875.260711-1836.25h2_ge_release_svc_refresh_CLIENTCONSUMER_RET_A64FRE_zh-cn.iso`，约
+6.4 GiB)， 但 `prlctl list --all` 没有注册虚拟机，`/Users/yang/Parallels` 没有 `.pvm`，本机 Docker
+只有 Linux 镜像；因此仍没有可直接运行的 Windows Chrome/Edge 环境。
 本轮未创建、启动或修改虚拟机，也未接触用户浏览器登录态。
 
 另用独立临时 profile 启动 macOS Chrome Stable `151.0.7922.173`，在浏览器级 CDP 通过
 `Extensions.loadUnpacked` 实际加载 `dist/vimium`，目标列表出现
-`chrome-extension://.../background_scripts/main.js` Service Worker；随后尝试 Computer Use 可见 UI 状态读取，
-调用在 30 秒超时，未形成可复核的人工操作证据。临时 Chrome 进程已关闭。
+`chrome-extension://.../background_scripts/main.js` Service Worker；随后尝试 Computer Use 可见 UI
+状态读取， 调用在 30 秒超时，未形成可复核的人工操作证据。临时 Chrome 进程已关闭。
 
 该探测只补充环境事实和 CDP 加载事实，不改变 §18.4 人工矩阵状态。
 
 ## OpenKeyMouse 独立 Deno 测试入口（2026-08-24）
 
 设计文档要求的 `deno test -A tests/open_key_mouse/` 原先因目录不存在而失败；新增
-`tests/open_key_mouse/deno_test_adapter_test.js` 作为现有 shoulda 单元测试的 Deno 入口，不复制测试逻辑。
-实际结果：`1 passed / 0 failed`，适配入口内 shoulda 测试 `64/64`，退出码 0。
+`tests/open_key_mouse/deno_test_adapter_test.js` 作为现有 shoulda 单元测试的 Deno
+入口，不复制测试逻辑。 实际结果：`1 passed / 0 failed`，适配入口内 shoulda 测试 `64/64`，退出码 0。

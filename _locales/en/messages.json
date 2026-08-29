@@ -202,7 +202,7 @@
   },
   "pattern": { "message": "Pattern", "description": "Gesture pattern label" },
   "patternInput": {
-    "message": "Pattern text (for example, L>R)",
+    "message": "Gesture arrows (for example, ↑ · →)",
     "description": "Keyboard gesture pattern input"
   },
   "gestureEditor": { "message": "Gesture editor", "description": "Gesture drawing area" },
@@ -301,6 +301,14 @@
   },
   "gestureUnrecognized": { "message": "Gesture not recognized", "description": "Gesture feedback" },
   "gestureCancelled": { "message": "Gesture cancelled", "description": "Gesture feedback" },
+  "gestureDirectionUp": { "message": "Up", "description": "Gesture direction" },
+  "gestureDirectionDown": { "message": "Down", "description": "Gesture direction" },
+  "gestureDirectionLeft": { "message": "Left", "description": "Gesture direction" },
+  "gestureDirectionRight": { "message": "Right", "description": "Gesture direction" },
+  "gestureDirectionUpLeft": { "message": "Up left", "description": "Gesture direction" },
+  "gestureDirectionUpRight": { "message": "Up right", "description": "Gesture direction" },
+  "gestureDirectionDownLeft": { "message": "Down left", "description": "Gesture direction" },
+  "gestureDirectionDownRight": { "message": "Down right", "description": "Gesture direction" },
   "browserRestriction": {
     "message": "This page is restricted by the browser.",
     "description": "Browser limitation"
@@ -508,6 +516,10 @@
     "message": "Show tab list",
     "description": "Command title"
   },
+  "command_BrowserToolbox_openSettings": {
+    "message": "Open Browser Toolbox settings",
+    "description": "Command title"
+  },
   "command_BrowserToolbox_toggleKeyboard": {
     "message": "Toggle keyboard navigation",
     "description": "Command title"
@@ -560,6 +572,24 @@
     "message": "Download image",
     "description": "Command title"
   },
+  "command_goBack": { "message": "Go back", "description": "Gesture command title" },
+  "command_goForward": { "message": "Go forward", "description": "Gesture command title" },
+  "command_removeTab": { "message": "Close tab", "description": "Gesture command title" },
+  "command_restoreTab": {
+    "message": "Restore closed tab",
+    "description": "Gesture command title"
+  },
+  "command_scrollToTop": { "message": "Scroll to top", "description": "Gesture command title" },
+  "command_scrollToBottom": {
+    "message": "Scroll to bottom",
+    "description": "Gesture command title"
+  },
+  "command_scrollFullPageUp": { "message": "Page up", "description": "Gesture command title" },
+  "command_scrollFullPageDown": { "message": "Page down", "description": "Gesture command title" },
+  "command_reload": { "message": "Refresh", "description": "Gesture command title" },
+  "command_reloadHard": { "message": "Hard refresh", "description": "Gesture command title" },
+  "command_previousTab": { "message": "Previous tab", "description": "Gesture command title" },
+  "command_nextTab": { "message": "Next tab", "description": "Gesture command title" },
   "settingsSections": { "message": "Settings sections", "description": "Settings navigation" },
   "settingsSearch": { "message": "Search settings", "description": "Settings navigation search" },
   "settingsSearchHint": {

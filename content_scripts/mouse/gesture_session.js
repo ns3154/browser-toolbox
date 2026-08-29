@@ -12,7 +12,7 @@
         turnHysteresisDegrees: 18,
         maxSegments: 8,
         maxDurationMs: 2500,
-        directionMode: "4-way",
+        directionMode: "8-way",
       }, options);
       this.sampler = new samplerApi.PathSampler({
         sampleDistancePx: this.options.sampleDistancePx,
@@ -32,7 +32,7 @@
     }
 
     move(point, now = point.t ?? Date.now()) {
-      if (this.state === "IDLE" || this.state === "CANCELLED") return this.snapshot(false);
+      if (this.state !== "PENDING" && this.state !== "ACTIVE") return this.snapshot(false);
       if (now - this.startedAt > this.options.maxDurationMs) {
         this.cancel("timeout");
         return this.snapshot(false);
@@ -49,6 +49,17 @@
       return this.snapshot(activated);
     }
 
+    contextMenu(point, now = point.t ?? Date.now()) {
+      if (this.state !== "PENDING") return this.snapshot(false);
+      // contextmenu 可能先于最后一个 pointermove 到达；用事件坐标补做一次阈值判断。
+      const result = this.move(point, now);
+      if (result.state === "ACTIVE" || result.state === "CANCELLED") return result;
+      this.state = "NATIVE_CONTEXT_MENU";
+      this.lastPattern = [];
+      this.sampler.clear();
+      return this.snapshot(false);
+    }
+
     end(now = Date.now()) {
       // 没有新的 pointermove 时也要在抬键瞬间复核超时，避免已过期的 ACTIVE 会话执行命令。
       if (
@@ -59,7 +70,11 @@
       }
       const result = this.snapshot(false);
       if (this.state === "ACTIVE") this.state = "COMPLETED";
-      else if (this.state === "PENDING") this.state = "NATIVE_CONTEXT_MENU";
+      else if (this.state === "PENDING") {
+        this.state = "NATIVE_CONTEXT_MENU";
+        this.lastPattern = [];
+        this.sampler.clear();
+      }
       return Object.assign(result, { state: this.state });
     }
 

@@ -5,9 +5,25 @@
   const repository = globalThis.BrowserToolboxSettingsRepositoryInstance;
   const runtimeSettings = globalThis.BrowserToolboxSettingsRuntimeClientInstance;
   const recognizer = globalThis.BrowserToolboxGestureRecognizer;
+  const NATIVE_MENU_RETRY_MS = 600;
+  const NATIVE_MENU_RETRY_DISTANCE_PX = 12;
 
   function trusted(event) {
     return globalThis.isUnitTests || event.isTrusted === true;
+  }
+
+  function localizedMessage(key, fallback) {
+    const i18n = globalThis.BrowserToolboxI18n;
+    return i18n?.hasMessage?.(key) ? i18n.message(key) : fallback;
+  }
+
+  function commandHudLabel(binding) {
+    const commandName = binding?.commandName;
+    if (typeof commandName !== "string" || commandName.length === 0) return "";
+    const key = commandName === "reload" && binding.options?.hard === true
+      ? "command_reloadHard"
+      : `command_${commandName.replaceAll(".", "_")}`;
+    return localizedMessage(key, commandName);
   }
 
   function pageContext(extra = {}) {
@@ -100,6 +116,7 @@
       this.nativeDragTarget = null;
       this.nativeDragAttribute = null;
       this.gestureTimeoutId = null;
+      this.lastGestureMatch = null;
       this.pageshowListener = () => {
         if (!this.initialized || this.listeners.length === 0) this.init();
       };
@@ -163,6 +180,56 @@
         this.settings?.mouse?.showCommandHud !== false;
     }
 
+    updateGestureFeedback(result, point) {
+      const match = recognizer.find(result.pattern, this.settings.mouse.bindings);
+      if (match.exact) {
+        this.lastGestureMatch = {
+          pattern: match.pattern.slice(),
+          binding: match.exact,
+        };
+      }
+      const cancelHovered = this.overlay?.isCancelPoint(point) === true;
+      this.overlay?.setCancelHover(cancelHovered);
+      if (this.showCommandHud() && match.pattern.length > 0) {
+        const displayMatch = cancelHovered && this.lastGestureMatch
+          ? this.lastGestureMatch
+          : { pattern: match.pattern, binding: match.exact };
+        this.overlay.setGesture(
+          displayMatch.pattern,
+          commandHudLabel(displayMatch.binding),
+          {
+            cancelLabel: localizedMessage("cancel", "Cancel"),
+            cancelHovered,
+          },
+        );
+      }
+      return { cancelHovered, match };
+    }
+
+    cancelFromTarget(event) {
+      this.clearGestureTimeout();
+      event.preventDefault();
+      event.stopPropagation();
+      this.gesture?.cancel("cancel-target");
+      this.bridge?.cancel();
+      this.bridge = null;
+      this.gesture = null;
+      this.gestureRequestId = null;
+      this.lastGestureMatch = null;
+      if (
+        event.button === 2 &&
+        this.settings.mouse.suppressContextMenuAfterActivation !== false
+      ) {
+        // 进入取消目标代表本次输入已经被手势层接管；抬键后的 contextmenu 仍需一次性拦截。
+        this.guard.activate();
+        this.guard.armForContextMenu();
+        this.guard.deactivate();
+      } else {
+        this.guard.reset();
+      }
+      this.overlay.hide();
+    }
+
     gestureButton() {
       const button = this.settings?.mouse?.triggerButton;
       return Number.isInteger(button) && [0, 1, 2].includes(button) ? button : 2;
@@ -203,6 +270,20 @@
         this.guard?.clearPending();
       }
       const gestureButton = this.gestureButton();
+      const isRightGesture = event.button === 2 && gestureButton === 2;
+      const capturesEarlyContextMenu = isRightGesture &&
+        this.settings.mouse.suppressContextMenuAfterActivation !== false;
+      if (
+        capturesEarlyContextMenu &&
+        this.guard?.consumeNativeMenuRetry(
+          { x: event.clientX, y: event.clientY },
+          NATIVE_MENU_RETRY_DISTANCE_PX,
+        )
+      ) {
+        // 第一次轻点已经证明用户没有画轨迹；近距离双击右键的第二次输入直接交给浏览器。
+        return;
+      }
+      if (!isRightGesture) this.guard?.clearNativeMenuRetry();
       if (
         this.gesture?.isActive() &&
         (event.button === gestureButton || event.button === 0 || event.button === 2)
@@ -216,6 +297,11 @@
         this.clearGestureTimeout();
         this.gesture = new globalThis.BrowserToolboxGestureSession(this.settings.mouse);
         this.gesture.start({ x: event.clientX, y: event.clientY }, event.timeStamp || Date.now());
+        this.lastGestureMatch = null;
+        // 取消目标是独立的手势控制，不属于方向 HUD；第一次按下即显示。
+        // 快速第二次右键已在上方提前放行，不会创建会话，也不会闪现取消目标。
+        this.overlay.showCancel({ label: localizedMessage("cancel", "Cancel") });
+        if (capturesEarlyContextMenu) this.guard?.startPendingGesture();
         this.bridge = new globalThis.BrowserToolboxFrameGestureBridge();
         const invocation = invocationApi.createInvocation(
           "__gesture__",
@@ -293,8 +379,8 @@
           event.preventDefault();
           event.stopPropagation();
           if (this.settings.mouse.showTrail) this.overlay.draw(result.points);
-          const text = recognizer.format(result.pattern) || "…";
-          if (this.showCommandHud()) this.overlay.setHud(text, true);
+          // 激活距离和方向分段阈值不同；只有真正量化出方向后才展开 HUD。
+          this.updateGestureFeedback(result, { x: event.clientX, y: event.clientY });
           this.bridge?.update(result.pattern.at(-1));
         }
       }
@@ -316,16 +402,25 @@
       if (!trusted(event)) return;
       this.wheel?.release(event.button);
       if (this.gesture && event.button === this.gestureButton()) {
+        if (
+          this.gesture.isActive() &&
+          this.overlay?.isCancelPoint({ x: event.clientX, y: event.clientY })
+        ) {
+          this.cancelFromTarget(event);
+          return;
+        }
         this.clearGestureTimeout();
         const result = this.gesture.end(event.timeStamp || Date.now());
+        const shouldArmNativeMenuRetry = result.state === "NATIVE_CONTEXT_MENU" &&
+          event.button === 2 &&
+          this.settings.mouse.suppressContextMenuAfterActivation !== false;
         if (
           result.state === "COMPLETED" &&
           this.settings.mouse.suppressContextMenuAfterActivation !== false
         ) {
           this.guard.armForContextMenu();
         } else {
-          // PENDING 右键轻点必须保留浏览器原生菜单，不能留下延迟拦截状态。
-          this.guard.clearPending();
+          this.guard.reset();
         }
         if (result.state === "COMPLETED") {
           event.preventDefault();
@@ -356,9 +451,18 @@
         } else {
           this.bridge?.cancel();
         }
+        this.bridge = null;
         this.gesture = null;
         this.gestureRequestId = null;
-        this.guard.deactivate();
+        this.lastGestureMatch = null;
+        if (result.state === "COMPLETED") this.guard.deactivate();
+        else if (shouldArmNativeMenuRetry) {
+          // 首次右键轻点不伪造菜单，只给下一次近距离右键保留一个短暂的原生菜单入口。
+          this.guard.armNativeMenuRetry(
+            { x: event.clientX, y: event.clientY },
+            NATIVE_MENU_RETRY_MS,
+          );
+        }
         this.overlay.hide();
       }
       if (this.drag && event.button === 0) {
@@ -390,6 +494,26 @@
 
     onContextMenu(event) {
       if (this.guard?.shouldSuppress()) {
+        if (
+          this.guard.provisional &&
+          this.gesture?.state === "PENDING" &&
+          this.gestureButton() === 2
+        ) {
+          // contextmenu 自带的可信坐标可能已经越过阈值，先补采样再决定是否进入 ACTIVE。
+          const result = this.gesture.move(
+            { x: event.clientX, y: event.clientY },
+            event.timeStamp || Date.now(),
+          );
+          if (result.activated) {
+            this.guard.activate();
+            if (this.settings.mouse.showTrail) {
+              this.overlay.show();
+              this.overlay.draw(result.points);
+            }
+            this.updateGestureFeedback(result, { x: event.clientX, y: event.clientY });
+            this.bridge?.update(result.pattern.at(-1));
+          }
+        }
         event.preventDefault();
         event.stopPropagation();
         this.guard.consume();
@@ -400,12 +524,36 @@
         !event.defaultPrevented &&
         event.button === 2 &&
         this.gesture &&
-        !this.gesture.isActive() &&
+        this.gesture.state === "PENDING" &&
         this.gestureButton() === 2
       ) {
-        // 原生菜单已经确认这是普通右键，取消 PENDING 候选，避免菜单打开后移动或抬键误激活手势。
-        // 保留右键摇杆的第一键状态，后续左键仍可按既有优先级完成摇杆组合。
-        this.cancelAll("native-context-menu", { preserveRocker: this.rocker?.held === 2 });
+        const result = this.gesture.contextMenu(
+          { x: event.clientX, y: event.clientY },
+          event.timeStamp || Date.now(),
+        );
+        if (result.state === "ACTIVE") {
+          // 浏览器可能先送达已位移坐标的 contextmenu；此时轨迹已经越过阈值，按 ACTIVE 处理。
+          if (this.settings.mouse.suppressContextMenuAfterActivation !== false) {
+            this.guard.activate();
+            event.preventDefault();
+            event.stopPropagation();
+            this.guard.consume();
+          }
+          if (this.settings.mouse.showTrail) {
+            this.overlay.show();
+            this.overlay.draw(result.points);
+          }
+          this.updateGestureFeedback(result, { x: event.clientX, y: event.clientY });
+          this.bridge?.update(result.pattern.at(-1));
+          return;
+        }
+        if (result.state === "NATIVE_CONTEXT_MENU") {
+          // 未越过阈值的菜单进入终态；先保留状态转换，再清理候选，后续移动不能延迟激活。
+          this.gesture = null;
+          this.cancelAll("native-context-menu", { preserveRocker: this.rocker?.held === 2 });
+        } else if (result.state === "CANCELLED") {
+          this.cancelAll("timeout", { preserveRocker: this.rocker?.held === 2 });
+        }
       }
     }
 
@@ -473,11 +621,13 @@
       this.drag?.cancel();
       this.restoreNativeDrag();
       this.bridge?.cancel();
+      this.bridge = null;
       this.gesture = null;
       this.gestureRequestId = null;
+      this.lastGestureMatch = null;
       this.drag = null;
       this.suppressClickUntil = 0;
-      this.guard?.deactivate();
+      this.guard?.reset();
       if (!preserveRocker) this.rocker?.cancel();
       this.wheel?.reset();
       this.overlay?.hide();

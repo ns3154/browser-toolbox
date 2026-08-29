@@ -788,11 +788,22 @@ button.primary:hover:not(:disabled) {
 }
 #gesture-preview {
   min-height: 24px;
-  font: 600 18px ui-monospace, monospace;
+  color: var(--toolbox-accent-strong);
+  font: 700 24px/1.35 -apple-system, BlinkMacSystemFont, "Segoe UI Symbol", system-ui, sans-serif;
+  letter-spacing: 0.08em;
 }
 .browser-toolbox-pattern-input {
   max-width: 420px;
   margin-top: 12px;
+}
+#gesture-pattern-input,
+.browser-toolbox-binding-pattern {
+  color: var(--toolbox-accent-strong);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI Symbol", system-ui, sans-serif;
+  font-size: 17px;
+  font-weight: 720;
+  letter-spacing: 0.06em;
+  text-align: center;
 }
 .browser-toolbox-cursor-preview {
   display: flex;

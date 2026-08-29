@@ -183,6 +183,9 @@ context("Browser command adapter", () => {
     const tab = { id: 9, index: 0, windowId: 5, url: "https://example.com/" };
     stub(chrome.tabs, "get", async () => tab);
     stub(chrome.tabs, "query", async () => []);
+    let openedSettingsUrl;
+    stub(chrome.runtime, "getURL", (path) => `chrome-extension://test/${path}`);
+    stub(chrome.tabs, "create", async ({ url }) => openedSettingsUrl = url);
     const adapter = new BrowserToolboxBrowserCommandAdapter({});
     const byContext = await adapter.getTab(
       invocation("BrowserToolbox.showTabList", { tabId: 9 }),
@@ -192,6 +195,13 @@ context("Browser command adapter", () => {
     assert.equal(
       "NO_ACTIVE_TAB",
       (await adapter.execute(invocation("BrowserToolbox.showTabList"), {})).code,
+    );
+    assert.isTrue(
+      (await adapter.execute(invocation("BrowserToolbox.openSettings"), {})).ok,
+    );
+    assert.equal(
+      "chrome-extension://test/pages/mouse_options.html",
+      openedSettingsUrl,
     );
     const calls = [];
     const existing = await adapter.executeExisting(

@@ -10,6 +10,7 @@ import "../../../lib/browser_toolbox/settings_schema.js";
 import "../../../lib/browser_toolbox/module_registry.js";
 import "../../../lib/browser_toolbox/site_rule_matcher.js";
 import "../../../lib/browser_toolbox/settings_policy.js";
+import "../../../lib/i18n.js";
 import "../../../lib/browser_toolbox/settings_runtime_client.js";
 
 context("Settings runtime client", () => {
@@ -43,12 +44,14 @@ context("Settings runtime client", () => {
     };
   }
 
-  function settingsWithHud(showHud) {
+  function settingsWithHud(showHud, language = "auto") {
     return BrowserToolboxSettingsPolicy.withEffectiveSettings(
-      BrowserToolboxSettingsSchema.mergeSettings({ general: { showHud } }),
+      BrowserToolboxSettingsSchema.mergeSettings({ general: { showHud, language } }),
       "https://example.com/",
     );
   }
+
+  teardown(() => BrowserToolboxI18n.setLocale("auto"));
 
   should("cache one defensive snapshot for the same context", async () => {
     const { client, messages } = createHarness(() => settingsWithHud(true));
@@ -91,6 +94,22 @@ context("Settings runtime client", () => {
 
     assert.isFalse(refreshed.general.showHud);
     assert.equal([true, false], observed);
+  });
+
+  should("apply the configured locale initially and after a live settings update", async () => {
+    let callCount = 0;
+    const { client, listeners } = createHarness(() =>
+      settingsWithHud(true, ++callCount === 1 ? "zh_CN" : "en")
+    );
+
+    await client.ensureLoaded("https://example.com/");
+    assert.equal("zh_CN", BrowserToolboxI18n.locale());
+    assert.equal("取消", BrowserToolboxI18n.message("cancel"));
+
+    listeners[0](BrowserToolboxMessageProtocol.create("browserToolbox.settingsChanged"));
+    await client.ensureLoaded("https://example.com/");
+    assert.equal("en", BrowserToolboxI18n.locale());
+    assert.equal("Cancel", BrowserToolboxI18n.message("cancel"));
   });
 
   should("discard an in-flight response invalidated by a settings change", async () => {

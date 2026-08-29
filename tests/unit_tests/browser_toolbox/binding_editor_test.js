@@ -5,6 +5,7 @@
 import "../test_helper.js";
 import * as testHelper from "../test_helper.js";
 import "../../../lib/browser_toolbox/value_utils.js";
+import "../../../content_scripts/mouse/direction_quantizer.js";
 import "../../../pages/binding_editor.js";
 
 context("Binding editor", () => {
@@ -16,9 +17,42 @@ context("Binding editor", () => {
       documentRef: document,
       getSettings: () => ({}),
       getRegistry: () => ({ commands: [], getCommand: () => null }),
-      message: (key) => ({ optionsDefault: "Default" }[key] || key),
+      message: (key) => ({
+        optionsDefault: "Default",
+        pattern: "Pattern",
+        none: "None",
+        gestureDirectionUp: "Up",
+        gestureDirectionDown: "Down",
+        gestureDirectionLeft: "Left",
+        gestureDirectionRight: "Right",
+        gestureDirectionUpLeft: "Up left",
+        gestureDirectionUpRight: "Up right",
+        gestureDirectionDownLeft: "Down left",
+        gestureDirectionDownRight: "Down right",
+      }[key] || key),
+      quantizer: BrowserToolboxDirectionQuantizer,
       markDirty: () => {},
     });
+  });
+
+  should("render editable patterns as arrows and normalize them back to tokens", () => {
+    const binding = { pattern: ["U", "R", "DL"] };
+    const input = editor.patternControl(binding);
+    assert.equal("↑ · → · ↙", input.value);
+    assert.equal("U>R>DL", input.dataset.pattern);
+    assert.isTrue(input.getAttribute("aria-label").includes("Up, Right, Down left"));
+
+    input.value = "L > UR";
+    input.dispatchEvent(new window.Event("blur"));
+    assert.equal("← · ↗", input.value);
+
+    const row = document.createElement("tr");
+    row._binding = binding;
+    row._pattern = input;
+    document.querySelector("#mouse-bindings").appendChild(row);
+    input.value = "↖ · →";
+    editor.sync();
+    assert.equal(["UL", "R"], binding.pattern);
   });
 
   should("provide schema-driven controls while keeping the JSON editor synchronized", () => {

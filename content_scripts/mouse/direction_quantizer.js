@@ -1,6 +1,27 @@
 // 将屏幕坐标向量量化为稳定的四向或八向方向。
 (function () {
   const DIRECTIONS = ["U", "D", "L", "R", "UL", "UR", "DL", "DR"];
+  const EIGHT_WAY_DIRECTIONS = ["R", "UR", "U", "UL", "L", "DL", "D", "DR"];
+  const DIRECTION_ARROWS = Object.freeze({
+    U: "↑",
+    D: "↓",
+    L: "←",
+    R: "→",
+    UL: "↖",
+    UR: "↗",
+    DL: "↙",
+    DR: "↘",
+  });
+  const ARROW_DIRECTIONS = Object.freeze(
+    Object.fromEntries(
+      Object.entries(DIRECTION_ARROWS).map(([direction, arrow]) => [
+        arrow,
+        direction,
+      ]),
+    ),
+  );
+  const EIGHT_WAY_SECTOR_RADIANS = Math.PI / 4;
+  const EIGHT_WAY_HALF_SECTOR_RADIANS = EIGHT_WAY_SECTOR_RADIANS / 2;
 
   function angleOf(direction) {
     return {
@@ -25,10 +46,24 @@
     let direction;
     if (mode === "8-way") {
       const angle = (Math.atan2(-dy, dx) + Math.PI * 2) % (Math.PI * 2);
-      const index = Math.round(angle / (Math.PI / 4)) % 8;
-      direction = ["R", "UR", "U", "UL", "L", "DL", "D", "DR"][index];
-      if (previous && angleDistance(angle, angleOf(previous)) < hysteresisDegrees * Math.PI / 180) {
-        return previous;
+      const index = Math.round(angle / EIGHT_WAY_SECTOR_RADIANS) % 8;
+      direction = EIGHT_WAY_DIRECTIONS[index];
+      const previousAngle = angleOf(previous);
+      if (direction !== previous && Number.isFinite(previousAngle)) {
+        // 跨过普通扇区边界后继续保留上一方向一小段角度，避免手部抖动反复切换。
+        // 迟滞最多限制在半个扇区以内，保证光标指向相邻方向中心时一定能完成转向。
+        const requestedHysteresis = Number.isFinite(hysteresisDegrees)
+          ? Math.max(0, hysteresisDegrees) * Math.PI / 180
+          : 0;
+        const hysteresis = Math.min(
+          requestedHysteresis,
+          EIGHT_WAY_HALF_SECTOR_RADIANS - Number.EPSILON,
+        );
+        if (
+          angleDistance(angle, previousAngle) < EIGHT_WAY_HALF_SECTOR_RADIANS + hysteresis
+        ) {
+          return previous;
+        }
       }
     } else {
       direction = Math.abs(dx) >= Math.abs(dy) ? (dx < 0 ? "L" : "R") : (dy < 0 ? "U" : "D");
@@ -65,16 +100,34 @@
   function normalizePattern(pattern) {
     if (Array.isArray(pattern)) return pattern.filter((value) => DIRECTIONS.includes(value));
     if (typeof pattern !== "string") return [];
-    return pattern.split(">").map((value) => value.trim()).filter((value) =>
-      DIRECTIONS.includes(value)
+    const result = [];
+    for (const rawToken of pattern.trim().split(/[\s>·•,|/]+/).filter(Boolean)) {
+      const token = rawToken.toUpperCase();
+      if (DIRECTIONS.includes(token)) {
+        result.push(token);
+        continue;
+      }
+      const arrowDirections = [...rawToken].map((character) => ARROW_DIRECTIONS[character]);
+      if (arrowDirections.length > 0 && arrowDirections.every(Boolean)) {
+        result.push(...arrowDirections);
+      }
+    }
+    return result;
+  }
+
+  function formatPattern(pattern, separator = " · ") {
+    return normalizePattern(pattern).map((direction) => DIRECTION_ARROWS[direction]).join(
+      separator,
     );
   }
 
   globalThis.BrowserToolboxDirectionQuantizer = Object.freeze({
     DIRECTIONS,
+    DIRECTION_ARROWS,
     quantize,
     quantizePoints,
     normalizePattern,
+    formatPattern,
     angleDistance,
   });
 })();

@@ -28,6 +28,16 @@
   let pendingCursorAsset = null;
   let cursorResetRequested = false;
   let operationInProgress = false;
+  const directionMessageKeys = Object.freeze({
+    U: "gestureDirectionUp",
+    D: "gestureDirectionDown",
+    L: "gestureDirectionLeft",
+    R: "gestureDirectionRight",
+    UL: "gestureDirectionUpLeft",
+    UR: "gestureDirectionUpRight",
+    DL: "gestureDirectionDownLeft",
+    DR: "gestureDirectionDownRight",
+  });
 
   function message(key) {
     return globalThis.BrowserToolboxI18n?.message(key) || key;
@@ -751,9 +761,12 @@
   function setPreviewPattern(pattern, updateInput = true) {
     previewPattern = quantizer.normalizePattern(pattern);
     const preview = document.querySelector("#gesture-preview");
-    preview.textContent = previewPattern.join(" > ") || "";
+    const formatted = quantizer.formatPattern(previewPattern);
+    const accessible = previewPattern.map((direction) => message(directionMessageKeys[direction]));
+    preview.textContent = formatted;
+    preview.setAttribute("aria-label", accessible.join(", "));
     if (updateInput) {
-      document.querySelector("#gesture-pattern-input").value = previewPattern.join(">");
+      document.querySelector("#gesture-pattern-input").value = formatted;
     }
     document.querySelector("#add-gesture-binding").disabled = previewPattern.length === 0;
   }
@@ -890,6 +903,9 @@
     });
     document.querySelector("#gesture-pattern-input").addEventListener("input", (event) => {
       setPreviewPattern(event.target.value, false);
+    });
+    document.querySelector("#gesture-pattern-input").addEventListener("blur", (event) => {
+      setPreviewPattern(event.target.value);
     });
     document.addEventListener("input", (event) => {
       if (

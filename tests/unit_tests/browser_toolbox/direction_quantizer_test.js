@@ -12,6 +12,70 @@ context("Direction quantizer", () => {
   should("support eight-way diagonal directions", () => {
     assert.equal("UR", BrowserToolboxDirectionQuantizer.quantize(10, -10, "8-way"));
     assert.equal("DL", BrowserToolboxDirectionQuantizer.quantize(-10, 10, "8-way"));
+    assert.equal(
+      ["UR"],
+      BrowserToolboxDirectionQuantizer.normalizePattern("UR > invalid"),
+    );
+  });
+
+  should("format UI patterns as arrows while accepting arrow and legacy input", () => {
+    assert.equal(
+      "↑ · → · ↙",
+      BrowserToolboxDirectionQuantizer.formatPattern(["U", "R", "DL"]),
+    );
+    assert.equal(
+      ["U", "R", "DL"],
+      BrowserToolboxDirectionQuantizer.normalizePattern("↑ · → · ↙"),
+    );
+    assert.equal(
+      ["UL", "UR", "DL", "DR"],
+      BrowserToolboxDirectionQuantizer.normalizePattern("↖↗ ↙↘"),
+    );
+    assert.equal(
+      ["U", "R"],
+      BrowserToolboxDirectionQuantizer.normalizePattern("U > R > invalid"),
+    );
+  });
+
+  should("apply hysteresis across eight-way sector boundaries", () => {
+    const vectorAt = (degrees) => ({
+      dx: Math.cos(degrees * Math.PI / 180) * 100,
+      dy: -Math.sin(degrees * Math.PI / 180) * 100,
+    });
+    const thirty = vectorAt(30);
+    const fortyTwo = vectorAt(42);
+    const fortyFive = vectorAt(45);
+
+    assert.equal(
+      "R",
+      BrowserToolboxDirectionQuantizer.quantize(
+        thirty.dx,
+        thirty.dy,
+        "8-way",
+        "R",
+        18,
+      ),
+    );
+    assert.equal(
+      "UR",
+      BrowserToolboxDirectionQuantizer.quantize(
+        fortyTwo.dx,
+        fortyTwo.dy,
+        "8-way",
+        "R",
+        18,
+      ),
+    );
+    assert.equal(
+      "UR",
+      BrowserToolboxDirectionQuantizer.quantize(
+        fortyFive.dx,
+        fortyFive.dy,
+        "8-way",
+        "R",
+        45,
+      ),
+    );
   });
 
   should("cover zero vectors, all eight sectors and hysteresis", () => {

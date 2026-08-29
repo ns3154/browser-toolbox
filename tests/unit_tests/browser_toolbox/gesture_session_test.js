@@ -12,6 +12,38 @@ context("Gesture session", () => {
     assert.equal("NATIVE_CONTEXT_MENU", session.end(1010).state);
   });
 
+  should("keep native context menu terminal after a later pointer move", () => {
+    const session = new BrowserToolboxGestureSession({ activationDistancePx: 10 });
+    session.start({ x: 0, y: 0 }, 1000);
+
+    assert.equal("NATIVE_CONTEXT_MENU", session.contextMenu({ x: 2, y: 0 }, 1005).state);
+    assert.equal("NATIVE_CONTEXT_MENU", session.move({ x: 40, y: 0 }, 1010).state);
+    assert.equal("NATIVE_CONTEXT_MENU", session.end(1020).state);
+    assert.equal(0, session.snapshot(false).points.length);
+  });
+
+  should("activate when context menu coordinates have already crossed the threshold", () => {
+    const session = new BrowserToolboxGestureSession({ activationDistancePx: 10 });
+    session.start({ x: 0, y: 0 }, 1000);
+
+    const result = session.contextMenu({ x: 12, y: 0 }, 1010);
+    assert.isTrue(result.activated);
+    assert.equal("ACTIVE", result.state);
+  });
+
+  should("recognize diagonal movement in the default eight-way mode", () => {
+    const session = new BrowserToolboxGestureSession({
+      activationDistancePx: 5,
+      minimumSegmentDistancePx: 10,
+    });
+    session.start({ x: 0, y: 0 }, 1000);
+
+    const result = session.move({ x: 20, y: -20 }, 1010);
+    assert.isTrue(result.activated);
+    assert.equal(["UR"], result.pattern);
+    assert.equal(["UR"], session.end(1020).pattern);
+  });
+
   should("cancel an expired active session without a command", () => {
     const session = new BrowserToolboxGestureSession({
       activationDistancePx: 5,

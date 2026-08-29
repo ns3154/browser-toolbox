@@ -640,6 +640,13 @@ const allCommands = [
     noRepeat: true,
   },
   {
+    name: "BrowserToolbox.openSettings",
+    desc: "Open Browser Toolbox settings",
+    group: "settings",
+    background: true,
+    noRepeat: true,
+  },
+  {
     name: "BrowserToolbox.toggleKeyboard",
     desc: "Toggle keyboard navigation",
     group: "settings",

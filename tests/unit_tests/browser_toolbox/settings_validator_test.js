@@ -14,6 +14,29 @@ context("BrowserToolbox settings validator", () => {
       registry,
     );
     assert.isTrue(result.ok);
+    assert.equal("8-way", BrowserToolboxSettingsSchema.DEFAULT_SETTINGS.mouse.directionMode);
+    assert.equal(
+      [
+        "L:goBack",
+        "R:goForward",
+        "U:scrollFullPageUp",
+        "D:scrollFullPageDown",
+        "D>R:removeTab",
+        "L>U:restoreTab",
+        "R>D:scrollToBottom",
+        "R>U:scrollToTop",
+        "U>D:reload",
+        "U>D>U:reload:hard",
+        "U>L:previousTab",
+        "U>R:nextTab",
+        "D>R>U:BrowserToolbox.newWindow",
+        "U>R>D:BrowserToolbox.closeWindow",
+        "R>D>L>U:BrowserToolbox.openSettings",
+      ],
+      BrowserToolboxSettingsSchema.DEFAULT_SETTINGS.mouse.bindings.map((binding) =>
+        `${binding.pattern.join(">")}:${binding.commandName}${binding.options.hard ? ":hard" : ""}`
+      ),
+    );
   });
 
   should("reject duplicate enabled patterns and mutable privacy flags", () => {

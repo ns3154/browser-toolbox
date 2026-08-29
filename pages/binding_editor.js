@@ -11,6 +11,17 @@
  * @property {function(string): string} [idFactory] 生成绑定 ID。
  */
 (function () {
+  const DIRECTION_MESSAGE_KEYS = Object.freeze({
+    U: "gestureDirectionUp",
+    D: "gestureDirectionDown",
+    L: "gestureDirectionLeft",
+    R: "gestureDirectionRight",
+    UL: "gestureDirectionUpLeft",
+    UR: "gestureDirectionUpRight",
+    DL: "gestureDirectionDownLeft",
+    DR: "gestureDirectionDownRight",
+  });
+
   class BindingEditor {
     /**
      * 创建绑定表格编辑器。
@@ -85,8 +96,25 @@
     }
 
     patternControl(binding) {
-      const input = this.fieldInput(binding.pattern?.join(">"), "pattern");
+      const input = this.fieldInput(this.quantizer.formatPattern(binding.pattern), "pattern");
       input.className = "browser-toolbox-binding-pattern";
+      input.autocomplete = "off";
+      input.spellcheck = false;
+      const updateAccessiblePattern = () => {
+        const pattern = this.quantizer.normalizePattern(input.value);
+        const labels = pattern.map((direction) => this.message(DIRECTION_MESSAGE_KEYS[direction]));
+        input.dataset.pattern = pattern.join(">");
+        input.setAttribute(
+          "aria-label",
+          `${this.message("pattern")}: ${labels.join(", ") || this.message("none")}`,
+        );
+      };
+      input.addEventListener("input", updateAccessiblePattern);
+      input.addEventListener("blur", () => {
+        input.value = this.quantizer.formatPattern(input.value);
+        updateAccessiblePattern();
+      });
+      updateAccessiblePattern();
       return input;
     }
 

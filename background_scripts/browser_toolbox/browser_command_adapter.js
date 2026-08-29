@@ -62,7 +62,12 @@ import * as userSearchEngines from "../user_search_engines.js";
      */
     async execute(invocation, sender) {
       const tab = await this.getTab(invocation, sender);
-      if (!tab && !["BrowserToolbox.newWindow"].includes(invocation.commandName)) {
+      if (
+        !tab &&
+        !["BrowserToolbox.newWindow", "BrowserToolbox.openSettings"].includes(
+          invocation.commandName,
+        )
+      ) {
         return invocationApi.createResult(false, invocationApi.ERROR_CODES.NO_ACTIVE_TAB);
       }
       const context = invocation.context || {};
@@ -85,6 +90,9 @@ import * as userSearchEngines from "../user_search_engines.js";
           return this.toggleModule("superDrag", tab.url);
         case "BrowserToolbox.showTabList":
           await chrome.tabs.create({ url: chrome.runtime.getURL("pages/tab_list.html") });
+          return invocationApi.createResult(true);
+        case "BrowserToolbox.openSettings":
+          await chrome.tabs.create({ url: chrome.runtime.getURL("pages/mouse_options.html") });
           return invocationApi.createResult(true);
         case "BrowserToolbox.searchSelection":
           return this.searchSelection(

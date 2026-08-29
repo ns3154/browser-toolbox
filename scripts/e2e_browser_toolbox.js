@@ -492,7 +492,148 @@ async function runActiveGestureWhileHeld(page, point, button, holdMilliseconds, 
   return result;
 }
 
-async function runPendingRightClickThenMove(page, point, inspect) {
+async function runTrustedRightGesture(
+  page,
+  point,
+  inspect,
+  { contextMenuWhileHeld = false } = {},
+) {
+  const client = await page.createCDPSession();
+  let pending;
+  let activatedWithoutDirection;
+  let active;
+  let afterContextMenu = null;
+  try {
+    await client.send("Input.dispatchMouseEvent", {
+      type: "mouseMoved",
+      x: point.x,
+      y: point.y,
+      buttons: 0,
+    });
+    await client.send("Input.dispatchMouseEvent", {
+      type: "mousePressed",
+      x: point.x,
+      y: point.y,
+      button: "right",
+      buttons: 2,
+      clickCount: 1,
+    });
+    await sleep(80);
+    pending = await inspect();
+    await client.send("Input.dispatchMouseEvent", {
+      type: "mouseMoved",
+      x: point.x + 12,
+      y: point.y,
+      buttons: 2,
+    });
+    await sleep(80);
+    activatedWithoutDirection = await inspect();
+    await client.send("Input.dispatchMouseEvent", {
+      type: "mouseMoved",
+      x: point.x + 120,
+      y: point.y,
+      buttons: 2,
+    });
+    await sleep(100);
+    active = await inspect();
+    if (contextMenuWhileHeld) {
+      // ACTIVE 后补发一次 trusted 右键按下，验证真实 contextmenu 会被 guard 阻止。
+      await client.send("Input.dispatchMouseEvent", {
+        type: "mousePressed",
+        x: point.x + 120,
+        y: point.y,
+        button: "right",
+        buttons: 2,
+        clickCount: 1,
+      });
+      await sleep(100);
+      afterContextMenu = await inspect();
+    }
+  } finally {
+    await client.send("Input.dispatchMouseEvent", {
+      type: "mouseReleased",
+      x: point.x + 120,
+      y: point.y,
+      button: "right",
+      buttons: 0,
+      clickCount: 1,
+    }).catch(() => {});
+    await client.detach().catch(() => {});
+  }
+  await sleep(500);
+  return {
+    pending,
+    activatedWithoutDirection,
+    active,
+    afterContextMenu,
+    afterRelease: await inspect(),
+  };
+}
+
+async function runGestureToCancelTarget(page, point, button, inspect) {
+  const buttonMask = mouseButtonMask(button);
+  assert(buttonMask, `不支持的测试鼠标按键：${button}`);
+  const client = await page.createCDPSession();
+  let matched;
+  let hovered;
+  let releasePoint = point;
+  try {
+    await client.send("Input.dispatchMouseEvent", {
+      type: "mouseMoved",
+      x: point.x,
+      y: point.y,
+      buttons: 0,
+    });
+    await client.send("Input.dispatchMouseEvent", {
+      type: "mousePressed",
+      x: point.x,
+      y: point.y,
+      button,
+      buttons: buttonMask,
+      clickCount: 1,
+    });
+    for (const x of [point.x + 90, point.x - 30, point.x + 90]) {
+      await client.send("Input.dispatchMouseEvent", {
+        type: "mouseMoved",
+        x,
+        y: point.y,
+        buttons: buttonMask,
+      });
+      await sleep(70);
+    }
+    matched = await inspect();
+    assert(matched?.gestureCancelRect, "手势取消目标应提供可命中的屏幕区域");
+    releasePoint = {
+      x: (matched.gestureCancelRect.left + matched.gestureCancelRect.right) / 2,
+      y: (matched.gestureCancelRect.top + matched.gestureCancelRect.bottom) / 2,
+    };
+    await client.send("Input.dispatchMouseEvent", {
+      type: "mouseMoved",
+      x: releasePoint.x,
+      y: releasePoint.y,
+      buttons: buttonMask,
+    });
+    await sleep(100);
+    hovered = await inspect();
+  } finally {
+    await client.send("Input.dispatchMouseEvent", {
+      type: "mouseReleased",
+      x: releasePoint.x,
+      y: releasePoint.y,
+      button,
+      buttons: 0,
+      clickCount: 1,
+    }).catch(() => {});
+    await client.detach().catch(() => {});
+  }
+  await sleep(300);
+  return { matched, hovered, afterRelease: await inspect() };
+}
+
+async function runNativeMenuRetryThenMove(page, point, inspect) {
+  await page.mouse.click(point.x, point.y, { button: "right" });
+  await sleep(100);
+  const afterFirstClick = await inspect();
   const client = await page.createCDPSession();
   let afterContextMenu;
   let afterMove;
@@ -511,9 +652,9 @@ async function runPendingRightClickThenMove(page, point, inspect) {
       buttons: 2,
       clickCount: 1,
     });
-    // Chrome for Testing 152 会在首次 pointermove 前派发原生 contextmenu；等待它完成后再模拟用户误移动。
     await sleep(100);
     afterContextMenu = await inspect();
+    await page.keyboard.press("Escape");
     await client.send("Input.dispatchMouseEvent", {
       type: "mouseMoved",
       x: point.x + 120,
@@ -534,7 +675,7 @@ async function runPendingRightClickThenMove(page, point, inspect) {
     await client.detach().catch(() => {});
   }
   await sleep(300);
-  return { afterContextMenu, afterMove };
+  return { afterFirstClick, afterContextMenu, afterMove, afterRelease: await inspect() };
 }
 
 async function sendActiveGestureWithRocker(page, point, triggerButton = "right") {
@@ -759,21 +900,91 @@ async function isolatedControllerState(options, pageUrl) {
       target: { tabId: tab.id, frameIds: [0] },
       world: "ISOLATED",
       func: () => {
+        const controller = globalThis.BrowserToolboxMouseControllerInstance;
         const gestureHost = globalThis.document?.querySelector?.(
           ".browser-toolbox-gesture-host",
         );
         return {
-          gestureState: globalThis.BrowserToolboxMouseControllerInstance?.gesture?.state || null,
-          gestureTimeoutScheduled:
-            globalThis.BrowserToolboxMouseControllerInstance?.gestureTimeoutId != null,
+          gestureState: controller?.gesture?.state || null,
+          gestureTimeoutScheduled: controller?.gestureTimeoutId != null,
           gestureOverlayVisible: Boolean(
             gestureHost && globalThis.getComputedStyle?.(gestureHost).display !== "none",
           ),
+          gestureHudVisible: Boolean(
+            controller?.overlay?.hud && !controller.overlay.hud.hidden &&
+              controller.overlay.hud.style.visibility !== "hidden",
+          ),
+          gestureDirectionCount: controller?.overlay?.directionTrack?.querySelectorAll?.(
+            ".browser-toolbox-direction",
+          )?.length || 0,
+          gestureDirectionLabels: [
+            ...(
+              controller?.overlay?.directionTrack?.querySelectorAll?.(
+                ".browser-toolbox-direction",
+              ) || []
+            ),
+          ].map((element) => element.getAttribute("aria-label") || ""),
+          gestureCommandLabel: controller?.overlay?.statusLabel?.textContent || "",
+          gestureCancelLabel: controller?.overlay?.cancelLabel?.textContent || "",
+          contentLocale: globalThis.BrowserToolboxI18n?.locale?.() || "",
+          gestureCancelVisible:
+            controller?.overlay?.cancel?.classList?.contains?.("is-visible") === true,
+          gestureCancelHovered:
+            controller?.overlay?.cancel?.classList?.contains?.("is-hovered") === true,
+          gestureCancelRect: (() => {
+            const rect = controller?.overlay?.cancelTarget?.getBoundingClientRect?.();
+            return rect && rect.width > 0 && rect.height > 0
+              ? {
+                left: rect.left,
+                top: rect.top,
+                right: rect.right,
+                bottom: rect.bottom,
+                width: rect.width,
+                height: rect.height,
+              }
+              : null;
+          })(),
+          bridgeActive: Boolean(
+            controller?.bridge?.requestId || controller?.bridge?.port ||
+              controller?.bridge?.readyTimer,
+          ),
+          guardActive: controller?.guard?.active === true,
+          guardProvisional: controller?.guard?.provisional === true,
+          guardPending: controller?.guard?.pending === true,
+          nativeMenuRetryArmed: Boolean(
+            controller?.guard?.nativeMenuRetryPoint &&
+              controller.guard.nativeMenuRetryUntil >= Date.now(),
+          ),
+          commandCallCount: globalThis.__browserToolboxE2eCommandCalls?.scrollToTop || 0,
         };
       },
     });
     return results[0]?.result || null;
   }, pageUrl);
+}
+
+async function installIsolatedCommandCounter(options, pageUrl, commandName) {
+  return await options.evaluate(async ({ url, command }) => {
+    const tabs = await chrome.tabs.query({});
+    const tab = tabs.find((item) => item.url === url);
+    if (!tab?.id) return false;
+    const results = await chrome.scripting.executeScript({
+      target: { tabId: tab.id, frameIds: [0] },
+      world: "ISOLATED",
+      args: [command],
+      func: (name) => {
+        const original = globalThis.NormalModeCommands?.[name];
+        if (typeof original !== "function") return false;
+        globalThis.__browserToolboxE2eCommandCalls = { [name]: 0 };
+        globalThis.NormalModeCommands[name] = async function (...args) {
+          globalThis.__browserToolboxE2eCommandCalls[name] += 1;
+          return await original.apply(this, args);
+        };
+        return true;
+      },
+    });
+    return results[0]?.result === true;
+  }, { url: pageUrl, command: commandName });
 }
 
 async function closeRemotePages(browser) {
@@ -1577,17 +1788,25 @@ async function testOptionsAccessibility(options) {
   await options.keyboard.type("L>R");
   assertEqual(
     await options.$eval("#gesture-preview", (element) => element.textContent),
-    "L > R",
-    "键盘轨迹输入应更新可读预览",
+    "← · →",
+    "旧字母轨迹输入应更新为箭头预览",
   );
   await options.focus("#add-gesture-binding");
+  assertEqual(
+    await options.$eval("#gesture-pattern-input", (element) => element.value),
+    "← · →",
+    "轨迹输入失焦后应规范化为箭头",
+  );
   await options.keyboard.press("Enter");
   assert(
     await options.$eval(
       "#mouse-bindings",
-      (element) => [...element.querySelectorAll("input")].some((input) => input.value === "L>R"),
+      (element) =>
+        [...element.querySelectorAll("input.browser-toolbox-binding-pattern")].some((input) =>
+          input.value === "← · →" && input.dataset.pattern === "L>R"
+        ),
     ),
-    "键盘轨迹输入应可添加绑定",
+    "键盘轨迹输入应以箭头添加绑定并保留内部方向 token",
   );
 
   const mediaClient = await options.createCDPSession();
@@ -2341,6 +2560,58 @@ async function testMouseGestures(page, base127, browser, options) {
   assertEqual(timeoutState?.gestureTimeoutScheduled, false, "轨迹超时后应清理定时器");
 
   await resetSettings(options);
+  const defaultMouseSettings = (await readSettings(options)).mouse;
+  assertEqual(defaultMouseSettings.directionMode, "8-way", "默认手势应启用八方向识别");
+  const actualDefaultBindings = defaultMouseSettings.bindings.map((binding) =>
+    `${binding.pattern.join(">")}:${binding.commandName}${binding.options.hard ? ":hard" : ""}`
+  );
+  const expectedDefaultBindings = [
+    "L:goBack",
+    "R:goForward",
+    "U:scrollFullPageUp",
+    "D:scrollFullPageDown",
+    "D>R:removeTab",
+    "L>U:restoreTab",
+    "R>D:scrollToBottom",
+    "R>U:scrollToTop",
+    "U>D:reload",
+    "U>D>U:reload:hard",
+    "U>L:previousTab",
+    "U>R:nextTab",
+    "D>R>U:BrowserToolbox.newWindow",
+    "U>R>D:BrowserToolbox.closeWindow",
+    "R>D>L>U:BrowserToolbox.openSettings",
+  ];
+  assertEqual(
+    JSON.stringify(actualDefaultBindings),
+    JSON.stringify(expectedDefaultBindings),
+    "恢复默认后应写入参考图对应的完整手势集合",
+  );
+  await patchSettings(options, { mouse: { triggerButton: 0 } });
+  await page.reload({ waitUntil: "load" });
+  await sleep(500);
+  await waitForController(options, page.url());
+  const settingsTargetCount =
+    browser.targets().filter((target) => target.url().includes("/pages/mouse_options.html")).length;
+  await sendDrag(
+    page,
+    await gesturePoints(page, "#gesture-target", [
+      { x: 80, y: 0 },
+      { x: 80, y: 80 },
+      { x: 0, y: 80 },
+      { x: 0, y: 0 },
+    ]),
+    "left",
+  );
+  const openedSettingsTarget = await waitFor(() => {
+    const targets = browser.targets().filter((target) =>
+      target.url().includes("/pages/mouse_options.html")
+    );
+    return targets.length > settingsTargetCount ? targets.at(-1) : null;
+  });
+  assert(openedSettingsTarget, "默认 R>D>L>U 手势应打开浏览器工具箱设置页");
+  await (await openedSettingsTarget.page())?.close();
+  await page.bringToFront();
   await patchSettings(options, {
     mouse: {
       triggerButton: 0,
@@ -2452,6 +2723,51 @@ async function testMouseGestures(page, base127, browser, options) {
     "自定义左键轨迹完成后应清理定时器",
   );
 
+  console.log("E2E: 方向图标、命中命令与拖入取消目标");
+  await patchSettings(options, {
+    mouse: {
+      triggerButton: 0,
+      bindings: [{
+        id: "e2e-cancel-gesture",
+        enabled: true,
+        pattern: ["R", "L", "R"],
+        commandName: "scrollToTop",
+        options: {},
+      }],
+    },
+  });
+  await page.goto(`${base127}/fixture.html`, { waitUntil: "load" });
+  await sleep(800);
+  await waitForController(options, page.url());
+  assert(
+    await installIsolatedCommandCounter(options, page.url(), "scrollToTop"),
+    "应能安装取消手势命令计数器",
+  );
+  await page.evaluate(() => scrollTo(0, 1200));
+  const cancelRun = await runGestureToCancelTarget(
+    page,
+    await centerFor(page, "#gesture-target"),
+    "left",
+    () => isolatedControllerState(options, page.url()),
+  );
+  assertEqual(cancelRun.matched?.gestureState, "ACTIVE", "R-L-R 应保持 ACTIVE 等待抬键");
+  assertEqual(cancelRun.matched?.gestureHudVisible, true, "形成方向后应显示图标 HUD");
+  assertEqual(cancelRun.matched?.gestureDirectionCount, 3, "R-L-R 应显示三个方向图标");
+  assert(
+    cancelRun.matched?.gestureCommandLabel.length > 0,
+    "命中 R-L-R 绑定后应显示命令文字",
+  );
+  assertEqual(cancelRun.hovered?.gestureCancelHovered, true, "光标进入目标后应显示取消悬停态");
+  assertEqual(
+    cancelRun.hovered?.gestureDirectionCount,
+    3,
+    "拖向取消目标时应保留最后命中的方向图示",
+  );
+  assertEqual(cancelRun.afterRelease?.gestureState, null, "取消后应清理手势会话");
+  assertEqual(cancelRun.afterRelease?.gestureOverlayVisible, false, "取消后应隐藏覆盖层");
+  assertEqual(cancelRun.afterRelease?.commandCallCount, 0, "拖入取消目标不得执行命令");
+  assertEqual(await page.evaluate(() => scrollY), 1200, "取消手势后页面状态应保持不变");
+
   await resetSettings(options);
   // Chrome for Testing 的 headless CDP 会在右键首次移动前先派发原生菜单；用左键验证激活后的通用轨迹链路。
   await patchSettings(options, { mouse: { triggerButton: 0 } });
@@ -2516,21 +2832,32 @@ async function testMouseGestures(page, base127, browser, options) {
     mouse: {
       triggerButton: 0,
       directionMode: "8-way",
-      bindings: [{
-        id: "e2e-diagonal-top",
-        enabled: true,
-        pattern: ["DR"],
-        commandName: "scrollToTop",
-        options: {},
-      }],
+      bindings: [
+        {
+          id: "e2e-diagonal-up-right",
+          enabled: true,
+          pattern: ["UR"],
+          commandName: "scrollToTop",
+          options: {},
+        },
+        {
+          id: "e2e-diagonal-up-left",
+          enabled: true,
+          pattern: ["UL"],
+          commandName: "scrollToBottom",
+          options: {},
+        },
+      ],
     },
   });
   await page.goto(`${base127}/fixture.html`, { waitUntil: "load" });
   await sleep(1000);
   await waitForController(options, page.url());
   await page.evaluate(() => scrollTo(0, 1200));
-  await sendDrag(page, await pointsFor(page, "#gesture-target", 110, 110), "left");
+  await sendDrag(page, await pointsFor(page, "#gesture-target", 110, -110), "left");
   await waitFor(() => page.evaluate(() => scrollY === 0));
+  await sendDrag(page, await pointsFor(page, "#gesture-target", -110, -110), "left");
+  await waitFor(() => page.evaluate(() => scrollY > 0));
   await resetSettings(options);
   await patchSettings(options, { general: { language: "en" } });
   // 外部写入后重新加载设置页，建立下一次保存的真实基线。
@@ -2958,63 +3285,243 @@ async function testNativeSafety(page, base127, options) {
   console.log("E2E: 右键菜单策略、内层滚动和普通输入");
   await page.goto(`${base127}/fixture.html`, { waitUntil: "load" });
   await sleep(1000);
+  await patchSettings(options, {
+    general: { language: "zh_CN" },
+    mouse: {
+      triggerButton: 2,
+      suppressContextMenuAfterActivation: true,
+      bindings: [{
+        id: "e2e-default-right-gesture",
+        enabled: true,
+        pattern: ["R"],
+        commandName: "scrollToTop",
+        options: {},
+      }],
+    },
+  });
+  await page.reload({ waitUntil: "load" });
+  await sleep(800);
+  await waitForController(options, page.url());
+  assert(
+    await installIsolatedCommandCounter(options, page.url(), "scrollToTop"),
+    "应能安装右键手势命令计数器",
+  );
 
+  console.log("E2E: 默认右键 ACTIVE 与 trusted contextmenu");
+  await clearEvents(page);
+  await page.evaluate(() => scrollTo(0, 1200));
+  const activePoint = await centerFor(page, "#gesture-target");
+  const activeRun = await runTrustedRightGesture(
+    page,
+    activePoint,
+    () => isolatedControllerState(options, page.url()),
+    { contextMenuWhileHeld: true },
+  );
+  console.log(
+    "E2E: headed 默认右键 ACTIVE 事件顺序",
+    (await events(page))
+      .filter((event) =>
+        ["pointerdown", "mousedown", "contextmenu", "pointermove", "pointerup", "mouseup"].includes(
+          event.type,
+        )
+      )
+      .map((event) =>
+        `${event.type}(button=${event.button},buttons=${event.buttons},trusted=${event.isTrusted},prevented=${event.defaultPrevented})`
+      )
+      .join(" -> "),
+  );
+  assertEqual(activeRun.pending?.gestureState, "PENDING", "右键刚按下时应保持手势候选状态");
+  assertEqual(activeRun.pending?.gestureCancelVisible, true, "第一次右键按下应只显示取消目标");
+  assertEqual(activeRun.pending?.gestureHudVisible, false, "尚未形成方向时不应显示 HUD");
+  assertEqual(activeRun.pending?.gestureDirectionCount, 0, "候选阶段不应提前生成方向图标");
+  assertEqual(
+    activeRun.activatedWithoutDirection?.gestureState,
+    "ACTIVE",
+    "越过激活距离后应进入 ACTIVE",
+  );
+  assertEqual(
+    activeRun.activatedWithoutDirection?.gestureCancelVisible,
+    true,
+    "尚未形成方向时取消目标仍应持续显示",
+  );
+  assertEqual(
+    activeRun.activatedWithoutDirection?.gestureHudVisible,
+    false,
+    "只有方向真正形成后才能展开 HUD",
+  );
+  assertEqual(
+    activeRun.activatedWithoutDirection?.gestureDirectionCount,
+    0,
+    "激活但未达到分段阈值时不应生成方向图标",
+  );
+  assertEqual(activeRun.active?.gestureState, "ACTIVE", "默认右键移动超过阈值后应进入 ACTIVE");
+  assertEqual(activeRun.active?.gestureTimeoutScheduled, true, "ACTIVE 右键应保留会话定时器");
+  assertEqual(activeRun.active?.gestureOverlayVisible, true, "轨迹和 HUD 只应在 ACTIVE 后显示");
+  assertEqual(activeRun.active?.gestureCancelVisible, true, "ACTIVE 期间取消目标应持续显示");
+  assertEqual(activeRun.active?.gestureHudVisible, true, "形成首个方向后应展开 HUD");
+  assertEqual(activeRun.active?.gestureDirectionCount, 1, "单段右移应显示一个方向图标");
+  assertEqual(activeRun.active?.contentLocale, "zh_CN", "网页内容脚本应应用简体中文设置");
+  assertEqual(activeRun.active?.gestureDirectionLabels?.[0], "向右", "右移图标应提供中文方向名");
+  assertEqual(activeRun.active?.gestureCommandLabel, "回到顶部", "HUD 应显示中文命令名");
+  assertEqual(activeRun.active?.gestureCancelLabel, "取消", "取消目标应显示中文文案");
+  assertEqual(activeRun.active?.bridgeActive, true, "ACTIVE 右键应保持 frame bridge");
+  assertEqual(activeRun.active?.guardActive, true, "ACTIVE 右键应启用菜单保护");
+  assertEqual(activeRun.active?.commandCallCount, 0, "右键释放前不应执行手势命令");
+  const activeEvents = await events(page);
+  const activeContextMenus = activeEvents.filter((event) =>
+    event.type === "contextmenu" && event.isTrusted === true
+  );
+  const activeContextMenu = activeContextMenus.at(-1);
+  assertEqual(activeContextMenus.length, 2, "默认右键测试应记录提前菜单和 ACTIVE 后菜单");
+  assert(
+    Math.abs(activeContextMenu.clientX - (activePoint.x + 120)) < 1,
+    "ACTIVE 后的 trusted contextmenu 应位于移动后的坐标",
+  );
+  assert(activeContextMenu.defaultPrevented, "已激活的默认右键轨迹应阻止原生菜单");
+  await waitFor(() => page.evaluate(() => scrollY === 0));
+  assertEqual(activeRun.afterRelease?.gestureState, null, "右键命令完成后应清理 gesture");
+  assertEqual(activeRun.afterRelease?.gestureTimeoutScheduled, false, "右键命令完成后应清理定时器");
+  assertEqual(activeRun.afterRelease?.gestureOverlayVisible, false, "右键命令完成后应隐藏 overlay");
+  assertEqual(activeRun.afterRelease?.gestureCancelVisible, false, "右键命令完成后应隐藏取消目标");
+  assertEqual(activeRun.afterRelease?.bridgeActive, false, "右键命令完成后应关闭 bridge");
+  assertEqual(activeRun.afterRelease?.guardActive, false, "右键命令完成后不应残留 active guard");
+  assertEqual(activeRun.afterRelease?.guardPending, false, "已处理菜单后不应残留 delayed guard");
+  assertEqual(activeRun.afterRelease?.commandCallCount, 1, "默认右键手势命令应只执行一次");
+
+  await patchSettings(options, { general: { language: "en" } });
+  await waitFor(async () =>
+    (await isolatedControllerState(options, page.url()))?.contentLocale === "en"
+  );
+  assertEqual(
+    (await isolatedControllerState(options, page.url()))?.contentLocale,
+    "en",
+    "网页不刷新也应热更新内容脚本语言",
+  );
+
+  console.log("E2E: pointerup 后延迟 contextmenu 一次性保护");
+  await page.reload({ waitUntil: "load" });
+  await sleep(800);
+  await waitForController(options, page.url());
+  assert(
+    await installIsolatedCommandCounter(options, page.url(), "scrollToTop"),
+    "应能重新安装右键手势命令计数器",
+  );
+  await clearEvents(page);
+  await page.evaluate(() => scrollTo(0, 1200));
+  const delayedPoint = await centerFor(page, "#gesture-target");
+  const delayedRun = await runTrustedRightGesture(
+    page,
+    delayedPoint,
+    () => isolatedControllerState(options, page.url()),
+  );
+  assertEqual(delayedRun.active?.contentLocale, "en", "后续右键手势应使用英文设置");
+  assertEqual(delayedRun.active?.gestureDirectionLabels?.[0], "Right", "右移图标应提供英文方向名");
+  assertEqual(delayedRun.active?.gestureCommandLabel, "Scroll to top", "HUD 应显示英文命令名");
+  assertEqual(delayedRun.active?.gestureCancelLabel, "Cancel", "取消目标应显示英文文案");
+  await waitFor(() => page.evaluate(() => scrollY === 0));
+  assertEqual(delayedRun.afterRelease?.commandCallCount, 1, "延迟菜单场景的命令应只执行一次");
+  assertEqual(delayedRun.afterRelease?.guardPending, true, "pointerup 后应暂存一次菜单保护");
+  await dispatchContextMenu(page, { x: delayedPoint.x + 120, y: delayedPoint.y });
+  const delayedContextMenu = (await events(page)).find((event) =>
+    event.type === "contextmenu" && event.isTrusted === false
+  );
+  assert(delayedContextMenu?.defaultPrevented, "pointerup 后的延迟 contextmenu 应被阻止");
+  const delayedCleanState = await isolatedControllerState(options, page.url());
+  assertEqual(delayedCleanState?.guardPending, false, "延迟 contextmenu 后应消费一次性 guard");
+  assertEqual(delayedCleanState?.bridgeActive, false, "延迟 contextmenu 后不应残留 bridge");
+  assertEqual(delayedCleanState?.commandCallCount, 1, "延迟菜单不得重复执行手势命令");
+
+  console.log("E2E: 首次右键候选与第二次右键原生菜单");
+  await page.reload({ waitUntil: "load" });
+  await sleep(800);
+  await waitForController(options, page.url());
+  assert(
+    await installIsolatedCommandCounter(options, page.url(), "scrollToTop"),
+    "应能为普通右键安装命令计数器",
+  );
   const heading = await centerFor(page, "#heading");
   await clearEvents(page);
-  const pendingStates = await runPendingRightClickThenMove(
+  const nativeMenuRun = await runNativeMenuRetryThenMove(
     page,
     heading,
     () => isolatedControllerState(options, page.url()),
   );
-  const contextMenu = (await events(page)).find((event) => event.type === "contextmenu");
-  assert(contextMenu, "普通右键应产生 contextmenu 事件");
-  assert(!contextMenu.defaultPrevented, "未越过激活距离的普通右键应保留原生菜单");
-  assertEqual(
-    pendingStates.afterContextMenu?.gestureState,
-    null,
-    "原生菜单出现后应立即取消 PENDING 右键候选",
+  const nativeClickEvents = await events(page);
+  const contextMenus = nativeClickEvents.filter((event) => event.type === "contextmenu");
+  console.log(
+    "E2E: headed 普通右键事件顺序",
+    nativeClickEvents
+      .filter((event) =>
+        ["pointerdown", "mousedown", "contextmenu", "pointerup", "mouseup"].includes(event.type)
+      )
+      .map((event) =>
+        `${event.type}(button=${event.button},buttons=${event.buttons},trusted=${event.isTrusted},prevented=${event.defaultPrevented})`
+      )
+      .join(" -> "),
   );
+  assertEqual(contextMenus.length, 2, "双击右键应产生两次可信 contextmenu");
+  assert(contextMenus[0].defaultPrevented, "第一次右键候选应阻止提前的原生菜单");
+  assert(!contextMenus[1].defaultPrevented, "第二次近距离右键应放行原生菜单");
+  assertEqual(nativeMenuRun.afterFirstClick?.gestureState, null, "第一次轻点后应清理 gesture");
   assertEqual(
-    pendingStates.afterMove?.gestureState,
-    null,
-    "原生菜单出现后的移动不应重新激活右键手势",
-  );
-  assertEqual(
-    pendingStates.afterMove?.gestureTimeoutScheduled,
+    nativeMenuRun.afterFirstClick?.gestureTimeoutScheduled,
     false,
-    "原生菜单出现后应清理右键手势定时器",
+    "第一次轻点后应清理定时器",
   );
   assertEqual(
-    pendingStates.afterContextMenu?.gestureOverlayVisible,
+    nativeMenuRun.afterFirstClick?.gestureOverlayVisible,
     false,
-    "原生菜单出现时不应显示 PENDING 手势轨迹",
+    "第一次轻点不应显示轨迹或 HUD",
   );
+  assertEqual(nativeMenuRun.afterFirstClick?.bridgeActive, false, "第一次轻点后应关闭 bridge");
+  assertEqual(
+    nativeMenuRun.afterFirstClick?.guardActive,
+    false,
+    "第一次轻点后不应残留 active guard",
+  );
+  assertEqual(
+    nativeMenuRun.afterFirstClick?.guardProvisional,
+    false,
+    "第一次轻点后不应残留候选菜单保护",
+  );
+  assertEqual(
+    nativeMenuRun.afterFirstClick?.nativeMenuRetryArmed,
+    true,
+    "第一次轻点后应短暂等待第二次原生右键",
+  );
+  assertEqual(nativeMenuRun.afterContextMenu?.gestureState, null, "原生菜单出现后不应保留 gesture");
+  assertEqual(
+    nativeMenuRun.afterContextMenu?.gestureCancelVisible,
+    false,
+    "快速第二次右键放行原生菜单时不应显示取消目标",
+  );
+  assertEqual(
+    nativeMenuRun.afterContextMenu?.gestureHudVisible,
+    false,
+    "快速第二次右键放行原生菜单时不应显示 HUD",
+  );
+  assertEqual(
+    nativeMenuRun.afterContextMenu?.nativeMenuRetryArmed,
+    false,
+    "第二次右键应消费原生菜单候选",
+  );
+  assertEqual(nativeMenuRun.afterMove?.gestureState, null, "原生菜单后的移动不应延迟激活");
+  assertEqual(
+    nativeMenuRun.afterMove?.gestureOverlayVisible,
+    false,
+    "原生菜单后的移动不应显示 overlay",
+  );
+  assertEqual(
+    nativeMenuRun.afterRelease?.gestureTimeoutScheduled,
+    false,
+    "原生菜单场景应清理定时器",
+  );
+  assertEqual(nativeMenuRun.afterRelease?.bridgeActive, false, "原生菜单场景应关闭 bridge");
+  assertEqual(nativeMenuRun.afterRelease?.guardActive, false, "原生菜单场景应清理 active guard");
+  assertEqual(nativeMenuRun.afterRelease?.guardPending, false, "原生菜单场景应清理 delayed guard");
+  assertEqual(nativeMenuRun.afterRelease?.commandCallCount, 0, "双击右键菜单不得执行命令");
 
-  await patchSettings(options, { mouse: { triggerButton: 0 } });
-  await page.reload({ waitUntil: "load" });
-  await sleep(1000);
-  await waitForController(options, page.url());
-  await clearEvents(page);
-  const activePoint = await centerFor(page, "#heading");
-  const activeEvents = await runActiveGestureWhileHeld(
-    page,
-    activePoint,
-    "left",
-    100,
-    async () => {
-      await dispatchContextMenu(page, activePoint);
-      return events(page);
-    },
-  );
-  const activeContextMenu = activeEvents.find((event) =>
-    event.type === "contextmenu" && event.isTrusted === false
-  );
-  assert(activeContextMenu, "已激活的轨迹应能接管后续 contextmenu 事件");
-  assert(
-    activeContextMenu.defaultPrevented,
-    "已激活的轨迹不应弹出浏览器原生菜单",
-  );
-
+  await resetSettings(options);
   await options.evaluate(async () => {
     const key = "browserToolboxSettings";
     const current = (await chrome.storage.sync.get(key))[key];

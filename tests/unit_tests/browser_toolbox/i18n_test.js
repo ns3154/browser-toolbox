@@ -8,17 +8,24 @@ context("BrowserToolbox internationalization", () => {
   should("switch the new UI catalog between English and Simplified Chinese", () => {
     BrowserToolboxI18n.setLocale("en");
     assert.equal("Save", BrowserToolboxI18n.message("save"));
-    assert.equal("Pattern text (for example, L>R)", BrowserToolboxI18n.message("patternInput"));
+    assert.equal(
+      "Gesture arrows (for example, ↑ · →)",
+      BrowserToolboxI18n.message("patternInput"),
+    );
     assert.equal("See permissions help", BrowserToolboxI18n.message("seePermissionsHelp"));
+    assert.equal("Refresh", BrowserToolboxI18n.message("command_reload"));
+    assert.equal("Right", BrowserToolboxI18n.message("gestureDirectionRight"));
     assert.equal(
       "This matching pattern is used by another rule; the later configured rule takes precedence for overlapping fields.",
       BrowserToolboxI18n.message("siteRuleDuplicateWarning"),
     );
     BrowserToolboxI18n.setLocale("zh_CN");
     assert.equal("保存", BrowserToolboxI18n.message("save"));
-    assert.equal("轨迹文本（例如 L>R）", BrowserToolboxI18n.message("patternInput"));
+    assert.equal("手势箭头（例如 ↑ · →）", BrowserToolboxI18n.message("patternInput"));
     assert.equal("查看权限帮助", BrowserToolboxI18n.message("seePermissionsHelp"));
     assert.equal("复制链接网址", BrowserToolboxI18n.message("command_BrowserToolbox_copyLinkUrl"));
+    assert.equal("刷新", BrowserToolboxI18n.message("command_reload"));
+    assert.equal("向右", BrowserToolboxI18n.message("gestureDirectionRight"));
     assert.equal(
       "没有浏览器工具箱站点规则匹配此网址。",
       BrowserToolboxI18n.message("siteRuleNoMatchingRules"),

@@ -162,7 +162,7 @@
   "page": { "message": "页面。", "description": "页面后缀" },
   "noTelemetry": { "message": "无遥测、无账户、无广告、无付费功能。", "description": "隐私承诺" },
   "pattern": { "message": "轨迹", "description": "手势轨迹标签" },
-  "patternInput": { "message": "轨迹文本（例如 L>R）", "description": "键盘手势轨迹输入" },
+  "patternInput": { "message": "手势箭头（例如 ↑ · →）", "description": "键盘手势轨迹输入" },
   "gestureEditor": { "message": "手势编辑区", "description": "手势绘制区域" },
   "command": { "message": "命令", "description": "命令标签" },
   "options": { "message": "选项", "description": "命令选项" },
@@ -226,6 +226,14 @@
   "validationSchema": { "message": "设置版本不受支持", "description": "设置校验错误" },
   "gestureUnrecognized": { "message": "未识别手势", "description": "手势反馈" },
   "gestureCancelled": { "message": "手势已取消", "description": "手势反馈" },
+  "gestureDirectionUp": { "message": "向上", "description": "手势方向" },
+  "gestureDirectionDown": { "message": "向下", "description": "手势方向" },
+  "gestureDirectionLeft": { "message": "向左", "description": "手势方向" },
+  "gestureDirectionRight": { "message": "向右", "description": "手势方向" },
+  "gestureDirectionUpLeft": { "message": "左上", "description": "手势方向" },
+  "gestureDirectionUpRight": { "message": "右上", "description": "手势方向" },
+  "gestureDirectionDownLeft": { "message": "左下", "description": "手势方向" },
+  "gestureDirectionDownRight": { "message": "右下", "description": "手势方向" },
   "browserRestriction": { "message": "此页面受浏览器限制。", "description": "浏览器限制提示" },
   "language": { "message": "语言", "description": "语言设置" },
   "languageAuto": { "message": "跟随浏览器", "description": "自动语言" },
@@ -358,6 +366,10 @@
     "description": "命令标题"
   },
   "command_BrowserToolbox_showTabList": { "message": "显示标签页列表", "description": "命令标题" },
+  "command_BrowserToolbox_openSettings": {
+    "message": "打开浏览器工具箱设置",
+    "description": "命令标题"
+  },
   "command_BrowserToolbox_toggleKeyboard": { "message": "切换键盘导航", "description": "命令标题" },
   "command_BrowserToolbox_toggleMouseGestures": {
     "message": "切换鼠标手势",
@@ -392,6 +404,18 @@
     "description": "命令标题"
   },
   "command_BrowserToolbox_downloadImage": { "message": "下载图片", "description": "命令标题" },
+  "command_goBack": { "message": "后退", "description": "手势命令标题" },
+  "command_goForward": { "message": "前进", "description": "手势命令标题" },
+  "command_removeTab": { "message": "关闭标签页", "description": "手势命令标题" },
+  "command_restoreTab": { "message": "恢复关闭的标签页", "description": "手势命令标题" },
+  "command_scrollToTop": { "message": "回到顶部", "description": "手势命令标题" },
+  "command_scrollToBottom": { "message": "滚动到底部", "description": "手势命令标题" },
+  "command_scrollFullPageUp": { "message": "向上翻页", "description": "手势命令标题" },
+  "command_scrollFullPageDown": { "message": "向下翻页", "description": "手势命令标题" },
+  "command_reload": { "message": "刷新", "description": "手势命令标题" },
+  "command_reloadHard": { "message": "强制刷新", "description": "手势命令标题" },
+  "command_previousTab": { "message": "上一个标签页", "description": "手势命令标题" },
+  "command_nextTab": { "message": "下一个标签页", "description": "手势命令标题" },
   "settingsSections": { "message": "设置分区", "description": "设置导航" },
   "settingsSearch": { "message": "搜索设置", "description": "设置导航搜索" },
   "settingsSearchHint": {
