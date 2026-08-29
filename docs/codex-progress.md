@@ -2,6 +2,42 @@
 
 本文件按设计文档规定追加。每个条目必须只记录已经实际执行的命令和结果；未验证内容不得写成完成。
 
+## 2026-08-30 / 功能分支快进合并 main 与本地分支规则 / E-150
+
+- 授权与范围：用户明确要求把 `feat/mouse-gestures-i18n` 直接合并到 `main`，并把本地 `AGENTS.md`
+  改为“没有特殊要求时直接在 `main` 分支开发”。没有创建 PR、合并提交、标签、Release
+  或商店发布，没有删除功能分支，也没有处理根目录 `.DS_Store`。
+- main 合并：先执行 `git fetch origin` 和 `git pull --ff-only origin main`，确认远端 `main` 仍为
+  `c3ec01d3e3c5471ba4ea368100caef472f33b6e2`；随后
+  `git merge --ff-only origin/feat/mouse-gestures-i18n` 成功，把本地 `main` 快进到
+  `eae9bbd1fbb161072136d1da3d7e7361851cc51a`，完整保留功能提交
+  `e46a586a4bd5a6f882dd24c08efcec75ea0682c8` 和远端记录提交
+  `eae9bbd1fbb161072136d1da3d7e7361851cc51a`。
+- 本地 AGENTS：根目录 `AGENTS.md` 由全局 Git ignore 规则忽略，历史上已通过 `bba016c9`
+  停止跟踪；本轮只修改本机文件，新增“没有特殊要求时直接在 `main`
+  分支开发、提交和推送；只有用户明确要求功能分支、PR、worktree
+  或隔离开发时才使用其他分支”。该文件不会进入公开提交。
+- main
+  验证：`PUPPETEER_EXECUTABLE_PATH="/Users/yang/Applications/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing" ./make.js test`
+  退出码 0，单元 450/450、DOM 111/111；`deno test -A tests/browser_toolbox/` 退出码
+  0，BrowserToolbox shoulda 198/198。权限、网络行为和技术标识审计均退出码 0；`./make.js package`
+  退出码 0，最新归档已更新；`git diff --check` 退出码 0。
+- 可见安装：首次尝试在旧 CFT 验收 profile 内执行 `chrome.runtime.reload()` 后，CFT 152 将该 profile
+  的 CDP 未打包扩展页标记为 `ERR_BLOCKED_BY_CLIENT`，没有把该环境错误记为产品通过。随后新建独立
+  profile `/tmp/browser-toolbox-cft152-main-profile-20260830.6guEjW`，在 headed CFT `152.0.7977.64`
+  中通过 `Extensions.loadUnpacked` 加载
+  `/Users/yang/project/plugin/browser-toolbox/dist/browser-toolbox`，扩展 ID 为
+  `nalfnhojdelfpccjnfnbcoedeenocdek`。副屏保留设置页和
+  `http://127.0.0.1:8766/browser-toolbox-hud-test-page.html`，运行态为
+  `initialized = true`、`locale = zh_CN`、`triggerButton = 2`、`directionMode = 8-way`、15 条绑定。
+- 风险边界：本轮 main 上没有重新执行完整 E2E；完整 CFT E2E 已在相同产品 SHA `eae9bbd1`
+  合并前通过，main 上又重跑了单元、DOM、BrowserToolbox 回归、审计、打包和可见安装。该证据仍不等于
+  Windows/Edge、Chrome Stable、屏幕阅读器、认证态站点或完整 Vimium 人工矩阵通过。
+- 当前状态：本地 `main` 已包含功能分支的两个提交并领先
+  `origin/main`，下一步提交本条验收记录并直接推送 `origin/main`；`.DS_Store` 仍为唯一未跟踪文件。
+- 对应提交：`e46a586a4bd5a6f882dd24c08efcec75ea0682c8`、`eae9bbd1fbb161072136d1da3d7e7361851cc51a`；本条为
+  main 合并后的验收记录。
+
 ## 2026-08-30 / 鼠标手势与双语 README 功能分支推送 / E-149
 
 - 提交范围：按精确文件清单暂存 32 个文件，包含右键菜单状态机、方向 HUD、八方向与箭头配置、网页 HUD
