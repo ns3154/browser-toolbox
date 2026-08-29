@@ -27,8 +27,8 @@ BROWSER_TOOLBOX_E2E_LOAD_UNPACKED_VIA_CDP=true PUPPETEER_EXECUTABLE_PATH="/tmp/b
 ~~~
 
 - 结果边界与风险：本轮证明的是构建产物路径、manifest 和隔离自动化加载路径；不等于原生 GUI、屏幕阅读器、平台矩阵或真实商店审核。Linux 按用户要求保留未处理。
-- 当前状态：工作区变更待提交和推送；`AGENTS.md` 仍未被跟踪。
-- 对应提交：待提交。
+- 当前状态：产物命名修复已提交，待推送；`AGENTS.md` 仍未被跟踪。
+- 对应提交：`1620e68a`（`fix: align Browser Toolbox build artifacts`）。
 
 ## 2026-08-29 / 右键轻点保留原生菜单 / E-138
 
