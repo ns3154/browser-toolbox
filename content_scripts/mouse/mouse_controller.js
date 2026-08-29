@@ -216,10 +216,6 @@
         this.clearGestureTimeout();
         this.gesture = new globalThis.BrowserToolboxGestureSession(this.settings.mouse);
         this.gesture.start({ x: event.clientX, y: event.clientY }, event.timeStamp || Date.now());
-        if (this.settings.mouse.suppressContextMenuAfterActivation !== false) {
-          // Chromium 可能在首次 pointermove 之前派发 contextmenu；先接管会话，避免菜单抢走轨迹输入。
-          this.guard.activate();
-        }
         if (this.settings.mouse.showTrail) this.overlay.show();
         this.bridge = new globalThis.BrowserToolboxFrameGestureBridge();
         const invocation = invocationApi.createInvocation(
@@ -322,8 +318,14 @@
       if (this.gesture && event.button === this.gestureButton()) {
         this.clearGestureTimeout();
         const result = this.gesture.end(event.timeStamp || Date.now());
-        if (this.settings.mouse.suppressContextMenuAfterActivation !== false) {
+        if (
+          result.state === "COMPLETED" &&
+          this.settings.mouse.suppressContextMenuAfterActivation !== false
+        ) {
           this.guard.armForContextMenu();
+        } else {
+          // PENDING 右键轻点必须保留浏览器原生菜单，不能留下延迟拦截状态。
+          this.guard.clearPending();
         }
         if (result.state === "COMPLETED") {
           event.preventDefault();

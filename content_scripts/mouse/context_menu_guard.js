@@ -1,4 +1,4 @@
-// 右键菜单保护按配置从手势会话开始生效，并覆盖 pointerup 到 contextmenu 的事件间隙。
+// 右键菜单保护只在手势越过激活阈值后生效，并覆盖 pointerup 到 contextmenu 的事件间隙。
 (function () {
   class ContextMenuGuard {
     constructor() {
@@ -21,9 +21,10 @@
     }
 
     armForContextMenu(graceMs = 1000) {
-      // 某些浏览器在 pointerup 之后才派发 contextmenu；保留一次性保护，避免已完成轨迹
-      // 在清理 ACTIVE 状态后又打开浏览器菜单。若菜单已经在 ACTIVE 阶段处理，则无需重复保护。
-      if (this.contextMenuSeen) return;
+      // 某些浏览器在 pointerup 之后才派发 contextmenu；仅为已激活的轨迹保留一次性保护，
+      // 避免轻点右键在清理 PENDING 状态后仍被误拦截。若菜单已经在 ACTIVE 阶段处理，
+      // 则无需重复保护。
+      if (!this.active || this.contextMenuSeen) return;
       this.pending = true;
       this.pendingUntil = Date.now() + graceMs;
     }

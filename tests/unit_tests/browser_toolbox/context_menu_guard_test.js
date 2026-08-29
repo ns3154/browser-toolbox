@@ -31,4 +31,11 @@ context("Context menu guard", () => {
 
     assert.isFalse(guard.shouldSuppress());
   });
+
+  should("not arm suppression before a gesture crosses its activation threshold", () => {
+    const guard = new BrowserToolboxContextMenuGuard();
+    guard.armForContextMenu();
+
+    assert.isFalse(guard.shouldSuppress());
+  });
 });

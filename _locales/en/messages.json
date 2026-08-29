@@ -82,7 +82,7 @@
     "description": "Browser limitation note"
   },
   "browserToolboxMouseHelp": {
-    "message": "Draw a configured path with the gesture button. When menu suppression is enabled, Chromium context menus are blocked from button-down to prevent right-button gesture conflicts; disabling it keeps the native menu but may conflict with gestures.",
+    "message": "Draw a configured path with the gesture button. A light right click or movement below the activation threshold keeps the native context menu. When menu suppression is enabled, a right-button gesture blocks the menu after crossing the threshold; disabling it keeps the native menu but may conflict with gestures.",
     "description": "Mouse gesture help"
   },
   "browserToolboxSuperDragHelp": {
@@ -311,7 +311,7 @@
   "languageChinese": { "message": "简体中文", "description": "Simplified Chinese language" },
   "triggerButton": { "message": "Gesture trigger button", "description": "Gesture trigger button" },
   "mouseTriggerButtonHint": {
-    "message": "The gesture button takes priority over super drag and rocker input when they use the same button. With the right button, menu suppression starts on button-down to prevent Chromium context-menu conflicts; disabling it keeps the native menu but may conflict with gestures.",
+    "message": "The gesture button takes priority over super drag and rocker input when they use the same button. With the right button, a click or movement below the activation threshold keeps the native menu; when menu suppression is enabled, an activated gesture blocks it. Disabling suppression keeps the native menu but may conflict with gestures.",
     "description": "Gesture button conflict behavior"
   },
   "directionMode": { "message": "Direction mode", "description": "Direction mode label" },
@@ -338,7 +338,7 @@
   "showTrail": { "message": "Show gesture trail", "description": "Trail toggle" },
   "showHud": { "message": "Show command HUD", "description": "HUD toggle" },
   "suppressContextMenu": {
-    "message": "Suppress context menu during gestures",
+    "message": "Suppress context menu after gesture activation",
     "description": "Context menu suppression during gesture sessions"
   },
   "privacyImmutable": {
@@ -658,7 +658,7 @@
     "description": "Onboarding introduction"
   },
   "onboardingGesture": {
-    "message": "When menu suppression is enabled, right-button gestures block conflicting native menus from button-down; disabling it keeps the native menu but may conflict with gestures.",
+    "message": "A light right click keeps the native context menu. When menu suppression is enabled, a right-button gesture blocks the menu after crossing the activation threshold; disabling it keeps the native menu but may conflict with gestures.",
     "description": "Onboarding gesture"
   },
   "onboardingDrag": {

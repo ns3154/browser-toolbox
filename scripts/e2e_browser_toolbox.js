@@ -359,6 +359,23 @@ async function moveMouse(page, point, buttons = 0, modifiers = 0) {
   });
 }
 
+async function dispatchContextMenu(page, point) {
+  await page.evaluate(({ x, y }) => {
+    const target = document.elementFromPoint(x, y);
+    target?.dispatchEvent(
+      new MouseEvent("contextmenu", {
+        bubbles: true,
+        cancelable: true,
+        button: 2,
+        buttons: 2,
+        clientX: x,
+        clientY: y,
+      }),
+    );
+  }, point);
+  await sleep(20);
+}
+
 async function sendDrag(page, points, button = "left", modifiers = 0) {
   if (modifiers) await page.keyboard.down("Alt");
   await page.mouse.move(points[0].x, points[0].y, { steps: 1 });
@@ -2877,12 +2894,23 @@ async function testNativeSafety(page, base127, options) {
   await sleep(300);
   const contextMenu = (await events(page)).find((event) => event.type === "contextmenu");
   assert(contextMenu, "普通右键应产生 contextmenu 事件");
-  assert(contextMenu.defaultPrevented, "默认右键手势模式应在 PENDING 阶段阻止冲突菜单");
+  assert(!contextMenu.defaultPrevented, "未越过激活距离的普通右键应保留原生菜单");
 
   await clearEvents(page);
-  await sendDrag(page, await pointsFor(page, "#heading", 150, 0), "right");
-  const activeContextMenu = (await events(page)).find((event) => event.type === "contextmenu");
-  assert(activeContextMenu, "已激活的右键轨迹仍应经过 contextmenu 事件链");
+  const activePoint = await centerFor(page, "#heading");
+  const activeEvents = await runActiveRightGestureWhileHeld(
+    page,
+    activePoint,
+    100,
+    async () => {
+      await dispatchContextMenu(page, activePoint);
+      return events(page);
+    },
+  );
+  const activeContextMenu = activeEvents.find((event) =>
+    event.type === "contextmenu" && event.isTrusted === false
+  );
+  assert(activeContextMenu, "已激活的右键轨迹应能接管后续 contextmenu 事件");
   assert(
     activeContextMenu.defaultPrevented,
     "已激活的右键轨迹不应弹出浏览器原生菜单",

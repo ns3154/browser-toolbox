@@ -135,10 +135,10 @@
             <label
               class="browser-toolbox-check"><input id="show-command-hud" type="checkbox"> <span data-i18n="showHud">Show command HUD</span></label>
             <label
-              class="browser-toolbox-check"><input id="suppress-context-menu" type="checkbox"> <span data-i18n="suppressContextMenu">Suppress context menu during gestures</span></label>
+              class="browser-toolbox-check"><input id="suppress-context-menu" type="checkbox"> <span data-i18n="suppressContextMenu">Suppress context menu after gesture activation</span></label>
           </div>
           <p class="browser-toolbox-note"
-            data-i18n="mouseTriggerButtonHint">The gesture button takes priority over super drag and rocker input when they use the same button. With the right button, menu suppression starts on button-down to prevent Chromium context-menu conflicts; disabling it keeps the native menu but may conflict with gestures.</p>
+            data-i18n="mouseTriggerButtonHint">The gesture button takes priority over super drag and rocker input when they use the same button. With the right button, a click or movement below the activation threshold keeps the native menu; when menu suppression is enabled, an activated gesture blocks it. Disabling suppression keeps the native menu but may conflict with gestures.</p>
           <h3 data-i18n="pattern">Pattern</h3>
           <canvas id="gesture-canvas" width="320" height="180" tabindex="0"
             aria-label="Gesture editor" data-i18n-aria-label="gestureEditor"></canvas>

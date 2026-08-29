@@ -73,7 +73,7 @@
     "description": "浏览器限制说明"
   },
   "browserToolboxMouseHelp": {
-    "message": "使用手势按键画出已配置的轨迹。启用菜单抑制时会从按下手势按键开始拦截浏览器菜单，避免右键轨迹冲突；关闭后保留原生菜单，但右键轨迹可能与菜单冲突。",
+    "message": "使用手势按键画出已配置的轨迹。右键轻点或移动未达到激活阈值时保留原生菜单；启用菜单抑制后，只有越过激活阈值的右键手势才会拦截菜单，关闭后始终保留原生菜单，但右键轨迹可能与菜单冲突。",
     "description": "鼠标手势帮助"
   },
   "browserToolboxSuperDragHelp": {
@@ -233,7 +233,7 @@
   "languageChinese": { "message": "简体中文", "description": "简体中文" },
   "triggerButton": { "message": "手势触发按键", "description": "手势触发按键" },
   "mouseTriggerButtonHint": {
-    "message": "手势按键与超级拖拽或摇杆使用同一按键时，手势优先。手势按键为右键时，菜单抑制会从按下开始，避免 Chromium 菜单抢占轨迹；关闭后保留原生菜单，但右键轨迹可能冲突。",
+    "message": "手势按键与超级拖拽或摇杆使用同一按键时，手势优先。手势按键为右键时，轻点或移动未达到激活阈值会保留原生菜单；启用菜单抑制后，越过阈值的右键手势才会拦截菜单，关闭后始终保留原生菜单，但右键轨迹可能冲突。",
     "description": "手势按键冲突行为"
   },
   "directionMode": { "message": "方向模式", "description": "方向模式标签" },
@@ -248,7 +248,7 @@
   "showTrail": { "message": "显示手势轨迹", "description": "轨迹开关" },
   "showHud": { "message": "显示命令 HUD", "description": "HUD 开关" },
   "suppressContextMenu": {
-    "message": "手势期间抑制原生菜单",
+    "message": "手势激活后抑制原生菜单",
     "description": "手势期间原生菜单抑制"
   },
   "privacyImmutable": {
@@ -487,7 +487,7 @@
     "description": "入门说明"
   },
   "onboardingGesture": {
-    "message": "启用菜单抑制时，右键轨迹从按下开始拦截冲突的原生菜单；关闭后保留原生菜单，但可能与轨迹冲突。",
+    "message": "右键轻点会保留原生菜单；启用菜单抑制后，只有越过激活阈值的右键手势才会拦截菜单，关闭后始终保留原生菜单，但可能与轨迹冲突。",
     "description": "入门手势"
   },
   "onboardingDrag": {

@@ -120,4 +120,5 @@
 - [x] E-132 当前 checkout 使用 `Extensions.loadUnpacked` 和临时 Chrome profile 的隔离 E2E 复核通过，覆盖设置导出、有效导入取消/确认、非法 JSON、未知字段、旧版导出格式、旧版存储键/会话覆盖/本地指针资源迁移、正则网站规则、核心输入、超级拖拽、滚轮/摇杆、跨 frame、fixtures 和 Service Worker 重启；该项不替代真实用户 profile 的旧 CRX 更新、人工导入确认、四平台人工矩阵或屏幕阅读器验收。
 - [x] E-131 Computer Use 恢复后在当前 Mac Chrome 的可见扩展页完成实时 UI 核对：多级设置导航、分区搜索、站点规则 Glob/正则选项、匹配解释、备份入口和导入文件选择器均可见；当前窗口不是临时 profile，未选择或导入文件，也未保存配置。该项是代理实时 UI 证据，不构成人工矩阵、屏幕阅读器或真实旧 CRX 导入更新通过，项目仍暂不发布。
 - [x] E-130 用户要求再次调用 Computer Use；`sky.get_app_state({ app: "com.google.Chrome" })` 再次返回客户端/服务端版本不匹配，未获得界面树、截图或点击能力。该项不构成人工通过，设置页及平台/辅助技术/真实旧 CRX 人工门禁仍未完成，项目仍暂不发布。
+- [x] E-138 修复右键轻点误拦截原生菜单：PENDING 阶段不再激活菜单保护，只有越过激活阈值的轨迹才会按配置抑制后续菜单事件；当前 checkout 单元/DOM `440/440`、`109/109`，shoulda `188/188`，权限/网络/技术标识审计、打包和 Chrome for Testing `152.0.7977.64` 隔离 E2E 均通过。Linux 本轮按用户要求未处理；该项仍不替代原生 GUI 菜单、平台/辅助技术/真实旧 CRX 更新和人工矩阵验收。
 - [ ] Chrome、Edge、Windows、macOS、Linux 的手工矩阵已记录实际结果。
