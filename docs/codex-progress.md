@@ -2,6 +2,36 @@
 
 本文件按设计文档规定追加。每个条目必须只记录已经实际执行的命令和结果；未验证内容不得写成完成。
 
+## 2026-08-29 / 原生右键菜单后的 PENDING 会话清理 / E-140
+
+- 授权边界：用户反馈右键菜单出现后仍留下黑色起点并在松键时误触发手势；本轮只修复右键 PENDING 会话清理、轨迹显示时机和对应 Chrome for Testing 回归，Linux 按用户要求暂不处理，没有新增权限、依赖、网络行为或商业化路径。
+- 根因：控制器在 `pointerdown` 时就显示手势覆盖层；原生 `contextmenu` 被放行后，尚未越过激活距离的 `GestureSession` 仍留在控制器中，后续移动可能把它提升为 ACTIVE，松键时继续执行命令。
+- 修复内容：轨迹覆盖层改为仅在首次越过激活阈值后显示；对可信且未被其他监听器阻止的原生右键菜单，立即取消 PENDING 会话、跨 frame bridge 和定时器，清理覆盖层，防止菜单出现后的移动/松键重新激活；保留右键摇杆的第一键状态，避免破坏既有组合优先级。E2E 新增“原生菜单出现后再移动”断言，并显式检查 PENDING 阶段不显示轨迹。
+- 本轮实际自动门禁：
+
+~~~text
+deno fmt --check content_scripts/mouse/mouse_controller.js scripts/e2e_browser_toolbox.js
+deno check content_scripts/mouse/mouse_controller.js scripts/e2e_browser_toolbox.js
+git diff --check
+  均退出码 0。
+PUPPETEER_EXECUTABLE_PATH="/tmp/browser-toolbox-cft-152.0.7977.64/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing" ./make.js test
+  退出码 0；单元 440/440、DOM 109/109。
+deno test -A tests/browser_toolbox/
+  退出码 0；shoulda 188/188。
+deno run -A scripts/audit_permissions.js
+deno run -A scripts/audit_network_usage.js
+deno run -A scripts/audit_technical_rename.js
+  均退出码 0；权限、网络和技术标识审计通过。
+./make.js package
+  退出码 0；最终 `dist/browser-toolbox` 产物重新生成。
+BROWSER_TOOLBOX_E2E_LOAD_UNPACKED_VIA_CDP=true PUPPETEER_EXECUTABLE_PATH="/tmp/browser-toolbox-cft-152.0.7977.64/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing" deno run --allow-read --allow-write --allow-env --allow-net --allow-run --allow-sys scripts/e2e_browser_toolbox.js
+  退出码 0；Chrome for Testing 152.0.7977.64 最终产物隔离 E2E 通过，包含原生右键菜单、菜单后的移动、轨迹/摇杆、核心输入、设置迁移、跨 frame、fixtures 和 Service Worker 重启。
+~~~
+
+- 结果边界与风险：Chrome for Testing headless CDP 会在首次右键 `pointermove` 前派发 `contextmenu`，因此自动化中的“激活后通用轨迹”使用左键触发来隔离状态机，右键专门覆盖原生菜单后的取消安全路径；这不替代可见原生 GUI 菜单、真实用户 profile、平台/辅助技术矩阵、屏幕阅读器、完整 Vimium 手工回归或商店审核。Linux 按用户要求保留未处理，项目仍暂不发布。
+- 当前状态：代码修复已提交，本条记录待随文档提交并推送；根目录既有 `.DS_Store` 未纳入版本控制。
+- 对应提交：`3da8d760`（`fix: cancel pending gesture after native context menu`）。
+
 ## 2026-08-29 / 产物目录与开发包名称统一 / E-139
 
 - 授权边界：用户指出手工加载路径出现 Vimium 名称；本轮修正构建 staging 目录、归档文件名、开发包 manifest 和 E2E/手工验收路径，没有改变运行时权限、依赖、网络行为或产品功能，Linux 按用户要求暂不处理。

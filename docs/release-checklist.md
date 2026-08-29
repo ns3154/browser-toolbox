@@ -122,4 +122,5 @@
 - [x] E-130 用户要求再次调用 Computer Use；`sky.get_app_state({ app: "com.google.Chrome" })` 再次返回客户端/服务端版本不匹配，未获得界面树、截图或点击能力。该项不构成人工通过，设置页及平台/辅助技术/真实旧 CRX 人工门禁仍未完成，项目仍暂不发布。
 - [x] E-138 修复右键轻点误拦截原生菜单：PENDING 阶段不再激活菜单保护，只有越过激活阈值的轨迹才会按配置抑制后续菜单事件；当前 checkout 单元/DOM `440/440`、`109/109`，shoulda `188/188`，权限/网络/技术标识审计、打包和 Chrome for Testing `152.0.7977.64` 隔离 E2E 均通过。Linux 本轮按用户要求未处理；该项仍不替代原生 GUI 菜单、平台/辅助技术/真实旧 CRX 更新和人工矩阵验收。
 - [x] E-139 修正发布 staging 目录和开发包品牌：手工加载目录统一为 `dist/browser-toolbox`，打包结束后该目录恢复正式 Browser Toolbox manifest，Chrome/Firefox/Canary 归档使用 Browser Toolbox 文件名；当前 checkout 单元/DOM `440/440`、`109/109`，shoulda `188/188`，权限/网络/技术标识审计、格式/差异检查和 Chrome for Testing `152.0.7977.64` 隔离 E2E 均通过。Linux 本轮按用户要求未处理；该项仍不替代平台/辅助技术和人工矩阵验收。
+- [x] E-140 修复原生右键菜单出现后仍残留 PENDING 手势的问题：轨迹覆盖层延后到激活阈值后显示，可信原生 `contextmenu` 会取消未激活右键候选及其 bridge/定时器，菜单后的移动和松键不会再执行手势；当前 checkout 单元/DOM `440/440`、`109/109`，shoulda `188/188`，权限/网络/技术标识审计、打包和 Chrome for Testing `152.0.7977.64` 最终产物隔离 E2E 均通过。Linux 本轮按用户要求未处理；该项仍不替代可见原生 GUI、平台/辅助技术和人工矩阵验收。
 - [ ] Chrome、Edge、Windows、macOS、Linux 的手工矩阵已记录实际结果。
