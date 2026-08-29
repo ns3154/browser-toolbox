@@ -29,7 +29,7 @@ BROWSER_TOOLBOX_E2E_LOAD_UNPACKED_VIA_CDP=true PUPPETEER_EXECUTABLE_PATH="/tmp/b
 ~~~
 
 - 结果边界与风险：Chrome for Testing headless CDP 会在首次右键 `pointermove` 前派发 `contextmenu`，因此自动化中的“激活后通用轨迹”使用左键触发来隔离状态机，右键专门覆盖原生菜单后的取消安全路径；这不替代可见原生 GUI 菜单、真实用户 profile、平台/辅助技术矩阵、屏幕阅读器、完整 Vimium 手工回归或商店审核。Linux 按用户要求保留未处理，项目仍暂不发布。
-- 当前状态：代码修复已提交，本条记录待随文档提交并推送；根目录既有 `.DS_Store` 未纳入版本控制。
+- 当前状态：代码修复和验证记录已提交并推送到远程 `origin/main`；根目录既有 `.DS_Store` 未纳入版本控制。
 - 对应提交：`3da8d760`（`fix: cancel pending gesture after native context menu`）。
 
 ## 2026-08-29 / 产物目录与开发包名称统一 / E-139
