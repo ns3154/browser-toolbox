@@ -216,7 +216,6 @@
         this.clearGestureTimeout();
         this.gesture = new globalThis.BrowserToolboxGestureSession(this.settings.mouse);
         this.gesture.start({ x: event.clientX, y: event.clientY }, event.timeStamp || Date.now());
-        if (this.settings.mouse.showTrail) this.overlay.show();
         this.bridge = new globalThis.BrowserToolboxFrameGestureBridge();
         const invocation = invocationApi.createInvocation(
           "__gesture__",
@@ -286,6 +285,7 @@
           if (this.settings.mouse.suppressContextMenuAfterActivation !== false) {
             this.guard.activate();
           }
+          if (this.settings.mouse.showTrail) this.overlay.show();
           event.preventDefault();
           event.stopPropagation();
         }
@@ -393,6 +393,19 @@
         event.preventDefault();
         event.stopPropagation();
         this.guard.consume();
+        return;
+      }
+      if (
+        trusted(event) &&
+        !event.defaultPrevented &&
+        event.button === 2 &&
+        this.gesture &&
+        !this.gesture.isActive() &&
+        this.gestureButton() === 2
+      ) {
+        // 原生菜单已经确认这是普通右键，取消 PENDING 候选，避免菜单打开后移动或抬键误激活手势。
+        // 保留右键摇杆的第一键状态，后续左键仍可按既有优先级完成摇杆组合。
+        this.cancelAll("native-context-menu", { preserveRocker: this.rocker?.held === 2 });
       }
     }
 

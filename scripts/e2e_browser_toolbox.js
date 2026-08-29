@@ -445,7 +445,13 @@ async function sendRocker(page, firstButton, secondButton) {
   await sleep(600);
 }
 
-async function runActiveRightGestureWhileHeld(page, point, holdMilliseconds, inspect) {
+function mouseButtonMask(button) {
+  return button === "left" ? 1 : button === "right" ? 2 : button === "middle" ? 4 : 0;
+}
+
+async function runActiveGestureWhileHeld(page, point, button, holdMilliseconds, inspect) {
+  const buttonMask = mouseButtonMask(button);
+  assert(buttonMask, `不支持的测试鼠标按键：${button}`);
   const client = await page.createCDPSession();
   let result;
   try {
@@ -459,15 +465,15 @@ async function runActiveRightGestureWhileHeld(page, point, holdMilliseconds, ins
       type: "mousePressed",
       x: point.x,
       y: point.y,
-      button: "right",
-      buttons: 2,
+      button,
+      buttons: buttonMask,
       clickCount: 1,
     });
     await client.send("Input.dispatchMouseEvent", {
       type: "mouseMoved",
       x: point.x + 120,
       y: point.y,
-      buttons: 2,
+      buttons: buttonMask,
     });
     await sleep(holdMilliseconds);
     result = await inspect();
@@ -476,7 +482,7 @@ async function runActiveRightGestureWhileHeld(page, point, holdMilliseconds, ins
       type: "mouseReleased",
       x: point.x + 120,
       y: point.y,
-      button: "right",
+      button,
       buttons: 0,
       clickCount: 1,
     }).catch(() => {});
@@ -486,8 +492,10 @@ async function runActiveRightGestureWhileHeld(page, point, holdMilliseconds, ins
   return result;
 }
 
-async function sendActiveGestureWithRocker(page, point) {
+async function runPendingRightClickThenMove(page, point, inspect) {
   const client = await page.createCDPSession();
+  let afterContextMenu;
+  let afterMove;
   try {
     await client.send("Input.dispatchMouseEvent", {
       type: "mouseMoved",
@@ -503,18 +511,65 @@ async function sendActiveGestureWithRocker(page, point) {
       buttons: 2,
       clickCount: 1,
     });
+    // Chrome for Testing 152 会在首次 pointermove 前派发原生 contextmenu；等待它完成后再模拟用户误移动。
+    await sleep(100);
+    afterContextMenu = await inspect();
     await client.send("Input.dispatchMouseEvent", {
       type: "mouseMoved",
       x: point.x + 120,
       y: point.y,
       buttons: 2,
     });
+    await sleep(100);
+    afterMove = await inspect();
+  } finally {
+    await client.send("Input.dispatchMouseEvent", {
+      type: "mouseReleased",
+      x: point.x + 120,
+      y: point.y,
+      button: "right",
+      buttons: 0,
+      clickCount: 1,
+    }).catch(() => {});
+    await client.detach().catch(() => {});
+  }
+  await sleep(300);
+  return { afterContextMenu, afterMove };
+}
+
+async function sendActiveGestureWithRocker(page, point, triggerButton = "right") {
+  const firstButton = triggerButton === "right" ? "right" : "left";
+  const secondButton = firstButton === "right" ? "left" : "right";
+  const firstMask = mouseButtonMask(firstButton);
+  const bothMasks = firstMask | mouseButtonMask(secondButton);
+  const client = await page.createCDPSession();
+  try {
+    await client.send("Input.dispatchMouseEvent", {
+      type: "mouseMoved",
+      x: point.x,
+      y: point.y,
+      buttons: 0,
+    });
+    await client.send("Input.dispatchMouseEvent", {
+      type: "mousePressed",
+      x: point.x,
+      y: point.y,
+      button: firstButton,
+      buttons: firstMask,
+      clickCount: 1,
+    });
+    await client.send("Input.dispatchMouseEvent", {
+      type: "mouseMoved",
+      x: point.x + 120,
+      y: point.y,
+      buttons: firstMask,
+    });
     await client.send("Input.dispatchMouseEvent", {
       type: "mousePressed",
       x: point.x + 120,
       y: point.y,
-      button: "left",
-      buttons: 3,
+      button: secondButton,
+      buttons: bothMasks,
       clickCount: 1,
     });
     await sleep(80);
@@ -522,15 +577,15 @@ async function sendActiveGestureWithRocker(page, point) {
       type: "mouseReleased",
       x: point.x + 120,
       y: point.y,
-      button: "left",
-      buttons: 2,
+      button: secondButton,
+      buttons: firstMask,
       clickCount: 1,
     });
     await client.send("Input.dispatchMouseEvent", {
       type: "mouseReleased",
       x: point.x + 120,
       y: point.y,
-      button: "right",
+      button: firstButton,
       buttons: 0,
       clickCount: 1,
     });
@@ -704,10 +759,16 @@ async function isolatedControllerState(options, pageUrl) {
       target: { tabId: tab.id, frameIds: [0] },
       world: "ISOLATED",
       func: () => {
+        const gestureHost = globalThis.document?.querySelector?.(
+          ".browser-toolbox-gesture-host",
+        );
         return {
           gestureState: globalThis.BrowserToolboxMouseControllerInstance?.gesture?.state || null,
           gestureTimeoutScheduled:
             globalThis.BrowserToolboxMouseControllerInstance?.gestureTimeoutId != null,
+          gestureOverlayVisible: Boolean(
+            gestureHost && globalThis.getComputedStyle?.(gestureHost).display !== "none",
+          ),
         };
       },
     });
@@ -2265,13 +2326,14 @@ async function testMouseGestures(page, base127, browser, options) {
   await waitForController(options, page.url());
 
   console.log("E2E: 轨迹超时与摇杆冲突优先级");
-  await patchSettings(options, { mouse: { maxDurationMs: 100 } });
+  await patchSettings(options, { mouse: { maxDurationMs: 100, triggerButton: 0 } });
   await page.reload({ waitUntil: "load" });
   await sleep(500);
   await waitForController(options, page.url());
-  const timeoutState = await runActiveRightGestureWhileHeld(
+  const timeoutState = await runActiveGestureWhileHeld(
     page,
     await centerFor(page, "#gesture-target"),
+    "left",
     180,
     () => isolatedControllerState(options, page.url()),
   );
@@ -2281,6 +2343,7 @@ async function testMouseGestures(page, base127, browser, options) {
   await resetSettings(options);
   await patchSettings(options, {
     mouse: {
+      triggerButton: 0,
       bindings: [{
         id: "e2e-active-trajectory",
         enabled: true,
@@ -2295,7 +2358,7 @@ async function testMouseGestures(page, base127, browser, options) {
   await sleep(800);
   await waitForController(options, page.url());
   await page.evaluate(() => scrollTo(0, 1200));
-  await sendActiveGestureWithRocker(page, await centerFor(page, "#target"));
+  await sendActiveGestureWithRocker(page, { x: 500, y: 300 }, "left");
   assert(page.url().endsWith("/two.html"), "ACTIVE 轨迹应优先于摇杆，不应触发后退");
   await waitFor(() => page.evaluate(() => scrollY === 0));
 
@@ -2303,6 +2366,7 @@ async function testMouseGestures(page, base127, browser, options) {
   console.log("E2E: 自定义跨 Service Worker 手势时长");
   await patchSettings(options, {
     mouse: {
+      triggerButton: 0,
       maxDurationMs: 3000,
       bindings: [{
         id: "e2e-long-gesture",
@@ -2317,9 +2381,10 @@ async function testMouseGestures(page, base127, browser, options) {
   await sleep(800);
   await waitForController(options, page.url());
   await page.evaluate(() => scrollTo(0, 1200));
-  const longGestureState = await runActiveRightGestureWhileHeld(
+  const longGestureState = await runActiveGestureWhileHeld(
     page,
     await centerFor(page, "#gesture-target"),
+    "left",
     2700,
     () => isolatedControllerState(options, page.url()),
   );
@@ -2388,12 +2453,14 @@ async function testMouseGestures(page, base127, browser, options) {
   );
 
   await resetSettings(options);
+  // Chrome for Testing 的 headless CDP 会在右键首次移动前先派发原生菜单；用左键验证激活后的通用轨迹链路。
+  await patchSettings(options, { mouse: { triggerButton: 0 } });
   await page.goto(`${base127}/fixture.html`, { waitUntil: "load" });
   await sleep(1000);
   await waitForController(options, page.url());
   await clearEvents(page);
-  await sendDrag(page, await pointsFor(page, "#gesture-target", -5, 0), "right");
-  assert(page.url().endsWith("/fixture.html"), "低于激活距离的右键输入不应触发历史命令");
+  await sendDrag(page, await pointsFor(page, "#gesture-target", -5, 0), "left");
+  assert(page.url().endsWith("/fixture.html"), "低于激活距离的触发按键输入不应触发历史命令");
   await page.evaluate(() => scrollTo(0, 1200));
   assertEqual(await page.evaluate(() => scrollY), 1200, "未达到手势方向绑定时页面滚动位置保持");
 
@@ -2405,14 +2472,14 @@ async function testMouseGestures(page, base127, browser, options) {
     "E2E: 历史起点",
     await page.evaluate(() => ({ url: location.href, length: history.length })),
   );
-  await sendDrag(page, await pointsFor(page, "#target", -140, 0), "right");
+  await sendDrag(page, await pointsFor(page, "#target", -140, 0), "left");
   console.log(
     "E2E: 后退后",
     await page.evaluate(() => ({ url: location.href, length: history.length })),
   );
   await waitFor(() => page.url().endsWith("/one.html"));
   await waitForController(options, page.url());
-  await sendDrag(page, await pointsFor(page, "#target", 140, 0), "right");
+  await sendDrag(page, await pointsFor(page, "#target", 140, 0), "left");
   await waitFor(() => page.url().endsWith("/two.html"));
 
   await page.goto(`${base127}/fixture.html`, { waitUntil: "load" });
@@ -2421,14 +2488,14 @@ async function testMouseGestures(page, base127, browser, options) {
   await sendDrag(
     page,
     await turnPoints(page, "#gesture-target", 60, 0, 0, -50),
-    "right",
+    "left",
   );
   await waitFor(() => page.evaluate(() => scrollY === 0));
   await page.evaluate(() => scrollTo(0, 0));
   await sendDrag(
     page,
     await turnPoints(page, "#gesture-target", 60, 0, 0, 120),
-    "right",
+    "left",
   );
   await waitFor(() => page.evaluate(() => scrollY > 0));
 
@@ -2439,7 +2506,7 @@ async function testMouseGestures(page, base127, browser, options) {
   await sendDrag(
     temporary,
     await turnPoints(temporary, "#gesture-target", 0, 60, 120, 0),
-    "right",
+    "left",
   );
   await waitFor(() => temporary.isClosed());
   assertEqual((await browser.pages()).length, pageCount - 1, "关闭标签页手势关闭当前标签页");
@@ -2447,6 +2514,7 @@ async function testMouseGestures(page, base127, browser, options) {
   console.log("E2E: 八方向轨迹");
   await patchSettings(options, {
     mouse: {
+      triggerButton: 0,
       directionMode: "8-way",
       bindings: [{
         id: "e2e-diagonal-top",
@@ -2461,7 +2529,7 @@ async function testMouseGestures(page, base127, browser, options) {
   await sleep(1000);
   await waitForController(options, page.url());
   await page.evaluate(() => scrollTo(0, 1200));
-  await sendDrag(page, await pointsFor(page, "#gesture-target", 110, 110), "right");
+  await sendDrag(page, await pointsFor(page, "#gesture-target", 110, 110), "left");
   await waitFor(() => page.evaluate(() => scrollY === 0));
   await resetSettings(options);
   await patchSettings(options, { general: { language: "en" } });
@@ -2860,6 +2928,8 @@ async function testWheelRockerAndFrames(page, base127, options) {
   await sendRocker(page, "left", "right");
   await waitFor(() => page.url().endsWith("/two.html"));
 
+  // Chrome for Testing 的 headless CDP 会提前派发右键菜单；切换为左键只隔离验证跨 frame 手势链路。
+  await patchSettings(options, { mouse: { triggerButton: 0 } });
   await page.goto(`${base127}/one.html`, { waitUntil: "load" });
   await page.goto(`${base127}/fixture.html`, { waitUntil: "load" });
   await sleep(1000);
@@ -2879,8 +2949,9 @@ async function testWheelRockerAndFrames(page, base127, options) {
     { x: frameBox.x + frameBox.width / 2, y: frameBox.y + frameBox.height / 2 },
     { x: frameBox.x + frameBox.width / 2 - 80, y: frameBox.y + frameBox.height / 2 },
     { x: frameBox.x + frameBox.width / 2 - 150, y: frameBox.y + frameBox.height / 2 },
-  ], "right");
+  ], "left");
   await waitFor(() => page.url().endsWith("/one.html"));
+  await patchSettings(options, { mouse: { triggerButton: 2 } });
 }
 
 async function testNativeSafety(page, base127, options) {
@@ -2890,17 +2961,45 @@ async function testNativeSafety(page, base127, options) {
 
   const heading = await centerFor(page, "#heading");
   await clearEvents(page);
-  await page.mouse.click(heading.x, heading.y, { button: "right" });
-  await sleep(300);
+  const pendingStates = await runPendingRightClickThenMove(
+    page,
+    heading,
+    () => isolatedControllerState(options, page.url()),
+  );
   const contextMenu = (await events(page)).find((event) => event.type === "contextmenu");
   assert(contextMenu, "普通右键应产生 contextmenu 事件");
   assert(!contextMenu.defaultPrevented, "未越过激活距离的普通右键应保留原生菜单");
+  assertEqual(
+    pendingStates.afterContextMenu?.gestureState,
+    null,
+    "原生菜单出现后应立即取消 PENDING 右键候选",
+  );
+  assertEqual(
+    pendingStates.afterMove?.gestureState,
+    null,
+    "原生菜单出现后的移动不应重新激活右键手势",
+  );
+  assertEqual(
+    pendingStates.afterMove?.gestureTimeoutScheduled,
+    false,
+    "原生菜单出现后应清理右键手势定时器",
+  );
+  assertEqual(
+    pendingStates.afterContextMenu?.gestureOverlayVisible,
+    false,
+    "原生菜单出现时不应显示 PENDING 手势轨迹",
+  );
 
+  await patchSettings(options, { mouse: { triggerButton: 0 } });
+  await page.reload({ waitUntil: "load" });
+  await sleep(1000);
+  await waitForController(options, page.url());
   await clearEvents(page);
   const activePoint = await centerFor(page, "#heading");
-  const activeEvents = await runActiveRightGestureWhileHeld(
+  const activeEvents = await runActiveGestureWhileHeld(
     page,
     activePoint,
+    "left",
     100,
     async () => {
       await dispatchContextMenu(page, activePoint);
@@ -2910,10 +3009,10 @@ async function testNativeSafety(page, base127, options) {
   const activeContextMenu = activeEvents.find((event) =>
     event.type === "contextmenu" && event.isTrusted === false
   );
-  assert(activeContextMenu, "已激活的右键轨迹应能接管后续 contextmenu 事件");
+  assert(activeContextMenu, "已激活的轨迹应能接管后续 contextmenu 事件");
   assert(
     activeContextMenu.defaultPrevented,
-    "已激活的右键轨迹不应弹出浏览器原生菜单",
+    "已激活的轨迹不应弹出浏览器原生菜单",
   );
 
   await options.evaluate(async () => {
@@ -2921,7 +3020,7 @@ async function testNativeSafety(page, base127, options) {
     const current = (await chrome.storage.sync.get(key))[key];
     await chrome.storage.sync.set({
       [key]: BrowserToolboxSettingsSchema.mergeSettings(current, {
-        mouse: { suppressContextMenuAfterActivation: false },
+        mouse: { triggerButton: 2, suppressContextMenuAfterActivation: false },
       }),
     });
   });
