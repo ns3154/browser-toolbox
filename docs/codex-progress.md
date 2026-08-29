@@ -2,6 +2,34 @@
 
 本文件按设计文档规定追加。每个条目必须只记录已经实际执行的命令和结果；未验证内容不得写成完成。
 
+## 2026-08-29 / 产物目录与开发包名称统一 / E-139
+
+- 授权边界：用户指出手工加载路径出现 Vimium 名称；本轮修正构建 staging 目录、归档文件名、开发包 manifest 和 E2E/手工验收路径，没有改变运行时权限、依赖、网络行为或产品功能，Linux 按用户要求暂不处理。
+- 根因：`make.js` 沿用上游 `dist/vimium` staging 目录，并在生成开发包后把 `Vimium Canary` manifest 留在该共享目录；因此直接加载该目录时会显示错误品牌。Chrome 商店归档本身使用的是本地化 `__MSG_extensionName__`，但手工测试目录没有恢复正式 manifest。
+- 修复内容：staging 目录改为 `dist/browser-toolbox`，旧目录在打包时清理；Chrome/Firefox/Canary 归档改用 `browser-toolbox-*` 文件名；开发包改名为 `Browser Toolbox Canary`，打包完成后恢复正式 Chrome manifest；E2E 默认路径和手工验收说明同步更新。当前 `dist/browser-toolbox` manifest 使用 `__MSG_extensionName__`，英文资源解析为 `Browser Toolbox`，旧 `dist/vimium` 不再存在。
+- 本轮实际命令与结果：
+
+~~~text
+./make.js package
+  退出码 0；生成 `dist/browser-toolbox` 和 Browser Toolbox 命名的 Chrome、Firefox、Canary 归档。
+PUPPETEER_EXECUTABLE_PATH="/tmp/browser-toolbox-cft-152.0.7977.64/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing" ./make.js test
+  退出码 0；单元 440/440、DOM 109/109。
+deno test -A tests/browser_toolbox/
+  退出码 0；shoulda 188/188。
+deno run -A scripts/audit_permissions.js
+deno run -A scripts/audit_network_usage.js
+deno run -A scripts/audit_technical_rename.js
+  均退出码 0；权限、网络和技术标识审计通过。
+deno fmt --check make.js scripts/e2e_browser_toolbox.js、git diff --check
+  均退出码 0。
+BROWSER_TOOLBOX_E2E_LOAD_UNPACKED_VIA_CDP=true PUPPETEER_EXECUTABLE_PATH="/tmp/browser-toolbox-cft-152.0.7977.64/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing" deno run --allow-read --allow-write --allow-env --allow-net --allow-run --allow-sys scripts/e2e_browser_toolbox.js
+  退出码 0；使用新的默认 `dist/browser-toolbox` 路径完成 Chrome for Testing 152.0.7977.64 隔离 E2E。
+~~~
+
+- 结果边界与风险：本轮证明的是构建产物路径、manifest 和隔离自动化加载路径；不等于原生 GUI、屏幕阅读器、平台矩阵或真实商店审核。Linux 按用户要求保留未处理。
+- 当前状态：工作区变更待提交和推送；`AGENTS.md` 仍未被跟踪。
+- 对应提交：待提交。
+
 ## 2026-08-29 / 右键轻点保留原生菜单 / E-138
 
 - 授权边界：用户要求修复右键手势轻点不显示原生菜单的问题；本轮只调整右键手势的激活时机、菜单保护、相关测试和中英文说明，Linux 按用户要求暂不处理，没有新增权限、依赖、网络行为或商业化路径。

@@ -30,7 +30,7 @@
 
 在每个环境中：
 
-1. 从当前 checkout 执行 `./make.js package`，在扩展管理页开启开发者模式并加载当前 `dist/vimium`。
+1. 从当前 checkout 执行 `./make.js package`，在扩展管理页开启开发者模式并加载当前 `dist/browser-toolbox`。
 2. 核对扩展版本、扩展 ID、扩展已启用，以及权限说明中 `<all_urls>` 的披露与实际提示一致。
 3. 先打开 `pages/mouse_options.html` 对应的设置页，确认六个一级分类和二级设置可以展开、折叠、搜索
    和定位；不要直接修改日常扩展配置。

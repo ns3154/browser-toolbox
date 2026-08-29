@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run --allow-read --allow-write --allow-env --allow-net --allow-run --allow-sys
 // Usage: ./make.js command. Use -l to list commands.
-// This is a set of tasks for building and testing Vimium in development.
+// This is a set of tasks for building and testing Browser Toolbox in development.
 import * as fs from "@std/fs";
 import * as path from "@std/path";
 import { abort, desc, run, task } from "https://deno.land/x/drake@v1.5.1/mod.ts";
@@ -136,26 +136,27 @@ async function buildStorePackage() {
 
   const chromeManifest = await parseManifestFile();
   // 保留源文件时间，避免同一 checkout 的重复打包因 ZIP 条目时间变化而产生不同哈希。
-  const rsyncOptions = ["-rt", ".", "dist/vimium"].concat(
+  const distDirectory = "dist/browser-toolbox";
+  const rsyncOptions = ["-rt", ".", distDirectory].concat(
     ...excludeList.map((item) => ["--exclude", item]),
   );
   const version = chromeManifest["version"];
   const writeDistManifest = async (manifest) => {
     const sourceStat = await Deno.stat("manifest.json");
-    const distManifest = "dist/vimium/manifest.json";
+    const distManifest = `${distDirectory}/manifest.json`;
     await Deno.writeTextFile(distManifest, JSON.stringify(manifest, null, 2));
     await Deno.utime(distManifest, sourceStat.atime, sourceStat.mtime);
   };
-  // cd into "dist/vimium" before building the zip, so that the files in the zip don't each have the
-  // path prefix "dist/vimium".
+  // cd into the product directory before building the zip, so the archive has no staging path prefix.
   // --filesync ensures that files in the archive which are no longer on disk are deleted. It's
   // equivalent to removing the zip file before the build.
-  const zipCommand = "cd dist/vimium && zip -r -X --filesync ";
+  const zipCommand = `cd ${distDirectory} && zip -r -X --filesync `;
 
-  await shell("rm", ["-rf", "dist/vimium"]);
+  // 清理旧的上游临时目录，避免用户误加载旧的 Vimium Canary 产物。
+  await shell("rm", ["-rf", "dist/vimium", distDirectory]);
   await shell("mkdir", [
     "-p",
-    "dist/vimium",
+    distDirectory,
     "dist/chrome-canary",
     "dist/chrome-store",
     "dist/firefox",
@@ -168,25 +169,28 @@ async function buildStorePackage() {
   // Exclude PNG icons from the Firefox build, because we use the SVG directly.
   await shell("bash", [
     "-c",
-    `${zipCommand} ../firefox/vimium-firefox-${version}.zip . -x icons/*.png`,
+    `${zipCommand} ../firefox/browser-toolbox-firefox-${version}.zip . -x icons/*.png`,
   ]);
 
   // Build the Chrome Store package.
   await writeDistManifest(chromeManifest);
   await shell("bash", [
     "-c",
-    `${zipCommand} ../chrome-store/vimium-chrome-store-${version}.zip .`,
+    `${zipCommand} ../chrome-store/browser-toolbox-chrome-store-${version}.zip .`,
   ]);
 
-  // Build the Chrome Store dev package.
+  // 构建 Chrome Store 开发包，并使用产品名称而不是上游 Canary 名称。
   await writeDistManifest(Object.assign({}, chromeManifest, {
-    name: "Vimium Canary",
-    description: "This is the development branch of Vimium (it is beta software).",
+    name: "Browser Toolbox Canary",
+    description: "Development build of Browser Toolbox.",
   }));
   await shell("bash", [
     "-c",
-    `${zipCommand} ../chrome-canary/vimium-canary-${version}.zip .`,
+    `${zipCommand} ../chrome-canary/browser-toolbox-canary-${version}.zip .`,
   ]);
+
+  // Canary 包共用 staging 目录；打包结束后恢复正式 manifest，供手工加载和 E2E 使用。
+  await writeDistManifest(chromeManifest);
 }
 
 async function runUnitTests() {

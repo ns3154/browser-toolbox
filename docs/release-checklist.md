@@ -81,7 +81,7 @@
 - [x] E-082 后当前未发布本地产物连续两次运行 `deno run -A scripts/build_release.js --package` 的四个归档 SHA-256 一致：BrowserToolbox `e2f7f3de2d499898ec2936a46fc5657977effa0949f256d299d13496cee26c2b`、Chrome `ea3be17632e0647568874b49630f4894c5d04030275f25c870452bd09103ffa1`、Firefox `5db567318b04aa00353167eb7b98199ad574107efff321543a6f3249c496d9b9`、Chrome Canary `9c4a1fe878168151dd24bc45fb9d87a9c81f10e3073018dd1f196061d884daac`；这不改变未提交工作区和未完成人工发布门禁。
 - [x] 当前工作区归档和发布包检查已重复运行并保持可复现；这不改变“未固定提交、暂不发布”的状态。
 - [x] 发布包不含测试、调试日志、个人路径、测试密钥或本机凭证；`make.js` 已排除 `docs/` 和
-      `scripts/`，并通过 `unzip -l dist/chrome-store/vimium-chrome-store-0.1.0.zip` 的禁入路径审计。
+      `scripts/`，并通过 `unzip -l dist/chrome-store/browser-toolbox-chrome-store-0.1.0.zip` 的禁入路径审计。
 - [x] E-094 扩展页面显式固定为 `script-src 'self'; object-src 'self'`，权限审计现在强制校验完整 CSP；当前 checkout 单元/DOM `403/403`、`109/109`，shoulda `155/155`，权限/网络审计、打包和 macOS Chrome Stable 隔离 E2E 均通过，发布归档连续构建结果一致。该项只记录自动安全门禁，不替代人工平台、屏幕阅读器或发布签名验收。
 - [x] E-096 Runtime 消息和手势 Port 入口现在严格校验 `sender.id === chrome.runtime.id`；当前 checkout 单元/DOM `403/403`、`109/109`，shoulda `155/155`，权限/网络审计、打包和 macOS Chrome Stable 隔离 E2E 均通过，发布归档连续构建结果一致。该项只记录自动安全门禁，不替代人工平台、屏幕阅读器或生产升级验收。
 - [x] E-098 设置导入的绑定 `pattern` 和统一命令调用的 `context/options` 非法输入现在返回拒绝结果而不是让校验器抛错；当前 checkout 单元/DOM `405/405`、`109/109`，shoulda `157/157`，权限/网络审计、打包、macOS Chrome Stable `Extensions.loadUnpacked` 隔离 E2E 和连续两次发布检查均通过，五个归档 SHA-256 一致。该项只记录自动安全门禁，不替代人工平台、屏幕阅读器或生产升级验收。
@@ -121,4 +121,5 @@
 - [x] E-131 Computer Use 恢复后在当前 Mac Chrome 的可见扩展页完成实时 UI 核对：多级设置导航、分区搜索、站点规则 Glob/正则选项、匹配解释、备份入口和导入文件选择器均可见；当前窗口不是临时 profile，未选择或导入文件，也未保存配置。该项是代理实时 UI 证据，不构成人工矩阵、屏幕阅读器或真实旧 CRX 导入更新通过，项目仍暂不发布。
 - [x] E-130 用户要求再次调用 Computer Use；`sky.get_app_state({ app: "com.google.Chrome" })` 再次返回客户端/服务端版本不匹配，未获得界面树、截图或点击能力。该项不构成人工通过，设置页及平台/辅助技术/真实旧 CRX 人工门禁仍未完成，项目仍暂不发布。
 - [x] E-138 修复右键轻点误拦截原生菜单：PENDING 阶段不再激活菜单保护，只有越过激活阈值的轨迹才会按配置抑制后续菜单事件；当前 checkout 单元/DOM `440/440`、`109/109`，shoulda `188/188`，权限/网络/技术标识审计、打包和 Chrome for Testing `152.0.7977.64` 隔离 E2E 均通过。Linux 本轮按用户要求未处理；该项仍不替代原生 GUI 菜单、平台/辅助技术/真实旧 CRX 更新和人工矩阵验收。
+- [x] E-139 修正发布 staging 目录和开发包品牌：手工加载目录统一为 `dist/browser-toolbox`，打包结束后该目录恢复正式 Browser Toolbox manifest，Chrome/Firefox/Canary 归档使用 Browser Toolbox 文件名；当前 checkout 单元/DOM `440/440`、`109/109`，shoulda `188/188`，权限/网络/技术标识审计、格式/差异检查和 Chrome for Testing `152.0.7977.64` 隔离 E2E 均通过。Linux 本轮按用户要求未处理；该项仍不替代平台/辅助技术和人工矩阵验收。
 - [ ] Chrome、Edge、Windows、macOS、Linux 的手工矩阵已记录实际结果。

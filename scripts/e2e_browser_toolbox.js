@@ -17,7 +17,7 @@ import "../lib/browser_toolbox/module_registry.js";
 const projectRoot = decodeURIComponent(new URL("../", import.meta.url).pathname).replace(/\/$/, "");
 // 远程 CDP 浏览器无法读取宿主机路径；测试环境可提供来宾内的归档展开目录。
 const extensionPath = Deno.env.get("BROWSER_TOOLBOX_E2E_EXTENSION_PATH") ||
-  `${projectRoot}/dist/vimium`;
+  `${projectRoot}/dist/browser-toolbox`;
 const executablePath = Deno.env.get("PUPPETEER_EXECUTABLE_PATH") ||
   "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const headless = Deno.env.get("BROWSER_TOOLBOX_E2E_HEADLESS") === "false" ? false : "new";
