@@ -27,7 +27,7 @@ BROWSER_TOOLBOX_E2E_LOAD_UNPACKED_VIA_CDP=true PUPPETEER_EXECUTABLE_PATH="/tmp/b
 ~~~
 
 - 结果边界与风险：本轮是 Chrome for Testing 隔离自动化，不等于原生 GUI 菜单的人工验收。Chromium 可能在首次 `pointermove` 前派发 `contextmenu`；PENDING 阶段必须优先保留轻点菜单，因此若浏览器已经在激活前放行菜单，扩展无法事后撤回。Chrome、Edge、Windows、macOS、Linux 手工矩阵、屏幕阅读器和真实旧 CRX 更新仍未完成。
-- 当前状态：修复代码和相关文档已提交，工作区进度记录将在本条目后单独提交；没有推送或发布。
+- 当前状态：修复代码和相关文档已提交，随后按用户此前授权推送到远程 `origin/main`；没有触发商店发布。
 - 对应提交：`a7bf780a`（`fix: preserve native menu for light right clicks`）。
 
 ## 2026-08-29 / macOS 操作与 Windows 环境核对 / E-137
