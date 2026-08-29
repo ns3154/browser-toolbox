@@ -2,6 +2,24 @@
 
 本文件按设计文档规定追加。每个条目必须只记录已经实际执行的命令和结果；未验证内容不得写成完成。
 
+## 2026-08-30 / 鼠标手势与双语 README 功能分支推送 / E-149
+
+- 提交范围：按精确文件清单暂存 32 个文件，包含右键菜单状态机、方向 HUD、八方向与箭头配置、网页 HUD
+  语言同步、英文/中文 locale、命令适配、设置页、测试、验收文档、默认英文 `README.md` 和新增
+  `README.zh-CN.md`；没有使用 `git add .`、`git add -A` 或通配暂存。
+- 本地提交：功能提交为 `e46a586a4bd5a6f882dd24c08efcec75ea0682c8`，提交信息为
+  `feat: improve mouse gestures and localization`；提交前暂存差异通过
+  `git diff --cached --check`，未发现凭证格式。
+- 远端结果：`git push -u origin feat/mouse-gestures-i18n` 退出码 0，远端
+  `refs/heads/feat/mouse-gestures-i18n` 已通过 `git ls-remote` 核对为同一 SHA。远端默认分支 `main`
+  未直接修改；本轮没有创建 PR、标签、Release 或商店发布。
+- CI 状态：`gh run list --repo ns3154/browser-toolbox --branch feat/mouse-gestures-i18n`
+  返回空列表，仓库当前没有 `.github/workflows` 目录，因此不能声称有远端 CI 通过；提交前本地门禁和
+  CFT E2E 结果见 E-148。
+- 本机边界：根目录 `.DS_Store` 仍为唯一未跟踪文件，没有提交、删除或改写；headed CFT 独立 profile
+  与测试页面继续保留供用户复测。
+- 对应提交：`e46a586a4bd5a6f882dd24c08efcec75ea0682c8`（功能提交）；本条为后续文档记录。
+
 ## 2026-08-30 / README 双语入口与提交前发布门禁 / E-148
 
 - 授权与范围：用户明确授权提交当前鼠标手势、HUD、八方向、箭头配置和国际化修改并推送远端，同时要求
