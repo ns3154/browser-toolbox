@@ -2,6 +2,34 @@
 
 本文件按设计文档规定追加。每个条目必须只记录已经实际执行的命令和结果；未验证内容不得写成完成。
 
+## 2026-08-29 / 右键轻点保留原生菜单 / E-138
+
+- 授权边界：用户要求修复右键手势轻点不显示原生菜单的问题；本轮只调整右键手势的激活时机、菜单保护、相关测试和中英文说明，Linux 按用户要求暂不处理，没有新增权限、依赖、网络行为或商业化路径。
+- 根因：右键 `pointerdown` 时提前激活 `ContextMenuGuard`，并且 `pointerup` 对未激活的 `PENDING` 会话也留下延迟菜单保护，导致普通右键轻点被扩展捕获。
+- 修复内容：菜单保护改为只在轨迹越过激活阈值后激活；只有已完成的 ACTIVE 轨迹才保留 `pointerup` 到延迟 `contextmenu` 的一次性保护；PENDING 轻点在结束时清理保护状态。设置项、帮助页、入门页、设计文档和手工验收清单均改为明确说明“轻点/阈值内保留原生菜单，激活后按开关抑制”。E2E 同时覆盖普通右键未被阻止和激活轨迹对后续菜单事件的拦截。
+- 本轮实际命令与结果：
+
+~~~text
+./make.js package
+  退出码 0；Chrome、Firefox、Canary 归档重新生成。
+PUPPETEER_EXECUTABLE_PATH="/tmp/browser-toolbox-cft-152.0.7977.64/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing" ./make.js test
+  退出码 0；单元 440/440、DOM 109/109。
+deno test -A tests/browser_toolbox/
+  退出码 0；shoulda 188/188。
+deno run -A scripts/audit_permissions.js
+deno run -A scripts/audit_network_usage.js
+deno run -A scripts/audit_technical_rename.js
+  均退出码 0；权限、网络和技术标识审计通过。
+deno fmt --check（本轮涉及的 4 个 JavaScript 文件）、jq empty 两个本地化文件、git diff --check
+  均退出码 0。
+BROWSER_TOOLBOX_E2E_LOAD_UNPACKED_VIA_CDP=true PUPPETEER_EXECUTABLE_PATH="/tmp/browser-toolbox-cft-152.0.7977.64/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing" deno run --allow-read --allow-write --allow-env --allow-net --allow-run --allow-sys scripts/e2e_browser_toolbox.js
+  退出码 0；Chrome for Testing 152.0.7977.64 隔离 E2E 的右键菜单策略、核心手势、设置迁移、跨 frame、fixtures 和 Service Worker 重启均通过。
+~~~
+
+- 结果边界与风险：本轮是 Chrome for Testing 隔离自动化，不等于原生 GUI 菜单的人工验收。Chromium 可能在首次 `pointermove` 前派发 `contextmenu`；PENDING 阶段必须优先保留轻点菜单，因此若浏览器已经在激活前放行菜单，扩展无法事后撤回。Chrome、Edge、Windows、macOS、Linux 手工矩阵、屏幕阅读器和真实旧 CRX 更新仍未完成。
+- 当前状态：修复代码和相关文档已提交，工作区进度记录将在本条目后单独提交；没有推送或发布。
+- 对应提交：`a7bf780a`（`fix: preserve native menu for light right clicks`）。
+
 ## 2026-08-29 / macOS 操作与 Windows 环境核对 / E-137
 
 - 授权边界：按用户要求继续执行 macOS Chrome 和 Windows 隔离环境操作，Linux 本轮暂不处理；只使用独立 Chrome for Testing 临时 profile 和现有 `OpenKeyMouse-Windows-Isolated` VM 探测，没有触碰日常浏览器 profile、登录态、Cookie、Token 或个人浏览数据，没有提交、推送或发布。
