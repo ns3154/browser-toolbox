@@ -1247,8 +1247,8 @@ async function testActionControls(browser, id, fixture, errors) {
     );
     const initial = await action.evaluate(() => ({
       wheel: document.querySelector("#browser-toolbox-toggle-wheel").checked,
-      label: document.querySelector("#browser-toolbox-toggle-wheel").parentElement.textContent
-        .trim(),
+      label: document.querySelector("#browser-toolbox-toggle-wheel").labels?.[0]?.textContent.trim() ||
+        document.querySelector("#browser-toolbox-toggle-wheel").getAttribute("aria-label") || "",
       help: document.querySelector("#browser-toolbox-open-help")?.textContent.trim() || "",
       title: document.title,
       lang: document.documentElement.lang,
@@ -1619,19 +1619,19 @@ async function testOptionsAccessibility(options) {
     };
   });
   assert(
-    semantics.tablists === 6 && semantics.verticalTablists,
+    semantics.tablists === 3 && semantics.verticalTablists,
     `设置页二级导航应声明垂直标签组：${JSON.stringify(semantics)}`,
   );
   assert(
-    semantics.categories === 6 && semantics.validCategories,
+    semantics.categories === 3 && semantics.validCategories,
     `设置页一级导航应具备展开语义：${JSON.stringify(semantics)}`,
   );
   assert(
-    semantics.tabs === 11 && semantics.validTabs,
+    semantics.tabs === 15 && semantics.validTabs,
     `设置页导航按钮应具备完整 tab 语义：${JSON.stringify(semantics)}`,
   );
   assert(
-    semantics.panels === 11 && semantics.validPanels,
+    semantics.panels === 15 && semantics.validPanels,
     `设置页面板应具备完整 tabpanel 语义：${JSON.stringify(semantics)}`,
   );
   assertEqual(
@@ -1668,7 +1668,7 @@ async function testOptionsAccessibility(options) {
   }));
   assertEqual(
     searchState.visibleSections.join("|"),
-    "siteRules|privacy",
+    "siteRules",
     `设置分区搜索应只保留匹配的站点分区：${JSON.stringify(searchState)}`,
   );
   assert(searchState.status.length > 0, "设置分区搜索应提供可访问结果状态");
@@ -1685,7 +1685,7 @@ async function testOptionsAccessibility(options) {
     options.$eval(
       ".browser-toolbox-nav-item:not([hidden])",
       (element) =>
-        [...document.querySelectorAll(".browser-toolbox-nav-item:not([hidden])")].length === 11,
+        [...document.querySelectorAll(".browser-toolbox-nav-item:not([hidden])")].length === 15,
     )
   );
   await options.focus("#settings-section-search");
@@ -1713,7 +1713,7 @@ async function testOptionsAccessibility(options) {
   await waitFor(() =>
     options.$$eval(
       ".browser-toolbox-nav-item:not([hidden])",
-      (elements) => elements.length === 11,
+      (elements) => elements.length === 15,
     )
   );
 
@@ -1721,7 +1721,7 @@ async function testOptionsAccessibility(options) {
   await options.keyboard.press("End");
   await waitFor(() =>
     options.$eval(
-      ".browser-toolbox-nav-item[data-section='about']",
+      ".browser-toolbox-nav-item[data-section='backupAbout']",
       (element) => element.getAttribute("aria-selected") === "true",
     )
   );
@@ -1732,8 +1732,6 @@ async function testOptionsAccessibility(options) {
       (element) => element.getAttribute("aria-selected") === "true",
     )
   );
-  await options.keyboard.press("ArrowDown");
-  await options.keyboard.press("ArrowDown");
   await waitFor(() =>
     options.$eval(
       "button[data-section='mouse']",
@@ -1742,17 +1740,31 @@ async function testOptionsAccessibility(options) {
   );
   assert(
     await options.$eval(
-      "[data-nav-category='mouseDrag']",
+      "[data-nav-category='browsingEnhancement']",
       (element) => element.getAttribute("aria-expanded") === "true",
     ),
     "切换二级导航时应自动展开所属一级分类",
   );
   assert(
     await options.$eval(
-      "#browser-toolbox-subnav-navigationKeyboard",
-      (element) => element.hidden,
+      "#browser-toolbox-subnav-system",
+      (element) => !element.hidden,
     ),
-    "切换二级导航时应收起其他一级分类",
+    "设置页应同时展示三个稳定的一级分类",
+  );
+  await options.keyboard.press("ArrowDown");
+  await waitFor(() =>
+    options.$eval(
+      "button[data-section='superDrag']",
+      (element) => element.getAttribute("aria-selected") === "true",
+    )
+  );
+  await options.keyboard.press("ArrowUp");
+  await waitFor(() =>
+    options.$eval(
+      "button[data-section='mouse']",
+      (element) => element.getAttribute("aria-selected") === "true",
+    )
   );
   await options.$eval("button[data-section='keyboard']", (element) => element.click());
   assert(
@@ -1762,7 +1774,7 @@ async function testOptionsAccessibility(options) {
     ),
     "键盘分区应提供可编辑的全局启用开关",
   );
-  await options.$eval("[data-nav-category='sitePrivacy']", (element) => element.click());
+  await options.$eval("button[data-section='siteRules']", (element) => element.click());
   await waitFor(() =>
     options.$eval(
       "button[data-section='siteRules']",
@@ -1771,18 +1783,19 @@ async function testOptionsAccessibility(options) {
   );
   assert(
     await options.$eval(
-      "[data-nav-category='sitePrivacy']",
+      "[data-nav-category='system']",
       (element) => element.getAttribute("aria-expanded") === "true",
     ),
     "点击一级分类时应展开该分类并选中第一个二级页面",
   );
-  await options.$eval("[data-nav-category='mouseDrag']", (element) => element.click());
+  await options.$eval("button[data-section='mouse']", (element) => element.click());
   await waitFor(() =>
     options.$eval(
       "button[data-section='mouse']",
       (element) => element.getAttribute("aria-selected") === "true",
     )
   );
+  await options.click("#mouse-advanced-settings summary");
 
   await options.focus("#gesture-pattern-input");
   await options.keyboard.type("L>R");
@@ -2061,7 +2074,7 @@ async function testOptionsAndBackup(
   } else {
     await client.send("Page.setDownloadBehavior", { behavior: "allow", downloadPath: tempDir });
   }
-  await options.$eval("button[data-section='backup']", (element) => element.click());
+  await options.$eval("button[data-section='backupAbout']", (element) => element.click());
   await options.$eval("#export-settings", (element) => element.click());
   console.log("E2E: 等待设置导出");
   const exportPath = `${tempDir}/browser-toolbox-settings.json`;
@@ -2104,7 +2117,7 @@ async function testOptionsAndBackup(
   console.log("E2E: 导入有效设置");
   await options.evaluate(() => globalThis.confirm = () => true);
   await options.$eval("#save-status", (element) => element.textContent = "");
-  await options.$eval("button[data-section='backup']", (element) => element.click());
+  await options.$eval("button[data-section='backupAbout']", (element) => element.click());
   const cancelledImportPreview = await importSettingsFile(options, exportPath, {
     confirm: false,
     remotePath: remoteExportPath,
@@ -2226,7 +2239,7 @@ async function testOptionsAndBackup(
   await importSettingsFile(options, legacyExportPath);
   await waitFor(async () => {
     const migrated = await readSettings(options);
-    return migrated?.schemaVersion === 4 &&
+    return migrated?.schemaVersion === 5 &&
       migrated.mouse?.bindings?.[0]?.pattern?.join(",") === "R";
   });
   const importedLegacy = await readSettings(options);
@@ -2268,7 +2281,7 @@ async function testOptionsAndBackup(
     options.evaluate(async () => {
       const settings = (await chrome.storage.sync.get("browserToolboxSettings"))
         .browserToolboxSettings;
-      return settings?.schemaVersion === 4 &&
+      return settings?.schemaVersion === 5 &&
         settings.mouse?.bindings?.[0]?.pattern?.join(",") === "L" &&
         settings.mouse?.bindings?.[0]?.commandName === "BrowserToolbox.newWindow";
     })
@@ -2483,7 +2496,7 @@ async function testOptionsAndBackup(
   await waitForOptionsReady(options);
   await waitFor(() =>
     options.evaluate(
-      (key) => chrome.storage.sync.get(key).then((items) => items[key]?.schemaVersion === 4),
+      (key) => chrome.storage.sync.get(key).then((items) => items[key]?.schemaVersion === 5),
       settingsKey,
     )
   );
@@ -2499,7 +2512,7 @@ async function testOptionsAndBackup(
   assertEqual(migrationBackup.schemaVersion, 0, "迁移前配置应保存在本地备份");
 
   console.log("E2E: 本地 PNG 指针");
-  await options.$eval("button[data-section='mouse']", (element) => element.click());
+  await options.$eval("button[data-section='appearance']", (element) => element.click());
   await uploadFileForBrowser(options, "#cursor-file", `${projectRoot}/icons/icon16.png`);
   await waitFor(() => options.$eval("#cursor-preview", (element) => !element.hidden));
   await saveOptions(options);
@@ -2519,7 +2532,7 @@ async function testOptionsAndBackup(
   );
 
   console.log("E2E: 恢复浏览器工具箱默认值");
-  await options.$eval("button[data-section='backup']", (element) => element.click());
+  await options.$eval("button[data-section='backupAbout']", (element) => element.click());
   await options.evaluate(() => globalThis.confirm = () => true);
   await options.$eval("#restore-defaults", (element) => element.click());
   await waitFor(() =>
@@ -3584,6 +3597,7 @@ async function testSiteRule(page, options, base127) {
         wheel: false,
         rocker: false,
         cursor: false,
+        documentFormatter: false,
       },
     }],
   });

@@ -36,7 +36,8 @@
     "scripting",
     "favicon", // The favicon permission is not yet supported by Firefox.
     "webNavigation",
-    "search"
+    "search",
+    "contextMenus"
   ],
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
@@ -49,6 +50,11 @@
       "js": [
         "lib/i18n.js",
         "lib/browser_toolbox/value_utils.js",
+        "lib/browser_toolbox/tools/tool_contract.js",
+        "lib/browser_toolbox/tools/tool_registry.js",
+        "lib/browser_toolbox/tools/tool_registry_validator.js",
+        "lib/browser_toolbox/tools/document_formatters.js",
+        "content_scripts/document_formatter/document_formatter.js",
         "lib/browser_toolbox/command_invocation.js",
         "lib/browser_toolbox/message_protocol.js",
         "lib/browser_toolbox/settings_schema.js",
@@ -98,7 +104,8 @@
         "content_scripts/mouse/mouse_controller.js"
       ],
       "css": [
-        "content_scripts/vimium.css"
+        "content_scripts/vimium.css",
+        "content_scripts/document_formatter/document_formatter.css"
       ],
       "run_at": "document_start",
       "all_frames": true,

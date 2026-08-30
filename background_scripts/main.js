@@ -3,6 +3,9 @@ import "../lib/settings.js";
 import "../lib/url_utils.js";
 import "../lib/i18n.js";
 import "../lib/browser_toolbox/value_utils.js";
+import "../lib/browser_toolbox/tools/tool_contract.js";
+import "../lib/browser_toolbox/tools/tool_registry.js";
+import "../lib/browser_toolbox/tools/tool_registry_validator.js";
 import "../lib/browser_toolbox/command_invocation.js";
 import "../lib/browser_toolbox/message_protocol.js";
 import "../lib/browser_toolbox/settings_schema.js";
@@ -18,6 +21,9 @@ import "./browser_toolbox/settings_storage.js";
 import "../lib/browser_toolbox/settings_policy.js";
 import "./browser_toolbox/vimium_settings_adapter.js";
 import "./browser_toolbox/settings_repository.js";
+import "./browser_toolbox/tool_input_token_store.js";
+import "./browser_toolbox/tool_launcher.js";
+import "./browser_toolbox/tool_context_menu_manager.js";
 import "./browser_toolbox/command_registry_adapter.js";
 import "./browser_toolbox/browser_command_adapter.js";
 import "./browser_toolbox/command_dispatcher.js";
@@ -447,6 +453,11 @@ const BackgroundCommands = {
 
 const browserToolboxSettingsRepository = globalThis.BrowserToolboxSettingsRepositoryInstance;
 const browserToolboxFrameCoordinator = globalThis.BrowserToolboxGestureFrameCoordinatorInstance;
+const browserToolboxToolInputTokenStore = globalThis.BrowserToolboxToolInputTokenStoreInstance;
+const browserToolboxToolContextMenuManager = new globalThis.BrowserToolboxToolContextMenuManager
+  .ToolContextMenuManager({
+  settingsRepository: browserToolboxSettingsRepository,
+});
 
 // 设置页或同步设备修改配置后，只广播失效通知；每个 frame 再按自身生命周期读取一次有效快照。
 // 这样消息不携带完整配置，也不会把不同标签页的站点规则结果混用。
@@ -476,6 +487,7 @@ async function broadcastBrowserToolboxSettingsChange() {
 
 browserToolboxSettingsRepository.addEventListener(() => {
   broadcastBrowserToolboxSettingsChange();
+  browserToolboxToolContextMenuManager.reconcile().catch(() => {});
 });
 
 const browserToolboxBrowserAdapter = new globalThis.BrowserToolboxBrowserCommandAdapter(
@@ -547,6 +559,65 @@ function selectTab(direction, { count, tab }) {
   });
 }
 
+// Chrome 的内置 XML 查看器不会执行 manifest.content_scripts；这里只为顶层 XML 页面补一条
+// 静态文件注入路径。先读取浏览器已经判定的 MIME 类型，不读取或上传页面内容，也不触碰 iframe。
+const browserToolboxRawDocumentFormatterScripts = [
+  "lib/i18n.js",
+  "lib/browser_toolbox/value_utils.js",
+  "lib/browser_toolbox/tools/tool_contract.js",
+  "lib/browser_toolbox/tools/tool_registry.js",
+  "lib/browser_toolbox/tools/tool_registry_validator.js",
+  "lib/browser_toolbox/tools/document_formatters.js",
+  "content_scripts/document_formatter/document_formatter.js",
+  "lib/browser_toolbox/command_invocation.js",
+  "lib/browser_toolbox/message_protocol.js",
+  "lib/browser_toolbox/settings_schema.js",
+  "lib/browser_toolbox/regex_safety.js",
+  "lib/browser_toolbox/module_registry.js",
+  "lib/browser_toolbox/settings_validator.js",
+  "lib/browser_toolbox/site_rule_matcher.js",
+  "lib/browser_toolbox/settings_policy.js",
+  "background_scripts/browser_toolbox/settings_migrations.js",
+  "background_scripts/browser_toolbox/settings_storage.js",
+  "background_scripts/browser_toolbox/vimium_settings_adapter.js",
+  "background_scripts/browser_toolbox/settings_repository.js",
+  "lib/browser_toolbox/settings_runtime_client.js",
+];
+
+async function injectRawDocumentFormatterIntoXml(tabId, frameId) {
+  if (frameId !== 0 || !chrome.scripting?.executeScript) return;
+  try {
+    const [pageInfo] = await chrome.scripting.executeScript({
+      target: { tabId, frameIds: [0] },
+      func: () => ({
+        contentType: document.contentType,
+        formatterLoaded: Boolean(globalThis.BrowserToolboxDocumentFormatterController),
+      }),
+    });
+    const contentType = String(pageInfo?.result?.contentType || "").toLowerCase();
+    if (!/^application\/(?:[^;]+\+)?xml$/.test(contentType)) return;
+    if (!pageInfo?.result?.formatterLoaded) {
+      await chrome.scripting.executeScript({
+        target: { tabId, frameIds: [0] },
+        files: browserToolboxRawDocumentFormatterScripts,
+      });
+      await chrome.scripting.insertCSS({
+        target: { tabId, frameIds: [0] },
+        files: ["content_scripts/document_formatter/document_formatter.css"],
+      });
+    }
+    await chrome.scripting.executeScript({
+      target: { tabId, frameIds: [0] },
+      func: async () => {
+        if (!document.body || document.querySelector(".browser-toolbox-document-toolbar")) return {};
+        await globalThis.BrowserToolboxDocumentFormatterController?.init?.();
+      },
+    });
+  } catch (_) {
+    // 浏览器受限页、页面在导航中卸载或用户撤回权限时保持原页面，不影响 Vimium 主流程。
+  }
+}
+
 chrome.webNavigation.onCommitted.addListener(async ({ tabId, frameId }) => {
   // Vimium can't run on all tabs (e.g. chrome:// URLs). insertCSS will throw an error on such tabs,
   // which is expected, and noise. Swallow that error.
@@ -559,6 +630,12 @@ chrome.webNavigation.onCommitted.addListener(async ({ tabId, frameId }) => {
       frameIds: [frameId],
     },
   }).catch(swallowError);
+  await injectRawDocumentFormatterIntoXml(tabId, frameId);
+});
+
+// XML 查看器的 body 可能在 onCommitted 之后才完成；完成导航时再调用一次只读初始化。
+chrome.webNavigation.onCompleted?.addListener?.(({ tabId, frameId }) => {
+  injectRawDocumentFormatterIntoXml(tabId, frameId).catch(() => {});
 });
 
 // Returns all frame IDs for the given tab. Note that in Chrome, this will omit frame IDs for frames
@@ -748,6 +825,19 @@ const sendRequestHandlers = {
       );
     }
     return browserToolboxDispatcher.dispatch(request.invocation, sender);
+  },
+  async "browserToolbox.consumeToolInput"(request) {
+    if (
+      typeof request?.token !== "string" || typeof request?.toolId !== "string" ||
+      request.token.length > 128 || request.toolId.length > 64 ||
+      (request.source != null &&
+        !globalThis.BrowserToolboxToolContract.SOURCES.includes(request.source))
+    ) return null;
+    return browserToolboxToolInputTokenStore.consume(
+      request.token,
+      request.toolId,
+      request.source ?? null,
+    );
   },
   runBackgroundCommand(request, sender) {
     return BackgroundCommands[request.registryEntry.command](request, sender);
@@ -1075,7 +1165,15 @@ async function injectContentScriptsAndCSSIntoExistingTabs() {
 async function initializeExtension() {
   await Settings.onLoaded();
   await browserToolboxSettingsRepository.ensureLoaded(globalThis.BrowserToolboxCommandRegistry);
+  try {
+    await browserToolboxToolInputTokenStore.cleanup();
+  } catch (_) {
+    // session storage 暂时不可用时不阻断既有 Vimium 能力；后续启动会再次清理。
+  }
   await Commands.init();
+  await browserToolboxToolContextMenuManager.reconcile(
+    browserToolboxSettingsRepository.getSettings(),
+  );
 }
 
 // The browser may have tabs already open. We inject the content scripts and Vimium's CSS

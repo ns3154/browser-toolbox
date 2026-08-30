@@ -5,8 +5,27 @@
  * @property {function(string, Element): void} [onActivate] 激活回调。
  * @property {Object} [sections] 分区注册表。
  * @property {Document} [documentRef] DOM 文档。
+ * @property {boolean} [collapseSiblings=false] 激活页面时是否收起其他分组。
  */
 (function () {
+  const SECTION_ICON_NAMES = Object.freeze({
+    general: "sliders",
+    keyboard: "keyboard",
+    mouse: "mouse",
+    superDrag: "drag",
+    wheel: "wheel",
+    search: "search",
+    toolsOverview: "grid",
+    jsonFormatter: "braces",
+    textDiff: "diff",
+    codecTransform: "code",
+    timeAndId: "clock",
+    appearance: "mouse",
+    siteRules: "shield",
+    privacy: "lock",
+    backupAbout: "info",
+  });
+
   class SettingsNavigation {
     /**
      * 创建设置页层级导航。
@@ -15,12 +34,18 @@
      */
     constructor(
       root,
-      { onActivate = () => {}, sections = null, documentRef = globalThis.document } = {},
+      {
+        onActivate = () => {},
+        sections = null,
+        documentRef = globalThis.document,
+        collapseSiblings = false,
+      } = {},
     ) {
       this.root = root;
       this.document = documentRef;
       this.sections = sections;
       this.onActivate = onActivate;
+      this.collapseSiblings = collapseSiblings;
       this.activeButton = null;
       this.searchQuery = "";
       if (this.sections?.SECTIONS?.length || this.sections?.sections?.length) this.render();
@@ -80,7 +105,20 @@
           button.type = "button";
           button.dataset.section = section.id;
           button.setAttribute("aria-selected", "false");
-          button.dataset.i18n = section.labelKey;
+          const iconFactory = globalThis.BrowserToolboxToolIcons;
+          if (iconFactory?.createIcon) {
+            button.appendChild(iconFactory.createIcon(SECTION_ICON_NAMES[section.id], {
+              documentRef: this.document,
+              className: "browser-toolbox-nav-icon",
+            }));
+          }
+          const sectionLabel = this.document.createElement("span");
+          sectionLabel.dataset.i18n = section.labelKey;
+          button.appendChild(sectionLabel);
+          if (section.showInDefaultNav === false) {
+            button.dataset.hiddenByDefault = "true";
+            button.hidden = true;
+          }
           subnav.appendChild(button);
         }
         groupElement.append(category, subnav);
@@ -151,7 +189,11 @@
         let groupMatchesCount = 0;
         for (const button of buttons) {
           const sectionText = this.sectionSearchText(button);
-          const matched = !normalized || groupMatches || sectionText.includes(normalized);
+          const keepActive = button === this.activeButton;
+          const defaultVisible = button.dataset.hiddenByDefault !== "true";
+          const matched = normalized
+            ? groupMatches || sectionText.includes(normalized)
+            : defaultVisible || keepActive;
           button.hidden = !matched;
           if (matched) groupMatchesCount += 1;
         }
@@ -159,7 +201,7 @@
         this.setGroupExpanded(
           group,
           groupMatchesCount > 0 &&
-            (Boolean(normalized) || group === this.activeButton?.closest(
+            (Boolean(normalized) || !this.collapseSiblings || group === this.activeButton?.closest(
                   ".browser-toolbox-nav-group",
                 )),
         );
@@ -214,7 +256,9 @@
           category.focus();
           return;
         }
-        const first = group?.querySelector(".browser-toolbox-nav-item[data-section]");
+          const first = [...(group?.querySelectorAll(
+            ".browser-toolbox-nav-item[data-section]",
+          ) || [])].find((item) => !item.hidden);
         if (first) this.activate(first, { focus: true });
       });
       category.addEventListener("keydown", (event) => {
@@ -294,6 +338,10 @@
     }
 
     expandOnly(group) {
+      if (!this.collapseSiblings) {
+        for (const item of this.groups) this.setGroupExpanded(item, !item.hidden || item === group);
+        return;
+      }
       for (const item of this.groups) this.setGroupExpanded(item, item === group);
     }
 
@@ -307,6 +355,7 @@
       if (!button) return;
       const name = button.dataset.section;
       const group = button.closest(".browser-toolbox-nav-group");
+      button.hidden = false;
       this.expandOnly(group);
       for (const item of this.buttons) {
         const selected = item === button;

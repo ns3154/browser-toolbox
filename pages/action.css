@@ -10,6 +10,26 @@ body {
   flex-direction: column;
 }
 
+.browser-toolbox-tools-panel {
+  padding: 10px var(--padding);
+  border-bottom: 1px solid #cbd5e1;
+}
+
+.browser-toolbox-tools-panel h1 {
+  margin: 4px 0 6px;
+}
+
+.browser-toolbox-tool-note {
+  margin: 4px 0 8px;
+  color: #64748b;
+}
+
+.browser-toolbox-tool-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
 h1 {
   font-size: 18px;
 }
@@ -91,4 +111,1446 @@ footer .options-message {
 
 .browser-toolbox-action-buttons button {
   cursor: pointer;
+}
+
+.browser-toolbox-tool-list {
+  display: grid;
+  gap: 6px;
+  margin: 8px 0 14px;
+}
+
+.browser-toolbox-tool-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.browser-toolbox-tool-option span {
+  display: grid;
+  gap: 2px;
+}
+
+.browser-toolbox-tool-option small {
+  color: #64748b;
+}
+
+/* 快捷工具动作页的视觉层：旧版 Vimium 选择器仍保留给排除规则，但新布局全部限定在本页。 */
+body.browser-toolbox-action-page {
+  --toolbox-action-bg: #f4f7fb;
+  --toolbox-surface: #ffffff;
+  --toolbox-surface-muted: #f7f9fc;
+  --toolbox-ink: #172033;
+  --toolbox-muted: #718096;
+  --toolbox-line: #e4eaf2;
+  --toolbox-blue: #2563eb;
+  --toolbox-blue-soft: #edf4ff;
+  --toolbox-green: #16845b;
+  --toolbox-green-soft: #e9f8f0;
+  --toolbox-radius-sm: 9px;
+  --toolbox-radius-md: 13px;
+  --toolbox-radius-lg: 18px;
+  box-sizing: border-box;
+  width: min(420px, 100vw);
+  min-height: 100vh;
+  height: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background: var(--toolbox-action-bg);
+  color: var(--toolbox-ink);
+  font: 13px/1.45 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+.browser-toolbox-action-page .browser-toolbox-action-shell {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 100vh;
+  padding: 14px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-action-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 42px;
+  padding: 2px 2px 8px;
+  border: 0;
+}
+
+.browser-toolbox-action-page .browser-toolbox-brand-mark {
+  display: grid;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 11px;
+  background: var(--toolbox-blue-soft);
+}
+
+.browser-toolbox-action-page .browser-toolbox-brand-mark img {
+  width: 25px;
+  height: 25px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-brand-copy {
+  display: grid;
+  min-width: 0;
+  gap: 1px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-brand-copy h1 {
+  margin: 0;
+  color: var(--toolbox-ink);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -.01em;
+}
+
+.browser-toolbox-action-page .browser-toolbox-running {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--toolbox-green);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.browser-toolbox-action-page .browser-toolbox-running i,
+.browser-toolbox-action-page .browser-toolbox-site-badge::before {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  content: "";
+}
+
+.browser-toolbox-action-page .browser-toolbox-icon-button {
+  display: grid;
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  margin-left: auto;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: var(--toolbox-muted);
+  font-size: 17px;
+  text-decoration: none;
+}
+
+.browser-toolbox-action-page .browser-toolbox-icon-button:hover,
+.browser-toolbox-action-page .browser-toolbox-icon-button:focus-visible {
+  border-color: var(--toolbox-line);
+  background: var(--toolbox-surface);
+  color: var(--toolbox-blue);
+}
+
+.browser-toolbox-action-page .browser-toolbox-action-section,
+.browser-toolbox-action-page .browser-toolbox-site-details,
+.browser-toolbox-action-page .browser-toolbox-restricted-card {
+  box-sizing: border-box;
+  border: 1px solid var(--toolbox-line);
+  border-radius: var(--toolbox-radius-lg);
+  background: var(--toolbox-surface);
+  box-shadow: 0 5px 18px rgb(29 52 84 / 5%);
+}
+
+.browser-toolbox-action-page .browser-toolbox-action-section {
+  padding: 14px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-section-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-section-heading h2,
+.browser-toolbox-action-page .browser-toolbox-section-heading h1 {
+  margin: 1px 0 0;
+  color: var(--toolbox-ink);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.browser-toolbox-action-page .browser-toolbox-section-kicker {
+  display: block;
+  color: var(--toolbox-muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.browser-toolbox-action-page .browser-toolbox-site-badge,
+.browser-toolbox-action-page .browser-toolbox-section-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex: 0 0 auto;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--toolbox-green-soft);
+  color: var(--toolbox-green);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.browser-toolbox-action-page .browser-toolbox-section-count {
+  min-width: 18px;
+  justify-content: center;
+  background: var(--toolbox-blue-soft);
+  color: var(--toolbox-blue);
+}
+
+.browser-toolbox-action-page .browser-toolbox-site-status {
+  min-height: 18px;
+  margin: 8px 0 11px;
+  color: var(--toolbox-muted);
+  font-size: 11px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-secondary-button,
+.browser-toolbox-action-page .browser-toolbox-primary-button {
+  box-sizing: border-box;
+  min-height: 31px;
+  padding: 6px 10px;
+  border: 1px solid var(--toolbox-line);
+  border-radius: var(--toolbox-radius-sm);
+  background: var(--toolbox-surface-muted);
+  box-shadow: none;
+  color: var(--toolbox-ink);
+  cursor: pointer;
+  font: inherit;
+  text-shadow: none;
+}
+
+.browser-toolbox-action-page .browser-toolbox-primary-button {
+  border-color: var(--toolbox-blue);
+  background: var(--toolbox-blue);
+  color: #fff;
+}
+
+.browser-toolbox-action-page .browser-toolbox-secondary-button:hover,
+.browser-toolbox-action-page .browser-toolbox-secondary-button:focus-visible {
+  border-color: #b9c8dd;
+  background: var(--toolbox-blue-soft);
+  color: var(--toolbox-blue);
+}
+
+.browser-toolbox-action-page .browser-toolbox-primary-button:hover,
+.browser-toolbox-action-page .browser-toolbox-primary-button:focus-visible {
+  background: #1d4ed8;
+}
+
+.browser-toolbox-action-page .browser-toolbox-enhancement-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 11px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-enhancement-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 29px minmax(0, 1fr) 30px;
+  align-items: start;
+  gap: 7px;
+  min-width: 0;
+  padding: 10px 8px;
+  border: 1px solid var(--toolbox-line);
+  border-radius: var(--toolbox-radius-md);
+  background: var(--toolbox-surface-muted);
+  cursor: pointer;
+}
+
+.browser-toolbox-action-page .browser-toolbox-enhancement-card:hover {
+  border-color: #bdd0ee;
+  background: #fbfdff;
+}
+
+.browser-toolbox-action-page .browser-toolbox-enhancement-icon {
+  display: grid;
+  width: 29px;
+  height: 29px;
+  place-items: center;
+  border-radius: 9px;
+  background: var(--toolbox-blue-soft);
+  color: var(--toolbox-blue);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.browser-toolbox-action-page .browser-toolbox-enhancement-icon-mouse {
+  background: #f0edff;
+  color: #7357d8;
+}
+
+.browser-toolbox-action-page .browser-toolbox-enhancement-icon-drag {
+  background: #fff3e8;
+  color: #c76b1e;
+}
+
+.browser-toolbox-action-page .browser-toolbox-enhancement-icon-wheel {
+  background: #e8f8f1;
+  color: var(--toolbox-green);
+}
+
+.browser-toolbox-action-page .browser-toolbox-enhancement-copy {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-enhancement-copy strong {
+  overflow: hidden;
+  color: var(--toolbox-ink);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.browser-toolbox-action-page .browser-toolbox-enhancement-copy small {
+  overflow: hidden;
+  min-height: 28px;
+  color: var(--toolbox-muted);
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.browser-toolbox-action-page .browser-toolbox-module-status {
+  color: var(--toolbox-green);
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.browser-toolbox-action-page .browser-toolbox-module-status.is-disabled {
+  color: #b45309;
+}
+
+.browser-toolbox-action-page .browser-toolbox-switch {
+  position: relative;
+  display: block;
+  width: 28px;
+  height: 17px;
+  margin-top: 2px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-switch input {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.browser-toolbox-action-page .browser-toolbox-switch i {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: #cbd5e1;
+  transition: background .15s ease;
+}
+
+.browser-toolbox-action-page .browser-toolbox-switch i::after {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgb(15 23 42 / 25%);
+  content: "";
+  transition: transform .15s ease;
+}
+
+.browser-toolbox-action-page .browser-toolbox-switch input:checked + i {
+  background: var(--toolbox-blue);
+}
+
+.browser-toolbox-action-page .browser-toolbox-switch input:checked + i::after {
+  transform: translateX(11px);
+}
+
+.browser-toolbox-action-page .browser-toolbox-switch input:focus-visible + i {
+  outline: 2px solid var(--toolbox-blue);
+  outline-offset: 2px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-restricted-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px;
+  border-color: #f1d6aa;
+  background: #fffaf1;
+}
+
+.browser-toolbox-action-page .browser-toolbox-restricted-icon {
+  display: grid;
+  flex: 0 0 27px;
+  width: 27px;
+  height: 27px;
+  place-items: center;
+  border-radius: 9px;
+  background: #fff0d6;
+  color: #b45309;
+  font-weight: 800;
+}
+
+.browser-toolbox-action-page .browser-toolbox-restricted-card h2 {
+  margin: 0 0 5px;
+  color: #7c4a12;
+  font-size: 13px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-restricted-card p {
+  margin: 0 0 8px;
+  color: #916b3f;
+  font-size: 11px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-site-details {
+  overflow: hidden;
+}
+
+.browser-toolbox-action-page .browser-toolbox-site-details summary {
+  padding: 12px 14px;
+  color: var(--toolbox-ink);
+  cursor: pointer;
+  font-weight: 700;
+  list-style-position: inside;
+}
+
+.browser-toolbox-action-page .browser-toolbox-site-details summary:hover,
+.browser-toolbox-action-page .browser-toolbox-site-details summary:focus-visible {
+  background: var(--toolbox-blue-soft);
+  color: var(--toolbox-blue);
+  outline: none;
+}
+
+.browser-toolbox-action-page #dialog-body {
+  display: block;
+  padding: 0 14px 14px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-exclusion-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  margin-bottom: 10px;
+  color: var(--toolbox-muted);
+  font-size: 11px;
+}
+
+.browser-toolbox-action-page #how-many-enabled {
+  color: var(--toolbox-ink);
+  font-weight: 700;
+}
+
+.browser-toolbox-action-page #exclusion-scroll-box {
+  max-height: 180px;
+  border: 1px solid var(--toolbox-line);
+  border-radius: var(--toolbox-radius-sm);
+}
+
+.browser-toolbox-action-page #exclusion-rules {
+  color: var(--toolbox-ink);
+}
+
+.browser-toolbox-action-page #exclusion-rules input[name="pattern"],
+.browser-toolbox-action-page #exclusion-rules input[name="passKeys"] {
+  width: 100%;
+  min-height: 28px;
+  border: 1px solid var(--toolbox-line);
+  border-radius: 6px;
+  background: var(--toolbox-surface);
+  color: var(--toolbox-ink);
+}
+
+.browser-toolbox-action-page #exclusion-add-button {
+  float: none;
+  margin: 10px 0 0;
+}
+
+.browser-toolbox-action-page .browser-toolbox-options-message {
+  margin: 12px 0 0;
+  color: var(--toolbox-muted);
+  font-size: 11px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-options-message a,
+.browser-toolbox-action-page .browser-toolbox-text-link {
+  color: var(--toolbox-blue);
+  text-decoration: none;
+}
+
+.browser-toolbox-action-page .browser-toolbox-options-message a:hover,
+.browser-toolbox-action-page .browser-toolbox-text-link:hover {
+  text-decoration: underline;
+}
+
+.browser-toolbox-action-page .browser-toolbox-tools-panel {
+  padding-bottom: 12px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-tool-note {
+  margin: 7px 0 10px;
+  color: var(--toolbox-muted);
+  font-size: 11px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-tool-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-tool-card {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) 14px;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  min-height: 65px;
+  padding: 9px;
+  border: 1px solid var(--toolbox-line);
+  border-radius: var(--toolbox-radius-md);
+  background: var(--toolbox-surface-muted);
+  box-shadow: none;
+  color: var(--toolbox-ink);
+  cursor: pointer;
+  text-align: left;
+  text-shadow: none;
+}
+
+.browser-toolbox-action-page .browser-toolbox-tool-card:hover,
+.browser-toolbox-action-page .browser-toolbox-tool-card:focus-visible {
+  border-color: #aec7ee;
+  background: var(--toolbox-blue-soft);
+  color: var(--toolbox-blue);
+}
+
+.browser-toolbox-action-page .browser-toolbox-tool-icon {
+  width: 27px;
+  height: 27px;
+  padding: 5px;
+  box-sizing: border-box;
+  border-radius: 8px;
+  background: #e9f1ff;
+  color: var(--toolbox-blue);
+}
+
+.browser-toolbox-action-page .browser-toolbox-tool-card-copy {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-tool-card-copy strong {
+  overflow: hidden;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.browser-toolbox-action-page .browser-toolbox-tool-card-copy small {
+  overflow: hidden;
+  color: var(--toolbox-muted);
+  font-size: 10px;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.browser-toolbox-action-page .browser-toolbox-tool-card-arrow {
+  color: #9aa8bb;
+  font-size: 15px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-action-footer {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 5px;
+  margin-top: auto;
+  padding: 4px 0 0;
+}
+
+.browser-toolbox-action-page .browser-toolbox-footer-link {
+  display: grid;
+  min-width: 0;
+  min-height: 48px;
+  place-items: center;
+  gap: 3px;
+  padding: 5px 2px;
+  border: 1px solid transparent;
+  border-radius: var(--toolbox-radius-sm);
+  background: transparent;
+  box-shadow: none;
+  color: var(--toolbox-muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 10px;
+  text-align: center;
+  text-decoration: none;
+  text-shadow: none;
+}
+
+.browser-toolbox-action-page .browser-toolbox-footer-link:hover,
+.browser-toolbox-action-page .browser-toolbox-footer-link:focus-visible {
+  border-color: var(--toolbox-line);
+  background: var(--toolbox-surface);
+  color: var(--toolbox-blue);
+  outline: none;
+}
+
+.browser-toolbox-action-page .browser-toolbox-footer-icon {
+  color: currentColor;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.browser-toolbox-action-page #browser-toolbox-exclusion-footer {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--toolbox-line);
+  border-radius: var(--toolbox-radius-md);
+  background: var(--toolbox-surface);
+  color: var(--toolbox-muted);
+}
+
+.browser-toolbox-action-page #browser-toolbox-exclusion-footer .options-message {
+  flex: 1;
+  font-size: 10px;
+}
+
+.browser-toolbox-action-page #browser-toolbox-exclusion-footer > div:last-child {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 5px;
+}
+
+.browser-toolbox-action-page #browser-toolbox-exclusion-footer button {
+  min-height: 28px;
+  padding: 4px 8px;
+  border: 1px solid var(--toolbox-line);
+  border-radius: 7px;
+  background: var(--toolbox-surface-muted);
+  color: var(--toolbox-ink);
+  cursor: pointer;
+  font: inherit;
+  text-shadow: none;
+}
+
+.browser-toolbox-action-page #browser-toolbox-exclusion-footer #save {
+  border-color: var(--toolbox-blue);
+  background: var(--toolbox-blue);
+  color: #fff;
+}
+
+.browser-toolbox-action-page :is(button, a, input, select, summary):focus-visible {
+  outline: 2px solid var(--toolbox-blue);
+  outline-offset: 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+  body.browser-toolbox-action-page {
+    --toolbox-action-bg: #111827;
+    --toolbox-surface: #182235;
+    --toolbox-surface-muted: #202d42;
+    --toolbox-ink: #e5edf8;
+    --toolbox-muted: #9aabc0;
+    --toolbox-line: #33445e;
+    --toolbox-blue-soft: #1c355f;
+    --toolbox-green-soft: #173c32;
+    --toolbox-green: #64d5a2;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-enhancement-card:hover,
+  .browser-toolbox-action-page .browser-toolbox-tool-card:hover,
+  .browser-toolbox-action-page .browser-toolbox-tool-card:focus-visible {
+    background: #263958;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-restricted-card {
+    border-color: #704f25;
+    background: #332718;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-restricted-card h2 {
+    color: #ffd18b;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-restricted-card p {
+    color: #e3b978;
+  }
+}
+
+@media (max-width: 360px) {
+  .browser-toolbox-action-page .browser-toolbox-action-shell {
+    padding: 10px;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-enhancement-grid,
+  .browser-toolbox-action-page .browser-toolbox-tool-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-action-footer {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* 覆盖旧版窄弹窗兼容层的最小高度，弹窗高度由实际内容决定。 */
+body.browser-toolbox-action-page {
+  min-height: 0;
+}
+
+.browser-toolbox-action-page .browser-toolbox-action-shell {
+  min-height: 0;
+}
+
+@media (max-width: 360px) {
+  .browser-toolbox-action-page .browser-toolbox-action-shell {
+    gap: 0;
+    padding: 0;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-enhancement-card {
+    padding: 9px 10px;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-enhancement-card-featured {
+    grid-template-columns: 40px minmax(0, 1fr) 30px;
+    padding: 11px 12px;
+  }
+}
+
+/* 动作弹窗的最终视觉层：用一个连续的面板承载入口，避免每个区域都像独立设置页。 */
+body.browser-toolbox-action-page {
+  --toolbox-action-bg: #eef3f9;
+  --toolbox-surface: #ffffff;
+  --toolbox-surface-muted: #f7f9fc;
+  --toolbox-ink: #18243a;
+  --toolbox-muted: #6f8099;
+  --toolbox-line: #dbe4f0;
+  --toolbox-blue: #1f5fe7;
+  --toolbox-blue-soft: #edf4ff;
+  --toolbox-green: #13855d;
+  --toolbox-green-soft: #e8f7ef;
+  --toolbox-radius-sm: 9px;
+  --toolbox-radius-md: 12px;
+  --toolbox-radius-lg: 17px;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 420px;
+  min-height: 0;
+  height: auto;
+  padding: 8px;
+  background: var(--toolbox-action-bg);
+}
+
+.browser-toolbox-action-page .browser-toolbox-action-shell {
+  width: 100%;
+  max-width: 420px;
+  min-height: 0;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--toolbox-line);
+  border-radius: var(--toolbox-radius-lg);
+  background: var(--toolbox-surface);
+  box-shadow: 0 12px 28px rgb(42 67 104 / 10%);
+}
+
+.browser-toolbox-action-page .browser-toolbox-action-brand {
+  min-height: 60px;
+  padding: 12px 16px 11px;
+  border-bottom: 1px solid var(--toolbox-line);
+}
+
+.browser-toolbox-action-page .browser-toolbox-brand-mark {
+  flex-basis: 36px;
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-brand-mark img {
+  width: 27px;
+  height: 27px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-brand-copy h1 {
+  font-size: 16px;
+  letter-spacing: -.025em;
+}
+
+.browser-toolbox-action-page .browser-toolbox-running {
+  font-size: 10px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-ui-icon {
+  display: block;
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.browser-toolbox-action-page .browser-toolbox-icon-button {
+  width: 34px;
+  height: 34px;
+  flex-basis: 34px;
+  border-color: transparent;
+  border-radius: 10px;
+  font-size: 0;
+}
+
+.browser-toolbox-action-page .browser-toolbox-icon-button .browser-toolbox-ui-icon {
+  width: 19px;
+  height: 19px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-action-section,
+.browser-toolbox-action-page .browser-toolbox-site-details {
+  border: 0;
+  border-bottom: 1px solid var(--toolbox-line);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.browser-toolbox-action-page .browser-toolbox-action-section {
+  padding: 14px 16px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-section-kicker {
+  display: none;
+}
+
+.browser-toolbox-action-page .browser-toolbox-section-heading h2,
+.browser-toolbox-action-page .browser-toolbox-section-heading h1 {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.35;
+  letter-spacing: -.02em;
+}
+
+.browser-toolbox-action-page .browser-toolbox-site-badge,
+.browser-toolbox-action-page .browser-toolbox-section-count {
+  padding: 4px 8px;
+  font-size: 10px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-site-status {
+  min-height: 16px;
+  margin: 7px 0 9px;
+  font-size: 11px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-secondary-button,
+.browser-toolbox-action-page .browser-toolbox-primary-button {
+  min-height: 30px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-enhancement-grid {
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-enhancement-card {
+  grid-template-columns: 31px minmax(0, 1fr) 30px;
+  align-items: center;
+  min-height: 58px;
+  padding: 9px 10px;
+  border-radius: 11px;
+  background: var(--toolbox-surface-muted);
+}
+
+.browser-toolbox-action-page .browser-toolbox-enhancement-card-featured {
+  grid-column: 1 / -1;
+  grid-template-columns: 40px minmax(0, 1fr) 30px;
+  min-height: 74px;
+  padding: 11px 12px;
+  background: var(--toolbox-surface);
+}
+
+.browser-toolbox-action-page .browser-toolbox-enhancement-icon {
+  width: 31px;
+  height: 31px;
+  border-radius: 9px;
+  font-size: 0;
+}
+
+.browser-toolbox-action-page .browser-toolbox-enhancement-card-featured .browser-toolbox-enhancement-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-enhancement-icon .browser-toolbox-ui-icon {
+  width: 19px;
+  height: 19px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-enhancement-card-featured .browser-toolbox-ui-icon {
+  width: 27px;
+  height: 27px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-enhancement-copy {
+  gap: 1px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-enhancement-copy strong {
+  font-size: 12px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-enhancement-copy small {
+  min-height: 0;
+  font-size: 10px;
+  line-height: 1.35;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.browser-toolbox-action-page .browser-toolbox-module-status {
+  font-size: 10px;
+  line-height: 1.25;
+}
+
+.browser-toolbox-action-page .browser-toolbox-switch {
+  width: 29px;
+  height: 18px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-switch i::after {
+  top: 3px;
+  left: 3px;
+  width: 12px;
+  height: 12px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-switch input:checked + i::after {
+  transform: translateX(11px);
+}
+
+.browser-toolbox-action-page .browser-toolbox-tools-panel {
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-text-link {
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.browser-toolbox-action-page .browser-toolbox-tool-note {
+  margin: 6px 0 9px;
+  font-size: 10px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-tool-buttons {
+  gap: 7px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-tool-card {
+  grid-template-columns: 29px minmax(0, 1fr) 15px;
+  gap: 7px;
+  min-height: 57px;
+  padding: 8px 9px;
+  border-radius: 11px;
+  background: var(--toolbox-surface-muted);
+}
+
+.browser-toolbox-action-page .browser-toolbox-tool-icon {
+  width: 29px;
+  height: 29px;
+  padding: 6px;
+  border-radius: 9px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-tool-card-copy {
+  gap: 1px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-tool-card-copy strong {
+  font-size: 11px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-tool-card-copy small {
+  font-size: 9px;
+  line-height: 1.25;
+}
+
+.browser-toolbox-action-page .browser-toolbox-tool-card-arrow {
+  display: grid;
+  place-items: center;
+  color: #91a3bd;
+  font-size: 0;
+}
+
+.browser-toolbox-action-page .browser-toolbox-tool-card-arrow-icon {
+  width: 15px;
+  height: 15px;
+  transform: rotate(-90deg);
+}
+
+.browser-toolbox-action-page .browser-toolbox-action-footer {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 2px;
+  margin-top: auto;
+  padding: 8px 10px 9px;
+  border-bottom: 0;
+  background: var(--toolbox-surface);
+}
+
+.browser-toolbox-action-page .browser-toolbox-footer-link {
+  min-height: 50px;
+  padding: 5px 2px;
+  border-radius: 8px;
+  color: var(--toolbox-muted);
+  font-size: 9px;
+  font-weight: 550;
+}
+
+.browser-toolbox-action-page .browser-toolbox-footer-icon {
+  display: grid;
+  place-items: center;
+  font-size: 0;
+}
+
+.browser-toolbox-action-page .browser-toolbox-footer-icon .browser-toolbox-ui-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-restricted-card {
+  margin: 12px 16px;
+  padding: 12px;
+  border: 1px solid #f1d6aa;
+  border-radius: 12px;
+  box-shadow: none;
+}
+
+.browser-toolbox-action-page .browser-toolbox-site-details {
+  border-top: 0;
+}
+
+.browser-toolbox-action-page .browser-toolbox-site-details summary {
+  padding: 12px 16px;
+  font-size: 12px;
+}
+
+.browser-toolbox-action-page #browser-toolbox-exclusion-footer {
+  margin: 10px 16px;
+  border-radius: 10px;
+}
+
+@media (prefers-color-scheme: dark) {
+  body.browser-toolbox-action-page {
+    --toolbox-action-bg: #0e1524;
+    --toolbox-surface: #172235;
+    --toolbox-surface-muted: #202d42;
+    --toolbox-ink: #e7eef9;
+    --toolbox-muted: #a5b5c9;
+    --toolbox-line: #334661;
+    --toolbox-blue-soft: #203a66;
+    --toolbox-green: #70d8ab;
+    --toolbox-green-soft: #183f35;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-tool-card:hover,
+  .browser-toolbox-action-page .browser-toolbox-tool-card:focus-visible,
+  .browser-toolbox-action-page .browser-toolbox-enhancement-card:hover {
+    background: #2a3a55;
+  }
+}
+
+@media (max-width: 360px) {
+  body.browser-toolbox-action-page {
+    padding: 6px;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-action-shell {
+    min-height: 0;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-action-brand,
+  .browser-toolbox-action-page .browser-toolbox-action-section {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-site-details summary {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+}
+
+/* 窄弹窗也必须保留可读的文字列宽；浏览器缩放会把动作页压到 320px 以下。 */
+body.browser-toolbox-action-page {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 420px;
+  min-height: 0;
+  height: auto;
+  overflow-x: hidden;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.browser-toolbox-action-page .browser-toolbox-action-shell {
+  width: 100%;
+  min-width: 0;
+  max-width: 420px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-action-brand,
+.browser-toolbox-action-page .browser-toolbox-section-heading,
+.browser-toolbox-action-page .browser-toolbox-enhancement-card,
+.browser-toolbox-action-page .browser-toolbox-tool-card {
+  min-width: 0;
+}
+
+.browser-toolbox-action-page .browser-toolbox-brand-copy {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.browser-toolbox-action-page .browser-toolbox-brand-copy h1,
+.browser-toolbox-action-page .browser-toolbox-running,
+.browser-toolbox-action-page .browser-toolbox-section-heading h1,
+.browser-toolbox-action-page .browser-toolbox-section-heading h2 {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-break: keep-all;
+}
+
+.browser-toolbox-action-page .browser-toolbox-section-heading > div {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.browser-toolbox-action-page .browser-toolbox-enhancement-copy,
+.browser-toolbox-action-page .browser-toolbox-tool-card-copy {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.browser-toolbox-action-page .browser-toolbox-enhancement-copy small {
+  overflow: hidden;
+  min-width: 0;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+@media (max-width: 360px) {
+  .browser-toolbox-action-page .browser-toolbox-action-shell {
+    gap: 0;
+    padding: 0;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-action-brand {
+    gap: 8px;
+    padding-inline: 0;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-brand-mark {
+    flex-basis: 32px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-brand-mark img {
+    width: 23px;
+    height: 23px;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-brand-copy h1 {
+    font-size: 14px;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-enhancement-card {
+    grid-template-columns: 31px minmax(0, 1fr) 30px;
+    gap: 8px;
+    padding: 9px 10px;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-enhancement-card-featured {
+    grid-template-columns: 40px minmax(0, 1fr) 30px;
+    padding: 11px 12px;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-enhancement-card .browser-toolbox-switch {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-enhancement-copy {
+    padding-right: 38px;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-enhancement-copy strong {
+    white-space: normal;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-enhancement-copy small {
+    min-height: 0;
+    line-height: 1.4;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-tool-card {
+    grid-template-columns: 27px minmax(0, 1fr) 12px;
+    gap: 7px;
+    padding: 8px;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-tool-card-copy strong,
+  .browser-toolbox-action-page .browser-toolbox-tool-card-copy small {
+    white-space: normal;
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+}
+
+/* 最后一层收口：弹窗严格遵循参考图的“品牌头 + 主卡片 + 工具栅格 + 入口栏”层级。 */
+.browser-toolbox-action-page .browser-toolbox-action-brand {
+  box-sizing: border-box;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) 34px;
+  align-items: center;
+  gap: 11px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-brand-copy {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
+.browser-toolbox-action-page .browser-toolbox-brand-copy h1 {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.browser-toolbox-action-page .browser-toolbox-running {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.browser-toolbox-action-page .browser-toolbox-action-section {
+  background: var(--toolbox-surface);
+}
+
+.browser-toolbox-action-page .browser-toolbox-enhancement-card {
+  order: 2;
+}
+
+.browser-toolbox-action-page .browser-toolbox-enhancement-card-featured {
+  order: 1;
+  border-color: #d3e0f2;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+  box-shadow: 0 3px 12px rgb(42 67 104 / 4%);
+}
+
+.browser-toolbox-action-page .browser-toolbox-enhancement-card:nth-child(4) {
+  grid-column: 1 / -1;
+}
+
+.browser-toolbox-action-page .browser-toolbox-enhancement-card:hover,
+.browser-toolbox-action-page .browser-toolbox-enhancement-card:focus-within {
+  border-color: #a8c5f4;
+  background: var(--toolbox-blue-soft);
+  box-shadow: 0 4px 12px rgb(31 95 231 / 9%);
+}
+
+.browser-toolbox-action-page .browser-toolbox-enhancement-card-featured:hover,
+.browser-toolbox-action-page .browser-toolbox-enhancement-card-featured:focus-within {
+  background: #f7fbff;
+}
+
+.browser-toolbox-action-page .browser-toolbox-tool-card {
+  border-color: #d9e3f0;
+  background: #fbfcfe;
+}
+
+.browser-toolbox-action-page .browser-toolbox-tool-card:hover,
+.browser-toolbox-action-page .browser-toolbox-tool-card:focus-visible {
+  border-color: #9fc0f5;
+  background: var(--toolbox-blue-soft);
+  box-shadow: 0 3px 10px rgb(31 95 231 / 8%);
+}
+
+.browser-toolbox-action-page .browser-toolbox-tool-card-arrow-icon {
+  transform: rotate(-90deg);
+}
+
+.browser-toolbox-action-page .browser-toolbox-action-footer {
+  border-top: 0;
+}
+
+.browser-toolbox-action-page .browser-toolbox-footer-link {
+  transition: background-color .15s ease, color .15s ease, border-color .15s ease;
+}
+
+@media (max-width: 360px) {
+  .browser-toolbox-action-page .browser-toolbox-action-brand {
+    grid-template-columns: 32px minmax(0, 1fr) 32px;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-brand-copy {
+    display: grid;
+    gap: 1px;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-enhancement-card:nth-child(4) {
+    grid-column: auto;
+  }
+}
+
+/* 动作弹窗不能被浏览器缩放或宿主窄列压成逐字换行；极窄视口改用纵向信息流。 */
+body.browser-toolbox-action-page {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 420px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-action-shell {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 260px) {
+  /* Chrome 动作弹窗会按内容重新测量这个宽度，避免浏览器缩放把可读区域压成窄缝。 */
+  body.browser-toolbox-action-page {
+    width: 320px;
+    min-width: 320px;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-action-brand {
+    position: relative;
+    grid-template-columns: 32px minmax(0, 1fr);
+    padding-right: 42px;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-brand-copy {
+    display: grid;
+    align-content: center;
+    justify-items: start;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-brand-copy h1 {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    word-break: normal;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-icon-button {
+    position: absolute;
+    top: 12px;
+    right: 8px;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-section-heading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-section-heading h1,
+  .browser-toolbox-action-page .browser-toolbox-section-heading h2 {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    word-break: normal;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-site-badge,
+  .browser-toolbox-action-page .browser-toolbox-section-count {
+    align-self: flex-start;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-restricted-card {
+    display: grid;
+    grid-template-columns: 1fr;
+    margin: 10px;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-enhancement-card,
+  .browser-toolbox-action-page .browser-toolbox-enhancement-card-featured {
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-enhancement-card .browser-toolbox-switch {
+    top: 10px;
+    right: 10px;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-enhancement-copy {
+    padding-right: 0;
+    overflow: visible;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-enhancement-copy strong,
+  .browser-toolbox-action-page .browser-toolbox-enhancement-copy small {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    word-break: normal;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-tool-card {
+    position: relative;
+    grid-template-columns: 29px minmax(0, 1fr);
+    padding-right: 30px;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-tool-card-copy {
+    overflow: visible;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-tool-card-copy strong,
+  .browser-toolbox-action-page .browser-toolbox-tool-card-copy small {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    word-break: normal;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-tool-card-arrow {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+  }
 }

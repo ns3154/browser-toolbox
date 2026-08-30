@@ -11,7 +11,7 @@ context("Settings migrations", () => {
       schemaVersion: 0,
       gestureBindings: [{ pattern: ["R"], commandName: "OpenKeyMouse.newWindow" }],
     });
-    assert.equal(4, migrated.schemaVersion);
+    assert.equal(5, migrated.schemaVersion);
     assert.equal(["R"], migrated.mouse.bindings[0].pattern);
     assert.equal("BrowserToolbox.newWindow", migrated.mouse.bindings[0].commandName);
     assert.isFalse(migrated.privacy.telemetry);
@@ -49,7 +49,7 @@ context("Settings migrations", () => {
       "BrowserToolbox.openLinkForeground",
       migrated.superDrag.bindings[0].commandName,
     );
-    assert.equal(4, migrated.schemaVersion);
+    assert.equal(5, migrated.schemaVersion);
     assert.equal("regex", migrated.siteRules[0].matchType);
     assert.isTrue(migrated.siteRules[0].enabled);
     assert.equal("browser-toolbox-settings", BrowserToolboxSettingsMigrations.EXPORT_FORMAT);
@@ -78,7 +78,7 @@ context("Settings migrations", () => {
     });
     const parsed = migrations.migrateExportPayload(payload);
     assert.isTrue(parsed.ok);
-    assert.equal(4, parsed.settings.schemaVersion);
+    assert.equal(5, parsed.settings.schemaVersion);
     assert.equal("BrowserToolbox.newWindow", parsed.settings.mouse.bindings[0].commandName);
     assert.equal([], payload.localAssets);
 
@@ -151,5 +151,27 @@ context("Settings migrations", () => {
     assert.equal(["settings.futureSection"], migrated.unknown);
     assert.equal(["settings.futureSection"], migrated.preserved);
     assert.isTrue(Object.hasOwn(migrated.settings, "futureSection"));
+  });
+
+  should("preserve unknown tool fields while normalizing known tool settings", () => {
+    const migrated = BrowserToolboxSettingsMigrations.migrate({
+      schemaVersion: 4,
+      tools: {
+        futureToolPolicy: { mode: "next" },
+        contextMenu: { toolIds: ["json.format"], futureContextFlag: true },
+        documentFormatter: {
+          autoFormat: { json: false, futureFormat: true },
+          json: { defaultSort: "descending", futureJsonOption: 7 },
+          futureFormatterOption: "keep",
+        },
+      },
+    });
+    assert.equal({ mode: "next" }, migrated.tools.futureToolPolicy);
+    assert.isTrue(migrated.tools.contextMenu.futureContextFlag);
+    assert.isTrue(migrated.tools.documentFormatter.autoFormat.futureFormat);
+    assert.equal(7, migrated.tools.documentFormatter.json.futureJsonOption);
+    assert.equal("keep", migrated.tools.documentFormatter.futureFormatterOption);
+    assert.isFalse(migrated.tools.documentFormatter.autoFormat.json);
+    assert.equal("descending", migrated.tools.documentFormatter.json.defaultSort);
   });
 });

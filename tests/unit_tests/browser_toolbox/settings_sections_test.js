@@ -11,21 +11,25 @@ context("Settings section registry", () => {
   should("keep every section attached to a unique registered group", () => {
     const api = sections();
     assert.isTrue(api.validateRegistry(api.GROUPS, api.SECTIONS));
-    assert.equal(11, api.SECTIONS.length);
-    assert.equal(6, api.GROUPS.length);
+    assert.equal(15, api.SECTIONS.length);
+    assert.equal(3, api.GROUPS.length);
     assert.equal(
       [
-        "general",
-        "keyboard",
         "mouse",
         "superDrag",
         "wheel",
+        "keyboard",
         "search",
+        "general",
+        "toolsOverview",
+        "jsonFormatter",
+        "textDiff",
+        "codecTransform",
+        "timeAndId",
         "appearance",
         "siteRules",
         "privacy",
-        "backup",
-        "about",
+        "backupAbout",
       ],
       api.SECTIONS.map((section) => section.id),
     );

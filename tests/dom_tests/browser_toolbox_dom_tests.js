@@ -1,4 +1,74 @@
 context("BrowserToolbox DOM integration", () => {
+  async function loadMarkup(path) {
+    const response = await fetch(new URL(path, import.meta.url));
+    return new DOMParser().parseFromString(await response.text(), "text/html");
+  }
+
+  should("keep the popup layers and functional control IDs in the redesigned order", async () => {
+    const popup = await loadMarkup("../../pages/action.html");
+    assert.equal(
+      [
+        "browser-toolbox-action-brand",
+        "browser-toolbox-controls",
+        "browser-toolbox-enhancement-summary",
+        "browser-toolbox-site-details",
+        "browser-toolbox-tools",
+        "browser-toolbox-action-footer",
+      ],
+      [...popup.querySelector("main").children]
+        .filter((element) => [
+          "browser-toolbox-action-brand",
+          "browser-toolbox-controls",
+          "browser-toolbox-enhancement-summary",
+          "browser-toolbox-site-details",
+          "browser-toolbox-tools",
+        ].some((name) => element.id === name || element.classList.contains(name)) ||
+          element.classList.contains("browser-toolbox-action-footer"))
+        .map((element) => element.id || [...element.classList].find((name) => name.startsWith("browser-toolbox-action-"))),
+    );
+    assert.equal(4, popup.querySelectorAll("#browser-toolbox-enhancement-summary input[type=checkbox]").length);
+    assert.isTrue(Boolean(popup.querySelector("#browser-toolbox-site-details #exclusion-rules")));
+    assert.isTrue(Boolean(popup.querySelector("#browser-toolbox-all-tools")));
+  });
+
+  should("expose exactly three settings groups and fifteen navigable panels", async () => {
+    const settings = await loadMarkup("../../pages/mouse_options.html");
+    const panels = [...settings.querySelectorAll("[data-panel]")].map((panel) => panel.dataset.panel);
+    assert.equal(15, panels.length);
+    assert.equal(
+      ["general", "keyboard", "toolsOverview", "jsonFormatter", "textDiff", "codecTransform", "timeAndId", "search", "appearance", "mouse", "superDrag", "wheel", "siteRules", "privacy", "backupAbout"],
+      panels,
+    );
+    assert.equal(6, settings.querySelectorAll("[data-panel=jsonFormatter] input[type=checkbox]").length);
+    assert.isTrue(Boolean(settings.querySelector("#browser-tool-directory-search")));
+    assert.isTrue(Boolean(settings.querySelector("#browser-tool-directory")));
+  });
+
+  should("keep each utility on a standalone page with its own result affordances", async () => {
+    const tools = await loadMarkup("../../pages/tools/index.html");
+    assert.isTrue(Boolean(tools.querySelector("[data-tool-page='true']")));
+    assert.isTrue(Boolean(tools.querySelector("#tool-back")));
+    assert.isTrue(Boolean(tools.querySelector("#tool-settings")));
+    assert.isTrue(Boolean(tools.querySelector("#json-result-tree")));
+    assert.isTrue(Boolean(tools.querySelector("#diff-result-list")));
+    assert.isTrue(Boolean(tools.querySelector("#codec-output")));
+    assert.isTrue(tools.querySelector("#tool-picker") === null);
+    assert.isTrue(tools.querySelector("#tool-catalog") === null);
+    assert.isTrue(Boolean(tools.querySelector("#tool-input")));
+    assert.isTrue(Boolean(tools.querySelector("#tool-input-right")));
+  });
+
+  should("render formatted source as text without creating executable DOM", () => {
+    const source = '{"markup":"<img src=x onerror=alert(1)>","text":"<b>plain</b>"}';
+    const result = BrowserToolboxDocumentFormatters.formatJsonDocument(source);
+    const output = document.createElement("pre");
+    output.textContent = result.formatted;
+    document.body.append(output);
+    assert.equal(0, output.querySelectorAll("img, b, script").length);
+    assert.equal(result.formatted, output.textContent);
+    output.remove();
+  });
+
   should("draw and clean a Shadow DOM gesture overlay", () => {
     const overlay = new BrowserToolboxGestureOverlay(document);
     overlay.show();

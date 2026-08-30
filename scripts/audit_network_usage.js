@@ -3,8 +3,10 @@ const roots = [
   "lib/browser_toolbox",
   "background_scripts/browser_toolbox",
   "content_scripts/mouse",
+  "content_scripts/document_formatter",
   "pages/mouse_options.js",
   "pages/tab_list.js",
+  "pages/tools",
 ];
 const patterns = [
   [/\bfetch\s*\(/, "fetch"],
@@ -29,6 +31,9 @@ const allowed = [
   { file: "lib/browser_toolbox/command_invocation.js", text: "browsertoolbox.invalid" },
   { file: "content_scripts/mouse/drag_context_classifier.js", text: "browsertoolbox.invalid" },
   { file: "content_scripts/mouse/gesture_overlay.js", text: "www.w3.org/2000/svg" },
+  { file: "lib/browser_toolbox/tools/tool_icons.js", text: "www.w3.org/2000/svg" },
+  { file: "content_scripts/document_formatter/document_formatter.js", text: "www.w3.org/1999/xhtml" },
+  { file: "pages/mouse_options.js", text: "www.w3.org/2000/svg" },
   { file: "pages/mouse_options.js", text: "https://example.com/*" },
 ];
 const files = [];

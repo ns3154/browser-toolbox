@@ -9,6 +9,7 @@
  * @property {Object} quantizer 方向量化器。
  * @property {function(): void} [markDirty] 标记草稿变更。
  * @property {function(string): string} [idFactory] 生成绑定 ID。
+ * @property {function(string): void} [onBindingsChange] 绑定变更后的视图刷新回调。
  */
 (function () {
   const DIRECTION_MESSAGE_KEYS = Object.freeze({
@@ -35,6 +36,7 @@
       quantizer,
       markDirty = () => {},
       idFactory = (prefix) => `${prefix}-${Date.now()}`,
+      onBindingsChange = () => {},
     }) {
       this.document = documentRef;
       this.getSettings = getSettings;
@@ -43,6 +45,7 @@
       this.quantizer = quantizer;
       this.markDirty = markDirty;
       this.idFactory = idFactory;
+      this.onBindingsChange = onBindingsChange;
     }
 
     get settings() {
@@ -375,6 +378,7 @@
             item !== binding
           );
           this.renderMouseBindings();
+          this.onBindingsChange("mouse");
           this.markDirty();
         });
         row.append(
@@ -419,6 +423,7 @@
             item !== binding
           );
           this.renderSuperDragBindings();
+          this.onBindingsChange("superDrag");
           this.markDirty();
         });
         context.addEventListener("change", () => {
@@ -472,6 +477,7 @@
             item !== binding
           );
           this.renderWheelBindings();
+          this.onBindingsChange("wheel");
           this.markDirty();
         });
         row.append(
@@ -515,6 +521,7 @@
             item !== binding
           );
           this.renderRockerBindings();
+          this.onBindingsChange("rocker");
           this.markDirty();
         });
         row.append(

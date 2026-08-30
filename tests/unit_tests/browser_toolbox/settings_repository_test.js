@@ -28,7 +28,7 @@ context("Settings repository", () => {
     assert.isTrue(repository.getSettings().general.enabled);
 
     const loaded = await repository.load(BrowserToolboxCommandRegistry);
-    assert.equal(4, loaded.schemaVersion);
+    assert.equal(5, loaded.schemaVersion);
     assert.isTrue(loaded.general.enabled);
     assert.isTrue(repository.listenerInstalled);
     assert.equal(
@@ -38,7 +38,7 @@ context("Settings repository", () => {
       ],
     );
     assert.equal(
-      4,
+      5,
       (await chrome.storage.sync.get("browserToolboxSettings"))["browserToolboxSettings"]
         .schemaVersion,
     );

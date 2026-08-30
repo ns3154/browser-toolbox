@@ -1,0 +1,413 @@
+/* 直接文档格式化页：默认使用浅色文档画布，深色仅作为系统偏好下的备用主题。 */
+body.browser-toolbox-document-formatted {
+  --toolbox-document-bg: #f4f7fb;
+  --toolbox-document-surface: #ffffff;
+  --toolbox-document-surface-muted: #f7f9fc;
+  --toolbox-document-ink: #172033;
+  --toolbox-document-muted: #718096;
+  --toolbox-document-line: #e2e8f0;
+  --toolbox-document-blue: #2563eb;
+  --toolbox-document-blue-soft: #edf4ff;
+  --toolbox-document-green: #16845b;
+  margin: 0;
+  background: var(--toolbox-document-bg);
+  color: var(--toolbox-document-ink);
+  color-scheme: light;
+  font: 14px/1.5 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+.browser-toolbox-document-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 2147483647;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  min-height: 52px;
+  padding: 8px 18px;
+  border-bottom: 1px solid var(--toolbox-document-line);
+  background: rgb(255 255 255 / 96%);
+  box-shadow: 0 3px 14px rgb(29 52 84 / 7%);
+  color: var(--toolbox-document-ink);
+}
+
+.browser-toolbox-document-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: auto;
+  color: var(--toolbox-document-ink);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.browser-toolbox-document-brand-icon {
+  display: inline-grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--toolbox-document-blue-soft);
+  color: var(--toolbox-document-blue);
+  font: 700 12px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.browser-toolbox-document-status {
+  order: 2;
+  color: var(--toolbox-document-green);
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.browser-toolbox-document-toolbar button,
+.browser-toolbox-document-toolbar select {
+  box-sizing: border-box;
+  min-height: 30px;
+  padding: 5px 9px;
+  border: 1px solid var(--toolbox-document-line);
+  border-radius: 8px;
+  background: var(--toolbox-document-surface-muted);
+  box-shadow: none;
+  color: var(--toolbox-document-ink);
+  cursor: pointer;
+  font: 12px/1.3 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  text-shadow: none;
+}
+
+.browser-toolbox-document-toolbar button:hover,
+.browser-toolbox-document-toolbar button:focus-visible,
+.browser-toolbox-document-toolbar select:hover,
+.browser-toolbox-document-toolbar select:focus-visible {
+  border-color: #a9c3ed;
+  background: var(--toolbox-document-blue-soft);
+  color: var(--toolbox-document-blue);
+  outline: 2px solid rgb(37 99 235 / 18%);
+  outline-offset: 1px;
+}
+
+.browser-toolbox-document-metadata {
+  max-width: 960px;
+  margin: 14px 18px 0;
+  padding: 10px 13px;
+  border: 1px solid var(--toolbox-document-line);
+  border-radius: 12px;
+  background: var(--toolbox-document-surface);
+  box-shadow: 0 3px 12px rgb(29 52 84 / 4%);
+  color: var(--toolbox-document-ink);
+}
+
+.browser-toolbox-document-metadata summary {
+  color: var(--toolbox-document-ink);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.browser-toolbox-document-metadata summary:focus-visible {
+  outline: 2px solid var(--toolbox-document-blue);
+  outline-offset: 2px;
+}
+
+.browser-toolbox-document-metadata dl {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 4px 16px;
+  margin: 10px 0 2px;
+  color: var(--toolbox-document-muted);
+  font: 11px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.browser-toolbox-document-metadata dt {
+  color: var(--toolbox-document-ink);
+  font-weight: 700;
+}
+
+.browser-toolbox-document-metadata dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.browser-toolbox-document-output {
+  box-sizing: border-box;
+  min-height: calc(100vh - 66px);
+  margin: 0;
+  padding: 22px 18px 42px;
+  overflow: auto;
+  white-space: pre;
+  color: #243149;
+  font: 13px/1.65 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  tab-size: 2;
+}
+
+.browser-toolbox-json-toggle {
+  padding: 0 2px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--toolbox-document-blue);
+  cursor: pointer;
+  font: inherit;
+}
+
+.browser-toolbox-json-toggle:hover,
+.browser-toolbox-json-toggle:focus-visible {
+  background: var(--toolbox-document-blue-soft);
+  outline: 2px solid rgb(37 99 235 / 22%);
+  outline-offset: 1px;
+}
+
+.browser-toolbox-token-comment { color: #718096; }
+.browser-toolbox-token-string { color: #087f5b; }
+.browser-toolbox-token-number { color: #b45309; }
+.browser-toolbox-token-keyword { color: #7048b6; }
+
+.browser-toolbox-document-notice {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 2147483647;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: min(620px, calc(100vw - 32px));
+  padding: 11px 13px;
+  border: 1px solid #f1d6aa;
+  border-radius: 10px;
+  background: #fffaf1;
+  box-shadow: 0 8px 24px rgb(29 52 84 / 14%);
+  color: #7c4a12;
+  font-size: 12px;
+}
+
+.browser-toolbox-document-notice-close {
+  flex: 0 0 auto;
+  padding: 3px 7px;
+  border: 1px solid currentColor;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+
+@media (prefers-color-scheme: dark) {
+  body.browser-toolbox-document-formatted {
+    --toolbox-document-bg: #111827;
+    --toolbox-document-surface: #182235;
+    --toolbox-document-surface-muted: #202d42;
+    --toolbox-document-ink: #e6edf7;
+    --toolbox-document-muted: #9aabc0;
+    --toolbox-document-line: #33445e;
+    --toolbox-document-blue: #82aaff;
+    --toolbox-document-blue-soft: #20385f;
+    --toolbox-document-green: #70d8ab;
+    color-scheme: dark;
+  }
+
+  .browser-toolbox-document-toolbar {
+    background: rgb(24 34 53 / 96%);
+  }
+
+  .browser-toolbox-document-output {
+    color: #e6edf7;
+  }
+
+  .browser-toolbox-token-comment { color: #9aabc0; }
+  .browser-toolbox-token-string { color: #70d8ab; }
+  .browser-toolbox-token-number { color: #f2b46d; }
+  .browser-toolbox-token-keyword { color: #b7a0f2; }
+
+  .browser-toolbox-document-notice {
+    border-color: #704f25;
+    background: #332718;
+    color: #ffd18b;
+  }
+}
+
+@media (max-width: 720px) {
+  .browser-toolbox-document-toolbar {
+    padding: 8px 12px;
+  }
+
+  .browser-toolbox-document-brand {
+    flex-basis: 100%;
+  }
+
+  .browser-toolbox-document-status {
+    order: 0;
+    margin-left: auto;
+  }
+
+  .browser-toolbox-document-metadata {
+    margin-right: 12px;
+    margin-left: 12px;
+  }
+
+  .browser-toolbox-document-output {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+}
+
+/* 直接文档视图采用轻量工具栏，品牌与状态固定在左侧，操作集中在右侧。 */
+body.browser-toolbox-document-formatted {
+  --toolbox-document-bg: #f7f9fc;
+  --toolbox-document-surface: #ffffff;
+  --toolbox-document-surface-muted: #f5f8fd;
+  --toolbox-document-ink: #17233a;
+  --toolbox-document-muted: #6d7f99;
+  --toolbox-document-line: #d8e2ef;
+  --toolbox-document-blue: #1f5fe7;
+  --toolbox-document-blue-soft: #edf4ff;
+  --toolbox-document-green: #13855d;
+  background: var(--toolbox-document-bg);
+  color: var(--toolbox-document-ink);
+}
+
+.browser-toolbox-document-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  min-height: 58px;
+  padding: 9px 18px;
+  border-bottom-color: var(--toolbox-document-line);
+  background: rgb(255 255 255 / 97%);
+  box-shadow: 0 4px 16px rgb(29 52 84 / 6%);
+}
+
+.browser-toolbox-document-brand-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  margin-right: auto;
+}
+
+.browser-toolbox-document-brand {
+  gap: 8px;
+  margin-right: 0;
+  color: var(--toolbox-document-ink);
+  font-size: 14px;
+}
+
+.browser-toolbox-document-brand-icon {
+  width: 28px;
+  height: 28px;
+  border: 1px solid #c6d8f8;
+  border-radius: 8px;
+  background: var(--toolbox-document-blue-soft);
+  color: var(--toolbox-document-blue);
+  font-size: 12px;
+}
+
+.browser-toolbox-document-status {
+  order: 0;
+  color: var(--toolbox-document-green);
+  font-size: 11px;
+}
+
+.browser-toolbox-document-status::before {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin: 0 6px 1px 0;
+  border-radius: 50%;
+  background: currentColor;
+  content: "";
+}
+
+.browser-toolbox-document-toolbar button,
+.browser-toolbox-document-toolbar select {
+  min-height: 32px;
+  padding: 5px 10px;
+  border-color: var(--toolbox-document-line);
+  border-radius: 8px;
+  background: var(--toolbox-document-surface-muted);
+  color: var(--toolbox-document-ink);
+  font-size: 12px;
+}
+
+.browser-toolbox-document-toolbar button:hover,
+.browser-toolbox-document-toolbar button:focus-visible,
+.browser-toolbox-document-toolbar select:hover,
+.browser-toolbox-document-toolbar select:focus-visible {
+  border-color: #a9c3ed;
+  background: var(--toolbox-document-blue-soft);
+  color: var(--toolbox-document-blue);
+  outline: 2px solid rgb(37 99 235 / 16%);
+}
+
+.browser-toolbox-document-metadata {
+  max-width: 1120px;
+  margin: 14px 18px 0;
+  padding: 9px 12px;
+  border-color: var(--toolbox-document-line);
+  border-radius: 11px;
+  background: var(--toolbox-document-surface);
+  box-shadow: 0 4px 14px rgb(29 52 84 / 4%);
+}
+
+.browser-toolbox-document-output {
+  min-height: calc(100vh - 73px);
+  padding: 18px 28px 44px;
+  color: #1f2d45;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.browser-toolbox-json-toggle {
+  color: var(--toolbox-document-blue);
+}
+
+.browser-toolbox-json-toggle:hover,
+.browser-toolbox-json-toggle:focus-visible {
+  background: var(--toolbox-document-blue-soft);
+}
+
+.browser-toolbox-token-comment { color: #75839a; }
+.browser-toolbox-token-string { color: #087f5b; }
+.browser-toolbox-token-number { color: #b45309; }
+.browser-toolbox-token-keyword { color: #7048b6; }
+
+@media (prefers-color-scheme: dark) {
+  body.browser-toolbox-document-formatted {
+    --toolbox-document-bg: #101827;
+    --toolbox-document-surface: #182438;
+    --toolbox-document-surface-muted: #202f46;
+    --toolbox-document-ink: #e8eef8;
+    --toolbox-document-muted: #a5b5c9;
+    --toolbox-document-line: #354862;
+    --toolbox-document-blue: #82aaff;
+    --toolbox-document-blue-soft: #203a66;
+    --toolbox-document-green: #70d8ab;
+  }
+
+  .browser-toolbox-document-toolbar {
+    background: rgb(24 36 56 / 97%);
+  }
+
+  .browser-toolbox-document-output {
+    color: var(--toolbox-document-ink);
+  }
+}
+
+@media (max-width: 720px) {
+  .browser-toolbox-document-toolbar {
+    align-items: stretch;
+    padding: 9px 12px;
+  }
+
+  .browser-toolbox-document-brand-group {
+    flex-basis: 100%;
+    justify-content: space-between;
+    margin-right: 0;
+  }
+
+  .browser-toolbox-document-output {
+    padding-right: 14px;
+    padding-left: 14px;
+  }
+}

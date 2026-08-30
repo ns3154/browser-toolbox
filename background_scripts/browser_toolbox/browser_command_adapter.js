@@ -11,6 +11,8 @@ import * as userSearchEngines from "../user_search_engines.js";
  */
 (function () {
   const invocationApi = globalThis.BrowserToolboxCommandInvocation;
+  const toolRegistry = globalThis.BrowserToolboxToolRegistry;
+  const toolLauncher = globalThis.BrowserToolboxToolLauncherInstance;
 
   function isHttpUrl(value) {
     if (typeof value !== "string" || value.length === 0 || value.length > 8192) return false;
@@ -94,6 +96,23 @@ import * as userSearchEngines from "../user_search_engines.js";
         case "BrowserToolbox.openSettings":
           await chrome.tabs.create({ url: chrome.runtime.getURL("pages/mouse_options.html") });
           return invocationApi.createResult(true);
+        case "BrowserToolbox.openTool": {
+          const toolId = invocation.options?.toolId;
+          const source = invocation.options?.source ||
+            (invocation.options?.inputToken ? "selection" : "action");
+          if (!toolRegistry?.get?.(toolId)) {
+            return invocationApi.createResult(
+              false,
+              invocationApi.ERROR_CODES.INVALID_OPTIONS,
+              "Unknown tool.",
+            );
+          }
+          return toolLauncher.open(toolId, {
+            token: invocation.options?.inputToken || "",
+            source,
+            tab,
+          });
+        }
         case "BrowserToolbox.searchSelection":
           return this.searchSelection(
             context.selectedText,

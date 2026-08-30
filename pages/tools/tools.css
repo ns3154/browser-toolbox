@@ -1,0 +1,1330 @@
+/* 独立工具页视觉令牌：浅色工作台是默认，暗色模式只在系统偏好下切换。 */
+body.browser-toolbox-tools-document {
+  --toolbox-bg: #f3f6fb;
+  --toolbox-surface: #ffffff;
+  --toolbox-surface-muted: #f7f9fd;
+  --toolbox-ink: #172033;
+  --toolbox-muted: #718096;
+  --toolbox-line: #dfe7f2;
+  --toolbox-line-strong: #c9d7e9;
+  --toolbox-blue: #2563eb;
+  --toolbox-blue-soft: #edf4ff;
+  --toolbox-green: #16835e;
+  --toolbox-red: #c2415d;
+  --toolbox-radius-sm: 10px;
+  --toolbox-radius-md: 14px;
+  --toolbox-radius-lg: 22px;
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  overflow-x: hidden;
+  background: var(--toolbox-bg);
+  color: var(--toolbox-ink);
+  font: 14px/1.5 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+.browser-toolbox-tools-document * {
+  box-sizing: border-box;
+}
+
+.browser-toolbox-tools-document [hidden] {
+  display: none !important;
+}
+
+.browser-toolbox-tools-document button,
+.browser-toolbox-tools-document input,
+.browser-toolbox-tools-document select,
+.browser-toolbox-tools-document textarea {
+  font: inherit;
+}
+
+.browser-toolbox-tools-document button,
+.browser-toolbox-tools-document a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tools-page {
+  width: min(100%, 1240px);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 28px 30px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tools-header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  padding: 16px 20px;
+  border: 1px solid var(--toolbox-line);
+  border-radius: var(--toolbox-radius-lg);
+  background: var(--toolbox-surface);
+  box-shadow: 0 12px 32px rgb(32 63 104 / 7%);
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-back,
+.browser-toolbox-tools-document .browser-toolbox-icon-button {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  min-width: 38px;
+  min-height: 38px;
+  padding: 7px;
+  border: 1px solid var(--toolbox-line);
+  border-radius: 12px;
+  background: var(--toolbox-surface-muted);
+  color: var(--toolbox-ink);
+  text-decoration: none;
+  cursor: pointer;
+  line-height: 1;
+  text-shadow: none;
+  transition: border-color .16s ease, background-color .16s ease, color .16s ease, transform .16s ease;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-back {
+  grid-template-columns: 18px auto;
+  gap: 7px;
+  padding-inline: 11px;
+  white-space: nowrap;
+  font-weight: 650;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-back .browser-toolbox-tool-icon,
+.browser-toolbox-tools-document .browser-toolbox-icon-button .browser-toolbox-tool-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-back:hover,
+.browser-toolbox-tools-document .browser-toolbox-tool-back:focus-visible,
+.browser-toolbox-tools-document .browser-toolbox-icon-button:hover,
+.browser-toolbox-tools-document .browser-toolbox-icon-button:focus-visible {
+  border-color: #a7c3f6;
+  background: var(--toolbox-blue-soft);
+  color: var(--toolbox-blue);
+  outline: none;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-icon-button:focus-visible,
+.browser-toolbox-tools-document .browser-toolbox-tool-back:focus-visible {
+  box-shadow: 0 0 0 3px rgb(37 99 235 / 18%);
+}
+
+.browser-toolbox-tools-document .browser-toolbox-icon-button:active,
+.browser-toolbox-tools-document .browser-toolbox-tool-back:active {
+  transform: translateY(1px);
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-heading {
+  min-width: 0;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-eyebrow {
+  margin: 0 0 4px;
+  color: var(--toolbox-blue);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-title-row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-icon-wrap {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 13px;
+  background: var(--toolbox-blue-soft);
+  color: var(--toolbox-blue);
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-icon-wrap .browser-toolbox-tool-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-title-row h1 {
+  max-width: 100%;
+  margin: 0;
+  overflow: hidden;
+  color: var(--toolbox-ink);
+  font-size: clamp(21px, 2vw, 28px);
+  letter-spacing: -.035em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tools-header #tool-description {
+  max-width: 720px;
+  margin: 3px 0 0;
+  overflow: hidden;
+  color: var(--toolbox-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-icon-button > .browser-toolbox-tool-icon {
+  pointer-events: none;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-workspace {
+  min-height: 620px;
+  padding: 20px;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 15px;
+  min-width: 0;
+  border: 1px solid var(--toolbox-line);
+  border-radius: var(--toolbox-radius-lg);
+  background: var(--toolbox-surface);
+  box-shadow: 0 14px 34px rgb(32 63 104 / 6%);
+}
+
+.browser-toolbox-tools-document .browser-toolbox-workspace-heading,
+.browser-toolbox-tools-document .browser-toolbox-result-heading,
+.browser-toolbox-tools-document .browser-toolbox-diff-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  min-width: 0;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-section-kicker {
+  display: block;
+  margin-bottom: 2px;
+  color: var(--toolbox-blue);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-workspace-heading h2,
+.browser-toolbox-tools-document .browser-toolbox-result-heading h2,
+.browser-toolbox-tools-document .browser-toolbox-diff-heading h3 {
+  margin: 0;
+  color: var(--toolbox-ink);
+  font-size: 17px;
+  letter-spacing: -.02em;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-local-badge {
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #eaf8f2;
+  color: var(--toolbox-green);
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 10px 12px;
+  min-width: 0;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-control,
+.browser-toolbox-tools-document .browser-toolbox-tool-input,
+.browser-toolbox-tools-document .browser-toolbox-tool-file {
+  display: grid;
+  min-width: 0;
+  gap: 6px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-control {
+  min-width: 145px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-control:has(input[type="checkbox"]) {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-control input[type="checkbox"] {
+  width: 37px;
+  min-width: 37px;
+  height: 22px;
+  min-height: 22px;
+  margin: 0;
+  padding: 2px;
+  appearance: none;
+  border: 1px solid var(--toolbox-line-strong);
+  border-radius: 999px;
+  background: #e8eef7;
+  box-shadow: inset 0 1px 2px rgb(32 63 104 / 9%);
+  cursor: pointer;
+  transition: background-color .16s ease, border-color .16s ease;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-control input[type="checkbox"]::before {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgb(20 44 75 / 22%);
+  content: "";
+  transition: transform .16s ease;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-control input[type="checkbox"]:checked {
+  border-color: var(--toolbox-blue);
+  background: var(--toolbox-blue);
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-control input[type="checkbox"]:checked::before {
+  transform: translateX(15px);
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-control input[type="checkbox"]:focus-visible {
+  outline: 2px solid rgb(37 99 235 / 20%);
+  outline-offset: 2px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-control > span,
+.browser-toolbox-tools-document .browser-toolbox-tool-input > span,
+.browser-toolbox-tools-document .browser-toolbox-tool-file > span,
+.browser-toolbox-tools-document .browser-toolbox-control-heading {
+  color: var(--toolbox-muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.browser-toolbox-tools-document :is(input, select, textarea) {
+  border: 1px solid var(--toolbox-line);
+  border-radius: var(--toolbox-radius-sm);
+  background: var(--toolbox-surface);
+  color: var(--toolbox-ink);
+  box-shadow: inset 0 1px 2px rgb(32 63 104 / 3%);
+}
+
+.browser-toolbox-tools-document :is(input, select) {
+  min-height: 36px;
+  padding: 7px 10px;
+}
+
+.browser-toolbox-tools-document :is(input, select, textarea):focus-visible {
+  border-color: var(--toolbox-blue);
+  outline: 2px solid rgb(37 99 235 / 18%);
+  outline-offset: 1px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-input-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  min-height: 0;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-input textarea {
+  width: 100%;
+  min-height: 315px;
+  padding: 13px 14px;
+  resize: vertical;
+  font: 13px/1.65 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  tab-size: 2;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-input.is-disabled {
+  opacity: .55;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-file {
+  width: min(100%, 520px);
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-file input {
+  padding: 6px;
+  color: var(--toolbox-muted);
+  font-size: 12px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-actions #tool-run {
+  min-width: 104px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-actions .browser-toolbox-icon-button {
+  min-width: 36px;
+  min-height: 36px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-actions button.primary {
+  min-height: 38px;
+  padding: 7px 18px;
+  border: 1px solid var(--toolbox-blue);
+  border-radius: var(--toolbox-radius-sm);
+  background: var(--toolbox-blue);
+  color: #fff;
+  cursor: pointer;
+  font-weight: 750;
+  text-shadow: none;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-actions button.primary:hover,
+.browser-toolbox-tools-document .browser-toolbox-tool-actions button.primary:focus-visible {
+  border-color: #1d4ed8;
+  background: #1d4ed8;
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(37 99 235 / 17%);
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-actions button:disabled {
+  cursor: progress;
+  opacity: .65;
+}
+
+.browser-toolbox-tools-document #tool-status {
+  min-height: 1.4em;
+  margin: -3px 0 0;
+  color: var(--toolbox-muted);
+  font-size: 12px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-result {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  gap: 10px;
+  padding: 15px;
+  min-width: 0;
+  border: 1px solid var(--toolbox-line);
+  border-radius: var(--toolbox-radius-md);
+  background: var(--toolbox-surface-muted);
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-output,
+.browser-toolbox-tools-document .browser-toolbox-codec-output {
+  min-height: 190px;
+  max-height: 620px;
+  margin: 0;
+  padding: 14px;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  border: 1px solid var(--toolbox-line);
+  border-radius: var(--toolbox-radius-sm);
+  background: #fbfcff;
+  color: #26364c;
+  font: 13px/1.65 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-metadata {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 5px 14px;
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--toolbox-line);
+  border-radius: var(--toolbox-radius-sm);
+  background: var(--toolbox-surface);
+  color: var(--toolbox-muted);
+  font: 11px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-metadata dt {
+  color: var(--toolbox-ink);
+  font-weight: 750;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-metadata dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+/* JSON：左侧只输入原文，右侧以可折叠树显示结果；行级操作只有图标。 */
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-workspace,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: auto auto minmax(0, 1fr) auto auto auto;
+  align-content: stretch;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-workspace-heading,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-workspace-heading,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-controls,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-controls {
+  grid-column: 1 / -1;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-input-grid,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-input-grid {
+  grid-column: 1;
+  grid-row: 3;
+  align-self: stretch;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-input,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-input {
+  min-height: 0;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-input textarea,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-input textarea {
+  height: 100%;
+  min-height: 390px;
+  resize: none;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-file,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-file,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-actions,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-actions,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json #tool-status,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-codec #tool-status {
+  grid-column: 1;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-result,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-result {
+  grid-column: 2;
+  grid-row: 3 / 7;
+  min-height: 0;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-json-result {
+  display: flex;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-json-result-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-json-result-toolbar .browser-toolbox-icon-button {
+  min-width: 31px;
+  min-height: 31px;
+  padding: 6px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-json-result-toolbar .browser-toolbox-icon-button:last-child .browser-toolbox-tool-icon {
+  transform: rotate(180deg);
+}
+
+.browser-toolbox-tools-document .browser-toolbox-json-tree {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 12px 11px;
+  overflow: auto;
+  border: 1px solid var(--toolbox-line);
+  border-radius: var(--toolbox-radius-sm);
+  background: #fbfcff;
+  color: #27364c;
+  font: 13px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-json-tree:focus-visible {
+  outline: 2px solid rgb(37 99 235 / 25%);
+  outline-offset: -2px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-json-node {
+  min-width: max-content;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-json-row {
+  display: flex;
+  min-height: 31px;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 3px;
+  border-radius: 7px;
+  white-space: pre;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-json-row:hover {
+  background: #f0f5ff;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-json-toggle,
+.browser-toolbox-tools-document .browser-toolbox-json-toggle-spacer {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  min-height: 24px;
+  padding: 4px;
+  border: 0;
+  background: transparent;
+  color: var(--toolbox-muted);
+}
+
+.browser-toolbox-tools-document .browser-toolbox-json-toggle {
+  cursor: pointer;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-json-toggle:hover,
+.browser-toolbox-tools-document .browser-toolbox-json-toggle:focus-visible {
+  background: var(--toolbox-blue-soft);
+  color: var(--toolbox-blue);
+  outline: none;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-json-toggle .browser-toolbox-tool-icon {
+  width: 16px;
+  height: 16px;
+  transition: transform .16s ease;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-json-toggle.is-collapsed .browser-toolbox-tool-icon {
+  transform: rotate(-90deg);
+}
+
+.browser-toolbox-tools-document .browser-toolbox-json-key {
+  color: #4d6da6;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-json-separator {
+  color: var(--toolbox-muted);
+}
+
+.browser-toolbox-tools-document .browser-toolbox-json-value-string {
+  color: #b14d63;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-json-value-number {
+  color: #a36221;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-json-value-literal {
+  color: #377d66;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-json-node-actions {
+  display: inline-flex;
+  gap: 2px;
+  margin-left: 7px;
+  opacity: .5;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-json-row:hover .browser-toolbox-json-node-actions,
+.browser-toolbox-tools-document .browser-toolbox-json-node-actions:focus-within {
+  opacity: 1;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-json-node-action {
+  width: 25px;
+  min-width: 25px;
+  height: 25px;
+  min-height: 25px;
+  padding: 5px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--toolbox-muted);
+}
+
+.browser-toolbox-tools-document .browser-toolbox-json-node-action:hover,
+.browser-toolbox-tools-document .browser-toolbox-json-node-action:focus-visible {
+  background: var(--toolbox-blue-soft);
+  color: var(--toolbox-blue);
+  outline: none;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-json-node-action:last-child:hover,
+.browser-toolbox-tools-document .browser-toolbox-json-node-action:last-child:focus-visible {
+  background: #fff0f2;
+  color: var(--toolbox-red);
+}
+
+.browser-toolbox-tools-document .browser-toolbox-json-node-action .browser-toolbox-tool-icon {
+  width: 15px;
+  height: 15px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-json-children {
+  margin-left: 12px;
+  padding-left: 13px;
+  border-left: 1px solid #d7e2f2;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-json-closing {
+  min-height: 24px;
+  padding: 3px 0 3px 4px;
+  color: var(--toolbox-muted);
+}
+
+.browser-toolbox-tools-document .browser-toolbox-json-empty {
+  margin: 8px;
+  color: var(--toolbox-muted);
+}
+
+/* 编码：操作和类型永远在上方，输入与结果固定为左右两栏。 */
+.browser-toolbox-tools-document .browser-toolbox-codec-controls {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: 13px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-codec-operation,
+.browser-toolbox-tools-document .browser-toolbox-codec-type-group {
+  display: grid;
+  gap: 7px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-segmented-control {
+  display: inline-flex;
+  width: fit-content;
+  padding: 3px;
+  gap: 3px;
+  border: 1px solid var(--toolbox-line);
+  border-radius: 11px;
+  background: var(--toolbox-surface-muted);
+}
+
+.browser-toolbox-tools-document .browser-toolbox-segmented-control button,
+.browser-toolbox-tools-document .browser-toolbox-codec-type-card {
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--toolbox-muted);
+  cursor: pointer;
+  text-shadow: none;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-segmented-control button {
+  min-width: 88px;
+  padding: 7px 14px;
+  font-weight: 750;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-segmented-control button.is-selected,
+.browser-toolbox-tools-document .browser-toolbox-segmented-control button:hover,
+.browser-toolbox-tools-document .browser-toolbox-segmented-control button:focus-visible {
+  border-color: #b3cdfb;
+  background: var(--toolbox-blue);
+  color: #fff;
+  outline: none;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-codec-type-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(74px, 1fr));
+  gap: 7px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-codec-type-card {
+  min-height: 43px;
+  padding: 8px 9px;
+  border-color: var(--toolbox-line);
+  background: var(--toolbox-surface-muted);
+  color: var(--toolbox-ink);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-codec-type-card.is-selected,
+.browser-toolbox-tools-document .browser-toolbox-codec-type-card:hover,
+.browser-toolbox-tools-document .browser-toolbox-codec-type-card:focus-visible {
+  border-color: #8bb2fb;
+  background: var(--toolbox-blue-soft);
+  color: var(--toolbox-blue);
+  outline: none;
+  box-shadow: 0 0 0 2px rgb(37 99 235 / 11%);
+}
+
+.browser-toolbox-tools-document .browser-toolbox-codec-advanced {
+  margin-top: 2px;
+  color: var(--toolbox-muted);
+  font-size: 12px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-codec-advanced summary {
+  width: fit-content;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-codec-type-grid-advanced {
+  grid-template-columns: repeat(5, minmax(110px, 1fr));
+  margin-top: 8px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-codec-output {
+  flex: 1 1 auto;
+  min-height: 390px;
+  max-height: none;
+  background: #fbfcff;
+  color: #26364c;
+}
+
+/* 对比：编辑区固定在上方，差异区固定在下方，差异文字只在自己的面板滚动。 */
+.browser-toolbox-tools-document.browser-toolbox-tool-is-diff .browser-toolbox-tools-page {
+  height: 100vh;
+  min-height: 560px;
+  overflow: hidden;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-diff .browser-toolbox-tool-workspace {
+  min-height: 0;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto auto minmax(190px, 1fr) minmax(170px, 32vh) auto auto;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-diff .browser-toolbox-tool-input-grid {
+  grid-row: 3;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  min-height: 0;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-diff .browser-toolbox-tool-input,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-diff .browser-toolbox-tool-input textarea {
+  min-height: 0;
+  height: 100%;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-diff .browser-toolbox-tool-input textarea {
+  resize: none;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-diff .browser-toolbox-tool-result {
+  grid-row: 4;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-diff .browser-toolbox-tool-file {
+  grid-row: 5;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-diff .browser-toolbox-tool-actions {
+  grid-row: 6;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-diff #tool-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-diff-result {
+  display: flex;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-diff-summary {
+  padding: 4px 8px;
+  border-radius: 7px;
+  background: #edf4ff;
+  color: var(--toolbox-blue);
+  font: 700 11px/1.3 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-diff-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  border: 1px solid var(--toolbox-line);
+  border-radius: var(--toolbox-radius-sm);
+  background: #fbfcff;
+  font: 12px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-diff-row {
+  display: grid;
+  grid-template-columns: 21px 43px minmax(0, 1fr);
+  align-items: baseline;
+  min-height: 27px;
+  padding: 3px 10px;
+  border-bottom: 1px solid rgb(223 231 242 / 55%);
+}
+
+.browser-toolbox-tools-document .browser-toolbox-diff-row:last-child {
+  border-bottom: 0;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-diff-row code {
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-diff-marker {
+  font-weight: 800;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-diff-line-number {
+  color: #9aa9bd;
+  text-align: right;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-diff-row-add {
+  background: #effaf4;
+  color: #176b4d;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-diff-row-remove {
+  background: #fff3f4;
+  color: #a63550;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-diff-row-same {
+  color: #55657a;
+}
+
+@media (prefers-color-scheme: dark) {
+  body.browser-toolbox-tools-document {
+    --toolbox-bg: #101827;
+    --toolbox-surface: #172235;
+    --toolbox-surface-muted: #1e2c42;
+    --toolbox-ink: #e7eef9;
+    --toolbox-muted: #9eafc5;
+    --toolbox-line: #344661;
+    --toolbox-line-strong: #49617f;
+    --toolbox-blue: #82aaff;
+    --toolbox-blue-soft: #213b66;
+    --toolbox-green: #66c49f;
+    --toolbox-red: #ff9eb1;
+  }
+
+  .browser-toolbox-tools-document .browser-toolbox-local-badge {
+    background: #173d35;
+  }
+
+  .browser-toolbox-tools-document :is(input, select, textarea),
+  .browser-toolbox-tools-document .browser-toolbox-tool-output,
+  .browser-toolbox-tools-document .browser-toolbox-codec-output,
+  .browser-toolbox-tools-document .browser-toolbox-json-tree,
+  .browser-toolbox-tools-document .browser-toolbox-diff-list {
+    background: #121c2d;
+    color: var(--toolbox-ink);
+  }
+
+  .browser-toolbox-tools-document .browser-toolbox-json-key {
+    color: #9dbdfb;
+  }
+
+  .browser-toolbox-tools-document .browser-toolbox-json-value-string {
+    color: #ff9eb1;
+  }
+
+  .browser-toolbox-tools-document .browser-toolbox-json-value-number {
+    color: #ffc181;
+  }
+
+  .browser-toolbox-tools-document .browser-toolbox-json-value-literal {
+    color: #8cd7b8;
+  }
+
+  .browser-toolbox-tools-document .browser-toolbox-diff-row-add {
+    background: #15362e;
+    color: #8cd7b8;
+  }
+
+  .browser-toolbox-tools-document .browser-toolbox-diff-row-remove {
+    background: #3a202b;
+    color: #ff9eb1;
+  }
+}
+
+@media (max-width: 900px) {
+  .browser-toolbox-tools-document .browser-toolbox-codec-type-grid {
+    grid-template-columns: repeat(4, minmax(90px, 1fr));
+  }
+
+  .browser-toolbox-tools-document .browser-toolbox-codec-type-grid-advanced {
+    grid-template-columns: repeat(3, minmax(110px, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .browser-toolbox-tools-document .browser-toolbox-tools-page {
+    padding: 14px 12px 24px;
+  }
+
+  .browser-toolbox-tools-document .browser-toolbox-tools-header {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .browser-toolbox-tools-document .browser-toolbox-tool-back {
+    width: 38px;
+    grid-template-columns: 18px;
+    padding: 7px;
+  }
+
+  .browser-toolbox-tools-document .browser-toolbox-tool-back > span:last-child {
+    display: none;
+  }
+
+  .browser-toolbox-tools-document .browser-toolbox-tool-title-row h1 {
+    font-size: 21px;
+  }
+
+  .browser-toolbox-tools-document .browser-toolbox-tools-header #tool-description {
+    font-size: 12px;
+  }
+
+  .browser-toolbox-tools-document .browser-toolbox-tool-workspace {
+    min-height: 0;
+    padding: 14px;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-workspace,
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-workspace,
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-diff .browser-toolbox-tool-workspace {
+    height: auto;
+    min-height: calc(100vh - 132px);
+    overflow: visible;
+    display: flex;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-input-grid,
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-input-grid,
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-diff .browser-toolbox-tool-input-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-input textarea,
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-input textarea,
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-diff .browser-toolbox-tool-input textarea {
+    height: auto;
+    min-height: 230px;
+  }
+
+  .browser-toolbox-tools-document .browser-toolbox-tool-result {
+    min-height: 300px;
+  }
+
+  .browser-toolbox-tools-document .browser-toolbox-codec-type-grid,
+  .browser-toolbox-tools-document .browser-toolbox-codec-type-grid-advanced {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-diff .browser-toolbox-tool-input-grid {
+    min-height: 0;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-diff .browser-toolbox-diff-list {
+    min-height: 240px;
+  }
+}
+
+/* 独立工具页的视觉收敛：让内容成为主角，减少大面积空白与重复卡片边界。 */
+body.browser-toolbox-tools-document {
+  --toolbox-bg: #f1f5fa;
+  --toolbox-surface: #ffffff;
+  --toolbox-surface-muted: #f8faff;
+  --toolbox-ink: #17233a;
+  --toolbox-muted: #6d7f99;
+  --toolbox-line: #d8e2ef;
+  --toolbox-line-strong: #c2d0e1;
+  --toolbox-blue: #1f5fe7;
+  --toolbox-blue-soft: #edf4ff;
+  --toolbox-green: #14845d;
+  --toolbox-red: #c2415d;
+  --toolbox-radius-sm: 9px;
+  --toolbox-radius-md: 12px;
+  --toolbox-radius-lg: 17px;
+  background: var(--toolbox-bg);
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tools-page {
+  width: min(100%, 1320px);
+  padding: 22px 24px 28px;
+  gap: 14px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tools-header {
+  gap: 14px;
+  padding: 13px 16px;
+  border-radius: var(--toolbox-radius-lg);
+  box-shadow: 0 8px 22px rgb(32 63 104 / 6%);
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-back,
+.browser-toolbox-tools-document .browser-toolbox-icon-button {
+  min-height: 36px;
+  border-radius: 10px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-back {
+  min-width: 36px;
+  padding-inline: 10px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-eyebrow {
+  margin-bottom: 2px;
+  font-size: 10px;
+  letter-spacing: .14em;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-title-row {
+  gap: 10px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-icon-wrap {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-icon-wrap .browser-toolbox-tool-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-title-row h1 {
+  font-size: clamp(21px, 2vw, 26px);
+  letter-spacing: -.04em;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tools-header #tool-description {
+  margin-top: 2px;
+  font-size: 13px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-workspace {
+  min-height: 560px;
+  padding: 18px;
+  gap: 13px;
+  border-radius: var(--toolbox-radius-lg);
+  box-shadow: 0 10px 26px rgb(32 63 104 / 5%);
+}
+
+.browser-toolbox-tools-document .browser-toolbox-workspace-heading h2,
+.browser-toolbox-tools-document .browser-toolbox-result-heading h2,
+.browser-toolbox-tools-document .browser-toolbox-diff-heading h3 {
+  font-size: 16px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-local-badge {
+  padding: 4px 9px;
+  font-size: 10px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-control > span,
+.browser-toolbox-tools-document .browser-toolbox-tool-input > span,
+.browser-toolbox-tools-document .browser-toolbox-tool-file > span,
+.browser-toolbox-tools-document .browser-toolbox-control-heading {
+  font-size: 10px;
+  letter-spacing: .01em;
+}
+
+.browser-toolbox-tools-document :is(input, select, textarea) {
+  border-color: var(--toolbox-line);
+  border-radius: 9px;
+  box-shadow: none;
+}
+
+.browser-toolbox-tools-document :is(input, select) {
+  min-height: 34px;
+  padding: 6px 9px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-input textarea {
+  min-height: 300px;
+  padding: 12px 13px;
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-file {
+  width: min(100%, 520px);
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-file input {
+  min-height: 36px;
+  padding: 5px 7px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-file input::file-selector-button {
+  margin-right: 8px;
+  padding: 5px 9px;
+  border: 1px solid var(--toolbox-line-strong);
+  border-radius: 7px;
+  background: var(--toolbox-surface-muted);
+  color: var(--toolbox-ink);
+  cursor: pointer;
+  font: inherit;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-actions {
+  gap: 7px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-actions button.primary {
+  min-height: 37px;
+  border-radius: 9px;
+  box-shadow: 0 4px 10px rgb(31 95 231 / 17%);
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-result {
+  padding: 13px;
+  gap: 8px;
+  border-radius: var(--toolbox-radius-md);
+  background: var(--toolbox-surface-muted);
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-output,
+.browser-toolbox-tools-document .browser-toolbox-codec-output,
+.browser-toolbox-tools-document .browser-toolbox-json-tree,
+.browser-toolbox-tools-document .browser-toolbox-diff-list {
+  background: var(--toolbox-surface);
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-output,
+.browser-toolbox-tools-document .browser-toolbox-codec-output {
+  min-height: 170px;
+  padding: 13px;
+  font-size: 12.5px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-tool-metadata {
+  max-height: 182px;
+  overflow: auto;
+  padding: 9px 11px;
+  border-radius: 9px;
+  font-size: 10px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-json-result-toolbar {
+  gap: 5px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-json-result-toolbar .browser-toolbox-icon-button {
+  min-width: 29px;
+  min-height: 29px;
+  padding: 5px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-json-tree {
+  padding: 10px;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-json-row {
+  min-height: 28px;
+  padding: 1px 3px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-json-node-actions {
+  opacity: .38;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-json-node-action {
+  width: 23px;
+  min-width: 23px;
+  height: 23px;
+  min-height: 23px;
+  padding: 4px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-codec-type-grid {
+  gap: 6px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-codec-type-card {
+  min-height: 41px;
+  padding: 7px 8px;
+  border-radius: 9px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-diff-result {
+  gap: 7px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-diff-summary {
+  padding: 4px 7px;
+  border-radius: 6px;
+}
+
+.browser-toolbox-tools-document .browser-toolbox-diff-row {
+  min-height: 26px;
+  padding: 3px 9px;
+}
+
+@media (prefers-color-scheme: dark) {
+  body.browser-toolbox-tools-document {
+    --toolbox-bg: #0f1726;
+    --toolbox-surface: #172235;
+    --toolbox-surface-muted: #202e44;
+    --toolbox-ink: #e8eef8;
+    --toolbox-muted: #a6b5c9;
+    --toolbox-line: #354862;
+    --toolbox-line-strong: #4b607c;
+    --toolbox-blue: #82aaff;
+    --toolbox-blue-soft: #203a66;
+    --toolbox-green: #70d8ab;
+  }
+
+  .browser-toolbox-tools-document .browser-toolbox-tool-output,
+  .browser-toolbox-tools-document .browser-toolbox-codec-output,
+  .browser-toolbox-tools-document .browser-toolbox-json-tree,
+  .browser-toolbox-tools-document .browser-toolbox-diff-list {
+    background: #121c2d;
+  }
+}
+
+@media (max-width: 720px) {
+  .browser-toolbox-tools-document .browser-toolbox-tools-page {
+    padding: 14px 12px 22px;
+  }
+
+  .browser-toolbox-tools-document .browser-toolbox-tools-header {
+    padding: 11px 12px;
+  }
+
+  .browser-toolbox-tools-document .browser-toolbox-tool-workspace {
+    min-height: 0;
+    padding: 14px;
+  }
+
+  .browser-toolbox-tools-document .browser-toolbox-tool-heading {
+    min-width: 0;
+  }
+
+  .browser-toolbox-tools-document .browser-toolbox-tool-title-row h1 {
+    overflow: visible;
+    font-size: 21px;
+    line-height: 1.25;
+    text-overflow: clip;
+    white-space: normal;
+  }
+
+  .browser-toolbox-tools-document .browser-toolbox-tools-header #tool-description {
+    max-width: 100%;
+    overflow: visible;
+    line-height: 1.4;
+    text-overflow: clip;
+    white-space: normal;
+  }
+}

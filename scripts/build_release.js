@@ -14,7 +14,7 @@ const secretFilePattern = /(?:^|\.)(?:env|pem|key|p12)$/i;
 async function findSecretFiles(directory, relativeDirectory = ".") {
   const secretFiles = [];
   for await (const entry of Deno.readDir(directory)) {
-    if ([".git", "dist", "node_modules"].includes(entry.name)) continue;
+    if ([".git", "dist", "node_modules", "local-development"].includes(entry.name)) continue;
     const filePath = `${directory}/${entry.name}`;
     const relativePath = relativeDirectory === "."
       ? entry.name
@@ -94,6 +94,8 @@ if (Deno.args.includes("--package")) {
       "./deno.lock",
       "./docs",
       "./docs/*",
+      "./local-development",
+      "./local-development/*",
       "./scripts",
       "./scripts/*",
       ".*",
@@ -115,12 +117,11 @@ if (Deno.args.includes("--package")) {
     "./dist/*",
     "./node_modules",
     "./node_modules/*",
+    // 本机开发设计、竞品截图、UI 设计稿和 Bug 记录不得进入源码包。
+    "./local-development",
+    "./local-development/*",
+    "./.DS_Store",
     "./**/.DS_Store",
-    // 这些文件是会随每轮验收变化的审计记录，不能进入可重复的源码快照。
-    "./docs/baseline.md",
-    "./docs/codex-progress.md",
-    "./docs/release-checklist.md",
-    "./docs/feature-parity-matrix.md",
   ];
   const sourceResult = await new Deno.Command("zip", {
     args: [

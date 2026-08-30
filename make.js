@@ -121,6 +121,8 @@ async function buildStorePackage() {
     "MIT-LICENSE.txt",
     "build_scripts",
     "dist",
+    // 本机开发过程资料由 Git 忽略，也不得进入商店构建目录。
+    "local-development",
     // 审计、发布和 E2E 脚本只服务于源码仓库，不应进入商店包。
     "docs",
     "scripts",

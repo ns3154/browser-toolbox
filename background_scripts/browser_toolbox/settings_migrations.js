@@ -33,6 +33,7 @@
     "exclusionRules",
     "searchEngines",
     "privacy",
+    "tools",
     // 这是 schemaVersion=0 的迁移入口，不能在报告中误判为未知字段。
     "gestureBindings",
   ]);
@@ -59,7 +60,25 @@
     rocker: new Set(["enabled", "bindings"]),
     cursor: new Set(["enabled", "localAssetId", "hotspotX", "hotspotY"]),
     privacy: new Set(["telemetry", "remoteConfig", "backgroundNetwork"]),
+    tools: new Set([
+      "enabled",
+      "pinnedIds",
+      "contextMenu",
+      "documentFormatter",
+      // 早期开发快照中的平铺字段只作为兼容输入读取，迁移后不会继续写回。
+      "actionToolIds",
+      "contextMenuToolIds",
+    ]),
   });
+  const TOOL_CONTEXT_MENU_KEYS = new Set(["enabled", "toolIds"]);
+  const TOOL_DOCUMENT_FORMATTER_KEYS = new Set([
+    "enabled",
+    "autoFormat",
+    "maxAutoBytes",
+    "json",
+  ]);
+  const TOOL_DOCUMENT_FORMAT_KEYS = new Set(["json", "xml", "css", "javascript", "java"]);
+  const TOOL_DOCUMENT_JSON_KEYS = new Set(["defaultSort", "defaultCollapseDepth"]);
   const BINDING_KEYS = new Set([
     "id",
     "enabled",
@@ -87,6 +106,7 @@
     "wheel",
     "rocker",
     "cursor",
+    "documentFormatter",
   ]);
   const EXCLUSION_RULE_KEYS = new Set(["pattern", "passKeys"]);
   const EXPORT_WRAPPER_KEYS = new Set([
@@ -168,6 +188,130 @@
     return next;
   }
 
+  function migrate4To5(input) {
+    const next = schema.mergeSettings(input);
+    next.schemaVersion = 5;
+    normalizeToolSettings(next, input?.tools);
+    return next;
+  }
+
+  function normalizeToolIds(ids, defaults, max, source, surface) {
+    const registry = globalThis.BrowserToolboxToolRegistry;
+    const fallbackSources = new Map([
+      ["json.format", { sources: ["action", "selection", "page", "command"], surfaces: ["popup", "contextMenu"] }],
+      ["text.diff", { sources: ["action", "selection", "command"], surfaces: ["popup", "contextMenu"] }],
+      ["codec.transform", { sources: ["action", "selection", "command"], surfaces: ["popup", "contextMenu"] }],
+      ["time.convert", { sources: ["action", "selection", "command"], surfaces: ["popup", "contextMenu"] }],
+      ["id.generate", { sources: ["action", "command"], surfaces: ["popup"] }],
+      ["password.generate", { sources: ["action", "command"], surfaces: ["popup"] }],
+      ["table.convert", { sources: ["action", "selection", "command"], surfaces: ["contextMenu"] }],
+    ]);
+    if (!Array.isArray(ids)) return [...defaults];
+    const result = [];
+    const seen = new Set();
+    for (const id of ids) {
+      const descriptor = registry?.get?.(id);
+      const fallback = fallbackSources.get(id);
+      const allowed = descriptor
+        ? descriptor.allowedSources.includes(source) && descriptor.surfaces?.[surface] === true
+        : fallback?.sources.includes(source) && fallback?.surfaces.includes(surface);
+      if (!allowed || seen.has(id)) continue;
+      seen.add(id);
+      result.push(id);
+      if (result.length === max) break;
+    }
+    return result;
+  }
+
+  function normalizeToolSettings(next, inputTools = {}) {
+    const defaults = schema.DEFAULT_SETTINGS.tools;
+    const source = inputTools && typeof inputTools === "object" && !Array.isArray(inputTools)
+      ? inputTools
+      : {};
+    const legacyPinned = Array.isArray(source.actionToolIds) ? source.actionToolIds : null;
+    const legacyContext = Array.isArray(source.contextMenuToolIds) ? source.contextMenuToolIds : null;
+    const contextSource = source.contextMenu && typeof source.contextMenu === "object" &&
+        !Array.isArray(source.contextMenu)
+      ? source.contextMenu
+      : {};
+    // 先把未知字段带入新结构，再只规范化已知字段；这样未来版本字段不会在迁移时静默丢失。
+    const mergedTools = schema.mergeSettings({ tools: defaults }, { tools: source }).tools;
+    next.tools = mergedTools && typeof mergedTools === "object" && !Array.isArray(mergedTools)
+      ? mergedTools
+      : schema.clone(defaults);
+    next.tools.enabled = typeof source.enabled === "boolean" ? source.enabled : defaults.enabled;
+    next.tools.pinnedIds = normalizeToolIds(
+      Array.isArray(source.pinnedIds) ? source.pinnedIds : legacyPinned,
+      defaults.pinnedIds,
+      6,
+      "action",
+      "popup",
+    );
+    if (!next.tools.contextMenu || typeof next.tools.contextMenu !== "object" ||
+      Array.isArray(next.tools.contextMenu)) {
+      next.tools.contextMenu = schema.clone(defaults.contextMenu);
+    }
+    next.tools.contextMenu.enabled = typeof contextSource.enabled === "boolean"
+      ? contextSource.enabled
+      : defaults.contextMenu.enabled;
+    next.tools.contextMenu.toolIds = normalizeToolIds(
+      Array.isArray(contextSource.toolIds) ? contextSource.toolIds : legacyContext,
+      defaults.contextMenu.toolIds,
+      3,
+      "selection",
+      "contextMenu",
+    );
+    const documentFormatter = source.documentFormatter;
+    if (!next.tools.documentFormatter || typeof next.tools.documentFormatter !== "object" ||
+      Array.isArray(next.tools.documentFormatter)) {
+      next.tools.documentFormatter = schema.clone(defaults.documentFormatter);
+    }
+    if (documentFormatter && typeof documentFormatter === "object" && !Array.isArray(documentFormatter)) {
+      if (typeof documentFormatter.enabled === "boolean") {
+        next.tools.documentFormatter.enabled = documentFormatter.enabled;
+      }
+      if (documentFormatter.autoFormat && typeof documentFormatter.autoFormat === "object" &&
+        !Array.isArray(documentFormatter.autoFormat)) {
+        if (!next.tools.documentFormatter.autoFormat ||
+          typeof next.tools.documentFormatter.autoFormat !== "object" ||
+          Array.isArray(next.tools.documentFormatter.autoFormat)) {
+          next.tools.documentFormatter.autoFormat = schema.clone(defaults.documentFormatter.autoFormat);
+        }
+        for (const format of Object.keys(next.tools.documentFormatter.autoFormat)) {
+          if (typeof documentFormatter.autoFormat[format] === "boolean") {
+            next.tools.documentFormatter.autoFormat[format] = documentFormatter.autoFormat[format];
+          }
+        }
+      }
+      if (
+        Number.isInteger(documentFormatter.maxAutoBytes) &&
+        documentFormatter.maxAutoBytes >= 0 &&
+        documentFormatter.maxAutoBytes <= 10 * 1024 * 1024
+        ) {
+        next.tools.documentFormatter.maxAutoBytes = documentFormatter.maxAutoBytes;
+      }
+      if (documentFormatter.json && typeof documentFormatter.json === "object" &&
+        !Array.isArray(documentFormatter.json)) {
+        if (!next.tools.documentFormatter.json || typeof next.tools.documentFormatter.json !== "object" ||
+          Array.isArray(next.tools.documentFormatter.json)) {
+          next.tools.documentFormatter.json = schema.clone(defaults.documentFormatter.json);
+        }
+        if (["original", "ascending", "descending"].includes(documentFormatter.json.defaultSort)) {
+          next.tools.documentFormatter.json.defaultSort = documentFormatter.json.defaultSort;
+        }
+        if (
+          documentFormatter.json.defaultCollapseDepth === null ||
+          (Number.isInteger(documentFormatter.json.defaultCollapseDepth) &&
+            documentFormatter.json.defaultCollapseDepth >= 0 &&
+            documentFormatter.json.defaultCollapseDepth <= 96)
+        ) next.tools.documentFormatter.json.defaultCollapseDepth = documentFormatter.json.defaultCollapseDepth;
+      }
+    }
+    delete next.tools.actionToolIds;
+    delete next.tools.contextMenuToolIds;
+    return next;
+  }
+
   function isRecord(value) {
     return value != null && typeof value === "object" && !Array.isArray(value);
   }
@@ -214,6 +358,27 @@
         collectBindingUnknownFields(section?.bindings, `${sectionName}.bindings`, output);
       }
     }
+    const contextMenu = settings.tools?.contextMenu;
+    collectObjectUnknownFields(contextMenu, TOOL_CONTEXT_MENU_KEYS, "tools.contextMenu", output);
+    const documentFormatter = settings.tools?.documentFormatter;
+    collectObjectUnknownFields(
+      documentFormatter,
+      TOOL_DOCUMENT_FORMATTER_KEYS,
+      "tools.documentFormatter",
+      output,
+    );
+    collectObjectUnknownFields(
+      documentFormatter?.autoFormat,
+      TOOL_DOCUMENT_FORMAT_KEYS,
+      "tools.documentFormatter.autoFormat",
+      output,
+    );
+    collectObjectUnknownFields(
+      documentFormatter?.json,
+      TOOL_DOCUMENT_JSON_KEYS,
+      "tools.documentFormatter.json",
+      output,
+    );
     collectBindingUnknownFields(settings.gestureBindings, "gestureBindings", output);
     if (Array.isArray(settings.siteRules)) {
       for (const [index, rule] of settings.siteRules.entries()) {
@@ -314,9 +479,11 @@
       else if (version === 1) current = migrate1To2(current);
       else if (version === 2) current = migrate2To3(current);
       else if (version === 3) current = migrate3To4(current);
+      else if (version === 4) current = migrate4To5(current);
       else throw new Error(`Unsupported settings schema: ${version}`);
       version = current.schemaVersion;
     }
+    normalizeToolSettings(current, current.tools);
     return migrateCommandNamespaces(current);
   }
 
@@ -342,6 +509,8 @@
     migrate1To2,
     migrate2To3,
     migrate3To4,
+    migrate4To5,
+    normalizeToolSettings,
     migrateCommandName,
     migrateCommandNamespaces,
     collectSettingsUnknownFields,

@@ -3,6 +3,10 @@ import "../lib/dom_utils.js";
 import "../lib/settings.js";
 import "../lib/i18n.js";
 import "../lib/browser_toolbox/value_utils.js";
+import "../lib/browser_toolbox/tools/tool_contract.js";
+import "../lib/browser_toolbox/tools/tool_registry.js";
+import "../lib/browser_toolbox/tools/tool_registry_validator.js";
+import "../lib/browser_toolbox/tools/tool_icons.js";
 import "../lib/browser_toolbox/command_invocation.js";
 import "../lib/browser_toolbox/message_protocol.js";
 import "../lib/browser_toolbox/settings_schema.js";
@@ -21,18 +25,24 @@ import { ExclusionRulesEditor } from "./exclusion_rules_editor.js";
 
 const vimiumSettings = globalThis.BrowserToolboxVimiumSettingsAdapterInstance;
 const moduleRegistry = globalThis.BrowserToolboxModuleRegistry;
+const toolRegistry = globalThis.BrowserToolboxToolRegistry;
 
 const ActionPage = {
   async init() {
     await this.loadLocalePreference();
     BrowserToolboxI18n.apply(document);
+    this.renderIcons();
     // Is it possible for the current tab's URL to change while this action popup is open?
     const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
     const activeTab = tabs[0];
     this.tabUrl = activeTab?.url || "";
+    this.setStaticPageLinks();
+    await this.initToolControls(activeTab);
 
     const hideUI = () => {
       document.querySelector("#browser-toolbox-controls").style.display = "none";
+      document.querySelector("#browser-toolbox-enhancement-summary").style.display = "none";
+      document.querySelector("#browser-toolbox-site-details").style.display = "none";
       document.querySelector("#dialog-body").style.display = "none";
       document.querySelector("footer").style.display = "none";
     };
@@ -66,8 +76,6 @@ const ActionPage = {
     }
 
     await this.initBrowserToolboxControls(activeTab);
-
-    document.querySelector("#optionsLink").href = chrome.runtime.getURL("pages/options.html");
 
     const saveButton = document.querySelector("#save");
     saveButton.addEventListener("click", (e) => this.onSave());
@@ -113,6 +121,33 @@ const ActionPage = {
     }
   },
 
+  setStaticPageLinks() {
+    const settingsUrl = chrome.runtime.getURL("pages/mouse_options.html");
+    const optionsUrl = chrome.runtime.getURL("pages/options.html");
+    const toolsUrl = chrome.runtime.getURL("pages/mouse_options.html#toolsOverview");
+    for (const selector of ["#browser-toolbox-settings-link", "#browser-toolbox-settings-footer-link"]) {
+      const link = document.querySelector(selector);
+      if (link) link.href = settingsUrl;
+    }
+    for (const selector of ["#optionsLink", "#footer-options-link"]) {
+      const link = document.querySelector(selector);
+      if (link) link.href = optionsUrl;
+    }
+    const toolSettingsLink = document.querySelector("#browser-toolbox-tool-settings-link");
+    if (toolSettingsLink) toolSettingsLink.href = toolsUrl;
+  },
+
+  renderIcons() {
+    const iconFactory = globalThis.BrowserToolboxToolIcons;
+    if (!iconFactory?.createIcon) return;
+    for (const slot of document.querySelectorAll("[data-toolbox-icon]")) {
+      const icon = iconFactory.createIcon(slot.dataset.toolboxIcon, {
+        className: "browser-toolbox-ui-icon",
+      });
+      slot.replaceChildren(icon);
+    }
+  },
+
   async initBrowserToolboxControls(activeTab) {
     const container = document.querySelector("#browser-toolbox-controls");
     if (!container || !activeTab) return;
@@ -122,9 +157,13 @@ const ActionPage = {
     BrowserToolboxI18n.setLocale(settings.general.language);
     BrowserToolboxI18n.apply(document);
     container.style.display = "block";
-    document.querySelector("#browser-toolbox-settings-link").href = chrome.runtime.getURL(
-      "pages/mouse_options.html",
-    );
+    document.querySelector("#browser-toolbox-enhancement-summary").style.display = "block";
+    document.querySelector("#browser-toolbox-site-details").style.display = "block";
+    this.setStaticPageLinks();
+    document.querySelector("#browser-toolbox-all-tools")?.addEventListener("click", async () => {
+      await chrome.tabs.create({ url: chrome.runtime.getURL("pages/mouse_options.html#toolsOverview") });
+      globalThis.close();
+    });
     document.querySelector("#browser-toolbox-open-help")?.addEventListener(
       "click",
       async () => {
@@ -162,9 +201,17 @@ const ActionPage = {
       for (const [selector, moduleName] of controls) {
         const input = document.querySelector(selector);
         if (!input) continue;
-        input.checked = moduleName === "wheel"
+        const enabled = moduleName === "wheel"
           ? effectiveModules.wheel !== false && effectiveModules.rocker !== false
           : effectiveModules[moduleName] !== false;
+        input.checked = enabled;
+        const statusLabel = input.closest(".browser-toolbox-enhancement-card")?.querySelector(
+          ".browser-toolbox-module-status",
+        );
+        if (statusLabel) {
+          statusLabel.textContent = BrowserToolboxI18n.message(enabled ? "enabled" : "disabled");
+          statusLabel.classList.toggle("is-disabled", !enabled);
+        }
       }
     };
     renderStatus(settings);
@@ -223,6 +270,78 @@ const ActionPage = {
         renderStatus(repository.getEffectiveSettings(activeTab.url || ""));
       },
     );
+    const siteDetails = document.querySelector("#browser-toolbox-site-details");
+    const siteDetailsToggle = document.querySelector("#browser-toolbox-site-details-toggle");
+    const syncSiteDetailsToggle = () => {
+      siteDetailsToggle?.setAttribute("aria-expanded", String(Boolean(siteDetails?.open)));
+    };
+    siteDetails?.addEventListener("toggle", syncSiteDetailsToggle);
+    siteDetailsToggle?.addEventListener("click", () => {
+      if (siteDetails) siteDetails.open = !siteDetails.open;
+      syncSiteDetailsToggle();
+    });
+    syncSiteDetailsToggle();
+  },
+
+  async initToolControls(activeTab) {
+    const panel = document.querySelector("#browser-toolbox-tools");
+    const buttons = document.querySelector("#browser-toolbox-tool-buttons");
+    if (!panel || !buttons) return;
+    const repository = globalThis.BrowserToolboxSettingsRepositoryInstance;
+    let settings;
+    try {
+      await repository.ensureLoaded();
+      settings = repository.getSettings();
+    } catch (_) {
+      settings = globalThis.BrowserToolboxSettingsSchema.DEFAULT_SETTINGS;
+    }
+    if (settings.tools?.enabled === false) return;
+    const configured = settings.tools?.pinnedIds || toolRegistry.DEFAULT_ACTION_TOOL_IDS;
+    buttons.replaceChildren();
+    for (const toolId of configured.slice(0, 6)) {
+      const descriptor = toolRegistry.get(toolId);
+      if (!descriptor || !descriptor.allowedSources.includes("action") || !descriptor.surfaces.popup) continue;
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "browser-toolbox-tool-card";
+      button.dataset.toolId = toolId;
+      const icon = globalThis.BrowserToolboxToolIcons?.createIcon(descriptor.icon, {
+        className: "browser-toolbox-tool-icon",
+      });
+      const copy = document.createElement("span");
+      copy.className = "browser-toolbox-tool-card-copy";
+      const title = document.createElement("strong");
+      title.textContent = BrowserToolboxI18n.message(descriptor.titleKey);
+      const description = document.createElement("small");
+      description.textContent = BrowserToolboxI18n.message(descriptor.descriptionKey);
+      copy.append(title, description);
+      const arrow = document.createElement("span");
+      arrow.className = "browser-toolbox-tool-card-arrow";
+      arrow.setAttribute("aria-hidden", "true");
+      arrow.append(globalThis.BrowserToolboxToolIcons.createIcon("chevron", {
+        className: "browser-toolbox-tool-card-arrow-icon",
+      }));
+      button.append(icon, copy, arrow);
+      button.title = BrowserToolboxI18n.message(descriptor.descriptionKey);
+      button.addEventListener("click", async () => {
+        const invocation = BrowserToolboxCommandInvocation.createInvocation(
+          "BrowserToolbox.openTool",
+          { toolId, source: "action" },
+          { type: "ui" },
+          Object.assign(
+            { pageUrl: activeTab?.url || "", topFrame: true },
+            Number.isInteger(activeTab?.id) ? { tabId: activeTab.id } : {},
+          ),
+        );
+        const result = await chrome.runtime.sendMessage({
+          handler: "browserToolbox.invoke",
+          invocation,
+        });
+        if (result?.ok !== false) globalThis.close();
+      });
+      buttons.append(button);
+    }
+    panel.style.display = buttons.children.length > 0 ? "block" : "none";
   },
 
   async isVimiumInstalledInTab(tabId) {
@@ -255,8 +374,12 @@ const ActionPage = {
   },
 
   showExclusionRulesEditor() {
+    const details = document.querySelector("#browser-toolbox-site-details");
+    if (details) details.open = true;
+    document.querySelector("#browser-toolbox-site-details-toggle")?.setAttribute("aria-expanded", "true");
     document.querySelector("#exclusions-container").style.display = "block";
     document.querySelector("#add-first-rule-container").style.display = "none";
+    document.querySelector("#browser-toolbox-exclusion-footer").style.display = "flex";
   },
 
   syncEnabledKeysCaption() {

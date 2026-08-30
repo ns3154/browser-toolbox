@@ -5,6 +5,7 @@
   const schema = globalThis.BrowserToolboxSettingsSchema;
   const validator = globalThis.BrowserToolboxSettingsValidator;
   const moduleRegistry = globalThis.BrowserToolboxModuleRegistry;
+  const toolSettingsApi = globalThis.BrowserToolboxToolSettings;
   const quantizer = globalThis.BrowserToolboxDirectionQuantizer;
   const draftApi = globalThis.BrowserToolboxSettingsDraft;
   const applicationServiceApi = globalThis.BrowserToolboxSettingsApplicationService;
@@ -38,6 +39,16 @@
     DL: "gestureDirectionDownLeft",
     DR: "gestureDirectionDownRight",
   });
+  const mouseGestureCardDefinitions = Object.freeze([
+    { pattern: ["U"], arrow: "↑", direction: "gestureDirectionUp" },
+    { pattern: ["R"], arrow: "→", direction: "gestureDirectionRight" },
+    { pattern: ["L"], arrow: "←", direction: "gestureDirectionLeft" },
+    { pattern: ["D"], arrow: "↓", direction: "gestureDirectionDown" },
+    { pattern: ["D", "R"], arrow: "↳", direction: "gestureDirectionDownRight" },
+    { pattern: ["L", "U"], arrow: "↖", direction: "gestureDirectionUpLeft" },
+    { pattern: ["R", "D"], arrow: "↘", direction: "gestureDirectionDownRight" },
+    { pattern: ["R", "U"], arrow: "↗", direction: "gestureDirectionUpRight" },
+  ]);
 
   function message(key) {
     return globalThis.BrowserToolboxI18n?.message(key) || key;
@@ -59,6 +70,13 @@
       cursor: message("cursor"),
       siteRules: message("siteRules"),
       privacy: message("privacy"),
+      toolsOverview: message("toolsOverview"),
+      jsonFormatter: message("jsonFormatter"),
+      textDiff: message("textDiff"),
+      codecTransform: message("codecTransform"),
+      timeAndId: message("timeAndId"),
+      appearance: message("appearance"),
+      backupAbout: message("backupAbout"),
     };
   }
 
@@ -137,6 +155,8 @@
   function applySettingsLocale() {
     BrowserToolboxI18n.setLocale(settings.general.language);
     BrowserToolboxI18n.apply(document);
+    renderMouseEnabledStatus();
+    renderMouseGestureCards();
     if (navigation) {
       const result = navigation.filter(document.querySelector("#settings-section-search")?.value);
       updateSettingsSearchStatus(result);
@@ -146,6 +166,10 @@
   function markDraftDirty({ sync = false, force = false } = {}) {
     if (sync) readForm();
     draft?.markDirty(force);
+    if (draft?.isDirty) {
+      const saveStatus = document.querySelector("#save-status");
+      if (saveStatus) saveStatus.textContent = "";
+    }
     updateDraftStatus();
   }
 
@@ -162,6 +186,14 @@
   function ensureSiteRuleIds(value) {
     for (const rule of value?.siteRules || []) rule.id ||= siteRulesApi.newId();
     return value;
+  }
+
+  function renderMouseEnabledStatus() {
+    const status = document.querySelector(".browser-toolbox-settings-status-label");
+    if (!status) return;
+    status.textContent = settings?.mouse?.enabled === false
+      ? message("mouseDisabledStatus")
+      : message("mouseEnabledStatus");
   }
 
   async function loadRegistry() {
@@ -244,8 +276,96 @@
     }
   }
 
+  function commandLabel(command) {
+    if (!command) return message("unassigned");
+    if (command.i18nKey && BrowserToolboxI18n?.hasMessage?.(command.i18nKey)) {
+      return message(command.i18nKey);
+    }
+    return command.title || command.desc || command.name || message("unassigned");
+  }
+
+  function createMouseGestureIcon(arrow) {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 32 32");
+    svg.setAttribute("class", "browser-toolbox-mouse-gesture-icon");
+    svg.setAttribute("aria-hidden", "true");
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    const paths = {
+      "↑": "M16 27V5m0 0-6 6m6-6 6 6",
+      "→": "M5 16h22m0 0-6-6m6 6-6 6",
+      "←": "M27 16H5m0 0 6-6m-6 6 6 6",
+      "↓": "M16 5v22m0 0-6-6m6 6 6-6",
+      "↳": "M8 7v18h17m0 0-6-6m6 6-6 6",
+      "↘": "M7 7l18 18m0 0V15m0 10H15",
+      "↖": "M25 25 7 7m0 0v10m0-10h10",
+      "↗": "M7 25 25 7m0 0H15m10 0v10",
+    };
+    path.setAttribute("d", paths[arrow] || paths["↑"]);
+    svg.appendChild(path);
+    return svg;
+  }
+
+  function createMouseGestureEditIcon() {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("class", "browser-toolbox-mouse-gesture-edit-icon");
+    svg.setAttribute("aria-hidden", "true");
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", "m4 17.5-.7 3.2 3.2-.7L18.8 7.7a2.3 2.3 0 0 0-3.2-3.2L4 17.5Zm10.8-11.4 3.2 3.2");
+    svg.appendChild(path);
+    return svg;
+  }
+
+  function renderMouseGestureCards() {
+    const root = document.querySelector("#mouse-gesture-cards");
+    if (!root) return;
+    const bindings = settings?.mouse?.bindings || [];
+    root.replaceChildren();
+    for (const definition of mouseGestureCardDefinitions) {
+      const binding = bindings.find((candidate) =>
+        JSON.stringify(candidate?.pattern || []) === JSON.stringify(definition.pattern)
+      );
+      const card = document.createElement("article");
+      card.className = "browser-toolbox-mouse-gesture-card";
+      card.dataset.pattern = definition.pattern.join(">");
+      const icon = createMouseGestureIcon(definition.arrow);
+      const copy = document.createElement("span");
+      copy.className = "browser-toolbox-mouse-gesture-card-copy";
+      const direction = document.createElement("strong");
+      direction.textContent = `${definition.arrow} ${message(definition.direction)}`;
+      const command = document.createElement("small");
+      command.textContent = commandLabel(registry?.getCommand(binding?.commandName));
+      if (!binding) card.classList.add("is-unassigned");
+      copy.append(direction, command);
+      card.append(icon, copy, createMouseGestureEditIcon());
+      if (binding) {
+        card.tabIndex = 0;
+        card.setAttribute("role", "button");
+        card.setAttribute("aria-label", `${direction.textContent}: ${command.textContent}`);
+        const focusBinding = () => {
+          const advanced = document.querySelector("#mouse-advanced-settings");
+          advanced.open = true;
+          advanced.scrollIntoView({ block: "nearest" });
+          [...document.querySelectorAll("#mouse-bindings tr")]
+            .find((row) => row._binding === binding)?._pattern?.focus();
+        };
+        card.addEventListener("click", focusBinding);
+        card.addEventListener("keydown", (event) => {
+          if (event.key !== "Enter" && event.key !== " ") return;
+          event.preventDefault();
+          focusBinding();
+        });
+      }
+      root.appendChild(card);
+    }
+    const count = document.querySelector("#mouse-gesture-count");
+    if (count) count.textContent = String(mouseGestureCardDefinitions.length);
+  }
+
   function renderAllBindings() {
     bindingEditor?.renderAll();
+    renderMouseEnabledStatus();
+    renderMouseGestureCards();
   }
 
   function renderSiteRules() {
@@ -350,12 +470,14 @@
 
   function readForm() {
     sectionsApi?.readForm(settings);
+    toolSettingsApi?.readForm(settings);
     bindingEditor?.sync();
     return settings;
   }
 
   function writeForm() {
     sectionsApi?.writeForm(settings);
+    toolSettingsApi?.writeForm(settings);
     renderAllBindings();
     renderSiteRules();
   }
@@ -899,6 +1021,7 @@
         options: {},
       });
       bindingEditor?.render("mouse");
+      renderMouseGestureCards();
       markDraftDirty();
     });
     document.querySelector("#gesture-pattern-input").addEventListener("input", (event) => {
@@ -982,6 +1105,9 @@
       quantizer,
       markDirty: () => markDraftDirty(),
       idFactory: siteRulesApi.newId,
+      onBindingsChange: (kind) => {
+        if (kind === "mouse") renderMouseGestureCards();
+      },
     });
     BrowserToolboxI18n.setLocale(settings.general.language);
     BrowserToolboxI18n.apply(document);
@@ -992,6 +1118,8 @@
       },
     );
     setupNavigation();
+    toolSettingsApi?.render(settings);
+    toolSettingsApi?.bindLimitFeedback();
     setupEvents();
     setPreviewPattern([]);
     writeForm();

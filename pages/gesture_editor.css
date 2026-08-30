@@ -983,3 +983,1023 @@ button.primary:hover:not(:disabled) {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* 设置页参考稿：三组常驻导航，主区以鼠标手势工作流为第一视觉层。 */
+body.browser-toolbox-settings-page {
+  --toolbox-bg: #ffffff;
+  --toolbox-surface: #ffffff;
+  --toolbox-surface-subtle: #f7f9fc;
+  --toolbox-text: #1b2942;
+  --toolbox-muted: #71829c;
+  --toolbox-border: #e1e8f2;
+  --toolbox-border-strong: #cbd6e5;
+  --toolbox-accent: #2563eb;
+  --toolbox-accent-strong: #1455cf;
+  --toolbox-accent-soft: #edf4ff;
+  --toolbox-green: #13855d;
+  --toolbox-green-soft: #e8f7ef;
+  min-width: 0;
+  background: var(--toolbox-bg);
+  color: var(--toolbox-text);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-layout {
+  grid-template-columns: 290px minmax(0, 1fr);
+}
+
+.browser-toolbox-settings-page .browser-toolbox-sidebar {
+  padding: 30px 17px 28px;
+  background: var(--toolbox-surface);
+  border-right-color: var(--toolbox-border);
+}
+
+.browser-toolbox-settings-page .browser-toolbox-brand {
+  gap: 12px;
+  margin: 0 10px 20px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-brand img {
+  width: 38px;
+  height: 38px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-sidebar h1 {
+  font-size: 25px;
+  font-weight: 760;
+  letter-spacing: -0.04em;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-settings-search {
+  margin: 0 10px 28px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-settings-search > span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-settings-search input {
+  min-height: 45px;
+  padding: 9px 13px 9px 38px;
+  border-color: var(--toolbox-border);
+  border-radius: 11px;
+  background: var(--toolbox-surface-subtle);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='17' height='17' viewBox='0 0 24 24' fill='none' stroke='%2371829c' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='6.5'/%3E%3Cpath d='m16 16 5 5'/%3E%3C/svg%3E");
+  background-position: 13px center;
+  background-repeat: no-repeat;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-search-status {
+  margin: 0 10px 12px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-search-status:empty {
+  display: none;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-nav {
+  gap: 24px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-nav-group {
+  gap: 5px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-nav button {
+  border-radius: 9px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-nav-category {
+  min-height: 28px;
+  padding: 3px 10px;
+  color: var(--toolbox-muted);
+  font-size: 15px;
+  font-weight: 760;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-nav-category {
+  gap: 0;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-nav-chevron {
+  display: none;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-nav-category[aria-expanded="true"],
+.browser-toolbox-settings-page .browser-toolbox-nav-category:hover {
+  background: transparent;
+  color: var(--toolbox-text);
+}
+
+.browser-toolbox-settings-page .browser-toolbox-nav-chevron {
+  width: 7px;
+  height: 7px;
+  color: var(--toolbox-muted);
+}
+
+.browser-toolbox-settings-page .browser-toolbox-nav-items {
+  gap: 2px;
+  margin-left: 0;
+  padding: 0;
+  border-left: 0;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 36px;
+  padding: 8px 12px 8px 29px;
+  color: #536681;
+  font-size: 15px;
+  font-weight: 560;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-nav-item[hidden],
+.browser-toolbox-settings-page .browser-toolbox-nav-items[hidden],
+.browser-toolbox-settings-page .browser-toolbox-nav-group[hidden] {
+  display: none;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-nav-item[aria-selected="true"] {
+  background: var(--toolbox-accent-soft);
+  color: var(--toolbox-accent-strong);
+  font-weight: 720;
+  box-shadow: inset 3px 0 var(--toolbox-accent);
+  padding-left: 26px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-nav-icon {
+  display: block;
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  color: currentColor;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-nav-icon path {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-nav button:hover {
+  background: var(--toolbox-surface-subtle);
+  color: var(--toolbox-accent-strong);
+}
+
+.browser-toolbox-settings-page .browser-toolbox-main {
+  max-width: none;
+  padding: 32px 30px 112px;
+  background: var(--toolbox-bg);
+}
+
+.browser-toolbox-settings-page .browser-toolbox-panel {
+  max-width: none;
+  margin: 0 auto 24px;
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-panel h2 {
+  color: var(--toolbox-text);
+}
+
+.browser-toolbox-settings-page .browser-toolbox-settings-hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 28px;
+  width: 100%;
+  margin: 0 0 24px;
+  padding: 0;
+  border: 0;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-settings-hero-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-settings-hero-title > div {
+  min-width: 0;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-settings-hero-icon {
+  display: grid;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 48px;
+  place-items: center;
+  border-radius: 0;
+  background: transparent;
+  color: var(--toolbox-text);
+}
+
+.browser-toolbox-settings-page .browser-toolbox-settings-hero-icon svg {
+  width: 32px;
+  height: 42px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-settings-hero .browser-toolbox-page-kicker {
+  display: none;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-settings-hero h2 {
+  margin: 0;
+  font-size: 31px;
+  font-weight: 780;
+  letter-spacing: -0.04em;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-settings-hero p {
+  margin: 5px 0 0;
+  color: var(--toolbox-muted);
+  font-size: 15px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-settings-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  flex: 0 0 auto;
+  padding-top: 12px;
+  color: var(--toolbox-green);
+  font-size: 14px;
+  font-weight: 720;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-settings-status-label::before {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin: 0 7px 1px 0;
+  border-radius: 50%;
+  background: currentColor;
+  content: "";
+}
+
+.browser-toolbox-settings-page .browser-toolbox-switch-large {
+  min-height: 28px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-switch-large input[type="checkbox"] {
+  width: 48px;
+  height: 28px;
+  border: 0;
+  background: #c7d2df;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-switch-large input[type="checkbox"]:checked {
+  border-color: var(--toolbox-accent);
+  background: var(--toolbox-accent);
+}
+
+.browser-toolbox-settings-page .browser-toolbox-switch-large input[type="checkbox"]::before {
+  top: 4px;
+  left: 4px;
+  width: 20px;
+  height: 20px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-switch-large input[type="checkbox"]:checked::before {
+  transform: translateX(20px);
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-how-card,
+.browser-toolbox-settings-page .browser-toolbox-mouse-settings-card,
+.browser-toolbox-settings-page .browser-toolbox-mouse-advanced {
+  border: 1px solid var(--toolbox-border);
+  border-radius: 17px;
+  background: var(--toolbox-surface);
+  box-shadow: 0 9px 24px rgb(50 77 117 / 5%);
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-how-card {
+  min-height: 191px;
+  padding: 24px 28px 25px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-how-card h3,
+.browser-toolbox-settings-page .browser-toolbox-mouse-settings-card h3 {
+  margin: 0;
+  color: var(--toolbox-text);
+  font-size: 18px;
+  font-weight: 750;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-how-flow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 46px minmax(0, 1fr);
+  align-items: center;
+  gap: 18px;
+  max-width: 900px;
+  margin: 20px auto 0;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-how-step {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-how-icon {
+  display: grid;
+  flex: 0 0 72px;
+  width: 72px;
+  height: 80px;
+  place-items: center;
+  border-radius: 0;
+  background: transparent;
+  color: var(--toolbox-text);
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-how-icon.is-dragging {
+  background: transparent;
+  color: var(--toolbox-accent);
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-how-icon svg {
+  width: 72px;
+  height: 84px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-how-step > span:last-child {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-how-step strong {
+  color: var(--toolbox-text);
+  font-size: 16px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-how-step small {
+  color: var(--toolbox-muted);
+  font-size: 14px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-how-arrow {
+  color: #9eb0c9;
+  font-size: 30px;
+  text-align: center;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-gesture-section {
+  margin-top: 28px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-gesture-section .browser-toolbox-section-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 8px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-gesture-section .browser-toolbox-page-kicker {
+  display: none;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-gesture-section h3 {
+  margin: 0;
+  color: var(--toolbox-text);
+  font-size: 21px;
+  font-weight: 760;
+  line-height: 1.25;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-gesture-section .browser-toolbox-section-count {
+  display: none;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-gesture-cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-gesture-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 19px;
+  min-width: 0;
+  min-height: 132px;
+  padding: 18px;
+  border: 1px solid var(--toolbox-border);
+  border-radius: 12px;
+  background: var(--toolbox-surface);
+  box-shadow: 0 6px 16px rgb(50 77 117 / 3%);
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-gesture-edit-icon {
+  position: absolute;
+  top: 13px;
+  right: 14px;
+  width: 17px;
+  height: 17px;
+  color: var(--toolbox-muted);
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-gesture-edit-icon path {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.6;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-gesture-card.is-unassigned {
+  opacity: .62;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-gesture-card[role="button"] {
+  cursor: pointer;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-gesture-card[role="button"]:hover,
+.browser-toolbox-settings-page .browser-toolbox-mouse-gesture-card[role="button"]:focus-visible {
+  border-color: #a9c5f4;
+  background: var(--toolbox-accent-soft);
+  outline: none;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-gesture-icon {
+  display: block;
+  flex: 0 0 92px;
+  width: 92px;
+  height: 76px;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--toolbox-accent);
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-gesture-icon path {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-gesture-card-copy {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-gesture-card-copy strong {
+  color: var(--toolbox-text);
+  font-size: 16px;
+  font-weight: 730;
+  white-space: nowrap;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-gesture-card-copy small {
+  color: var(--toolbox-muted);
+  font-size: 14px;
+  line-height: 1.4;
+  white-space: normal;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-settings-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-settings-card {
+  min-width: 0;
+  height: 200px;
+  min-height: 0;
+  padding: 20px 23px 20px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-settings-card h3 {
+  line-height: 1.25;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-value-field,
+.browser-toolbox-settings-page .browser-toolbox-setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  min-width: 0;
+  margin-top: 15px;
+  min-height: 22px;
+  color: var(--toolbox-text);
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-value-field > span:first-child,
+.browser-toolbox-settings-page .browser-toolbox-setting-row > span:first-child {
+  min-width: 0;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-inline-number {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 7px;
+  color: var(--toolbox-muted);
+}
+
+.browser-toolbox-settings-page .browser-toolbox-inline-number input {
+  width: min(290px, 60vw);
+  min-height: 38px;
+  padding: 7px 9px;
+  border: 1px solid var(--toolbox-border-strong);
+  border-radius: 9px;
+  background: var(--toolbox-surface);
+  color: var(--toolbox-text);
+  text-align: center;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-inline-number b {
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-setting-row .browser-toolbox-switch {
+  flex: 0 0 auto;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-settings-card .browser-toolbox-note {
+  max-width: 520px;
+  margin: 15px 0 0;
+  font-size: 13px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-settings-card:last-child .browser-toolbox-note {
+  display: none;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-settings-card-link {
+  display: block;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--toolbox-border);
+  color: var(--toolbox-accent-strong);
+  font-size: 14px;
+  font-weight: 680;
+  text-decoration: none;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-settings-card-link::after {
+  content: "  →";
+}
+
+.browser-toolbox-settings-page .browser-toolbox-settings-card-link:hover {
+  text-decoration: underline;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-advanced {
+  margin-top: 24px;
+  overflow: hidden;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-advanced summary {
+  padding: 16px 21px;
+  color: var(--toolbox-text);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-advanced summary:hover,
+.browser-toolbox-settings-page .browser-toolbox-mouse-advanced summary:focus-visible {
+  background: var(--toolbox-accent-soft);
+  color: var(--toolbox-accent-strong);
+  outline: none;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-advanced-body {
+  padding: 0 21px 23px;
+  border-top: 1px solid var(--toolbox-border);
+}
+
+.browser-toolbox-settings-page .browser-toolbox-mouse-advanced-body > .browser-toolbox-grid {
+  margin-top: 20px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-save-bar {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 290px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0;
+  padding: 18px 30px 20px;
+  border: 0;
+  border-top: 1px solid var(--toolbox-border);
+  border-radius: 0;
+  background: rgb(255 255 255 / 94%);
+  box-shadow: 0 -8px 22px rgb(50 77 117 / 6%);
+  backdrop-filter: blur(12px);
+}
+
+.browser-toolbox-settings-page .browser-toolbox-save-bar:has(#save-settings:not(:disabled)) {
+  position: fixed;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-save-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  color: var(--toolbox-muted);
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-save-hint > span:first-child {
+  color: var(--toolbox-muted);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.browser-toolbox-settings-page #dirty-status {
+  color: var(--toolbox-warning);
+  font-size: 13px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-save-bar > .browser-toolbox-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+  margin: 0 0 0 auto;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-save-bar button {
+  min-height: 54px;
+  padding: 12px 27px;
+  border-radius: 10px;
+  font-size: 16px;
+  white-space: nowrap;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-save-bar #discard-changes {
+  min-width: 128px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-save-bar #save-settings {
+  min-width: 138px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-save-bar #save-status {
+  color: var(--toolbox-green);
+  font-size: 14px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-save-bar #save-status:not(:empty)::before {
+  content: "✓";
+  display: inline-grid;
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  place-items: center;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  font-size: 13px;
+}
+
+@media (prefers-color-scheme: dark) {
+  body.browser-toolbox-settings-page {
+    --toolbox-bg: #101827;
+    --toolbox-surface: #182438;
+    --toolbox-surface-subtle: #202f46;
+    --toolbox-text: #edf3fc;
+    --toolbox-muted: #a5b5cc;
+    --toolbox-border: #344760;
+    --toolbox-border-strong: #4a5d77;
+    --toolbox-accent: #84adff;
+    --toolbox-accent-strong: #9bbdff;
+    --toolbox-accent-soft: #203a65;
+    --toolbox-green: #75dcb0;
+    --toolbox-green-soft: #183f35;
+  }
+
+  .browser-toolbox-settings-page .browser-toolbox-save-bar {
+    background: rgb(24 36 56 / 94%);
+  }
+}
+
+@media (max-width: 1100px) {
+  .browser-toolbox-settings-page .browser-toolbox-mouse-gesture-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  body.browser-toolbox-settings-page {
+    min-width: 0;
+  }
+
+  .browser-toolbox-settings-page .browser-toolbox-main {
+    padding: 28px 18px 112px;
+  }
+
+  .browser-toolbox-settings-page .browser-toolbox-save-bar,
+  .browser-toolbox-settings-page .browser-toolbox-save-bar:has(#save-settings:not(:disabled)) {
+    position: static;
+    padding: 12px 18px;
+  }
+
+  .browser-toolbox-settings-page .browser-toolbox-settings-hero {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .browser-toolbox-settings-page .browser-toolbox-settings-status {
+    padding-top: 0;
+  }
+
+  .browser-toolbox-settings-page .browser-toolbox-mouse-how-flow {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .browser-toolbox-settings-page .browser-toolbox-mouse-how-arrow {
+    transform: rotate(90deg);
+  }
+
+  .browser-toolbox-settings-page .browser-toolbox-mouse-gesture-cards,
+  .browser-toolbox-settings-page .browser-toolbox-mouse-settings-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 420px) {
+  .browser-toolbox-settings-page .browser-toolbox-settings-hero-title {
+    align-items: flex-start;
+  }
+
+  .browser-toolbox-settings-page .browser-toolbox-settings-hero h2 {
+    font-size: 27px;
+  }
+
+  .browser-toolbox-settings-page .browser-toolbox-mouse-how-card {
+    padding: 19px;
+  }
+
+  .browser-toolbox-settings-page .browser-toolbox-mouse-gesture-card {
+    min-height: 96px;
+    padding: 13px;
+  }
+}
+
+/* 通用设置分区与鼠标手势页共享同一套节奏，避免切换到常规/工具页后退回旧表单皮肤。 */
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="general"],
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="keyboard"],
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="search"],
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="toolsOverview"],
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="jsonFormatter"],
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="textDiff"],
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="codecTransform"],
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="timeAndId"],
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="appearance"],
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="privacy"],
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="backupAbout"] {
+  max-width: 1240px;
+  padding: 0;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="general"] > h2,
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="keyboard"] > h2,
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="search"] > h2,
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="toolsOverview"] h2,
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="jsonFormatter"] h2,
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="textDiff"] h2,
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="codecTransform"] h2,
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="timeAndId"] h2,
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="appearance"] > h2,
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="privacy"] > h2,
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="backupAbout"] > h2 {
+  margin: 0 0 22px;
+  color: var(--toolbox-text);
+  font-size: 31px;
+  font-weight: 780;
+  letter-spacing: -.04em;
+  line-height: 1.18;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="general"] .browser-toolbox-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  max-width: none;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="general"] .browser-toolbox-check {
+  min-height: 56px;
+  padding: 12px 14px;
+  border: 1px solid var(--toolbox-border);
+  border-radius: 12px;
+  background: var(--toolbox-surface);
+  color: var(--toolbox-text);
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="general"] .browser-toolbox-check:hover {
+  border-color: #a9c5f4;
+  background: var(--toolbox-accent-soft);
+}
+
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="general"] .browser-toolbox-check input {
+  width: 17px;
+  height: 17px;
+  margin: 0;
+  accent-color: var(--toolbox-accent);
+}
+
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="general"] .browser-toolbox-field {
+  width: min(100%, 360px);
+  margin-top: 16px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="general"] > .browser-toolbox-note {
+  max-width: 760px;
+  margin: 14px 0 0;
+  font-size: 13px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="toolsOverview"] .browser-toolbox-page-header {
+  margin-bottom: 15px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="toolsOverview"] > .browser-toolbox-note {
+  max-width: 820px;
+  margin: 0 0 19px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="toolsOverview"] h3,
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="jsonFormatter"] h3 {
+  margin: 24px 0 8px;
+  color: var(--toolbox-text);
+  font-size: 17px;
+  font-weight: 760;
+  letter-spacing: -.015em;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="toolsOverview"] .browser-toolbox-tool-overview-toggles {
+  margin: 0 0 22px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="toolsOverview"] .browser-toolbox-tool-list {
+  max-width: none;
+  margin: 0 0 17px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="toolsOverview"] .browser-toolbox-directory-heading {
+  margin-top: 26px;
+  padding-top: 20px;
+  border-top: 1px solid var(--toolbox-border);
+}
+
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="toolsOverview"] .browser-toolbox-tool-directory-item {
+  min-height: 64px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgb(50 77 117 / 3%);
+}
+
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="jsonFormatter"] > .browser-toolbox-note,
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="textDiff"] > .browser-toolbox-note,
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="codecTransform"] > .browser-toolbox-note,
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="timeAndId"] > .browser-toolbox-note {
+  max-width: 760px;
+  margin-top: -9px;
+  margin-bottom: 18px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="jsonFormatter"] .browser-toolbox-tool-toggle-wide {
+  max-width: none;
+  margin: 0 0 21px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="jsonFormatter"] .browser-toolbox-format-grid {
+  grid-template-columns: repeat(5, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="jsonFormatter"] .browser-toolbox-form-grid {
+  max-width: 980px;
+  margin-top: 20px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="textDiff"] .browser-toolbox-capability-summary,
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="codecTransform"] .browser-toolbox-capability-summary,
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="timeAndId"] .browser-toolbox-capability-summary {
+  max-width: 880px;
+  margin-top: 22px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="keyboard"] .browser-toolbox-field,
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="search"] .browser-toolbox-field {
+  max-width: 900px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="keyboard"] textarea,
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="search"] textarea {
+  min-height: 280px;
+  padding: 13px 14px;
+  border-radius: 12px;
+  font: 13px/1.65 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="appearance"] .browser-toolbox-grid {
+  max-width: 940px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="appearance"] .browser-toolbox-check,
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="appearance"] .browser-toolbox-field {
+  padding: 13px 14px;
+  border: 1px solid var(--toolbox-border);
+  border-radius: 12px;
+  background: var(--toolbox-surface);
+}
+
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="privacy"] > .browser-toolbox-note,
+.browser-toolbox-settings-page .browser-toolbox-panel[data-panel="backupAbout"] > .browser-toolbox-note {
+  max-width: 780px;
+}
+
+@media (max-width: 900px) {
+  .browser-toolbox-settings-page .browser-toolbox-panel[data-panel="general"] .browser-toolbox-grid,
+  .browser-toolbox-settings-page .browser-toolbox-panel[data-panel="jsonFormatter"] .browser-toolbox-format-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .browser-toolbox-settings-page .browser-toolbox-panel[data-panel="general"] .browser-toolbox-grid,
+  .browser-toolbox-settings-page .browser-toolbox-panel[data-panel="jsonFormatter"] .browser-toolbox-format-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .browser-toolbox-settings-page .browser-toolbox-panel[data-panel="general"] > h2,
+  .browser-toolbox-settings-page .browser-toolbox-panel[data-panel="keyboard"] > h2,
+  .browser-toolbox-settings-page .browser-toolbox-panel[data-panel="search"] > h2,
+  .browser-toolbox-settings-page .browser-toolbox-panel[data-panel="toolsOverview"] h2,
+  .browser-toolbox-settings-page .browser-toolbox-panel[data-panel="jsonFormatter"] h2,
+  .browser-toolbox-settings-page .browser-toolbox-panel[data-panel="textDiff"] h2,
+  .browser-toolbox-settings-page .browser-toolbox-panel[data-panel="codecTransform"] h2,
+  .browser-toolbox-settings-page .browser-toolbox-panel[data-panel="timeAndId"] h2,
+  .browser-toolbox-settings-page .browser-toolbox-panel[data-panel="appearance"] > h2,
+  .browser-toolbox-settings-page .browser-toolbox-panel[data-panel="privacy"] > h2,
+  .browser-toolbox-settings-page .browser-toolbox-panel[data-panel="backupAbout"] > h2 {
+    font-size: 27px;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 1350px) {
+  .browser-toolbox-settings-page .browser-toolbox-brand {
+    gap: 9px;
+    margin-inline: 8px;
+  }
+
+  .browser-toolbox-settings-page .browser-toolbox-brand img {
+    width: 34px;
+    height: 34px;
+  }
+
+  .browser-toolbox-settings-page .browser-toolbox-sidebar h1 {
+    font-size: 21px;
+    white-space: nowrap;
+  }
+}

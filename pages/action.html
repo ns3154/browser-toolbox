@@ -10,98 +10,195 @@
     <script src="action.js" type="module"></script>
   </head>
 
-  <body class="vimium-body">
-    <section id="browser-toolbox-controls" style="display: none">
-      <h1 data-i18n="browserToolbox">Browser Toolbox</h1>
-      <h2 data-i18n="currentSite">Current site</h2>
-      <p id="browser-toolbox-site-status" aria-live="polite"></p>
-      <div class="browser-toolbox-action-grid">
-        <label><input id="browser-toolbox-toggle-keyboard" type="checkbox"> <span data-i18n="keyboard">Keyboard</span></label>
-        <label><input id="browser-toolbox-toggle-mouse" type="checkbox"> <span data-i18n="mouseGestures">Mouse Gestures</span></label>
-        <label><input id="browser-toolbox-toggle-drag" type="checkbox"> <span data-i18n="superDrag">Super Drag</span></label>
-        <label><input id="browser-toolbox-toggle-wheel" type="checkbox"> <span data-i18n="wheelRocker">Wheel &amp; Rocker</span></label>
-      </div>
-      <p class="browser-toolbox-action-buttons">
-        <button id="browser-toolbox-disable-session"
-          data-i18n="disabled">Disable for this session</button>
-        <a id="browser-toolbox-settings-link" target="_blank"
-          data-i18n="openSettings">Open settings</a>
-        <button id="browser-toolbox-open-help" type="button"
-          data-i18n="openHelp">Open help</button>
-      </p>
-    </section>
-
-    <div id="not-enabled-error" style="display: none">
-      <h1 data-i18n="browserRestriction">This page is restricted by the browser.</h1>
-      <p data-i18n="pageUnavailable">The browser does not allow extensions to run on this page.</p>
-    </div>
-
-    <div id="firefox-missing-permissions-error" style="display: none">
-      <h1 data-i18n="firefoxMissingHostsPermission">
-        Vimium is missing the "all hosts" permission.
-      </h1>
-      <p data-i18n="firefoxPermissionHelp">
-        Firefox requires users to grant this permission manually. You can enable it with the button below:
-      </p>
-
-      <p>
-        <button id="grant-hosts-permission"
-          data-i18n="grantHostsPermission">Enable all hosts permission</button>
-      </p>
-
-      <p data-i18n="firefoxPermissionPathIntro">Or navigate to:</p>
-
-      <p data-i18n="firefoxPermissionPath">
-        about:addons &gt; Vimium &gt; Manage (three-dot menu) &gt; Permissions &gt; enable
-        "Access your data for all websites".
-      </p>
-      <p>
-        <a href="https://github.com/philc/vimium/wiki/Permissions"
-          data-i18n="seePermissionsHelp">See permissions help</a>
-      </p>
-    </div>
-
-    <div id="dialog-body">
-      <div>
-        <span id="how-many-enabled" data-i18n="allKeys">All</span>
-        <span data-i18n="vimiumKeysEnabledOnPage">Vimium keys are enabled on this page.</span>
-      </div>
-
-      <div id="add-first-rule-container">
-        <button id="add-first-rule"
-          data-i18n="excludeKeysOnPage">Exclude Vimium keys on this page</button>
-      </div>
-
-      <div id="exclusions-container" style="display: none">
-        <div id="exclusion-scroll-box">
-          <table id="exclusion-rules">
-            <thead>
-              <tr>
-                <td>
-                  <span class="exclusion-header-text"
-                    data-i18n="matchingPatterns">Patterns matching the current page</span>
-                </td>
-                <td><span class="exclusion-header-text" data-i18n="keysToExclude">Keys to exclude</span></td>
-              </tr>
-            </thead>
-          </table>
+  <body class="vimium-body browser-toolbox-action-page">
+    <main class="browser-toolbox-action-shell">
+      <header class="browser-toolbox-action-brand">
+        <span class="browser-toolbox-brand-mark" aria-hidden="true">
+          <img src="../icons/icon48.png" alt="">
+        </span>
+        <div class="browser-toolbox-brand-copy">
+          <h1 data-i18n="browserToolbox">Browser Toolbox</h1>
+          <span class="browser-toolbox-running"><i aria-hidden="true"></i><span data-i18n="running">Running</span></span>
         </div>
+        <a id="browser-toolbox-settings-link" class="browser-toolbox-icon-button" target="_blank"
+          data-i18n-aria-label="openSettings" data-i18n-title="openSettings" data-toolbox-icon="settings">
+          <span aria-hidden="true"></span>
+        </a>
+      </header>
 
-        <button id="exclusion-add-button" type="button" data-i18n="addRule">Add rule</button>
-      </div>
-    </div>
+      <section id="browser-toolbox-controls" class="browser-toolbox-action-section browser-toolbox-site-card"
+        style="display: none" aria-labelledby="browser-toolbox-current-site-title">
+        <div class="browser-toolbox-section-heading">
+          <div>
+            <span class="browser-toolbox-section-kicker" data-i18n="currentSite">Current site</span>
+            <h2 id="browser-toolbox-current-site-title" data-i18n="currentSite">Current site</h2>
+          </div>
+          <span class="browser-toolbox-site-badge" data-i18n="active">Active</span>
+        </div>
+        <p id="browser-toolbox-site-status" class="browser-toolbox-site-status" aria-live="polite"></p>
+        <button id="browser-toolbox-disable-session" class="browser-toolbox-secondary-button" type="button"
+          data-i18n="disabled">Disable for this session</button>
+      </section>
 
-    <footer>
-      <div class="options-message">
-        <span data-i18n="seeExclusionRules">See all exclusion rules on the</span>
-        <a id="optionsLink" target="_blank" data-i18n="optionsPage">Options</a>
-        <span data-i18n="page">page.</span>
-      </div>
-      <div>
-        <button id="cancel" type="button" data-i18n="cancel">Cancel</button>
-        <button id="save" type="button" disabled="true" data-i18n="noChanges">No changes</button>
-      </div>
-    </footer>
+      <section id="browser-toolbox-enhancement-summary" class="browser-toolbox-action-section"
+        style="display: none" aria-labelledby="browser-toolbox-enhancement-title">
+        <div class="browser-toolbox-section-heading">
+          <div>
+            <span class="browser-toolbox-section-kicker" data-i18n="browsingEnhancement">Browsing enhancements</span>
+            <h2 id="browser-toolbox-enhancement-title" data-i18n="browsingEnhancement">Browsing enhancements</h2>
+          </div>
+          <span class="browser-toolbox-section-count">4</span>
+        </div>
+        <div class="browser-toolbox-enhancement-grid">
+          <label class="browser-toolbox-enhancement-card browser-toolbox-enhancement-card-compact">
+            <span class="browser-toolbox-enhancement-icon browser-toolbox-enhancement-icon-keyboard" aria-hidden="true" data-toolbox-icon="keyboard"></span>
+            <span class="browser-toolbox-enhancement-copy">
+              <strong data-i18n="keyboard">Keyboard</strong>
+              <small data-i18n="actionKeyboardSummary">Vimium keyboard navigation</small>
+              <em class="browser-toolbox-module-status" data-module="keyboard" data-i18n="enabled">Enabled</em>
+            </span>
+            <span class="browser-toolbox-switch"><input id="browser-toolbox-toggle-keyboard" type="checkbox"><i></i></span>
+          </label>
+          <label class="browser-toolbox-enhancement-card browser-toolbox-enhancement-card-featured">
+            <span class="browser-toolbox-enhancement-icon browser-toolbox-enhancement-icon-mouse" aria-hidden="true" data-toolbox-icon="mouse"></span>
+            <span class="browser-toolbox-enhancement-copy">
+              <strong data-i18n="mouseGestures">Mouse Gestures</strong>
+              <small data-i18n="actionMouseSummary">Hold right-click and draw a path</small>
+              <em class="browser-toolbox-module-status" data-module="mouse" data-i18n="enabled">Enabled</em>
+            </span>
+            <span class="browser-toolbox-switch"><input id="browser-toolbox-toggle-mouse" type="checkbox"><i></i></span>
+          </label>
+          <label class="browser-toolbox-enhancement-card browser-toolbox-enhancement-card-compact">
+            <span class="browser-toolbox-enhancement-icon browser-toolbox-enhancement-icon-drag" aria-hidden="true" data-toolbox-icon="drag"></span>
+            <span class="browser-toolbox-enhancement-copy">
+              <strong data-i18n="superDrag">Super Drag</strong>
+              <small data-i18n="actionSuperDragSummary">Drag links, images, or text to act</small>
+              <em class="browser-toolbox-module-status" data-module="superDrag" data-i18n="enabled">Enabled</em>
+            </span>
+            <span class="browser-toolbox-switch"><input id="browser-toolbox-toggle-drag" type="checkbox"><i></i></span>
+          </label>
+          <label class="browser-toolbox-enhancement-card browser-toolbox-enhancement-card-compact">
+            <span class="browser-toolbox-enhancement-icon browser-toolbox-enhancement-icon-wheel" aria-hidden="true" data-toolbox-icon="wheel"></span>
+            <span class="browser-toolbox-enhancement-copy">
+              <strong data-i18n="wheelRocker">Wheel &amp; Rocker</strong>
+              <small data-i18n="actionWheelSummary">Switch tabs with wheel or rocker</small>
+              <em class="browser-toolbox-module-status" data-module="wheel" data-i18n="enabled">Enabled</em>
+            </span>
+            <span class="browser-toolbox-switch"><input id="browser-toolbox-toggle-wheel" type="checkbox"><i></i></span>
+          </label>
+        </div>
+      </section>
+
+      <section id="not-enabled-error" class="browser-toolbox-restricted-card" style="display: none"
+        aria-labelledby="browser-toolbox-restricted-title">
+        <span class="browser-toolbox-restricted-icon" aria-hidden="true">!</span>
+        <div>
+          <h2 id="browser-toolbox-restricted-title" data-i18n="browserRestriction">This page is restricted by the browser.</h2>
+          <p data-i18n="pageUnavailable">The browser does not allow extensions to run on this page.</p>
+        </div>
+      </section>
+
+      <section id="firefox-missing-permissions-error" class="browser-toolbox-restricted-card" style="display: none">
+        <span class="browser-toolbox-restricted-icon" aria-hidden="true">!</span>
+        <div>
+          <h2 data-i18n="firefoxMissingHostsPermission">Vimium is missing the "all hosts" permission.</h2>
+          <p data-i18n="firefoxPermissionHelp">
+            Firefox requires users to grant this permission manually. You can enable it with the button below:
+          </p>
+          <p><button id="grant-hosts-permission" class="browser-toolbox-primary-button" type="button"
+            data-i18n="grantHostsPermission">Enable all hosts permission</button></p>
+          <p data-i18n="firefoxPermissionPathIntro">Or navigate to:</p>
+          <p data-i18n="firefoxPermissionPath">
+            about:addons &gt; Vimium &gt; Manage (three-dot menu) &gt; Permissions &gt; enable
+            "Access your data for all websites".
+          </p>
+          <p><a href="https://github.com/philc/vimium/wiki/Permissions"
+            data-i18n="seePermissionsHelp">See permissions help</a></p>
+        </div>
+      </section>
+
+      <details id="browser-toolbox-site-details" class="browser-toolbox-site-details" style="display: none"
+        aria-labelledby="browser-toolbox-site-details-title">
+        <summary id="browser-toolbox-site-details-title"><span data-i18n="currentSiteDetails">Current site details</span></summary>
+        <div id="dialog-body">
+          <div class="browser-toolbox-exclusion-summary">
+            <span id="how-many-enabled" data-i18n="allKeys">All</span>
+            <span data-i18n="vimiumKeysEnabledOnPage">Vimium keys are enabled on this page.</span>
+          </div>
+          <div id="add-first-rule-container">
+            <button id="add-first-rule" class="browser-toolbox-secondary-button" type="button"
+              data-i18n="excludeKeysOnPage">Exclude Vimium keys on this page</button>
+          </div>
+          <div id="exclusions-container" style="display: none">
+            <div id="exclusion-scroll-box">
+              <table id="exclusion-rules">
+                <thead>
+                  <tr>
+                    <td><span class="exclusion-header-text" data-i18n="matchingPatterns">Patterns matching the current page</span></td>
+                    <td><span class="exclusion-header-text" data-i18n="keysToExclude">Keys to exclude</span></td>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+            <button id="exclusion-add-button" class="browser-toolbox-secondary-button" type="button"
+              data-i18n="addRule">Add rule</button>
+          </div>
+          <p class="browser-toolbox-options-message">
+            <span data-i18n="seeExclusionRules">See all exclusion rules on the</span>
+            <a id="optionsLink" target="_blank" data-i18n="optionsPage">Options</a>
+            <span data-i18n="page">page.</span>
+          </p>
+        </div>
+      </details>
+
+      <section id="browser-toolbox-tools" class="browser-toolbox-action-section browser-toolbox-tools-panel"
+        style="display: none" aria-labelledby="browser-toolbox-tools-title">
+        <div class="browser-toolbox-section-heading">
+          <div>
+            <span class="browser-toolbox-section-kicker" data-i18n="utilityTools">Utility tools</span>
+            <h2 id="browser-toolbox-tools-title" data-i18n="quickTools">Quick tools</h2>
+          </div>
+          <a id="browser-toolbox-tool-settings-link" class="browser-toolbox-text-link" target="_blank"
+            data-i18n="manageTools">Manage tools</a>
+        </div>
+        <p class="browser-toolbox-tool-note" data-i18n="toolLocalOnly">
+          All tools run locally. Inputs use a short-lived, one-time session token.
+        </p>
+        <div id="browser-toolbox-tool-buttons" class="browser-toolbox-tool-buttons"></div>
+      </section>
+
+      <nav class="browser-toolbox-action-footer" aria-label="Action links" data-i18n-aria-label="actionFooter">
+        <button id="browser-toolbox-all-tools" class="browser-toolbox-footer-link" type="button">
+          <span class="browser-toolbox-footer-icon" aria-hidden="true" data-toolbox-icon="grid"></span>
+          <span data-i18n="allTools">All tools</span>
+        </button>
+        <button id="browser-toolbox-site-details-toggle" class="browser-toolbox-footer-link" type="button"
+          aria-controls="browser-toolbox-site-details" aria-expanded="false">
+          <span class="browser-toolbox-footer-icon" aria-hidden="true" data-toolbox-icon="info"></span>
+          <span data-i18n="currentSiteDetails">Current site details</span>
+        </button>
+        <a id="browser-toolbox-settings-footer-link" class="browser-toolbox-footer-link" target="_blank">
+          <span class="browser-toolbox-footer-icon" aria-hidden="true" data-toolbox-icon="settings"></span>
+          <span data-i18n="openSettings">Open settings</span>
+        </a>
+        <button id="browser-toolbox-open-help" class="browser-toolbox-footer-link" type="button">
+          <span class="browser-toolbox-footer-icon" aria-hidden="true" data-toolbox-icon="info"></span>
+          <span data-i18n="openHelp">Open help</span>
+        </button>
+      </nav>
+
+      <footer id="browser-toolbox-exclusion-footer" style="display: none">
+        <div class="options-message">
+          <span data-i18n="seeExclusionRules">See all exclusion rules on the</span>
+          <a id="footer-options-link" target="_blank" data-i18n="optionsPage">Options</a>
+          <span data-i18n="page">page.</span>
+        </div>
+        <div>
+          <button id="cancel" type="button" data-i18n="cancel">Cancel</button>
+          <button id="save" type="button" disabled="true" data-i18n="noChanges">No changes</button>
+        </div>
+      </footer>
+    </main>
 
     <template id="exclusion-rule-template">
       <tr class="rule">

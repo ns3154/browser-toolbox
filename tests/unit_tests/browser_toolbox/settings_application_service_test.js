@@ -117,7 +117,7 @@ context("Settings application service", () => {
 
     assert.equal("browser-toolbox-settings", payload.format);
     assert.isTrue(migrated.ok);
-    assert.equal(4, migrated.settings.schemaVersion);
+    assert.equal(5, migrated.settings.schemaVersion);
     assert.equal("BrowserToolbox.newWindow", migrated.settings.mouse.bindings[0].commandName);
   });
 });

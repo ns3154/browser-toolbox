@@ -77,6 +77,11 @@ if (primaryContentScript?.match_about_blank !== true) {
 const contentScripts = manifest.content_scripts?.[0]?.js || [];
 const requiredOrder = [
   "lib/browser_toolbox/value_utils.js",
+  "lib/browser_toolbox/tools/tool_contract.js",
+  "lib/browser_toolbox/tools/tool_registry.js",
+  "lib/browser_toolbox/tools/tool_registry_validator.js",
+  "lib/browser_toolbox/tools/document_formatters.js",
+  "content_scripts/document_formatter/document_formatter.js",
   "lib/browser_toolbox/command_invocation.js",
   "lib/browser_toolbox/message_protocol.js",
   "lib/browser_toolbox/settings_schema.js",
@@ -138,7 +143,10 @@ for (const file of pageDependencyOrder) {
 const sourceFiles = [];
 async function collectSourceFiles(directory) {
   for await (const entry of Deno.readDir(directory)) {
-    if (entry.name === ".git" || entry.name === "dist" || entry.name === "node_modules") continue;
+    if (
+      entry.name === ".git" || entry.name === "dist" || entry.name === "node_modules" ||
+      entry.name === "local-development"
+    ) continue;
     const file = `${directory}/${entry.name}`;
     if (entry.isDirectory) {
       await collectSourceFiles(file);

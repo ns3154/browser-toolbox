@@ -27,11 +27,11 @@ context("BrowserToolbox settings navigation", () => {
 
   should("filter by translated group or section labels and keep the result count", () => {
     const result = navigation.filter("mouse");
-    assert.equal(3, result.matchedSections);
-    assert.isFalse(document.querySelector("[data-nav-group='mouseDrag']").hidden);
-    assert.isTrue(document.querySelector("[data-nav-group='searchTabs']").hidden);
+    assert.equal(1, result.matchedSections);
+    assert.isFalse(document.querySelector("[data-nav-group='browsingEnhancement']").hidden);
+    assert.isTrue(document.querySelector("[data-nav-group='utilityTools']").hidden);
     assert.equal(
-      ["mouse", "superDrag", "wheel"],
+      ["mouse"],
       navigation.visibleButtons().map((button) => button.dataset.section),
     );
 
@@ -49,24 +49,20 @@ context("BrowserToolbox settings navigation", () => {
   should("restore all groups and the active focus stop when the filter is cleared", () => {
     navigation.filter("pointer");
     navigation.filter("");
-    assert.equal(11, navigation.buttons.filter((button) => !button.hidden).length);
+    assert.equal(15, navigation.buttons.filter((button) => !button.hidden).length);
     assert.isTrue(navigation.groups.every((group) => !group.hidden));
+    assert.isTrue(navigation.categories.every((category) =>
+      category.getAttribute("aria-expanded") === "true"
+    ));
     assert.equal(1, navigation.buttons.filter((button) => button.tabIndex === 0).length);
   });
 
-  should("keep keyboard navigation inside the expanded group", () => {
+  should("keep keyboard navigation across the three visible groups", () => {
     navigation.filter("");
     const activeGroup = navigation.activeButton.closest(".browser-toolbox-nav-group");
     const focusable = navigation.focusableButtons();
     assert.isTrue(focusable.length > 0);
-    assert.isTrue(
-      focusable.every((button) => button.closest(".browser-toolbox-nav-group") === activeGroup),
-    );
-    assert.isTrue(
-      navigation.buttons.some((button) =>
-        !focusable.includes(button) && button.closest(".browser-toolbox-nav-group") !== activeGroup
-      ),
-    );
+    assert.equal(15, focusable.length);
 
     const currentGroupButtons = navigation.visibleButtons().filter((button) =>
       button.closest(".browser-toolbox-nav-group") === activeGroup
@@ -87,9 +83,9 @@ context("BrowserToolbox settings navigation", () => {
     BrowserToolboxI18n.setLocale("zh_CN");
     BrowserToolboxI18n.apply(document);
     const result = navigation.filter("站点");
-    assert.equal(2, result.matchedSections);
+    assert.equal(1, result.matchedSections);
     assert.equal(
-      ["siteRules", "privacy"],
+      ["siteRules"],
       navigation.visibleButtons().map((button) => button.dataset.section),
     );
   });

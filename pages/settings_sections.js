@@ -9,30 +9,15 @@
  */
 (function () {
   const GROUPS = Object.freeze([
-    { id: "navigationKeyboard", labelKey: "navigationKeyboard" },
-    { id: "mouseDrag", labelKey: "mouseDrag" },
-    { id: "searchTabs", labelKey: "searchTabs" },
-    { id: "appearanceBehavior", labelKey: "appearanceBehavior" },
-    { id: "sitePrivacy", labelKey: "sitePrivacy" },
-    { id: "backupAbout", labelKey: "backupAbout" },
+    { id: "browsingEnhancement", labelKey: "browsingEnhancement" },
+    { id: "utilityTools", labelKey: "utilityTools" },
+    { id: "system", labelKey: "system" },
   ]);
 
   const SECTIONS = Object.freeze([
     {
-      id: "general",
-      group: "navigationKeyboard",
-      labelKey: "general",
-      searchKeys: ["enabled", "showHud", "browserSyncEnabled", "language"],
-    },
-    {
-      id: "keyboard",
-      group: "navigationKeyboard",
-      labelKey: "keyboard",
-      searchKeys: ["keyMappings", "keyboardMappingNote"],
-    },
-    {
       id: "mouse",
-      group: "mouseDrag",
+      group: "browsingEnhancement",
       labelKey: "mouseGestures",
       searchKeys: [
         "enabled",
@@ -55,7 +40,7 @@
     },
     {
       id: "superDrag",
-      group: "mouseDrag",
+      group: "browsingEnhancement",
       labelKey: "superDrag",
       searchKeys: [
         "enabled",
@@ -69,7 +54,7 @@
     },
     {
       id: "wheel",
-      group: "mouseDrag",
+      group: "browsingEnhancement",
       labelKey: "wheelRocker",
       searchKeys: [
         "enabled",
@@ -85,20 +70,89 @@
       ],
     },
     {
+      id: "keyboard",
+      group: "browsingEnhancement",
+      labelKey: "keyboard",
+      searchKeys: ["keyMappings", "keyboardMappingNote"],
+    },
+    {
       id: "search",
-      group: "searchTabs",
-      labelKey: "searchSettings",
+      group: "browsingEnhancement",
+      labelKey: "searchAndTabs",
       searchKeys: ["searchEngines", "searchEngineNote"],
     },
     {
+      id: "general",
+      group: "browsingEnhancement",
+      labelKey: "general",
+      searchKeys: ["enabled", "showHud", "browserSyncEnabled", "language"],
+    },
+    {
+      id: "toolsOverview",
+      group: "utilityTools",
+      labelKey: "toolsOverview",
+      searchKeys: [
+        "actionTools",
+        "contextMenuTools",
+        "toolSelectionLimit",
+        "toolLocalOnly",
+        "toolEnabled",
+        "contextMenuEnabled",
+        "toolDirectory",
+        "toolOverviewDescription",
+        "toolOpen",
+      ],
+    },
+    {
+      id: "jsonFormatter",
+      group: "utilityTools",
+      labelKey: "jsonFormatter",
+      searchKeys: [
+        "documentFormatter",
+        "documentFormatterEnabled",
+        "documentFormatterAutoFormat",
+        "documentFormatterAutoJson",
+        "documentFormatterAutoXml",
+        "documentFormatterAutoCss",
+        "documentFormatterAutoJavascript",
+        "documentFormatterAutoJava",
+        "documentFormatterMaxAutoBytes",
+        "documentFormatterJsonDefaults",
+      ],
+    },
+    {
+      id: "textDiff",
+      group: "utilityTools",
+      labelKey: "textDiff",
+      searchKeys: ["textDiffSettingsDescription", "toolTextDiff", "toolOpen"],
+    },
+    {
+      id: "codecTransform",
+      group: "utilityTools",
+      labelKey: "codecTransform",
+      searchKeys: ["codecTransformSettingsDescription", "toolCodecTransform", "toolOpen"],
+    },
+    {
+      id: "timeAndId",
+      group: "utilityTools",
+      labelKey: "timeAndId",
+      searchKeys: [
+        "timeAndIdSettingsDescription",
+        "toolTimeConvert",
+        "toolIdGenerate",
+        "toolPasswordGenerate",
+        "toolOpen",
+      ],
+    },
+    {
       id: "appearance",
-      group: "appearanceBehavior",
+      group: "system",
       labelKey: "appearance",
       searchKeys: ["cursor", "cursorAsset", "cursorHotspotX", "cursorHotspotY", "resetCursor"],
     },
     {
       id: "siteRules",
-      group: "sitePrivacy",
+      group: "system",
       labelKey: "siteRules",
       searchKeys: [
         "siteRuleSpecificity",
@@ -118,27 +172,24 @@
     },
     {
       id: "privacy",
-      group: "sitePrivacy",
+      group: "system",
       labelKey: "privacy",
       searchKeys: ["noTelemetry", "privacyImmutable", "privacyNetwork", "licenseGpl"],
     },
     {
-      id: "backup",
-      group: "backupAbout",
-      labelKey: "backupRestore",
+      id: "backupAbout",
+      group: "system",
+      labelKey: "backupAbout",
       searchKeys: [
         "backupContents",
         "vimiumBackup",
         "restoreDefaults",
         "exportSettings",
         "importSettings",
+        "aboutText",
+        "openOnboarding",
+        "thirdPartyNotices",
       ],
-    },
-    {
-      id: "about",
-      group: "backupAbout",
-      labelKey: "aboutLicenses",
-      searchKeys: ["aboutText", "openOnboarding", "thirdPartyNotices"],
     },
   ]);
 
@@ -151,6 +202,17 @@
     { id: "language", path: "general.language", type: "value" },
     { id: "key-mappings", path: "keyboard.keyMappings", type: "value" },
     { id: "search-engines", path: "searchEngines", type: "value" },
+    { id: "tools-enabled", path: "tools.enabled", type: "checkbox" },
+    { id: "context-menu-enabled", path: "tools.contextMenu.enabled", type: "checkbox" },
+    { id: "document-formatter-enabled", path: "tools.documentFormatter.enabled", type: "checkbox" },
+    { id: "document-auto-json", path: "tools.documentFormatter.autoFormat.json", type: "checkbox" },
+    { id: "document-auto-xml", path: "tools.documentFormatter.autoFormat.xml", type: "checkbox" },
+    { id: "document-auto-css", path: "tools.documentFormatter.autoFormat.css", type: "checkbox" },
+    { id: "document-auto-javascript", path: "tools.documentFormatter.autoFormat.javascript", type: "checkbox" },
+    { id: "document-auto-java", path: "tools.documentFormatter.autoFormat.java", type: "checkbox" },
+    { id: "document-max-auto-bytes", path: "tools.documentFormatter.maxAutoBytes", type: "number" },
+    { id: "document-json-sort", path: "tools.documentFormatter.json.defaultSort", type: "value" },
+    { id: "document-json-collapse-depth", path: "tools.documentFormatter.json.defaultCollapseDepth", type: "nullableNumber" },
     { id: "mouse-enabled", path: "mouse.enabled", type: "checkbox" },
     { id: "trigger-button", path: "mouse.triggerButton", type: "number" },
     { id: "direction-mode", path: "mouse.directionMode", type: "value" },
@@ -215,12 +277,14 @@
 
   function readField(element, type) {
     if (type === "checkbox") return Boolean(element.checked);
+    if (type === "nullableNumber") return element.value.trim() === "" ? null : Number(element.value);
     if (type === "number") return Number(element.value);
     return element.value;
   }
 
   function writeField(element, type, value) {
     if (type === "checkbox") element.checked = Boolean(value);
+    else if (type === "nullableNumber") element.value = value == null ? "" : value;
     else element.value = value ?? "";
   }
 

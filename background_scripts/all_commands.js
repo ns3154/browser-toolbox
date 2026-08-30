@@ -647,6 +647,19 @@ const allCommands = [
     noRepeat: true,
   },
   {
+    name: "BrowserToolbox.openTool",
+    desc: "Open a Browser Toolbox utility",
+    group: "tools",
+    background: true,
+    noRepeat: true,
+    supportedInputs: ["ui"],
+    optionSchema: {
+      toolId: { type: "string", maxLength: 64 },
+      inputToken: { type: "string", maxLength: 128 },
+      source: { type: "enum", values: ["action", "selection", "page", "link", "image", "command"] },
+    },
+  },
+  {
     name: "BrowserToolbox.toggleKeyboard",
     desc: "Toggle keyboard navigation",
     group: "settings",

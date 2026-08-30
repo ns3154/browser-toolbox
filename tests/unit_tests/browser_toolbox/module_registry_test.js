@@ -8,7 +8,7 @@ import "../../../lib/browser_toolbox/module_registry.js";
 context("BrowserToolbox module registry", () => {
   should("keep site-rule and session capabilities aligned", () => {
     assert.equal(
-      ["keyboard", "mouse", "superDrag", "wheel", "rocker", "cursor"],
+      ["keyboard", "mouse", "superDrag", "wheel", "rocker", "cursor", "documentFormatter"],
       BrowserToolboxModuleRegistry.ids({ siteRule: true }),
     );
     assert.equal(
@@ -21,8 +21,9 @@ context("BrowserToolbox module registry", () => {
 
   should("derive defaults and disable every registered module", () => {
     const defaults = BrowserToolboxModuleRegistry.enabledDefaults({
-      keyboard: { enabled: false },
-      mouse: { enabled: true },
+        keyboard: { enabled: false },
+        mouse: { enabled: true },
+        tools: { documentFormatter: { enabled: false } },
     });
     assert.equal(
       {
@@ -32,6 +33,7 @@ context("BrowserToolbox module registry", () => {
         wheel: true,
         rocker: true,
         cursor: true,
+        documentFormatter: false,
       },
       defaults,
     );
@@ -44,6 +46,7 @@ context("BrowserToolbox module registry", () => {
         wheel: false,
         rocker: false,
         cursor: false,
+        documentFormatter: false,
       },
       defaults,
     );

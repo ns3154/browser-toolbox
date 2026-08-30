@@ -9,12 +9,6 @@ const LEGACY_MARKERS = Object.freeze([
 const ALLOWED_FILES = new Set([
   "background_scripts/browser_toolbox/settings_migrations.js",
   "background_scripts/browser_toolbox/settings_storage.js",
-  "docs/adr/001-fork-vimium.md",
-  "docs/adr/004-storage-split.md",
-  "docs/baseline.md",
-  "docs/codex-progress.md",
-  "docs/feature-parity-matrix.md",
-  "docs/release-checklist.md",
   "lib/browser_toolbox/settings_validator.js",
   "scripts/audit_technical_rename.js",
   "scripts/e2e_browser_toolbox.js",
@@ -31,7 +25,7 @@ function isAllowed(file) {
 
 async function collectFiles(directory, result = []) {
   for await (const entry of Deno.readDir(directory)) {
-    if ([".git", "dist", "node_modules"].includes(entry.name)) continue;
+    if ([".git", "dist", "node_modules", "local-development"].includes(entry.name)) continue;
     const path = directory === "." ? entry.name : `${directory}/${entry.name}`;
     if (entry.isDirectory) await collectFiles(path, result);
     else if (entry.isFile) result.push(path);

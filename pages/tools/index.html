@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="color-scheme" content="light dark">
+    <title data-i18n="tools">Browser Toolbox Tools</title>
+    <link rel="stylesheet" href="../options.css">
+    <link rel="stylesheet" href="tools.css">
+    <script src="../../lib/i18n.js"></script>
+    <script src="../../lib/browser_toolbox/tools/tool_contract.js"></script>
+    <script src="../../lib/browser_toolbox/tools/tool_registry.js"></script>
+    <script src="../../lib/browser_toolbox/tools/tool_icons.js"></script>
+    <script src="../../lib/browser_toolbox/tools/document_formatters.js"></script>
+    <script src="tool_runtime.js"></script>
+    <script src="json_tool.js"></script>
+    <script src="diff_tool.js"></script>
+    <script src="codec_tool.js"></script>
+    <script src="time_tool.js"></script>
+    <script src="generator_tools.js"></script>
+    <script src="table_tool.js"></script>
+    <script src="tool_loader.js"></script>
+    <script src="index.js" defer></script>
+  </head>
+  <body class="browser-toolbox-tools-document">
+    <main class="browser-toolbox-tools-page" data-tool-page="true">
+      <header class="browser-toolbox-tools-header">
+        <a id="tool-back" class="browser-toolbox-tool-back" data-i18n-title="toolBack"
+          data-i18n-aria-label="toolBack">
+          <span id="tool-back-icon" aria-hidden="true"></span>
+          <span data-i18n="toolBack">Back</span>
+        </a>
+        <div class="browser-toolbox-tool-heading">
+          <p class="browser-toolbox-eyebrow" data-i18n="browserToolbox">Browser Toolbox</p>
+          <div class="browser-toolbox-tool-title-row">
+            <span id="tool-icon" class="browser-toolbox-tool-icon-wrap" aria-hidden="true"></span>
+            <div>
+              <h1 id="tool-title" data-i18n="tools">Tools</h1>
+              <p id="tool-description" class="browser-toolbox-note"></p>
+            </div>
+          </div>
+        </div>
+        <a id="tool-settings" class="browser-toolbox-icon-button" target="_blank"
+          data-i18n-title="toolSettings" data-i18n-aria-label="toolSettings">
+          <span id="tool-settings-icon" aria-hidden="true"></span>
+        </a>
+      </header>
+
+      <section id="tool-workspace" class="browser-toolbox-tool-workspace" aria-labelledby="tool-input-title">
+        <div class="browser-toolbox-workspace-heading">
+          <div>
+            <span class="browser-toolbox-section-kicker" data-i18n="toolWorkspace">Workspace</span>
+            <h2 id="tool-input-title" data-i18n="toolInput">Input</h2>
+          </div>
+          <span class="browser-toolbox-local-badge" data-i18n="toolLocalBadge">Local only</span>
+        </div>
+        <div id="tool-controls" class="browser-toolbox-tool-controls"></div>
+        <div class="browser-toolbox-tool-input-grid">
+          <label class="browser-toolbox-tool-input" for="tool-input">
+            <span id="tool-input-label" data-i18n="toolInput">Input</span>
+            <textarea id="tool-input" rows="14" spellcheck="false"
+              data-i18n-placeholder="toolInputHint"></textarea>
+          </label>
+          <label id="tool-input-right-wrap" class="browser-toolbox-tool-input" for="tool-input-right" hidden>
+            <span data-i18n="toolInputRight">Right input</span>
+            <textarea id="tool-input-right" rows="14" spellcheck="false"
+              data-i18n-placeholder="toolInputHint"></textarea>
+          </label>
+        </div>
+        <label class="browser-toolbox-tool-file" for="tool-file">
+          <span data-i18n="toolFile">Local file</span>
+          <input id="tool-file" type="file" accept=".txt,.json,.xml,.css,.js,.mjs,.cjs,.java,.csv,.tsv,text/*,application/json,application/xml">
+        </label>
+        <div class="browser-toolbox-tool-actions">
+          <button id="tool-run" class="primary" type="button" data-i18n="toolRun">Run</button>
+          <button id="tool-copy" class="browser-toolbox-icon-button" type="button"
+            data-i18n-aria-label="toolCopy" data-i18n-title="toolCopy"><span id="tool-copy-icon" aria-hidden="true"></span></button>
+          <button id="tool-download" class="browser-toolbox-icon-button" type="button"
+            data-i18n-aria-label="toolDownload" data-i18n-title="toolDownload"><span id="tool-download-icon" aria-hidden="true"></span></button>
+          <button id="tool-restore" class="browser-toolbox-icon-button" type="button"
+            data-i18n-aria-label="toolRestore" data-i18n-title="toolRestore"><span id="tool-restore-icon" aria-hidden="true"></span></button>
+        </div>
+        <p id="tool-status" role="status" aria-live="polite"></p>
+        <section id="tool-result-workspace" class="browser-toolbox-tool-result" aria-labelledby="tool-output-title">
+          <div class="browser-toolbox-result-heading">
+            <h2 id="tool-output-title" data-i18n="toolOutput">Output</h2>
+            <button id="json-copy-root" class="browser-toolbox-icon-button" type="button" hidden
+              data-i18n-aria-label="toolCopyNode" data-i18n-title="toolCopyNode"><span id="json-copy-root-icon" aria-hidden="true"></span></button>
+          </div>
+          <div id="json-result-panel" class="browser-toolbox-json-result" hidden>
+            <div class="browser-toolbox-json-result-toolbar">
+              <button id="json-collapse-all" class="browser-toolbox-icon-button" type="button"
+                data-i18n-aria-label="toolCollapseAll" data-i18n-title="toolCollapseAll"><span id="json-collapse-all-icon" aria-hidden="true"></span></button>
+              <button id="json-expand-all" class="browser-toolbox-icon-button" type="button"
+                data-i18n-aria-label="toolExpandAll" data-i18n-title="toolExpandAll"><span id="json-expand-all-icon" aria-hidden="true"></span></button>
+            </div>
+            <div id="json-result-tree" class="browser-toolbox-json-tree" tabindex="0"></div>
+          </div>
+          <div id="diff-result-panel" class="browser-toolbox-diff-result" hidden>
+            <div class="browser-toolbox-diff-heading">
+              <h3 data-i18n="toolDiffPanel">Differences</h3>
+              <span id="diff-summary" class="browser-toolbox-diff-summary"></span>
+            </div>
+            <div id="diff-result-list" class="browser-toolbox-diff-list" role="list"></div>
+          </div>
+          <pre id="codec-output" class="browser-toolbox-codec-output" hidden tabindex="0"></pre>
+          <pre id="tool-output" class="browser-toolbox-tool-output" tabindex="0"></pre>
+          <dl id="tool-metadata" class="browser-toolbox-tool-metadata"></dl>
+        </section>
+      </section>
+    </main>
+  </body>
+</html>

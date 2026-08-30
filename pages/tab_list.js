@@ -1,4 +1,7 @@
 import "../lib/browser_toolbox/value_utils.js";
+import "../lib/browser_toolbox/tools/tool_contract.js";
+import "../lib/browser_toolbox/tools/tool_registry.js";
+import "../lib/browser_toolbox/tools/tool_registry_validator.js";
 import "../lib/browser_toolbox/settings_schema.js";
 import "../lib/browser_toolbox/regex_safety.js";
 import "../lib/browser_toolbox/module_registry.js";
