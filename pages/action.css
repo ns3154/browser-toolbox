@@ -257,6 +257,11 @@ body.browser-toolbox-action-page {
   font-weight: 700;
 }
 
+.browser-toolbox-action-page .browser-toolbox-site-badge.is-disabled {
+  background: #fff1f2;
+  color: #be123c;
+}
+
 .browser-toolbox-action-page .browser-toolbox-section-count {
   min-width: 18px;
   justify-content: center;
@@ -297,6 +302,11 @@ body.browser-toolbox-action-page {
   border-color: #b9c8dd;
   background: var(--toolbox-blue-soft);
   color: var(--toolbox-blue);
+}
+
+.browser-toolbox-action-page .browser-toolbox-secondary-button:disabled {
+  cursor: default;
+  opacity: .72;
 }
 
 .browser-toolbox-action-page .browser-toolbox-primary-button:hover,
@@ -387,7 +397,7 @@ body.browser-toolbox-action-page {
 }
 
 .browser-toolbox-action-page .browser-toolbox-module-status.is-disabled {
-  color: #b45309;
+  color: #be123c;
 }
 
 .browser-toolbox-action-page .browser-toolbox-switch {
@@ -1013,6 +1023,15 @@ body.browser-toolbox-action-page {
   .browser-toolbox-action-page .browser-toolbox-tool-card:focus-visible,
   .browser-toolbox-action-page .browser-toolbox-enhancement-card:hover {
     background: #2a3a55;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-site-badge.is-disabled {
+    background: #4a2230;
+    color: #fda4af;
+  }
+
+  .browser-toolbox-action-page .browser-toolbox-module-status.is-disabled {
+    color: #fb7185;
   }
 }
 

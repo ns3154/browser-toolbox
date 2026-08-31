@@ -1369,6 +1369,43 @@ async function testActionControls(browser, id, fixture, errors) {
     });
 
     await action.evaluate(() => chrome.storage.session.remove("browserToolboxSessionOverrides"));
+    await waitFor(async () => {
+      const state = await action.evaluate(() => ({
+        session: BrowserToolboxSettingsRepositoryInstance.sessionOverrides,
+        buttonDisabled: document.querySelector("#browser-toolbox-disable-session")?.disabled,
+      }));
+      return Object.keys(state.session || {}).length === 0 && state.buttonDisabled === false;
+    });
+    await action.$eval("#browser-toolbox-disable-session", (element) => element.click());
+    await waitFor(async () => {
+      const state = await action.evaluate(async () => ({
+        session: (await chrome.storage.session.get("browserToolboxSessionOverrides"))
+          .browserToolboxSessionOverrides,
+        badge: document.querySelector("#browser-toolbox-site-badge")?.textContent.trim(),
+        badgeDisabled: document.querySelector("#browser-toolbox-site-badge")?.classList.contains(
+          "is-disabled",
+        ),
+        button: document.querySelector("#browser-toolbox-disable-session"),
+        status: document.querySelector("#browser-toolbox-site-status")?.textContent.trim(),
+        disabledStatusColors: [...document.querySelectorAll(
+          ".browser-toolbox-module-status.is-disabled",
+        )].map((element) => getComputedStyle(element).color),
+        toggles: [...document.querySelectorAll("#browser-toolbox-enhancement-summary input")]
+          .map((element) => element.checked),
+      }));
+      return state.session?.enabled === false &&
+        /Inactive|已停用/.test(state.badge) &&
+        state.badgeDisabled === true &&
+        /Disabled for this session|本次会话已停用/.test(state.button?.textContent || "") &&
+        state.button?.disabled === true && state.toggles.every((checked) => !checked) &&
+        state.disabledStatusColors.length > 0 &&
+        state.disabledStatusColors.every((color) =>
+          color === "rgb(190, 18, 60)" || color === "rgb(251, 113, 133)"
+        ) &&
+        /Disabled modules|当前页面停用的模块/.test(state.status || "");
+    });
+
+    await action.evaluate(() => chrome.storage.session.remove("browserToolboxSessionOverrides"));
     await action.evaluate(async (pattern) => {
       const key = "browserToolboxSettings";
       const values = await chrome.storage.sync.get(key);

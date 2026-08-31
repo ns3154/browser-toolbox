@@ -144,6 +144,20 @@
   "version": { "message": "Version", "description": "Version label" },
   "openHelp": { "message": "Open help", "description": "Open help button" },
   "currentSite": { "message": "Current site", "description": "Current site heading" },
+  "disableForSession": {
+    "message": "Disable for this session",
+    "description": "Disable the current site for the browser session"
+  },
+  "sessionDisabled": {
+    "message": "Disabled for this session",
+    "description": "Current site session-disabled state"
+  },
+  "disabling": { "message": "Disabling…", "description": "Session disable in progress" },
+  "sessionDisableFailed": {
+    "message": "Could not disable for this session. Try again.",
+    "description": "Session disable failure"
+  },
+  "inactive": { "message": "Inactive", "description": "Inactive current site state" },
   "allModulesEnabled": {
     "message": "All Browser Toolbox modules are enabled on this site.",
     "description": "Current site status"

@@ -144,6 +144,9 @@ const ActionPage = {
       },
     );
     const status = document.querySelector("#browser-toolbox-site-status");
+    const siteBadge = document.querySelector("#browser-toolbox-site-badge");
+    const disableSessionButton = document.querySelector("#browser-toolbox-disable-session");
+    let statusError = "";
     const controls = [
       ["#browser-toolbox-toggle-keyboard", "keyboard", "BrowserToolbox.toggleKeyboard"],
       ["#browser-toolbox-toggle-mouse", "mouse", "BrowserToolbox.toggleMouseGestures"],
@@ -155,9 +158,25 @@ const ActionPage = {
       const disabled = moduleRegistry.entries({ siteRule: true })
         .filter((module) => effectiveModules[module.id] === false)
         .map((module) => BrowserToolboxI18n.message(module.labelKey));
-      status.textContent = disabled.length > 0
-        ? `${BrowserToolboxI18n.message("siteRuleDisabledModules")}: ${disabled.join(", ")}`
-        : BrowserToolboxI18n.message("allModulesEnabled");
+      const pageEnabled = effectiveModules.enabled !== false;
+      const sessionDisabled = repository.sessionOverrides?.enabled === false;
+      if (status) {
+        status.textContent = statusError ||
+          (disabled.length > 0
+            ? `${BrowserToolboxI18n.message("siteRuleDisabledModules")}: ${disabled.join(", ")}`
+            : BrowserToolboxI18n.message("allModulesEnabled"));
+      }
+      if (siteBadge) {
+        siteBadge.textContent = BrowserToolboxI18n.message(pageEnabled ? "active" : "inactive");
+        siteBadge.classList.toggle("is-disabled", !pageEnabled);
+      }
+      if (disableSessionButton && disableSessionButton.dataset.busy !== "true") {
+        disableSessionButton.disabled = sessionDisabled;
+        disableSessionButton.textContent = BrowserToolboxI18n.message(
+          sessionDisabled ? "sessionDisabled" : "disableForSession",
+        );
+        disableSessionButton.removeAttribute("aria-busy");
+      }
       for (const [selector, moduleName] of controls) {
         const input = document.querySelector(selector);
         if (!input) continue;
@@ -215,19 +234,32 @@ const ActionPage = {
         input.checked = actualEnabled;
       });
     }
-    document.querySelector("#browser-toolbox-disable-session").addEventListener(
+    disableSessionButton.addEventListener(
       "click",
       async () => {
-        await repository.setSessionOverrides({
-          enabled: false,
-          keyboard: false,
-          mouse: false,
-          superDrag: false,
-          wheel: false,
-          rocker: false,
-          cursor: false,
-        });
-        renderStatus(repository.getEffectiveSettings(activeTab.url || ""));
+        if (disableSessionButton.dataset.busy === "true") return;
+        statusError = "";
+        disableSessionButton.dataset.busy = "true";
+        disableSessionButton.disabled = true;
+        disableSessionButton.setAttribute("aria-busy", "true");
+        disableSessionButton.textContent = BrowserToolboxI18n.message("disabling");
+        try {
+          await repository.setSessionOverrides({
+            enabled: false,
+            keyboard: false,
+            mouse: false,
+            superDrag: false,
+            wheel: false,
+            rocker: false,
+            cursor: false,
+          });
+        } catch (error) {
+          statusError = BrowserToolboxI18n.message("sessionDisableFailed");
+          console.error("BrowserToolbox: failed to disable the current session", error);
+        } finally {
+          delete disableSessionButton.dataset.busy;
+          renderStatus(repository.getEffectiveSettings(activeTab.url || ""));
+        }
       },
     );
   },

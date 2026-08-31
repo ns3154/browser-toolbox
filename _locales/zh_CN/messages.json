@@ -126,6 +126,20 @@
   "version": { "message": "版本", "description": "版本标签" },
   "openHelp": { "message": "打开帮助", "description": "打开帮助按钮" },
   "currentSite": { "message": "当前站点", "description": "当前站点标题" },
+  "disableForSession": {
+    "message": "仅本次会话停用",
+    "description": "本次会话停用当前站点"
+  },
+  "sessionDisabled": {
+    "message": "本次会话已停用",
+    "description": "当前站点本次会话停用状态"
+  },
+  "disabling": { "message": "正在停用……", "description": "会话停用进行中" },
+  "sessionDisableFailed": {
+    "message": "本次会话停用失败，请重试。",
+    "description": "会话停用失败"
+  },
+  "inactive": { "message": "已停用", "description": "当前站点停用状态" },
   "allModulesEnabled": {
     "message": "当前站点已启用浏览器工具箱的全部模块。",
     "description": "当前站点状态"
