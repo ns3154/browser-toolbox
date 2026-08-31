@@ -10,24 +10,23 @@ context("BrowserToolbox DOM integration", () => {
       [
         "browser-toolbox-action-brand",
         "browser-toolbox-controls",
-        "browser-toolbox-enhancement-summary",
-        "browser-toolbox-site-details",
         "browser-toolbox-tools",
+        "browser-toolbox-enhancement-summary",
         "browser-toolbox-action-footer",
       ],
       [...popup.querySelector("main").children]
         .filter((element) => [
           "browser-toolbox-action-brand",
           "browser-toolbox-controls",
-          "browser-toolbox-enhancement-summary",
-          "browser-toolbox-site-details",
           "browser-toolbox-tools",
+          "browser-toolbox-enhancement-summary",
         ].some((name) => element.id === name || element.classList.contains(name)) ||
           element.classList.contains("browser-toolbox-action-footer"))
         .map((element) => element.id || [...element.classList].find((name) => name.startsWith("browser-toolbox-action-"))),
     );
     assert.equal(4, popup.querySelectorAll("#browser-toolbox-enhancement-summary input[type=checkbox]").length);
-    assert.isTrue(Boolean(popup.querySelector("#browser-toolbox-site-details #exclusion-rules")));
+    assert.isTrue(popup.querySelector("#browser-toolbox-site-details") === null);
+    assert.isTrue(popup.querySelector("#exclusion-rule-template") === null);
     assert.isTrue(Boolean(popup.querySelector("#browser-toolbox-all-tools")));
   });
 
@@ -47,8 +46,10 @@ context("BrowserToolbox DOM integration", () => {
   should("keep each utility on a standalone page with its own result affordances", async () => {
     const tools = await loadMarkup("../../pages/tools/index.html");
     assert.isTrue(Boolean(tools.querySelector("[data-tool-page='true']")));
-    assert.isTrue(Boolean(tools.querySelector("#tool-back")));
-    assert.isTrue(Boolean(tools.querySelector("#tool-settings")));
+    assert.isTrue(tools.querySelector("#tool-back") === null);
+    assert.isTrue(tools.querySelector("#tool-settings") === null);
+    assert.isTrue(Boolean(tools.querySelector(".browser-toolbox-result-heading #tool-copy")));
+    assert.isTrue(tools.querySelector(".browser-toolbox-tool-actions #tool-copy") === null);
     assert.isTrue(Boolean(tools.querySelector("#json-result-tree")));
     assert.isTrue(Boolean(tools.querySelector("#diff-result-list")));
     assert.isTrue(Boolean(tools.querySelector("#codec-output")));

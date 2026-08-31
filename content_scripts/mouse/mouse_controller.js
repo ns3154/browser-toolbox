@@ -124,6 +124,8 @@
       this.listeners = [];
       this.initialized = false;
       this.initializing = false;
+      this.settingsReady = false;
+      this.settingsLoadPromise = null;
       globalThis.addEventListener?.("pageshow", this.pageshowListener, true);
     }
 
@@ -138,8 +140,15 @@
       if ((!repository && !runtimeSettings) || !this.document?.addEventListener) return;
       this.initializing = true;
       this.initialized = true;
+      this.settingsReady = false;
       try {
-        await this.refreshSettings();
+        // 先用同步可得的默认快照挂载监听器，再等待 Service Worker 返回完整设置。
+        // 冷启动期间浏览器仍会派发首个 pointerdown/contextmenu，不能让异步配置读取挡住输入层。
+        this.settings = this.bootstrapSettings();
+        if (!this.settings) {
+          this.initialized = false;
+          return;
+        }
         this.overlay = new globalThis.BrowserToolboxGestureOverlay(this.document);
         this.guard = new globalThis.BrowserToolboxContextMenuGuard();
         this.wheel = new globalThis.BrowserToolboxWheelGestureController();
@@ -149,14 +158,36 @@
         this.settingsListener = (settings) => {
           this.settings = settings;
           this.drag?.updateSettings(this.settings.superDrag);
+          if (!this.effective("mouse") && this.gesture) this.cancelAll("settings-disabled");
           this.applyCursor().catch(() => {});
         };
         if (runtimeSettings) runtimeSettings.addEventListener(this.settingsListener);
         else repository.addEventListener(this.settingsListener);
+        this.settingsLoadPromise = this.refreshSettings();
+        await this.settingsLoadPromise.catch(() => {});
+        this.settingsReady = true;
         this.applyCursor();
       } finally {
+        this.settingsReady = true;
         this.initializing = false;
       }
+    }
+
+    bootstrapSettings() {
+      const url = globalThis.location?.href || "";
+      try {
+        const settings = runtimeSettings?.getSettings?.();
+        if (settings) return settings;
+      } catch (_) {
+        // 运行时客户端尚未准备好时继续尝试本地缓存。
+      }
+      try {
+        const settings = repository?.getEffectiveSettings?.(url);
+        if (settings) return settings;
+      } catch (_) {
+        // 本地仓库读取失败时交给异步刷新流程处理。
+      }
+      return null;
     }
 
     async refreshSettings() {
@@ -173,6 +204,13 @@
     effective(moduleName) {
       return this.settings?.effectiveModules?.[moduleName] !== false &&
         this.settings?.general?.enabled !== false;
+    }
+
+    async waitForSettings() {
+      if (!this.settingsReady && this.settingsLoadPromise) {
+        await this.settingsLoadPromise.catch(() => {});
+      }
+      return this.settings;
     }
 
     showCommandHud() {
@@ -425,10 +463,14 @@
         if (result.state === "COMPLETED") {
           event.preventDefault();
           event.stopPropagation();
+          const settings = await this.waitForSettings();
+          const mouseEnabled = this.effective("mouse");
           const bridgeReady = this.bridge?.waitUntilReady
-            ? await this.bridge.waitUntilReady()
-            : true;
-          const match = recognizer.find(result.pattern, this.settings.mouse.bindings);
+            ? mouseEnabled && await this.bridge.waitUntilReady()
+            : mouseEnabled;
+          const match = mouseEnabled
+            ? recognizer.find(result.pattern, settings?.mouse?.bindings || [])
+            : { exact: null };
           if (bridgeReady && match.exact) {
             await this.dispatchBinding(
               match.exact,
@@ -705,6 +747,8 @@
       this.settingsListener = null;
       this.overlay?.destroy();
       this.initialized = false;
+      this.settingsReady = false;
+      this.settingsLoadPromise = null;
     }
   }
 

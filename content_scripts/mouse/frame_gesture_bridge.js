@@ -1,6 +1,7 @@
 // Frame 只发送方向摘要，不发送鼠标坐标；手势期间使用短生命周期 Port 绑定会话。
 (function () {
   const GESTURE_PORT_NAME = "browserToolbox.gesture";
+  const GESTURE_READY_TIMEOUT_MS = 2000;
 
   class FrameGestureBridge {
     constructor({ runtimeApi = globalThis.chrome?.runtime } = {}) {
@@ -21,7 +22,8 @@
       this.lastDirection = null;
       this.readyPromise = new Promise((resolve) => {
         this.resolveReady = resolve;
-        this.readyTimer = setTimeout(() => this.finishReady(false), 500);
+        // Service Worker 冷启动可能与配置读取并行发生，给首个手势留出完整的启动窗口。
+        this.readyTimer = setTimeout(() => this.finishReady(false), GESTURE_READY_TIMEOUT_MS);
       });
       try {
         const port = this.runtimeApi?.connect?.({ name: GESTURE_PORT_NAME });

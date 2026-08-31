@@ -21,7 +21,6 @@ import "../background_scripts/browser_toolbox/vimium_settings_adapter.js";
 import "../background_scripts/browser_toolbox/settings_repository.js";
 
 import * as bgUtils from "../background_scripts/bg_utils.js";
-import { ExclusionRulesEditor } from "./exclusion_rules_editor.js";
 
 const vimiumSettings = globalThis.BrowserToolboxVimiumSettingsAdapterInstance;
 const moduleRegistry = globalThis.BrowserToolboxModuleRegistry;
@@ -42,9 +41,6 @@ const ActionPage = {
     const hideUI = () => {
       document.querySelector("#browser-toolbox-controls").style.display = "none";
       document.querySelector("#browser-toolbox-enhancement-summary").style.display = "none";
-      document.querySelector("#browser-toolbox-site-details").style.display = "none";
-      document.querySelector("#dialog-body").style.display = "none";
-      document.querySelector("footer").style.display = "none";
     };
 
     // In Firefox, prompt the user if they haven't enabled the "all hosts" permission. Vimium needs
@@ -76,40 +72,6 @@ const ActionPage = {
     }
 
     await this.initBrowserToolboxControls(activeTab);
-
-    const saveButton = document.querySelector("#save");
-    saveButton.addEventListener("click", (e) => this.onSave());
-
-    document.querySelector("#cancel").addEventListener("click", () => globalThis.close());
-
-    const onUpdated = () => {
-      saveButton.disabled = false;
-      saveButton.textContent = BrowserToolboxI18n.message("saveChanges");
-      this.syncEnabledKeysCaption();
-      this.showValidationErrors();
-    };
-
-    const defaultPatternForNewRules = this.generateDefaultPattern(this.tabUrl);
-
-    document.querySelector("#add-first-rule").addEventListener(
-      "click",
-      () => {
-        ExclusionRulesEditor.addRow(defaultPatternForNewRules);
-        this.showExclusionRulesEditor();
-        onUpdated();
-      },
-    );
-
-    ExclusionRulesEditor.defaultPatternForNewRules = defaultPatternForNewRules;
-    ExclusionRulesEditor.init();
-    ExclusionRulesEditor.addEventListener("input", onUpdated);
-    const rules = vimiumSettings.get("exclusionRules").filter((r) =>
-      this.tabUrl.match(this.getPatternRegExp(r.pattern))
-    );
-    ExclusionRulesEditor.setForm(rules);
-    this.syncEnabledKeysCaption();
-
-    if (rules.length > 0) this.showExclusionRulesEditor();
   },
 
   async loadLocalePreference() {
@@ -123,15 +85,12 @@ const ActionPage = {
 
   setStaticPageLinks() {
     const settingsUrl = chrome.runtime.getURL("pages/mouse_options.html");
-    const optionsUrl = chrome.runtime.getURL("pages/options.html");
     const toolsUrl = chrome.runtime.getURL("pages/mouse_options.html#toolsOverview");
-    for (const selector of ["#browser-toolbox-settings-link", "#browser-toolbox-settings-footer-link"]) {
+    for (
+      const selector of ["#browser-toolbox-settings-link", "#browser-toolbox-settings-footer-link"]
+    ) {
       const link = document.querySelector(selector);
       if (link) link.href = settingsUrl;
-    }
-    for (const selector of ["#optionsLink", "#footer-options-link"]) {
-      const link = document.querySelector(selector);
-      if (link) link.href = optionsUrl;
     }
     const toolSettingsLink = document.querySelector("#browser-toolbox-tool-settings-link");
     if (toolSettingsLink) toolSettingsLink.href = toolsUrl;
@@ -158,10 +117,11 @@ const ActionPage = {
     BrowserToolboxI18n.apply(document);
     container.style.display = "block";
     document.querySelector("#browser-toolbox-enhancement-summary").style.display = "block";
-    document.querySelector("#browser-toolbox-site-details").style.display = "block";
     this.setStaticPageLinks();
     document.querySelector("#browser-toolbox-all-tools")?.addEventListener("click", async () => {
-      await chrome.tabs.create({ url: chrome.runtime.getURL("pages/mouse_options.html#toolsOverview") });
+      await chrome.tabs.create({
+        url: chrome.runtime.getURL("pages/mouse_options.html#toolsOverview"),
+      });
       globalThis.close();
     });
     document.querySelector("#browser-toolbox-open-help")?.addEventListener(
@@ -270,17 +230,6 @@ const ActionPage = {
         renderStatus(repository.getEffectiveSettings(activeTab.url || ""));
       },
     );
-    const siteDetails = document.querySelector("#browser-toolbox-site-details");
-    const siteDetailsToggle = document.querySelector("#browser-toolbox-site-details-toggle");
-    const syncSiteDetailsToggle = () => {
-      siteDetailsToggle?.setAttribute("aria-expanded", String(Boolean(siteDetails?.open)));
-    };
-    siteDetails?.addEventListener("toggle", syncSiteDetailsToggle);
-    siteDetailsToggle?.addEventListener("click", () => {
-      if (siteDetails) siteDetails.open = !siteDetails.open;
-      syncSiteDetailsToggle();
-    });
-    syncSiteDetailsToggle();
   },
 
   async initToolControls(activeTab) {
@@ -300,7 +249,9 @@ const ActionPage = {
     buttons.replaceChildren();
     for (const toolId of configured.slice(0, 6)) {
       const descriptor = toolRegistry.get(toolId);
-      if (!descriptor || !descriptor.allowedSources.includes("action") || !descriptor.surfaces.popup) continue;
+      if (
+        !descriptor || !descriptor.allowedSources.includes("action") || !descriptor.surfaces.popup
+      ) continue;
       const button = document.createElement("button");
       button.type = "button";
       button.className = "browser-toolbox-tool-card";
@@ -353,79 +304,6 @@ const ActionPage = {
     } catch {
       // If there's no content script running in the activeTab, we'll get a connection error.
       return false;
-    }
-  },
-
-  showValidationErrors() {
-    const rows = document.querySelectorAll(".rule");
-    for (const row of rows) {
-      const pattern = row.querySelector("input[name=pattern]").value;
-      const regExp = this.getPatternRegExp(pattern);
-      const validationEl = row.querySelector(".validationMessage");
-      const patternMatchesUrl = this.tabUrl.match(regExp);
-      if (patternMatchesUrl) {
-        row.classList.remove("validationError");
-        validationEl.textContent = "";
-      } else {
-        row.classList.add("validationError");
-        validationEl.textContent = BrowserToolboxI18n.message("patternDoesNotMatch");
-      }
-    }
-  },
-
-  showExclusionRulesEditor() {
-    const details = document.querySelector("#browser-toolbox-site-details");
-    if (details) details.open = true;
-    document.querySelector("#browser-toolbox-site-details-toggle")?.setAttribute("aria-expanded", "true");
-    document.querySelector("#exclusions-container").style.display = "block";
-    document.querySelector("#add-first-rule-container").style.display = "none";
-    document.querySelector("#browser-toolbox-exclusion-footer").style.display = "flex";
-  },
-
-  syncEnabledKeysCaption() {
-    let caption = BrowserToolboxI18n.message("allKeys");
-    const rules = ExclusionRulesEditor.getRules();
-    if (rules.length > 0) {
-      const hasBlankPassKeysRule = rules.find((r) => r.passKeys.length == 0);
-      caption = hasBlankPassKeysRule
-        ? BrowserToolboxI18n.message("noKeys")
-        : BrowserToolboxI18n.message("someKeys");
-    }
-    document.querySelector("#how-many-enabled").textContent = caption;
-  },
-
-  async onSave() {
-    let rules = await vimiumSettings.get("exclusionRules");
-    // Remove any rules which match the current URL, and replace them with the contents of this dialog.
-    rules = rules.filter((r) => !this.tabUrl.match(this.getPatternRegExp(r.pattern)));
-    rules = rules.concat(ExclusionRulesEditor.getRules());
-    await vimiumSettings.set("exclusionRules", rules);
-    const el = document.querySelector("#save");
-    el.disabled = true;
-    el.textContent = BrowserToolboxI18n.message("saved");
-  },
-
-  getPatternRegExp(patternStr) {
-    return new RegExp("^" + patternStr.replace(/\*/g, ".*") + "$");
-  },
-
-  // Returns an exclusion pattern which matches the domain of the given URL.
-  // This is used as the default starter pattern when the "Add rule" button is clicked.
-  generateDefaultPattern(url) {
-    if (/^https?:\/\/./.test(url)) {
-      // The common use case is to disable Vimium at the domain level.
-      // Generate "https?://www.example.com/*" from "http://www.example.com/path/to/page.html".
-      // Note: IPV6 host addresses will contain "[" and "]" (which must be escaped).
-      const hostname = url.split("/", 3).slice(1).join("/").replace("[", "\\[").replace(
-        "]",
-        "\\]",
-      );
-      return "https?:/" + hostname + "/*";
-    } else if (/^[a-z]{3,}:\/\/./.test(url)) {
-      // Anything else which seems to be a URL.
-      return url.split("/", 3).join("/") + "/*";
-    } else {
-      return url + "*";
     }
   },
 };

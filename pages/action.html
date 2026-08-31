@@ -40,6 +40,22 @@
           data-i18n="disabled">Disable for this session</button>
       </section>
 
+      <section id="browser-toolbox-tools" class="browser-toolbox-action-section browser-toolbox-tools-panel"
+        style="display: none" aria-labelledby="browser-toolbox-tools-title">
+        <div class="browser-toolbox-section-heading">
+          <div>
+            <span class="browser-toolbox-section-kicker" data-i18n="utilityTools">Utility tools</span>
+            <h2 id="browser-toolbox-tools-title" data-i18n="quickTools">Quick tools</h2>
+          </div>
+          <a id="browser-toolbox-tool-settings-link" class="browser-toolbox-text-link" target="_blank"
+            data-i18n="manageTools">Manage tools</a>
+        </div>
+        <p class="browser-toolbox-tool-note" data-i18n="toolLocalOnly">
+          All tools run locally. Inputs use a short-lived, one-time session token.
+        </p>
+        <div id="browser-toolbox-tool-buttons" class="browser-toolbox-tool-buttons"></div>
+      </section>
+
       <section id="browser-toolbox-enhancement-summary" class="browser-toolbox-action-section"
         style="display: none" aria-labelledby="browser-toolbox-enhancement-title">
         <div class="browser-toolbox-section-heading">
@@ -117,65 +133,10 @@
         </div>
       </section>
 
-      <details id="browser-toolbox-site-details" class="browser-toolbox-site-details" style="display: none"
-        aria-labelledby="browser-toolbox-site-details-title">
-        <summary id="browser-toolbox-site-details-title"><span data-i18n="currentSiteDetails">Current site details</span></summary>
-        <div id="dialog-body">
-          <div class="browser-toolbox-exclusion-summary">
-            <span id="how-many-enabled" data-i18n="allKeys">All</span>
-            <span data-i18n="vimiumKeysEnabledOnPage">Vimium keys are enabled on this page.</span>
-          </div>
-          <div id="add-first-rule-container">
-            <button id="add-first-rule" class="browser-toolbox-secondary-button" type="button"
-              data-i18n="excludeKeysOnPage">Exclude Vimium keys on this page</button>
-          </div>
-          <div id="exclusions-container" style="display: none">
-            <div id="exclusion-scroll-box">
-              <table id="exclusion-rules">
-                <thead>
-                  <tr>
-                    <td><span class="exclusion-header-text" data-i18n="matchingPatterns">Patterns matching the current page</span></td>
-                    <td><span class="exclusion-header-text" data-i18n="keysToExclude">Keys to exclude</span></td>
-                  </tr>
-                </thead>
-              </table>
-            </div>
-            <button id="exclusion-add-button" class="browser-toolbox-secondary-button" type="button"
-              data-i18n="addRule">Add rule</button>
-          </div>
-          <p class="browser-toolbox-options-message">
-            <span data-i18n="seeExclusionRules">See all exclusion rules on the</span>
-            <a id="optionsLink" target="_blank" data-i18n="optionsPage">Options</a>
-            <span data-i18n="page">page.</span>
-          </p>
-        </div>
-      </details>
-
-      <section id="browser-toolbox-tools" class="browser-toolbox-action-section browser-toolbox-tools-panel"
-        style="display: none" aria-labelledby="browser-toolbox-tools-title">
-        <div class="browser-toolbox-section-heading">
-          <div>
-            <span class="browser-toolbox-section-kicker" data-i18n="utilityTools">Utility tools</span>
-            <h2 id="browser-toolbox-tools-title" data-i18n="quickTools">Quick tools</h2>
-          </div>
-          <a id="browser-toolbox-tool-settings-link" class="browser-toolbox-text-link" target="_blank"
-            data-i18n="manageTools">Manage tools</a>
-        </div>
-        <p class="browser-toolbox-tool-note" data-i18n="toolLocalOnly">
-          All tools run locally. Inputs use a short-lived, one-time session token.
-        </p>
-        <div id="browser-toolbox-tool-buttons" class="browser-toolbox-tool-buttons"></div>
-      </section>
-
       <nav class="browser-toolbox-action-footer" aria-label="Action links" data-i18n-aria-label="actionFooter">
         <button id="browser-toolbox-all-tools" class="browser-toolbox-footer-link" type="button">
           <span class="browser-toolbox-footer-icon" aria-hidden="true" data-toolbox-icon="grid"></span>
           <span data-i18n="allTools">All tools</span>
-        </button>
-        <button id="browser-toolbox-site-details-toggle" class="browser-toolbox-footer-link" type="button"
-          aria-controls="browser-toolbox-site-details" aria-expanded="false">
-          <span class="browser-toolbox-footer-icon" aria-hidden="true" data-toolbox-icon="info"></span>
-          <span data-i18n="currentSiteDetails">Current site details</span>
         </button>
         <a id="browser-toolbox-settings-footer-link" class="browser-toolbox-footer-link" target="_blank">
           <span class="browser-toolbox-footer-icon" aria-hidden="true" data-toolbox-icon="settings"></span>
@@ -187,34 +148,6 @@
         </button>
       </nav>
 
-      <footer id="browser-toolbox-exclusion-footer" style="display: none">
-        <div class="options-message">
-          <span data-i18n="seeExclusionRules">See all exclusion rules on the</span>
-          <a id="footer-options-link" target="_blank" data-i18n="optionsPage">Options</a>
-          <span data-i18n="page">page.</span>
-        </div>
-        <div>
-          <button id="cancel" type="button" data-i18n="cancel">Cancel</button>
-          <button id="save" type="button" disabled="true" data-i18n="noChanges">No changes</button>
-        </div>
-      </footer>
     </main>
-
-    <template id="exclusion-rule-template">
-      <tr class="rule">
-        <td>
-          <input type="text" name="pattern" spellcheck="false" data-i18n-placeholder="urlPattern"
-            data-i18n-aria-label="urlPattern" />
-          <div class="validationMessage"></div>
-        </td>
-        <td>
-          <input type="text" name="passKeys" spellcheck="false" data-i18n-placeholder="allKeys"
-            data-i18n-aria-label="keysToExclude" />
-        </td>
-        <td>
-          <input type="button" class="remove" value="&#x2716;" data-i18n-aria-label="removeRule" />
-        </td>
-      </tr>
-    </template>
   </body>
 </html>

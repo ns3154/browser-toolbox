@@ -1247,15 +1247,14 @@ async function testActionControls(browser, id, fixture, errors) {
     );
     const initial = await action.evaluate(() => ({
       wheel: document.querySelector("#browser-toolbox-toggle-wheel").checked,
-      label: document.querySelector("#browser-toolbox-toggle-wheel").labels?.[0]?.textContent.trim() ||
+      label:
+        document.querySelector("#browser-toolbox-toggle-wheel").labels?.[0]?.textContent.trim() ||
         document.querySelector("#browser-toolbox-toggle-wheel").getAttribute("aria-label") || "",
       help: document.querySelector("#browser-toolbox-open-help")?.textContent.trim() || "",
       title: document.title,
       lang: document.documentElement.lang,
-      keysStatus: document.querySelector("#dialog-body")?.textContent.trim() || "",
-      addRule: document.querySelector("#exclusion-add-button")?.textContent.trim() || "",
-      cancel: document.querySelector("#cancel")?.textContent.trim() || "",
-      noChanges: document.querySelector("#save")?.textContent.trim() || "",
+      footerEntries: document.querySelectorAll(".browser-toolbox-action-footer > *").length,
+      legacyDetails: Boolean(document.querySelector("#browser-toolbox-site-details")),
     }));
     assert(initial.wheel, "动作页应显示当前滚轮/摇杆会话状态");
     assert(/Wheel|滚轮/.test(initial.label), "动作页滚轮/摇杆开关应有可读标签");
@@ -1263,12 +1262,9 @@ async function testActionControls(browser, id, fixture, errors) {
     assert(/Browser Toolbox|浏览器工具箱/.test(initial.title), "动作页标题应使用产品本地化文案");
     assert(["en", "zh_CN"].includes(initial.lang), `动作页应设置有效语言：${initial.lang}`);
     assert(
-      /Vimium keys are enabled|Vimium 按键已在此页面启用/.test(initial.keysStatus),
-      "动作页排除规则状态应使用本地化文案",
+      initial.footerEntries === 3 && !initial.legacyDetails,
+      "动作页不应显示旧版 Vimium 站点详情面板",
     );
-    assert(/Add rule|添加规则/.test(initial.addRule), "动作页添加规则按钮应使用本地化文案");
-    assert(/Cancel|取消/.test(initial.cancel), "动作页取消按钮应使用本地化文案");
-    assert(/No changes|没有修改/.test(initial.noChanges), "动作页保存初始状态应使用本地化文案");
     await action.evaluate(() => document.querySelector("#browser-toolbox-open-help").click()).catch(
       () => {},
     );
@@ -2552,6 +2548,39 @@ async function testOptionsAndBackup(
 
 async function testMouseGestures(page, base127, browser, options) {
   console.log("E2E: 鼠标轨迹");
+  console.log("E2E: 首次页面打开后的冷启动右键手势");
+  await resetSettings(options);
+  await patchSettings(options, {
+    mouse: {
+      triggerButton: 2,
+      bindings: [{
+        id: "e2e-cold-start-right-gesture",
+        enabled: true,
+        pattern: ["R", "U"],
+        commandName: "scrollToTop",
+        options: {},
+      }],
+    },
+  });
+  const extensionIdForColdStart = await extensionId(browser);
+  assert(
+    await closeServiceWorker(browser, extensionIdForColdStart),
+    "冷启动手势测试应能停止已有 Service Worker",
+  );
+  await page.bringToFront();
+  await page.goto(`${base127}/fixture.html`, { waitUntil: "domcontentloaded" });
+  await page.evaluate(() => scrollTo(0, 1200));
+  await clearEvents(page);
+  await sendDrag(
+    page,
+    [{ x: 500, y: 300 }, { x: 620, y: 300 }, { x: 620, y: 180 }],
+    "right",
+  );
+  await waitFor(() => page.evaluate(() => scrollY === 0));
+  const coldStartContextMenu = (await events(page)).find((event) => event.type === "contextmenu");
+  assert(coldStartContextMenu?.defaultPrevented, "冷启动首个右键手势应阻止原生菜单");
+
+  await resetSettings(options);
   await page.bringToFront();
   await page.goto(`${base127}/fixture.html`, { waitUntil: "load" });
   await sleep(1000);
@@ -3644,17 +3673,7 @@ async function testGlobalDisable(page, options, base127) {
 
 async function testServiceWorkerRestart(browser, id, page, options) {
   console.log("E2E: Service Worker 重启");
-  const browserTarget = browser.target();
-  const client = await browserTarget.createCDPSession();
-  const targets = await client.send("Target.getTargets");
-  const serviceWorker = targets.targetInfos.find((target) =>
-    target.type === "service_worker" &&
-    target.url.startsWith(`chrome-extension://${id}/`) &&
-    (target.url.includes("/background_scripts/main.js") ||
-      target.url.endsWith("/service_worker.js"))
-  );
-  assert(serviceWorker, "应存在 BrowserToolbox Service Worker");
-  await client.send("Target.closeTarget", { targetId: serviceWorker.targetId });
+  assert(await closeServiceWorker(browser, id), "应存在 BrowserToolbox Service Worker");
   await waitFor(() =>
     browser.targets().some((target) =>
       target.type() === "service_worker" &&
@@ -3689,6 +3708,24 @@ async function testServiceWorkerRestart(browser, id, page, options) {
   if (result?.ok !== true) console.error("E2E: Service Worker 重启命令结果", result);
   assert(result?.ok === true, "Service Worker 重启后 Dispatcher 应继续执行命令");
   await waitFor(() => page.evaluate(() => scrollY === 0));
+}
+
+async function closeServiceWorker(browser, id) {
+  const client = await browser.target().createCDPSession();
+  try {
+    const targets = await client.send("Target.getTargets");
+    const serviceWorker = targets.targetInfos.find((target) =>
+      target.type === "service_worker" &&
+      target.url.startsWith(`chrome-extension://${id}/`) &&
+      (target.url.includes("/background_scripts/main.js") ||
+        target.url.endsWith("/service_worker.js"))
+    );
+    if (!serviceWorker) return false;
+    await client.send("Target.closeTarget", { targetId: serviceWorker.targetId });
+    return true;
+  } finally {
+    await client.detach().catch(() => {});
+  }
 }
 
 async function main() {

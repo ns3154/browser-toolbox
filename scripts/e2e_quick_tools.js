@@ -62,15 +62,17 @@ async function startFixtureServer() {
   return { server, baseUrl: `http://127.0.0.1:${server.addr.port}` };
 }
 
-async function freePort() {
-  const listener = Deno.listen({ hostname: "127.0.0.1", port: 0 });
-  const port = listener.addr.port;
-  listener.close();
-  return port;
+async function freePort(excludedPort = 0) {
+  while (true) {
+    const listener = Deno.listen({ hostname: "127.0.0.1", port: 0 });
+    const port = listener.addr.port;
+    listener.close();
+    if (port !== excludedPort) return port;
+  }
 }
 
-async function startBrowser() {
-  const port = await freePort();
+async function startBrowser(excludedPort) {
+  const port = await freePort(excludedPort);
   const userDataDir = await Deno.makeTempDir({ prefix: "browser-toolbox-quick-tools-profile-" });
   const process = new Deno.Command(executablePath, {
     args: [
@@ -137,6 +139,11 @@ async function openTool(browser, id, toolId, source = "action") {
     { waitUntil: "load" },
   );
   await page.waitForSelector("[data-tool-page='true']", { timeout: 10000 });
+  await page.waitForFunction(() => {
+    const button = document.querySelector("#tool-run");
+    const status = document.querySelector("#tool-status");
+    return Boolean(button && !button.disabled && status?.textContent.trim());
+  }, { timeout: 10000 });
   return page;
 }
 
@@ -145,6 +152,22 @@ async function setTextarea(page, selector, value) {
     element.value = nextValue;
     element.dispatchEvent(new Event("input", { bubbles: true }));
   }, value);
+}
+
+async function clickVisible(page, selector) {
+  await page.$eval(selector, (element) => {
+    const scroller = element.closest(".browser-toolbox-tool-header-toolbar");
+    if (scroller && scroller.scrollWidth > scroller.clientWidth) {
+      const elementBox = element.getBoundingClientRect();
+      const scrollerBox = scroller.getBoundingClientRect();
+      scroller.scrollLeft += elementBox.left < scrollerBox.left
+        ? elementBox.left - scrollerBox.left
+        : elementBox.right > scrollerBox.right
+        ? elementBox.right - scrollerBox.right
+        : 0;
+    }
+    element.click();
+  });
 }
 
 async function clickDocumentButton(page, action) {
@@ -186,9 +209,8 @@ async function testActionPopup(browser, id, baseUrl) {
           .filter((element) => [
             "browser-toolbox-action-brand",
             "browser-toolbox-controls",
-            "browser-toolbox-enhancement-summary",
-            "browser-toolbox-site-details",
             "browser-toolbox-tools",
+            "browser-toolbox-enhancement-summary",
           ].some((name) => element.id === name || element.classList.contains(name)) ||
             element.classList.contains("browser-toolbox-action-footer"))
           .map((element) => element.id || [...element.classList].find((name) => name.startsWith("browser-toolbox-action-"))),
@@ -196,7 +218,7 @@ async function testActionPopup(browser, id, baseUrl) {
         icons: document.querySelectorAll("#browser-toolbox-tool-buttons .browser-toolbox-tool-icon").length,
         footerEntries: document.querySelectorAll(".browser-toolbox-action-footer > *").length,
         settingsLink: document.querySelector("#browser-toolbox-settings-link")?.getAttribute("href") || "",
-        details: Boolean(document.querySelector("#browser-toolbox-site-details")),
+        legacyDetails: Boolean(document.querySelector("#browser-toolbox-site-details")),
       };
     });
     assert(
@@ -204,11 +226,24 @@ async function testActionPopup(browser, id, baseUrl) {
         state.layers.includes("browser-toolbox-enhancement-summary") &&
         state.layers.includes("browser-toolbox-tools") &&
         state.layers.includes("browser-toolbox-action-footer"),
-      `动作弹窗应按五层信息架构渲染：${JSON.stringify(state)}`,
+      `动作弹窗主内容应按四层、底部另有入口栏渲染：${JSON.stringify(state)}`,
+    );
+    assert(
+      state.layers.join(">") === [
+        "browser-toolbox-action-brand",
+        "browser-toolbox-controls",
+        "browser-toolbox-tools",
+        "browser-toolbox-enhancement-summary",
+        "browser-toolbox-action-footer",
+      ].join(">"),
+      `动作弹窗菜单顺序应为快捷工具在浏览增强上方：${JSON.stringify(state.layers)}`,
     );
     assert(state.cards > 0 && state.cards <= 6, "动作弹窗工具卡片应遵守最多六项限制。 ");
     assert(state.cards === state.icons, "动作弹窗工具卡片应使用本地图标。 ");
-    assert(state.footerEntries === 4 && state.details && state.settingsLink.includes("mouse_options.html"), "动作弹窗底部入口或设置链接缺失。 ");
+    assert(
+      state.footerEntries === 3 && !state.legacyDetails && state.settingsLink.includes("mouse_options.html"),
+      "动作弹窗底部入口或旧版站点详情残留。 ",
+    );
     await action.screenshot({ path: "/tmp/browser-toolbox-quick-tools-popup.png", fullPage: true });
 
     await action.setViewport({ width: 350, height: 760, deviceScaleFactor: 1 });
@@ -258,21 +293,67 @@ async function testToolPages(browser, id) {
   try {
     assert(await page.$("#tool-catalog") === null, "独立工具页不应再次堆叠工具目录。 ");
     assert(await page.$("#tool-picker") === null, "独立工具页不应显示工具选择器。 ");
+    const toolbar = await page.evaluate(() => {
+      const controls = document.querySelector("#tool-controls");
+      const actions = document.querySelector(".browser-toolbox-tool-actions");
+      const sort = document.querySelector('[data-tool-option="sortOrder"]');
+      return {
+        controlsWrap: controls && getComputedStyle(controls).flexWrap,
+        controlsOverflow: controls && getComputedStyle(controls).overflowX,
+        controlsDisplay: controls && getComputedStyle(controls).display,
+        headerToolbarDisplay: getComputedStyle(document.querySelector("#tool-header-toolbar")).display,
+        headerToolbarOverflow: getComputedStyle(document.querySelector("#tool-header-toolbar")).overflowX,
+        actionsWrap: actions && getComputedStyle(actions).flexWrap,
+        copyInActions: Boolean(actions?.querySelector("#tool-copy")),
+        copyInResult: Boolean(document.querySelector(".browser-toolbox-result-heading #tool-copy")),
+        localBadge: Boolean(document.querySelector(".browser-toolbox-tools-header .browser-toolbox-local-badge")),
+        back: Boolean(document.querySelector("#tool-back")),
+        settings: Boolean(document.querySelector("#tool-settings")),
+        sortTag: sort?.tagName,
+        sortValues: sort ? [...sort.options].map((option) => option.value) : [],
+        sortLabels: sort ? [...sort.options].map((option) => option.textContent) : [],
+      };
+    });
+    assert(toolbar.controlsWrap === "nowrap" && toolbar.actionsWrap === "nowrap" && toolbar.controlsOverflow === "visible", "宽屏工具栏和操作条应保持单行。 ");
+    assert(toolbar.localBadge && !toolbar.back && !toolbar.settings, "独立工具页顶部只保留品牌、工具标题和本地处理标记。 ");
+    assert(!toolbar.copyInActions && toolbar.copyInResult, "复制按钮应从操作条移到结果区。 ");
+    assert(toolbar.sortTag === "SELECT" && toolbar.sortValues.join(",") === "original,ascending,descending", "排序应使用单独的三态下拉框。 ");
+    assert(toolbar.sortLabels.join("/") === "原始/升序/降序" || toolbar.sortLabels.join("/") === "Original/Ascending/Descending", "排序下拉框文案应简洁明确。 ");
     await page.select('[data-tool-option="operation"]', "sort");
     await page.select('[data-tool-option="sortOrder"]', "ascending");
     await setTextarea(page, "#tool-input", '{"z":9007199254740993,"a":2,"nested":{"keep":true}}');
-    await page.click("#tool-run");
     await waitFor(() => page.$eval("#tool-output", (element) => element.textContent.includes("9007199254740993"))
       .catch(() => false));
+    assert(await page.$eval("#tool-status", (element) => /自动解析|automatically/i.test(element.textContent)), "JSON 输入变化后应自动解析并更新状态。 ");
     const output = await page.$eval("#tool-output", (element) => element.textContent);
     assert(output.indexOf('"a": 2') < output.indexOf('"z": 9007199254740993'), "JSON 工具应稳定排序并保留大整数原文。 ");
     const tree = await page.evaluate(() => ({
       text: document.querySelector("#json-result-tree")?.textContent || "",
       toggles: document.querySelectorAll(".browser-toolbox-json-toggle").length,
       iconActions: [...document.querySelectorAll(".browser-toolbox-json-node-action")].map((button) => button.getAttribute("aria-label")),
+      keys: [...document.querySelectorAll("#json-result-tree .browser-toolbox-json-key")].map((element) => element.textContent),
     }));
     assert(tree.text.includes("9007199254740993") && tree.toggles >= 2, "JSON 结果应以可折叠节点树展示。 ");
     assert(tree.iconActions.every((label) => label), "JSON 节点操作应通过可访问图标按钮提供。 ");
+    assert(tree.keys.indexOf('"a"') < tree.keys.indexOf('"z"'), "JSON 结果树应与排序下拉框保持一致。 ");
+    assert(await page.$eval("#json-copy-root", (button) => !button.hidden), "JSON 结果区应保留复制图标。 ");
+    await page.setViewport({ width: 390, height: 820, deviceScaleFactor: 1 });
+    const mobileToolbar = await page.$eval("#tool-header-toolbar", (element) => ({
+      display: getComputedStyle(element).display,
+      overflowX: getComputedStyle(element).overflowX,
+      scrollWidth: element.scrollWidth,
+      clientWidth: element.clientWidth,
+      gridAreas: getComputedStyle(element.closest(".browser-toolbox-tools-header")).gridTemplateAreas,
+      toolbarTop: Math.round(element.getBoundingClientRect().top),
+      headingTop: Math.round(element.closest(".browser-toolbox-tools-header").querySelector(".browser-toolbox-tool-heading").getBoundingClientRect().top),
+      badgeTop: Math.round(element.closest(".browser-toolbox-tools-header").querySelector(".browser-toolbox-local-badge").getBoundingClientRect().top),
+    }));
+    assert(
+      mobileToolbar.display === "flex" && mobileToolbar.overflowX === "auto" &&
+        mobileToolbar.scrollWidth > mobileToolbar.clientWidth && mobileToolbar.gridAreas.includes("toolbar toolbar") &&
+        mobileToolbar.toolbarTop > Math.max(mobileToolbar.headingTop, mobileToolbar.badgeTop),
+      `窄屏工具栏应收为两行，控制行可横向浏览：${JSON.stringify(mobileToolbar)}`,
+    );
     const toggleBefore = await page.$eval(".browser-toolbox-json-toggle", (button) => button.getAttribute("aria-expanded"));
     await page.$eval(".browser-toolbox-json-toggle", (button) => button.click());
     await sleep(100);
@@ -283,6 +364,17 @@ async function testToolPages(browser, id) {
     await waitFor(() => page.$eval("#tool-output", (element) => !element.textContent.includes('"a": 2'))
       .catch(() => false));
     assert(await page.$eval("#tool-output", (element) => !element.textContent.includes('"a": 2')), "JSON 删除图标应从结果中移除字段。 ");
+    await page.evaluate(() => {
+      window.__browserToolboxDownload = "";
+      const originalClick = HTMLAnchorElement.prototype.click;
+      HTMLAnchorElement.prototype.click = function () {
+        window.__browserToolboxDownload = this.download;
+        originalClick.call(this);
+      };
+    });
+    await clickVisible(page, "#tool-download");
+    assert(await page.evaluate(() => window.__browserToolboxDownload), "JSON 下载应触发本地链接。 ");
+    assert(await page.evaluate(() => /^browser-toolbox-\d+\.json$/.test(window.__browserToolboxDownload)), "JSON 下载文件名应使用毫秒级时间戳前缀。 ");
   } finally {
     await page.close();
   }
@@ -290,16 +382,14 @@ async function testToolPages(browser, id) {
   const codec = await openTool(browser, id, "codec.transform");
   try {
     assert(await codec.$("#tool-picker") === null, "编码页不应使用下拉框选择编码类型。 ");
-    await codec.click('[data-codec-operation="encode"]');
-    await codec.click('[data-codec-type="base64"]');
+    await clickVisible(codec, '[data-codec-operation="encode"]');
+    await clickVisible(codec, '[data-codec-type="base64"]');
     await setTextarea(codec, "#tool-input", "hello");
-    await codec.click("#tool-run");
     await waitFor(() => codec.$eval("#codec-output", (element) => element.textContent === "aGVsbG8=")
       .catch(() => false));
     assert(await codec.$eval("#codec-output", (element) => element.textContent) === "aGVsbG8=", "编码工具应在扩展页内本地运行。 ");
-    await codec.click('[data-codec-operation="decode"]');
+    await clickVisible(codec, '[data-codec-operation="decode"]');
     await setTextarea(codec, "#tool-input", "aGVsbG8=");
-    await codec.click("#tool-run");
     await waitFor(() => codec.$eval("#codec-output", (element) => element.textContent === "hello")
       .catch(() => false));
   } finally {
@@ -311,8 +401,7 @@ async function testToolPages(browser, id) {
     await setTextarea(diff, "#tool-input", "same\nold");
     await setTextarea(diff, "#tool-input-right", "same\nnew");
     await diff.click("#tool-run");
-    await waitFor(() => diff.$eval("#diff-result-list", (element) => element.textContent.includes("new"))
-      .catch(() => false));
+    await waitFor(() => diff.$eval("#diff-result-list", (element) => element.textContent.includes("new")));
     const diffState = await diff.$eval("#diff-result-list", (element) => ({
       rows: element.querySelectorAll("[role=listitem]").length,
       height: element.clientHeight,
@@ -358,6 +447,40 @@ async function testDocumentFormatter(browser, baseUrl) {
     assert(await json.$('.browser-toolbox-document-toolbar [data-document-action="repair-mojibake"]'), "JSON 应有专属修复工具栏。 ");
     assert(await json.$eval(".browser-toolbox-document-brand", (element) => /JSON/.test(element.textContent)), "JSON 工具栏应显示格式品牌。 ");
     assert(await json.$eval(".browser-toolbox-document-status", (element) => getComputedStyle(element).color !== "rgb(0, 0, 0)"), "JSON 工具栏应显示状态色。 ");
+    const documentToolbar = await json.evaluate(() => {
+      const toolbar = document.querySelector(".browser-toolbox-document-toolbar");
+      const actions = document.querySelector(".browser-toolbox-document-actions");
+      return {
+        wrap: getComputedStyle(toolbar).flexWrap,
+        actionWrap: getComputedStyle(actions).flexWrap,
+        actionDisplay: getComputedStyle(actions).display,
+      };
+    });
+    assert(documentToolbar.wrap === "nowrap" && documentToolbar.actionWrap === "nowrap" && documentToolbar.actionDisplay === "flex", "自动美化桌面工具栏应保持严格单行。 ");
+    await json.setViewport({ width: 390, height: 820, deviceScaleFactor: 1 });
+    const narrowDocumentToolbar = await json.evaluate(() => {
+      const toolbar = document.querySelector(".browser-toolbox-document-toolbar");
+      const brand = document.querySelector(".browser-toolbox-document-brand-group");
+      const actions = document.querySelector(".browser-toolbox-document-actions");
+      return {
+        display: getComputedStyle(toolbar).display,
+        brandTop: Math.round(brand.getBoundingClientRect().top),
+        actionsTop: Math.round(actions.getBoundingClientRect().top),
+        overflowX: getComputedStyle(actions).overflowX,
+      };
+    });
+    assert(narrowDocumentToolbar.display === "grid" && narrowDocumentToolbar.actionsTop > narrowDocumentToolbar.brandTop && ["auto", "scroll"].includes(narrowDocumentToolbar.overflowX), "自动美化窄屏工具栏应拆为品牌行和操作行。 ");
+    await json.setViewport({ width: 1280, height: 820, deviceScaleFactor: 1 });
+    await json.evaluate(() => {
+      window.__browserToolboxDocumentDownload = "";
+      const originalClick = HTMLAnchorElement.prototype.click;
+      HTMLAnchorElement.prototype.click = function () {
+        window.__browserToolboxDocumentDownload = this.download;
+        originalClick.call(this);
+      };
+    });
+    await clickDocumentButton(json, "download");
+    assert(await json.evaluate(() => /^browser-toolbox-\d+\.json$/.test(window.__browserToolboxDocumentDownload)), "自动美化 JSON 下载文件名应使用毫秒级时间戳前缀。 ");
     await json.screenshot({ path: "/tmp/browser-toolbox-document-json.png", fullPage: true });
     await clickDocumentButton(json, "toggle-original");
     assert(await json.$eval(".browser-toolbox-document-output", (element) => element.textContent.includes("9007199254740993")), "查看原文应保留原始文本。 ");
@@ -460,7 +583,7 @@ async function main() {
   let chromeProcess;
   let userDataDir;
   try {
-    ({ browser, process: chromeProcess, userDataDir } = await startBrowser());
+    ({ browser, process: chromeProcess, userDataDir } = await startBrowser(server.addr.port));
     const id = await extensionId(browser);
     await testActionPopup(browser, id, baseUrl);
     await testToolPages(browser, id);

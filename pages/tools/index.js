@@ -142,9 +142,216 @@
     return options;
   }
 
-  function addControl(control, key) {
+  function addControl(control, key, parent = byId("tool-controls")) {
     control.input.dataset.toolOption = key;
-    byId("tool-controls")?.append(control.label);
+    control.label.dataset.toolOptionKey = key;
+    control.label.classList.toggle("browser-toolbox-tool-sort-control", key === "sortOrder");
+    parent?.append(control.label);
+  }
+
+  function updateJsonInputHighlight() {
+    if (descriptor?.id !== "json.format") return;
+    const input = byId("tool-input");
+    const highlight = byId("json-input-highlight");
+    if (!input || !highlight) return;
+    const source = String(input.value);
+    const tokenPattern = /"(?:\\.|[^"\\])*"|true|false|null|-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?/g;
+    let cursor = 0;
+    highlight.replaceChildren();
+    const appendText = (text, className = "") => {
+      if (!text) return;
+      if (!className) {
+        highlight.append(document.createTextNode(text));
+        return;
+      }
+      const token = document.createElement("span");
+      token.className = className;
+      token.textContent = text;
+      highlight.append(token);
+    };
+    for (const match of source.matchAll(tokenPattern)) {
+      const start = match.index ?? cursor;
+      appendText(source.slice(cursor, start));
+      const value = match[0];
+      const after = source.slice(start + value.length);
+      const className = value.startsWith('"')
+        ? /^\s*:/.test(after)
+          ? "browser-toolbox-json-input-token-key"
+          : "browser-toolbox-json-input-token-string"
+        : /^(?:true|false|null)$/.test(value)
+        ? "browser-toolbox-json-input-token-literal"
+        : "browser-toolbox-json-input-token-number";
+      appendText(value, className);
+      cursor = start + value.length;
+    }
+    appendText(source.slice(cursor));
+    highlight.scrollTop = input.scrollTop;
+    highlight.scrollLeft = input.scrollLeft;
+  }
+
+  function updateJsonInputLineNumbers() {
+    if (descriptor?.id !== "json.format") return;
+    const input = byId("tool-input");
+    const gutter = byId("json-input-line-numbers");
+    if (!input || !gutter) return;
+    const lineCount = Math.max(1, String(input.value).split(/\r?\n/).length);
+    const visibleLineCount = Math.min(lineCount, 5000);
+    gutter.textContent = Array.from({ length: visibleLineCount }, (_, index) => String(index + 1)).join("\n");
+    if (lineCount > visibleLineCount) gutter.textContent += "\n…";
+    gutter.scrollTop = input.scrollTop;
+    updateJsonInputHighlight();
+  }
+
+  function jsonCursorPosition() {
+    const input = byId("tool-input");
+    if (!input) return { line: 1, column: 1 };
+    const value = String(input.value);
+    const position = Math.max(0, Math.min(value.length, input.selectionStart ?? value.length));
+    const before = value.slice(0, position);
+    const lineBreak = before.lastIndexOf("\n");
+    return {
+      line: before.split("\n").length,
+      column: position - lineBreak,
+    };
+  }
+
+  function updateJsonSummary(metadata = {}) {
+    if (descriptor?.id !== "json.format") return;
+    const summary = byId("json-tool-summary");
+    if (!summary) return;
+    const cursor = jsonCursorPosition();
+    const rootType = metadata.rootType === "array"
+      ? message("toolJsonArray")
+      : metadata.rootType === "object"
+      ? message("toolJsonObject")
+      : message("toolJsonValue");
+    const values = [
+      ["json-cursor-summary", `${message("toolJsonLine")} ${cursor.line}, ${message("toolJsonColumn")} ${cursor.column}`],
+      ["json-character-summary", `${message("toolJsonCharacters")} ${metadata.characters ?? 0}`],
+      ["json-length-summary", `${message("toolJsonLength")} ${metadata.bytes ?? 0}`],
+      ["json-type-summary", rootType],
+      ["json-depth-summary", `${message("toolJsonDepth")} ${metadata.maxDepth ?? 0}`],
+    ];
+    for (const [id, value] of values) byId(id).textContent = value;
+    summary.hidden = !state?.lastResult;
+  }
+
+  function syncJsonToolbarState() {
+    const action = byId("json-compact-action");
+    const operation = byId("tool-controls")?.querySelector('[data-tool-option="operation"]');
+    const compact = byId("tool-controls")?.querySelector('[data-tool-option="compact"]');
+    if (!action || !operation) return;
+    const active = operation.value === "compact" || Boolean(compact?.checked);
+    action.classList.toggle("is-active", active);
+    action.setAttribute("aria-pressed", String(active));
+  }
+
+  function createJsonToolbarButton(id, labelKey, className = "", iconName = "") {
+    const button = document.createElement("button");
+    button.id = id;
+    button.type = "button";
+    button.className = `browser-toolbox-json-toolbar-button ${className}`.trim();
+    const label = document.createElement("span");
+    label.className = "browser-toolbox-json-toolbar-label";
+    label.textContent = message(labelKey);
+    if (iconName) button.append(icon(iconName));
+    button.append(label);
+    return button;
+  }
+
+  function positionJsonAdvancedPanel(advanced) {
+    if (!advanced?.open) return;
+    const panel = advanced.querySelector(":scope > .browser-toolbox-json-advanced-panel");
+    const summary = advanced.querySelector(":scope > summary");
+    if (!panel || !summary) return;
+    const viewportPadding = 12;
+    const panelWidth = Math.min(360, Math.max(0, globalThis.innerWidth - viewportPadding * 2));
+    const maxLeft = Math.max(viewportPadding, globalThis.innerWidth - viewportPadding - panelWidth);
+    const summaryRect = summary.getBoundingClientRect();
+    const left = Math.min(maxLeft, Math.max(viewportPadding, summaryRect.right - panelWidth));
+    const provisionalTop = summaryRect.bottom + 8;
+    panel.style.setProperty("--json-advanced-panel-left", `${Math.round(left)}px`);
+    panel.style.setProperty("--json-advanced-panel-top", `${Math.round(provisionalTop)}px`);
+    panel.style.setProperty("--json-advanced-panel-width", `${Math.round(panelWidth)}px`);
+    const panelRect = panel.getBoundingClientRect();
+    const maxTop = Math.max(viewportPadding, globalThis.innerHeight - viewportPadding - panelRect.height);
+    const top = Math.min(maxTop, Math.max(viewportPadding, provisionalTop));
+    panel.style.setProperty("--json-advanced-panel-top", `${Math.round(top)}px`);
+  }
+
+  function buildJsonControls() {
+    const controls = byId("tool-controls");
+    controls.replaceChildren();
+    controls.classList.add("browser-toolbox-json-controls");
+    const descriptorControls = new Map(descriptor.controls.map((control) => [control.key, control]));
+    const createOption = (key) => {
+      const control = descriptorControls.get(key);
+      const options = (control.options || []).map(([value, labelKey]) => [value, message(labelKey)]);
+      return optionControl(control.labelKey, control.type, options, control.defaultValue);
+    };
+
+    const runButton = byId("tool-run");
+    if (runButton) {
+      runButton.dataset.i18n = "toolJsonFormatOperation";
+      const runLabel = document.createElement("span");
+      runLabel.className = "browser-toolbox-json-toolbar-label";
+      runLabel.textContent = runButton.textContent;
+      runButton.replaceChildren(icon("braces"), runLabel);
+    }
+
+    const compactAction = createJsonToolbarButton("json-compact-action", "toolJsonCompactOperation", "", "compress");
+    compactAction.setAttribute("aria-pressed", "false");
+    compactAction.addEventListener("click", () => {
+      const operation = controls.querySelector('[data-tool-option="operation"]');
+      const compact = controls.querySelector('[data-tool-option="compact"]');
+      if (!operation) return;
+      operation.value = operation.value === "compact" ? "format" : "compact";
+      if (compact) compact.checked = false;
+      syncJsonToolbarState();
+      run();
+    });
+
+    const sortControl = createOption("sortOrder");
+    const sortGroup = document.createElement("div");
+    sortGroup.className = "browser-toolbox-json-sort-group";
+    const sortIcon = icon("sort");
+    sortIcon.classList.add("browser-toolbox-json-sort-icon");
+    const sortLabel = document.createElement("span");
+    sortLabel.className = "browser-toolbox-json-sort-label";
+    sortLabel.textContent = message("toolSort");
+    addControl(sortControl, "sortOrder", sortGroup);
+    sortGroup.prepend(sortIcon, sortLabel);
+
+    const advanced = document.createElement("details");
+    advanced.className = "browser-toolbox-json-advanced";
+    const advancedSummary = document.createElement("summary");
+    advancedSummary.append(icon("more"));
+    const advancedLabel = document.createElement("span");
+    advancedLabel.className = "browser-toolbox-json-toolbar-label";
+    advancedLabel.textContent = message("toolJsonMoreOptions");
+    advancedSummary.append(advancedLabel);
+    const advancedPanel = document.createElement("div");
+    advancedPanel.className = "browser-toolbox-json-advanced-panel";
+    const advancedKeys = ["operation", "indent", "compact", "expandEscaped", "repair"];
+    for (const key of advancedKeys) {
+      const control = createOption(key);
+      addControl(control, key, advancedPanel);
+    }
+    const fileControl = byId("tool-file")?.closest(".browser-toolbox-tool-file");
+    if (fileControl) advancedPanel.append(fileControl);
+    const restore = createJsonToolbarButton("json-restore-action", "toolRestore");
+    restore.addEventListener("click", () => restoreInput());
+    advancedPanel.append(restore);
+    advanced.append(advancedSummary, advancedPanel);
+    const repositionAdvancedPanel = () => positionJsonAdvancedPanel(advanced);
+    advanced.addEventListener("toggle", () => {
+      if (advanced.open) globalThis.requestAnimationFrame(repositionAdvancedPanel);
+    });
+    globalThis.addEventListener("resize", repositionAdvancedPanel);
+    globalThis.addEventListener("scroll", repositionAdvancedPanel, { passive: true });
+    byId("tool-header-toolbar")?.addEventListener("scroll", repositionAdvancedPanel, { passive: true });
+    controls.append(compactAction, sortGroup, advanced);
+    syncJsonToolbarState();
   }
 
   function codecModeForType(type) {
@@ -169,6 +376,7 @@
     state.codecType = type.id;
     state.codecMode = codecModeForType(type);
     markCodecSelection();
+    scheduleAutoRun();
   }
 
   function createCodecTypeButton(type) {
@@ -208,6 +416,7 @@
           ADVANCED_CODEC_TYPES.find((candidate) => candidate.id === state.codecType);
         if (type && !type.mode) state.codecMode = codecModeForType(type);
         markCodecSelection();
+        scheduleAutoRun();
       });
       operationButtons.append(button);
     }
@@ -291,6 +500,25 @@
     return path.length === 0 ? "$" : path.join("/");
   }
 
+  function compareJsonCodePoints(left, right) {
+    const a = Array.from(left, (char) => char.codePointAt(0));
+    const b = Array.from(right, (char) => char.codePointAt(0));
+    for (let index = 0; index < Math.min(a.length, b.length); index++) {
+      if (a[index] !== b[index]) return a[index] - b[index];
+    }
+    return a.length - b.length;
+  }
+
+  function orderedJsonEntries(node) {
+    const entries = node.entries.map((entry, index) => ({ entry, index }));
+    const sortOrder = jsonRenderOptions().sortOrder;
+    if (sortOrder === "original") return entries;
+    return entries.sort((left, right) =>
+      (sortOrder === "descending" ? -1 : 1) * compareJsonCodePoints(left.entry.keyValue, right.entry.keyValue) ||
+      left.index - right.index
+    );
+  }
+
   function jsonNodeLabel(node) {
     if (node.kind === "object") return node.entries.length ? "{" : "{}";
     if (node.kind === "array") return node.items.length ? "[" : "[]";
@@ -314,11 +542,15 @@
     setStatus(message("toolJsonNodeDeleted"));
   }
 
-  function renderJsonNode(node, path = [], parent = null, index = -1) {
+  function renderJsonNode(node, path = [], parent = null, index = -1, lineState = { value: 0 }) {
     const container = document.createElement("div");
     container.className = `browser-toolbox-json-node browser-toolbox-json-node-${node.kind}`;
     const row = document.createElement("div");
     row.className = "browser-toolbox-json-row";
+    const lineNumber = document.createElement("span");
+    lineNumber.className = "browser-toolbox-json-line-number";
+    lineNumber.textContent = String(++lineState.value);
+    row.append(lineNumber);
 
     const hasChildren = isJsonContainer(node) && (node.entries?.length || node.items?.length);
     if (hasChildren) {
@@ -393,17 +625,22 @@
       children.className = "browser-toolbox-json-children";
       children.hidden = collapsed;
       if (node.kind === "object") {
-        node.entries.forEach((entry, childIndex) => {
-          children.append(renderJsonNode(entry.value, [...path, `key-${childIndex}`], node, childIndex));
+        orderedJsonEntries(node).forEach(({ entry, index: childIndex }) => {
+          children.append(renderJsonNode(entry.value, [...path, `key-${childIndex}`], node, childIndex, lineState));
         });
       } else {
         node.items.forEach((item, childIndex) => {
-          children.append(renderJsonNode(item, [...path, `item-${childIndex}`], node, childIndex));
+          children.append(renderJsonNode(item, [...path, `item-${childIndex}`], node, childIndex, lineState));
         });
       }
       const closing = document.createElement("div");
       closing.className = "browser-toolbox-json-closing";
-      closing.textContent = node.kind === "object" ? "}" : "]";
+      const closingLineNumber = document.createElement("span");
+      closingLineNumber.className = "browser-toolbox-json-line-number";
+      closingLineNumber.textContent = String(++lineState.value);
+      const closingValue = document.createElement("span");
+      closingValue.textContent = node.kind === "object" ? "}" : "]";
+      closing.append(closingLineNumber, closingValue);
       children.append(closing);
       container.append(children);
     }
@@ -421,7 +658,7 @@
       tree.append(empty);
       return;
     }
-    tree.append(renderJsonNode(state.jsonRoot));
+    tree.append(renderJsonNode(state.jsonRoot, [], null, -1, { value: 0 }));
   }
 
   function updateJsonOutputFromRoot() {
@@ -485,6 +722,12 @@
       outputTitle.dataset.i18n = "toolParsedOutput";
       outputTitle.textContent = message("toolParsedOutput");
       byId("tool-run").textContent = message("toolConvert");
+    } else if (descriptor.id === "json.format") {
+      inputLabel.dataset.i18n = "toolJsonInput";
+      inputLabel.textContent = message("toolJsonInput");
+      outputTitle.dataset.i18n = "toolJsonOutput";
+      outputTitle.textContent = message("toolJsonOutput");
+      byId("tool-run").textContent = message("toolJsonFormatOperation");
     } else {
       inputLabel.dataset.i18n = descriptor.inputMode === "dual" ? "toolInputLeft" : "toolInput";
       inputLabel.textContent = message(inputLabel.dataset.i18n);
@@ -496,20 +739,24 @@
     byId("diff-result-panel").hidden = descriptor.id !== "text.diff";
     byId("codec-output").hidden = descriptor.id !== "codec.transform";
     byId("tool-output").hidden = ["json.format", "text.diff", "codec.transform"].includes(descriptor.id);
+    byId("tool-copy").hidden = descriptor.id === "json.format";
     byId("json-copy-root").hidden = descriptor.id !== "json.format";
+    byId("json-tool-summary").hidden = descriptor.id !== "json.format";
   }
 
   function clearResult() {
     state.output = "";
+    state.lastResult = null;
     state.jsonRoot = null;
     byId("tool-output").textContent = "";
     byId("codec-output").textContent = "";
     byId("json-result-tree")?.replaceChildren();
     byId("diff-result-list")?.replaceChildren();
     byId("tool-metadata").replaceChildren();
+    byId("json-tool-summary").hidden = true;
   }
 
-  function applyResult(result) {
+  function applyResult(result, automatic = false) {
     state.output = String(result.output ?? "");
     state.lastResult = result;
     if (descriptor.id === "json.format") {
@@ -526,12 +773,26 @@
       byId("tool-output").textContent = state.output;
     }
     renderMetadata(result.metadata);
-    setStatus(message("toolReady"));
+    updateJsonSummary(result.metadata);
+    setStatus(message(automatic ? "toolAutoParsed" : "toolReady"));
   }
 
-  async function run() {
-    if (state?.running) return;
+  function scheduleAutoRun() {
+    if (!state || state.tokenInvalid) return;
+    if (state.autoRunTimer) globalThis.clearTimeout(state.autoRunTimer);
+    state.autoRunTimer = globalThis.setTimeout(() => {
+      state.autoRunTimer = null;
+      run(true);
+    }, 220);
+  }
+
+  async function run(automatic = false) {
+    if (state?.running) {
+      if (automatic) state.autoRunPending = true;
+      return;
+    }
     state.running = true;
+    const runRevision = state.inputRevision;
     byId("tool-run").disabled = true;
     try {
       const input = descriptor.inputMode === "none" ? "" : runtime.assertInput(currentInput(), descriptor);
@@ -547,13 +808,17 @@
         confirm: globalThis.confirm,
         confirmMessage: message("toolRepairConfirm"),
       });
-      applyResult(result);
+      applyResult(result, automatic);
     } catch (error) {
       clearResult();
       setStatus(error.message || message("toolInvalid"));
     } finally {
       state.running = false;
       byId("tool-run").disabled = false;
+      if (state.autoRunPending || runRevision !== state.inputRevision) {
+        state.autoRunPending = false;
+        scheduleAutoRun();
+      }
     }
   }
 
@@ -563,15 +828,20 @@
   }
 
   function download() {
-    runtime.downloadText(state.output, `browser-toolbox-${descriptor.id.replace(".", "-")}.txt`);
+    const isJson = descriptor.id === "json.format";
+    const filename = isJson
+      ? `browser-toolbox-${Date.now()}.json`
+      : `browser-toolbox-${descriptor.id.replace(".", "-")}.txt`;
+    runtime.downloadText(state.output, filename, isJson ? "application/json;charset=utf-8" : undefined);
     setStatus(message("toolDownloaded"));
   }
 
-  async function restore() {
+  async function restoreInput() {
     byId("tool-input").value = state.originalInput;
     byId("tool-input-right").value = state.originalRightInput;
     state.workingInput = state.originalInput;
     state.repairApplied = false;
+    updateJsonInputLineNumbers();
     await run();
     setStatus(message("toolRestored"));
   }
@@ -594,6 +864,7 @@
     byId("tool-input").value = consumed.input ?? "";
     state.originalInput = consumed.input ?? "";
     state.workingInput = state.originalInput;
+    updateJsonInputLineNumbers();
   }
 
   async function loadFile(file) {
@@ -608,22 +879,12 @@
     state.workingInput = input;
     state.originalFilename = file.name;
     state.repairApplied = false;
+    updateJsonInputLineNumbers();
     setStatus(`${message("toolFileLoaded")}: ${file.name}`);
-    await run();
+    await run(true);
   }
 
   function setupHeader() {
-    const settingsUrl = chrome.runtime.getURL("pages/mouse_options.html#toolsOverview");
-    const back = byId("tool-back");
-    const settings = byId("tool-settings");
-    if (back) back.href = settingsUrl;
-    if (settings) {
-      settings.href = settingsUrl;
-      settings.target = "_blank";
-      settings.rel = "noopener";
-    }
-    setIcon("tool-back-icon", "arrowLeft");
-    setIcon("tool-settings-icon", "settings");
     setIcon("tool-copy-icon", "copy");
     setIcon("tool-download-icon", "download");
     setIcon("tool-restore-icon", "restore");
@@ -631,7 +892,7 @@
     setIcon("json-collapse-all-icon", "chevron");
     setIcon("json-expand-all-icon", "chevron");
     const toolIcon = byId("tool-icon");
-    toolIcon?.replaceChildren(icon(descriptor.icon));
+    toolIcon?.replaceChildren(icon("toolbox"));
     byId("tool-title").textContent = message(descriptor.titleKey);
     byId("tool-description").textContent = message(descriptor.descriptionKey);
     document.title = message(descriptor.titleKey);
@@ -658,15 +919,28 @@
       originalFilename: "",
       tokenInvalid: false,
       running: false,
+      autoRunTimer: null,
+      autoRunPending: false,
+      inputRevision: 0,
     };
     setupHeader();
     applyLayout();
-    buildControls();
+    if (descriptor.id === "json.format") buildJsonControls();
+    else buildControls();
     await loadToken();
-    byId("tool-run").addEventListener("click", () => run());
+    byId("tool-run").addEventListener("click", () => {
+      if (descriptor.id === "json.format") {
+        const operation = byId("tool-controls")?.querySelector('[data-tool-option="operation"]');
+        const compact = byId("tool-controls")?.querySelector('[data-tool-option="compact"]');
+        if (operation) operation.value = "format";
+        if (compact) compact.checked = false;
+        syncJsonToolbarState();
+      }
+      run();
+    });
     byId("tool-copy").addEventListener("click", copy);
     byId("tool-download").addEventListener("click", download);
-    byId("tool-restore").addEventListener("click", () => restore());
+    byId("tool-restore").addEventListener("click", () => restoreInput());
     byId("json-copy-root")?.addEventListener("click", copy);
     byId("json-collapse-all")?.addEventListener("click", () => {
       if (!state.jsonRoot) return;
@@ -681,11 +955,25 @@
       loadFile(event.target.files?.[0]).catch((error) => setStatus(error.message));
       event.target.value = "";
     });
-    byId("tool-input").addEventListener("input", () => {
-      state.repairApplied = false;
-      state.workingInput = byId("tool-input").value;
+    byId("tool-controls")?.addEventListener("change", () => {
+      syncJsonToolbarState();
+      scheduleAutoRun();
     });
-    await run();
+    for (const input of document.querySelectorAll("#tool-input, #tool-input-right")) {
+      input.addEventListener("input", () => {
+        state.repairApplied = false;
+        state.workingInput = byId("tool-input").value;
+        state.inputRevision++;
+        updateJsonInputLineNumbers();
+        updateJsonSummary(state.lastResult?.metadata);
+        scheduleAutoRun();
+      });
+      input.addEventListener("scroll", () => updateJsonInputLineNumbers());
+      input.addEventListener("click", () => updateJsonSummary(state.lastResult?.metadata));
+      input.addEventListener("keyup", () => updateJsonSummary(state.lastResult?.metadata));
+    }
+    updateJsonInputLineNumbers();
+    await run(true);
     if (state.tokenInvalid) setStatus(message("toolTokenInvalid"));
     const notice = params.get("notice");
     if (notice === "empty-selection") setStatus(message("toolEmptySelection"));

@@ -411,3 +411,56 @@ body.browser-toolbox-document-formatted {
     padding-left: 14px;
   }
 }
+
+/* 宽屏保持一行，窄屏固定为品牌行和操作行两行。 */
+.browser-toolbox-document-toolbar {
+  flex-wrap: nowrap;
+  min-width: 0;
+}
+
+.browser-toolbox-document-brand-group,
+.browser-toolbox-document-actions {
+  min-width: 0;
+}
+
+.browser-toolbox-document-brand-group {
+  flex: 0 1 auto;
+}
+
+.browser-toolbox-document-actions {
+  display: flex;
+  flex: 0 1 auto;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.browser-toolbox-document-actions > * {
+  flex: 0 0 auto;
+}
+
+@media (max-width: 720px) {
+  .browser-toolbox-document-toolbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+    align-items: center;
+  }
+
+  .browser-toolbox-document-brand-group {
+    grid-column: 1;
+    width: 100%;
+    justify-content: space-between;
+    margin-right: 0;
+  }
+
+  .browser-toolbox-document-actions {
+    grid-column: 1;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+    overscroll-behavior-inline: contain;
+  }
+}

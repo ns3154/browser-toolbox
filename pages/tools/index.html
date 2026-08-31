@@ -24,11 +24,6 @@
   <body class="browser-toolbox-tools-document">
     <main class="browser-toolbox-tools-page" data-tool-page="true">
       <header class="browser-toolbox-tools-header">
-        <a id="tool-back" class="browser-toolbox-tool-back" data-i18n-title="toolBack"
-          data-i18n-aria-label="toolBack">
-          <span id="tool-back-icon" aria-hidden="true"></span>
-          <span data-i18n="toolBack">Back</span>
-        </a>
         <div class="browser-toolbox-tool-heading">
           <p class="browser-toolbox-eyebrow" data-i18n="browserToolbox">Browser Toolbox</p>
           <div class="browser-toolbox-tool-title-row">
@@ -39,26 +34,37 @@
             </div>
           </div>
         </div>
-        <a id="tool-settings" class="browser-toolbox-icon-button" target="_blank"
-          data-i18n-title="toolSettings" data-i18n-aria-label="toolSettings">
-          <span id="tool-settings-icon" aria-hidden="true"></span>
-        </a>
+        <div id="tool-header-toolbar" class="browser-toolbox-tool-header-toolbar">
+          <div id="tool-controls" class="browser-toolbox-tool-controls"></div>
+          <div class="browser-toolbox-tool-actions">
+            <button id="tool-run" class="primary" type="button" data-i18n="toolRun">Run</button>
+            <button id="tool-download" class="browser-toolbox-icon-button" type="button"
+              data-i18n-aria-label="toolDownload" data-i18n-title="toolDownload">
+              <span id="tool-download-icon" aria-hidden="true"></span>
+              <span id="tool-download-label" data-i18n="toolDownloadShort">下载</span>
+            </button>
+            <button id="tool-restore" class="browser-toolbox-icon-button" type="button"
+              data-i18n-aria-label="toolRestore" data-i18n-title="toolRestore"><span id="tool-restore-icon" aria-hidden="true"></span></button>
+          </div>
+        </div>
+        <span class="browser-toolbox-local-badge" data-i18n="toolLocalBadge">Local only</span>
       </header>
 
       <section id="tool-workspace" class="browser-toolbox-tool-workspace" aria-labelledby="tool-input-title">
         <div class="browser-toolbox-workspace-heading">
           <div>
-            <span class="browser-toolbox-section-kicker" data-i18n="toolWorkspace">Workspace</span>
             <h2 id="tool-input-title" data-i18n="toolInput">Input</h2>
           </div>
-          <span class="browser-toolbox-local-badge" data-i18n="toolLocalBadge">Local only</span>
         </div>
-        <div id="tool-controls" class="browser-toolbox-tool-controls"></div>
         <div class="browser-toolbox-tool-input-grid">
           <label class="browser-toolbox-tool-input" for="tool-input">
             <span id="tool-input-label" data-i18n="toolInput">Input</span>
-            <textarea id="tool-input" rows="14" spellcheck="false"
-              data-i18n-placeholder="toolInputHint"></textarea>
+            <div class="browser-toolbox-tool-editor">
+              <div id="json-input-line-numbers" class="browser-toolbox-json-line-numbers" aria-hidden="true">1</div>
+              <pre id="json-input-highlight" class="browser-toolbox-json-input-highlight" aria-hidden="true"></pre>
+              <textarea id="tool-input" rows="14" spellcheck="false"
+                data-i18n-placeholder="toolInputHint"></textarea>
+            </div>
           </label>
           <label id="tool-input-right-wrap" class="browser-toolbox-tool-input" for="tool-input-right" hidden>
             <span data-i18n="toolInputRight">Right input</span>
@@ -66,23 +72,11 @@
               data-i18n-placeholder="toolInputHint"></textarea>
           </label>
         </div>
-        <label class="browser-toolbox-tool-file" for="tool-file">
-          <span data-i18n="toolFile">Local file</span>
-          <input id="tool-file" type="file" accept=".txt,.json,.xml,.css,.js,.mjs,.cjs,.java,.csv,.tsv,text/*,application/json,application/xml">
-        </label>
-        <div class="browser-toolbox-tool-actions">
-          <button id="tool-run" class="primary" type="button" data-i18n="toolRun">Run</button>
-          <button id="tool-copy" class="browser-toolbox-icon-button" type="button"
-            data-i18n-aria-label="toolCopy" data-i18n-title="toolCopy"><span id="tool-copy-icon" aria-hidden="true"></span></button>
-          <button id="tool-download" class="browser-toolbox-icon-button" type="button"
-            data-i18n-aria-label="toolDownload" data-i18n-title="toolDownload"><span id="tool-download-icon" aria-hidden="true"></span></button>
-          <button id="tool-restore" class="browser-toolbox-icon-button" type="button"
-            data-i18n-aria-label="toolRestore" data-i18n-title="toolRestore"><span id="tool-restore-icon" aria-hidden="true"></span></button>
-        </div>
-        <p id="tool-status" role="status" aria-live="polite"></p>
         <section id="tool-result-workspace" class="browser-toolbox-tool-result" aria-labelledby="tool-output-title">
           <div class="browser-toolbox-result-heading">
             <h2 id="tool-output-title" data-i18n="toolOutput">Output</h2>
+            <button id="tool-copy" class="browser-toolbox-icon-button" type="button" hidden
+              data-i18n-aria-label="toolCopy" data-i18n-title="toolCopy"><span id="tool-copy-icon" aria-hidden="true"></span></button>
             <button id="json-copy-root" class="browser-toolbox-icon-button" type="button" hidden
               data-i18n-aria-label="toolCopyNode" data-i18n-title="toolCopyNode"><span id="json-copy-root-icon" aria-hidden="true"></span></button>
           </div>
@@ -106,6 +100,21 @@
           <pre id="tool-output" class="browser-toolbox-tool-output" tabindex="0"></pre>
           <dl id="tool-metadata" class="browser-toolbox-tool-metadata"></dl>
         </section>
+        <div class="browser-toolbox-tool-footer">
+          <p id="tool-status" role="status" aria-live="polite"></p>
+          <label class="browser-toolbox-tool-file" for="tool-file">
+            <span data-i18n="toolFile">Local file</span>
+            <input id="tool-file" type="file" accept=".txt,.json,.xml,.css,.js,.mjs,.cjs,.java,.csv,.tsv,text/*,application/json,application/xml">
+          </label>
+          <div id="json-tool-summary" class="browser-toolbox-json-summary" hidden>
+            <span id="json-cursor-summary"></span>
+            <span id="json-character-summary"></span>
+            <span id="json-length-summary"></span>
+            <span id="json-type-summary"></span>
+            <span id="json-depth-summary"></span>
+          </div>
+          <span class="browser-toolbox-json-responsive-hint" data-i18n="toolJsonResponsiveHint">窄屏时标题换行，工具栏可横向滚动</span>
+        </div>
       </section>
     </main>
   </body>

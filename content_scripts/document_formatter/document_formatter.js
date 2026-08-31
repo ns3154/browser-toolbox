@@ -95,6 +95,10 @@
     brandGroup.append(brand, status);
     toolbar.append(brandGroup);
 
+    const actions = createElement("div");
+    actions.className = "browser-toolbox-document-actions";
+    toolbar.append(actions);
+
     const indent = createElement("select");
     indent.setAttribute("aria-label", message("documentFormatterIndent"));
     for (const value of ["2", "4", "8", "tab"]) {
@@ -106,7 +110,7 @@
       indent.append(option);
     }
     indent.addEventListener("change", () => render({ indent: indent.value }));
-    toolbar.append(indent);
+    actions.append(indent);
 
     if (kind === "json") {
       const sort = createElement("select");
@@ -122,27 +126,28 @@
         sort.append(option);
       }
       sort.addEventListener("change", () => render({ sortOrder: sort.value }));
-      toolbar.append(sort);
-      toolbar.append(createButton(message("documentFormatterRepair"), () => repairMojibake(), "repair-mojibake"));
-      toolbar.append(createButton(message("documentFormatterUndoRepair"), () => undoRepair(), "undo-repair"));
-      toolbar.append(createButton(message("documentFormatterCollapse"), () => {
+      actions.append(sort);
+      actions.append(createButton(message("documentFormatterRepair"), () => repairMojibake(), "repair-mojibake"));
+      actions.append(createButton(message("documentFormatterUndoRepair"), () => undoRepair(), "undo-repair"));
+      actions.append(createButton(message("documentFormatterCollapse"), () => {
         state?.collapsedPaths.clear();
         render({ collapseDepth: 1 });
       }, "collapse"));
-      toolbar.append(createButton(message("documentFormatterExpand"), () => {
+      actions.append(createButton(message("documentFormatterExpand"), () => {
         state?.collapsedPaths.clear();
         render({ collapseDepth: null });
       }, "expand"));
       toolbar._sort = sort;
     }
-    toolbar.append(createButton(message("documentFormatterCopy"), () => copyOutput(), "copy"));
-    toolbar.append(createButton(message("documentFormatterDownload"), () => downloadOutput(), "download"));
+    actions.append(createButton(message("documentFormatterCopy"), () => copyOutput(), "copy"));
+    actions.append(createButton(message("documentFormatterDownload"), () => downloadOutput(), "download"));
     const originalView = createButton(message("documentFormatterViewOriginal"), () => toggleOriginalView(), "toggle-original");
-    toolbar.append(originalView);
-    toolbar.append(createButton(message("documentFormatterRestore"), () => restoreOriginal(), "restore-original"));
+    actions.append(originalView);
+    actions.append(createButton(message("documentFormatterRestore"), () => restoreOriginal(), "restore-original"));
     toolbar._status = status;
     toolbar._indent = indent;
     toolbar._originalView = originalView;
+    toolbar._actions = actions;
     return toolbar;
   }
 
@@ -358,7 +363,10 @@
 
   function downloadOutput() {
     if (!state) return;
-    const blob = new Blob([state.formatted], { type: "text/plain;charset=utf-8" });
+    const mime = state.kind === "json"
+      ? "application/json;charset=utf-8"
+      : "text/plain;charset=utf-8";
+    const blob = new Blob([state.formatted], { type: mime });
     const url = URL.createObjectURL(blob);
     const anchor = createElement("a");
     anchor.href = url;
@@ -369,11 +377,9 @@
   }
 
   function downloadFilename(kind) {
+    if (kind === "json") return `browser-toolbox-${Date.now()}.json`;
     const original = String(location.pathname || "").split("/").at(-1)
       ?.replace(/[^a-zA-Z0-9._-]/g, "") || "formatted";
-    if (kind === "json" && /\.json$/i.test(original)) {
-      return `${original.replace(/\.json$/i, "")}.formatted.json`;
-    }
     return original.includes(".") ? `${original}.formatted.txt` : `formatted.${kind}.txt`;
   }
 

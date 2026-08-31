@@ -34,49 +34,8 @@ h1 {
   font-size: 18px;
 }
 
-#dialog-body {
-  padding: var(--padding);
-  padding-right: 0;
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-}
-
 #not-enabled-error, #firefox-missing-permissions-error {
   padding: var(--padding);
-}
-
-#dialog-body > * {
-  margin: 10px 0;
-}
-
-#dialog-body > *:first-child {
-  margin-top: 0;
-}
-
-#dialog-body > *:last-child {
-  margin-bottom: 0;
-}
-
-#how-many-enabled {
-  font-weight: bold;
-}
-
-#exclusion-scroll-box {
-  max-height: 140px;
-}
-
-footer {
-  background-color: var(--vimium-foreground-color);
-  padding: var(--padding);
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  position: inherit;
-}
-
-footer .options-message {
-  flex-grow: 1;
 }
 
 #browser-toolbox-controls {
@@ -248,7 +207,6 @@ body.browser-toolbox-action-page {
 }
 
 .browser-toolbox-action-page .browser-toolbox-action-section,
-.browser-toolbox-action-page .browser-toolbox-site-details,
 .browser-toolbox-action-page .browser-toolbox-restricted-card {
   box-sizing: border-box;
   border: 1px solid var(--toolbox-line);
@@ -518,82 +476,11 @@ body.browser-toolbox-action-page {
   font-size: 11px;
 }
 
-.browser-toolbox-action-page .browser-toolbox-site-details {
-  overflow: hidden;
-}
-
-.browser-toolbox-action-page .browser-toolbox-site-details summary {
-  padding: 12px 14px;
-  color: var(--toolbox-ink);
-  cursor: pointer;
-  font-weight: 700;
-  list-style-position: inside;
-}
-
-.browser-toolbox-action-page .browser-toolbox-site-details summary:hover,
-.browser-toolbox-action-page .browser-toolbox-site-details summary:focus-visible {
-  background: var(--toolbox-blue-soft);
-  color: var(--toolbox-blue);
-  outline: none;
-}
-
-.browser-toolbox-action-page #dialog-body {
-  display: block;
-  padding: 0 14px 14px;
-}
-
-.browser-toolbox-action-page .browser-toolbox-exclusion-summary {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 6px;
-  margin-bottom: 10px;
-  color: var(--toolbox-muted);
-  font-size: 11px;
-}
-
-.browser-toolbox-action-page #how-many-enabled {
-  color: var(--toolbox-ink);
-  font-weight: 700;
-}
-
-.browser-toolbox-action-page #exclusion-scroll-box {
-  max-height: 180px;
-  border: 1px solid var(--toolbox-line);
-  border-radius: var(--toolbox-radius-sm);
-}
-
-.browser-toolbox-action-page #exclusion-rules {
-  color: var(--toolbox-ink);
-}
-
-.browser-toolbox-action-page #exclusion-rules input[name="pattern"],
-.browser-toolbox-action-page #exclusion-rules input[name="passKeys"] {
-  width: 100%;
-  min-height: 28px;
-  border: 1px solid var(--toolbox-line);
-  border-radius: 6px;
-  background: var(--toolbox-surface);
-  color: var(--toolbox-ink);
-}
-
-.browser-toolbox-action-page #exclusion-add-button {
-  float: none;
-  margin: 10px 0 0;
-}
-
-.browser-toolbox-action-page .browser-toolbox-options-message {
-  margin: 12px 0 0;
-  color: var(--toolbox-muted);
-  font-size: 11px;
-}
-
-.browser-toolbox-action-page .browser-toolbox-options-message a,
 .browser-toolbox-action-page .browser-toolbox-text-link {
   color: var(--toolbox-blue);
   text-decoration: none;
 }
 
-.browser-toolbox-action-page .browser-toolbox-options-message a:hover,
 .browser-toolbox-action-page .browser-toolbox-text-link:hover {
   text-decoration: underline;
 }
@@ -678,7 +565,7 @@ body.browser-toolbox-action-page {
 
 .browser-toolbox-action-page .browser-toolbox-action-footer {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 5px;
   margin-top: auto;
   padding: 4px 0 0;
@@ -716,47 +603,6 @@ body.browser-toolbox-action-page {
   color: currentColor;
   font-size: 15px;
   line-height: 1;
-}
-
-.browser-toolbox-action-page #browser-toolbox-exclusion-footer {
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
-  border: 1px solid var(--toolbox-line);
-  border-radius: var(--toolbox-radius-md);
-  background: var(--toolbox-surface);
-  color: var(--toolbox-muted);
-}
-
-.browser-toolbox-action-page #browser-toolbox-exclusion-footer .options-message {
-  flex: 1;
-  font-size: 10px;
-}
-
-.browser-toolbox-action-page #browser-toolbox-exclusion-footer > div:last-child {
-  display: flex;
-  flex: 0 0 auto;
-  gap: 5px;
-}
-
-.browser-toolbox-action-page #browser-toolbox-exclusion-footer button {
-  min-height: 28px;
-  padding: 4px 8px;
-  border: 1px solid var(--toolbox-line);
-  border-radius: 7px;
-  background: var(--toolbox-surface-muted);
-  color: var(--toolbox-ink);
-  cursor: pointer;
-  font: inherit;
-  text-shadow: none;
-}
-
-.browser-toolbox-action-page #browser-toolbox-exclusion-footer #save {
-  border-color: var(--toolbox-blue);
-  background: var(--toolbox-blue);
-  color: #fff;
 }
 
 .browser-toolbox-action-page :is(button, a, input, select, summary):focus-visible {
@@ -808,7 +654,7 @@ body.browser-toolbox-action-page {
   }
 
   .browser-toolbox-action-page .browser-toolbox-action-footer {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -927,7 +773,7 @@ body.browser-toolbox-action-page {
 }
 
 .browser-toolbox-action-page .browser-toolbox-action-section,
-.browser-toolbox-action-page .browser-toolbox-site-details {
+.browser-toolbox-action-page .browser-toolbox-action-section {
   border: 0;
   border-bottom: 1px solid var(--toolbox-line);
   border-radius: 0;
@@ -1114,7 +960,7 @@ body.browser-toolbox-action-page {
 }
 
 .browser-toolbox-action-page .browser-toolbox-action-footer {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 2px;
   margin-top: auto;
   padding: 8px 10px 9px;
@@ -1148,20 +994,6 @@ body.browser-toolbox-action-page {
   border: 1px solid #f1d6aa;
   border-radius: 12px;
   box-shadow: none;
-}
-
-.browser-toolbox-action-page .browser-toolbox-site-details {
-  border-top: 0;
-}
-
-.browser-toolbox-action-page .browser-toolbox-site-details summary {
-  padding: 12px 16px;
-  font-size: 12px;
-}
-
-.browser-toolbox-action-page #browser-toolbox-exclusion-footer {
-  margin: 10px 16px;
-  border-radius: 10px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -1199,10 +1031,6 @@ body.browser-toolbox-action-page {
     padding-left: 12px;
   }
 
-  .browser-toolbox-action-page .browser-toolbox-site-details summary {
-    padding-right: 12px;
-    padding-left: 12px;
-  }
 }
 
 /* 窄弹窗也必须保留可读的文字列宽；浏览器缩放会把动作页压到 320px 以下。 */
