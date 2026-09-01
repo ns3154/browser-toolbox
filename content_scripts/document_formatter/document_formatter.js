@@ -9,6 +9,41 @@
 
   const message = (key) => globalThis.BrowserToolboxI18n?.message(key) || key;
 
+  function formatName(kind) {
+    return { json: "JSON", xml: "XML", css: "CSS", javascript: "JavaScript", java: "Java" }[kind] ||
+      kind;
+  }
+
+  function formatByteSize(value) {
+    const bytes = Math.max(0, Number(value) || 0);
+    if (bytes < 1024) return `${bytes} ${message("documentFormatterBytes")}`;
+    const kilobytes = bytes / 1024;
+    return `${kilobytes < 10 ? kilobytes.toFixed(1) : Math.round(kilobytes)} KB`;
+  }
+
+  function formatStatus(kind, metadata) {
+    const prefix = kind === "json"
+      ? message("documentFormatterAutoFormatted")
+      : `${formatName(kind)} ${message("documentFormatterTitleSuffix")}`;
+    let status = `${prefix} · ${formatByteSize(metadata?.bytes)}`;
+    if (kind !== "json") return status;
+    status += ` · ${metadata?.keys || 0} ${message("documentFormatterKeyCount")}`;
+    if (metadata?.duplicateKeys > 0) {
+      status += ` · ${message("documentFormatterDuplicateKeys")} ${metadata.duplicateKeys}`;
+    }
+    return status;
+  }
+
+  function formatMetadataPreview(metadata, currentState) {
+    const kind = currentState?.kind || "document";
+    let preview = `${formatName(kind)} · ${formatByteSize(metadata?.bytes)}`;
+    if (kind === "json") {
+      preview += ` · ${metadata?.keys || 0} ${message("documentFormatterKeyCount")}`;
+      preview += ` · ${message("documentFormatterMaxDepth")} ${metadata?.maxDepth ?? 0}`;
+    }
+    return preview;
+  }
+
   function isTopLevel() {
     try {
       return globalThis.top === globalThis;
@@ -87,8 +122,7 @@
     icon.setAttribute("aria-hidden", "true");
     icon.textContent = "{}";
     const label = createElement("strong");
-    const formatName = { json: "JSON", xml: "XML", css: "CSS", javascript: "JavaScript", java: "Java" }[kind] || kind;
-    label.textContent = `${formatName} ${message("documentFormatterTitleSuffix")}`;
+    label.textContent = `${formatName(kind)} ${message("documentFormatterTitleSuffix")}`;
     brand.append(icon, label);
     const brandGroup = createElement("div");
     brandGroup.className = "browser-toolbox-document-brand-group";
@@ -115,11 +149,13 @@
     if (kind === "json") {
       const sort = createElement("select");
       sort.setAttribute("aria-label", message("documentFormatterSortAria"));
-      for (const [value, label] of [
-        ["original", message("documentFormatterKeepOrder")],
-        ["ascending", message("documentFormatterSortAscending")],
-        ["descending", message("documentFormatterSortDescending")],
-      ]) {
+      for (
+        const [value, label] of [
+          ["original", message("documentFormatterKeepOrder")],
+          ["ascending", message("documentFormatterSortAscending")],
+          ["descending", message("documentFormatterSortDescending")],
+        ]
+      ) {
         const option = createElement("option");
         option.value = value;
         option.textContent = label;
@@ -127,8 +163,12 @@
       }
       sort.addEventListener("change", () => render({ sortOrder: sort.value }));
       actions.append(sort);
-      actions.append(createButton(message("documentFormatterRepair"), () => repairMojibake(), "repair-mojibake"));
-      actions.append(createButton(message("documentFormatterUndoRepair"), () => undoRepair(), "undo-repair"));
+      actions.append(
+        createButton(message("documentFormatterRepair"), () => repairMojibake(), "repair-mojibake"),
+      );
+      actions.append(
+        createButton(message("documentFormatterUndoRepair"), () => undoRepair(), "undo-repair"),
+      );
       actions.append(createButton(message("documentFormatterCollapse"), () => {
         state?.collapsedPaths.clear();
         render({ collapseDepth: 1 });
@@ -140,10 +180,22 @@
       toolbar._sort = sort;
     }
     actions.append(createButton(message("documentFormatterCopy"), () => copyOutput(), "copy"));
-    actions.append(createButton(message("documentFormatterDownload"), () => downloadOutput(), "download"));
-    const originalView = createButton(message("documentFormatterViewOriginal"), () => toggleOriginalView(), "toggle-original");
+    actions.append(
+      createButton(message("documentFormatterDownload"), () => downloadOutput(), "download"),
+    );
+    const originalView = createButton(
+      message("documentFormatterViewOriginal"),
+      () => toggleOriginalView(),
+      "toggle-original",
+    );
     actions.append(originalView);
-    actions.append(createButton(message("documentFormatterRestore"), () => restoreOriginal(), "restore-original"));
+    actions.append(
+      createButton(
+        message("documentFormatterRestore"),
+        () => restoreOriginal(),
+        "restore-original",
+      ),
+    );
     toolbar._status = status;
     toolbar._indent = indent;
     toolbar._originalView = originalView;
@@ -155,15 +207,21 @@
     const details = createElement("details");
     details.className = "browser-toolbox-document-metadata";
     const summary = createElement("summary");
-    summary.textContent = message("documentFormatterMetadata");
+    const summaryLabel = createElement("span");
+    summaryLabel.textContent = message("documentFormatterMetadata");
+    const preview = createElement("span");
+    preview.className = "browser-toolbox-document-metadata-preview";
+    summary.append(summaryLabel, preview);
     const list = createElement("dl");
     details.append(summary, list);
+    details._preview = preview;
     details._list = list;
     return details;
   }
 
   function renderMetadata(panel, metadata, currentState) {
     if (!panel?._list) return;
+    if (panel._preview) panel._preview.textContent = formatMetadataPreview(metadata, currentState);
     const labels = {
       characters: "documentFormatterCharacters",
       bytes: "documentFormatterBytes",
@@ -218,18 +276,25 @@
       : /(\/\*[\s\S]*?\*\/|\/\/[^\n]*|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|\b\d+(?:\.\d+)?\b|\b(?:true|false|null|class|interface|enum|record|public|private|protected|static|final|return|const|let|var|function|import|package|new|if|else|for|while)\b)/g;
     let last = 0;
     for (const match of String(text).matchAll(pattern)) {
-      if (match.index > last) fragment.append(document.createTextNode(text.slice(last, match.index)));
+      if (match.index > last) {
+        fragment.append(document.createTextNode(text.slice(last, match.index)));
+      }
       const span = createElement("span");
       const token = match[0];
-      span.className = token.startsWith("/") ? "browser-toolbox-token-comment"
+      span.className = token.startsWith("/")
+        ? "browser-toolbox-token-comment"
         : token.startsWith('"') || token.startsWith("'") || token.startsWith("`")
-        ? "browser-toolbox-token-string"
-        : /^\d/.test(token) ? "browser-toolbox-token-number" : "browser-toolbox-token-keyword";
+        ? kind === "json-key" ? "browser-toolbox-token-key" : "browser-toolbox-token-string"
+        : /^\d/.test(token)
+        ? "browser-toolbox-token-number"
+        : "browser-toolbox-token-keyword";
       span.textContent = token;
       fragment.append(span);
       last = match.index + token.length;
     }
-    if (last < String(text).length) fragment.append(document.createTextNode(String(text).slice(last)));
+    if (last < String(text).length) {
+      fragment.append(document.createTextNode(String(text).slice(last)));
+    }
     root.append(fragment);
   }
 
@@ -292,7 +357,7 @@
       root.append(document.createTextNode("\n"));
       appendIndent(root, indent, level + 1);
       if (isObject) {
-        appendHighlightedText(root, item.key.raw, "json");
+        appendHighlightedText(root, item.key.raw, "json-key");
         root.append(document.createTextNode(": "));
         appendJsonNode(root, item.value, level + 1, `${path}.${index}`);
       } else {
@@ -337,17 +402,13 @@
       else appendHighlightedText(state.output, fullResult.formatted, state.kind);
       renderMetadata(state.metadataPanel, state.metadata, state);
       state.toolbar._originalView.textContent = message("documentFormatterViewOriginal");
-      state.toolbar._status.textContent = `${state.kind} · ${fullResult.metadata.bytes || 0} ${message("documentFormatterBytes")}`;
-      if (state.kind === "json") {
-        state.toolbar._status.textContent += ` · ${message("documentFormatterKeys")} ${fullResult.metadata.keys || 0}`;
-        if (fullResult.metadata.duplicateKeys > 0) {
-          state.toolbar._status.textContent += ` · ${message("documentFormatterDuplicateKeys")} ${fullResult.metadata.duplicateKeys}`;
-        }
-      }
+      state.toolbar._status.textContent = formatStatus(state.kind, fullResult.metadata);
     } catch (error) {
       state.formatted = state.workingSource;
       state.output.replaceChildren(document.createTextNode(state.workingSource));
-      state.toolbar._status.textContent = `${message("documentFormatterKeptOriginal")}: ${error.message}`;
+      state.toolbar._status.textContent = `${
+        message("documentFormatterKeptOriginal")
+      }: ${error.message}`;
     }
   }
 
