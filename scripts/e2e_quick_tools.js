@@ -319,6 +319,45 @@ async function testToolPages(browser, id) {
     assert(!toolbar.copyInActions && toolbar.copyInResult, "复制按钮应从操作条移到结果区。 ");
     assert(toolbar.sortTag === "SELECT" && toolbar.sortValues.join(",") === "original,ascending,descending", "排序应使用单独的三态下拉框。 ");
     assert(toolbar.sortLabels.join("/") === "原始/升序/降序" || toolbar.sortLabels.join("/") === "Original/Ascending/Descending", "排序下拉框文案应简洁明确。 ");
+    const sortMenu = await page.evaluate(() => {
+      const trigger = document.querySelector("#json-sort-trigger");
+      const menu = document.querySelector("#json-sort-menu");
+      const option = menu?.querySelector("[role=option]");
+      if (!trigger || !menu || !option) return null;
+      const triggerStyle = getComputedStyle(trigger);
+      const optionStyle = getComputedStyle(option);
+      return {
+        trigger: trigger.getAttribute("aria-label"),
+        role: menu.getAttribute("role"),
+        options: [...menu.querySelectorAll("[role=option]")].map((item) => item.textContent.replace("✓", "").trim()),
+        matchingStyle: ["fontFamily", "fontSize", "fontWeight", "lineHeight"].every((key) =>
+          triggerStyle[key] === optionStyle[key]
+        ),
+      };
+    });
+    assert(
+      sortMenu?.role === "listbox" && sortMenu.options.join("/") === "原始/升序/降序" && sortMenu.matchingStyle,
+      `排序菜单应使用统一的本地控件样式：${JSON.stringify(sortMenu)}`,
+    );
+    await clickVisible(page, "#json-sort-trigger");
+    await waitFor(() => page.$eval("#json-sort-trigger", (button) => button.getAttribute("aria-expanded") === "true")
+      .catch(() => false));
+    await page.screenshot({ path: "/tmp/browser-toolbox-json-sort-menu.png", fullPage: false });
+    assert(
+      await page.$eval("#json-sort-menu", (menu) => menu.classList.contains("is-open") && menu.getBoundingClientRect().height > 0),
+      "排序菜单打开后应显示统一样式的选项。 ",
+    );
+    await page.click('#json-sort-menu [data-sort-value="ascending"]');
+    assert(
+      await page.$eval("#json-sort-trigger", (button) => button.getAttribute("aria-expanded") === "false" && button.textContent.includes("升序")),
+      "选择排序选项后菜单应收起并更新当前文字。 ",
+    );
+    await clickVisible(page, ".browser-toolbox-json-advanced > summary");
+    await waitFor(() => page.$eval(".browser-toolbox-json-advanced", (details) => details.open).catch(() => false));
+    await page.screenshot({ path: "/tmp/browser-toolbox-json-more-options-open.png", fullPage: false });
+    await page.mouse.click(20, 300);
+    await waitFor(() => page.$eval(".browser-toolbox-json-advanced", (details) => !details.open).catch(() => false));
+    assert(await page.$eval(".browser-toolbox-json-advanced", (details) => !details.open), "点击页面空白处应关闭更多选项。 ");
     await page.select('[data-tool-option="operation"]', "sort");
     await page.select('[data-tool-option="sortOrder"]', "ascending");
     await setTextarea(page, "#tool-input", '{"z":9007199254740993,"a":2,"nested":{"keep":true}}');

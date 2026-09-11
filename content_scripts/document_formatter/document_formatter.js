@@ -171,10 +171,12 @@
       );
       actions.append(createButton(message("documentFormatterCollapse"), () => {
         state?.collapsedPaths.clear();
+        state?.expandedPaths.clear();
         render({ collapseDepth: 1 });
       }, "collapse"));
       actions.append(createButton(message("documentFormatterExpand"), () => {
         state?.collapsedPaths.clear();
+        state?.expandedPaths.clear();
         render({ collapseDepth: null });
       }, "expand"));
       toolbar._sort = sort;
@@ -314,8 +316,13 @@
     );
     button.title = button.getAttribute("aria-label");
     button.addEventListener("click", () => {
-      if (expanded) state.collapsedPaths.add(path);
-      else state.collapsedPaths.delete(path);
+      if (expanded) {
+        state.collapsedPaths.add(path);
+        state.expandedPaths.delete(path);
+      } else {
+        state.collapsedPaths.delete(path);
+        state.expandedPaths.add(path);
+      }
       render();
     });
     root.append(button);
@@ -332,6 +339,7 @@
   }
 
   function shouldCollapse(path, level) {
+    if (state.expandedPaths.has(path)) return false;
     return state.collapsedPaths.has(path) ||
       (state.collapseDepth != null && level >= state.collapseDepth);
   }
@@ -525,6 +533,7 @@
       sortOrder: documentSettings?.json?.defaultSort || "original",
       collapseDepth: documentSettings?.json?.defaultCollapseDepth ?? null,
       collapsedPaths: new Set(),
+      expandedPaths: new Set(),
       repairApplied: false,
       showingOriginal: false,
       metadata: result.metadata,

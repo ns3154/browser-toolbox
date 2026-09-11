@@ -2895,3 +2895,1339 @@ body.browser-toolbox-tools-document {
     padding: 7px 8px;
   }
 }
+
+/* JSON 格式化页 v5：顶部收敛为轻量工具栏，让输入和解析工作区成为视觉重点。 */
+.browser-toolbox-tools-document .browser-toolbox-tool-title-icon {
+  display: none;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json {
+  --toolbox-bg: #f7f9fc;
+  --toolbox-surface: #ffffff;
+  --toolbox-surface-muted: #fbfdff;
+  --toolbox-ink: #172033;
+  --toolbox-muted: #7a8799;
+  --toolbox-line: #dce5ef;
+  --toolbox-line-strong: #c8d5e5;
+  --toolbox-blue: #2563eb;
+  --toolbox-blue-soft: #edf4ff;
+  --toolbox-green: #14845d;
+  height: 100vh;
+  min-height: 0;
+  overflow: hidden;
+  color-scheme: light;
+  background: var(--toolbox-bg);
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tools-page {
+  width: 100%;
+  height: 100vh;
+  min-height: 0;
+  max-width: none;
+  padding: 0;
+  gap: 0;
+  overflow: hidden;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tools-header {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas: "heading toolbar badge";
+  height: 58px;
+  min-height: 58px;
+  padding: 0 18px;
+  gap: 12px;
+  border: 0;
+  border-bottom: 1px solid var(--toolbox-line);
+  border-radius: 0;
+  background: var(--toolbox-surface);
+  box-shadow: none;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-heading {
+  display: flex;
+  grid-area: heading;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-title-row {
+  display: contents;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-eyebrow {
+  order: 2;
+  margin: 0;
+  padding-right: 13px;
+  border-right: 1px solid var(--toolbox-line);
+  color: var(--toolbox-ink);
+  font-size: 14px;
+  font-weight: 650;
+  letter-spacing: 0;
+  line-height: 1;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-icon-wrap {
+  order: 1;
+  display: grid;
+  width: 25px;
+  height: 25px;
+  place-items: center;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--toolbox-blue);
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-icon-wrap .browser-toolbox-tool-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-title-row > div {
+  display: flex;
+  order: 3;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-title-row h1 {
+  max-width: none;
+  margin: 0;
+  overflow: visible;
+  color: var(--toolbox-ink);
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: -.02em;
+  line-height: 1;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-title-icon {
+  display: inline-grid;
+  width: 17px;
+  height: 17px;
+  flex: 0 0 auto;
+  color: var(--toolbox-muted);
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-title-icon .browser-toolbox-tool-icon {
+  width: 17px;
+  height: 17px;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tools-header #tool-description {
+  display: none;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-header-toolbar {
+  display: flex;
+  grid-area: toolbar;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-header-toolbar > .browser-toolbox-tool-controls {
+  display: flex;
+  order: 1;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+  width: max-content;
+  min-width: max-content;
+  overflow: visible;
+  white-space: nowrap;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-actions {
+  display: flex;
+  order: 2;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-operation-group {
+  display: inline-flex;
+  height: 34px;
+  flex: 0 0 auto;
+  align-items: stretch;
+  overflow: hidden;
+  border: 1px solid var(--toolbox-line);
+  border-radius: 9px;
+  background: var(--toolbox-surface);
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-controls #tool-run,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-operation-group .browser-toolbox-json-toolbar-button {
+  display: inline-flex;
+  height: 32px;
+  min-height: 32px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-controls #tool-run {
+  min-width: 78px;
+  background: var(--toolbox-blue);
+  color: #fff;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-controls #tool-run:hover,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-controls #tool-run:focus-visible {
+  background: #1d4ed8;
+  outline: none;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-operation-group #json-compact-action {
+  min-width: 68px;
+  border-left: 1px solid var(--toolbox-line);
+  background: var(--toolbox-surface);
+  color: var(--toolbox-ink);
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-operation-group #json-compact-action:hover,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-operation-group #json-compact-action:focus-visible,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-operation-group #json-compact-action.is-active {
+  background: var(--toolbox-blue-soft);
+  color: var(--toolbox-blue);
+  outline: none;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-operation-group .browser-toolbox-tool-icon {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-sort-group {
+  display: inline-flex;
+  height: 34px;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid var(--toolbox-line);
+  border-radius: 9px;
+  background: var(--toolbox-surface);
+  white-space: nowrap;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-sort-icon {
+  width: 15px;
+  height: 15px;
+  margin-left: 10px;
+  flex: 0 0 auto;
+  color: var(--toolbox-blue);
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-sort-label {
+  padding: 0 8px;
+  color: var(--toolbox-ink);
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-sort-group .browser-toolbox-tool-control {
+  display: block;
+  height: 32px;
+  min-width: 0;
+  border-left: 1px solid var(--toolbox-line);
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-sort-group .browser-toolbox-tool-control > span {
+  display: none;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-sort-group select {
+  width: auto;
+  min-width: 66px;
+  height: 32px;
+  min-height: 32px;
+  padding: 0 22px 0 9px;
+  border: 0;
+  border-radius: 0;
+  background-color: var(--toolbox-surface);
+  color: var(--toolbox-ink);
+  font-size: 13px;
+  outline: none;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-advanced {
+  position: relative;
+  display: block;
+  flex: 0 0 auto;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-advanced > summary {
+  display: inline-flex;
+  height: 34px;
+  min-height: 34px;
+  align-items: center;
+  gap: 6px;
+  padding: 0 11px;
+  border: 1px solid var(--toolbox-line);
+  border-radius: 9px;
+  background: var(--toolbox-surface);
+  color: var(--toolbox-ink);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1;
+  list-style: none;
+  white-space: nowrap;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-advanced > summary:hover,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-advanced > summary:focus-visible {
+  border-color: #a7c3f6;
+  background: var(--toolbox-blue-soft);
+  color: var(--toolbox-blue);
+  outline: none;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-advanced > summary::-webkit-details-marker {
+  display: none;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-advanced > summary > .browser-toolbox-tool-icon {
+  width: 15px;
+  height: 15px;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tools-header > .browser-toolbox-local-badge {
+  grid-area: badge;
+  padding: 4px 8px;
+  border: 1px solid #d8f0e2;
+  border-radius: 8px;
+  background: #f1fbf5;
+  color: var(--toolbox-green);
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-actions #tool-download {
+  display: inline-grid;
+  width: 34px;
+  min-width: 34px;
+  height: 34px;
+  min-height: 34px;
+  padding: 8px;
+  border-radius: 9px;
+  background: var(--toolbox-surface);
+  color: var(--toolbox-ink);
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json #tool-download:hover,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json #tool-download:focus-visible {
+  background: var(--toolbox-blue-soft);
+  color: var(--toolbox-blue);
+  outline: none;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json #tool-download-label {
+  display: none;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json #tool-download-icon,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json #tool-download-icon .browser-toolbox-tool-icon {
+  width: 17px;
+  height: 17px;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json #tool-restore {
+  display: none;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-advanced-panel {
+  z-index: 10;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 42fr) minmax(0, 58fr);
+  grid-template-rows: minmax(0, 1fr) 48px;
+  height: auto;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  background: var(--toolbox-surface);
+  box-shadow: none;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-workspace-heading {
+  display: none;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-input-grid {
+  display: contents;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-input {
+  grid-column: 1;
+  grid-row: 1;
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  border-right: 1px solid var(--toolbox-line);
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-input > span {
+  display: flex;
+  height: 52px;
+  min-height: 52px;
+  flex: 0 0 52px;
+  align-items: center;
+  padding: 0 22px;
+  border-bottom: 1px solid var(--toolbox-line);
+  color: var(--toolbox-ink);
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-editor {
+  position: relative;
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-input-highlight,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-input textarea,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-line-numbers {
+  font: 13.5px/1.75 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-input-highlight {
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 14px 16px 14px 12px;
+  overflow: hidden;
+  background: transparent;
+  color: #26364c;
+  pointer-events: none;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  tab-size: 2;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-line-numbers {
+  min-height: 0;
+  padding: 14px 10px 14px 0;
+  overflow: hidden;
+  border-right: 1px solid #edf1f6;
+  color: #9aa9bd;
+  text-align: right;
+  user-select: none;
+  white-space: pre;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-input textarea {
+  grid-column: 2;
+  grid-row: 1;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 14px 16px 14px 12px;
+  overflow: auto;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: transparent;
+  caret-color: #26364c;
+  resize: none;
+  tab-size: 2;
+  -webkit-text-fill-color: transparent;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-input textarea::placeholder {
+  color: var(--toolbox-muted);
+  -webkit-text-fill-color: var(--toolbox-muted);
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-result {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  background: var(--toolbox-surface);
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-result-heading {
+  height: 52px;
+  min-height: 52px;
+  flex: 0 0 52px;
+  padding: 0 22px;
+  border-bottom: 1px solid var(--toolbox-line);
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-result-heading h2 {
+  color: var(--toolbox-ink);
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-result-heading .browser-toolbox-icon-button {
+  width: 30px;
+  min-width: 30px;
+  height: 30px;
+  min-height: 30px;
+  padding: 6px;
+  border-radius: 8px;
+  background: var(--toolbox-surface);
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-result {
+  position: relative;
+  display: flex;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 0;
+  overflow: hidden;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-result-toolbar {
+  top: 10px;
+  right: 16px;
+  gap: 4px;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-result-toolbar .browser-toolbox-icon-button {
+  width: 30px;
+  min-width: 30px;
+  height: 30px;
+  min-height: 30px;
+  padding: 6px;
+  border-radius: 8px;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-result.is-empty .browser-toolbox-json-result-toolbar {
+  display: none;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-tree {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 14px 22px;
+  overflow: auto;
+  border: 0;
+  border-radius: 0;
+  background: var(--toolbox-surface);
+  color: #26364c;
+  font: 14px/1.7 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-empty {
+  box-sizing: border-box;
+  width: min(calc(100% - 112px), 520px);
+  min-height: 300px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 28px;
+  border: 1px dashed #c8d8ef;
+  border-radius: 10px;
+  color: var(--toolbox-muted);
+  text-align: center;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-empty-badge {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border: 1px solid #a7c5ff;
+  border-radius: 14px;
+  background: #f4f8ff;
+  color: var(--toolbox-blue);
+  font: 650 16px/1 system-ui, -apple-system, sans-serif;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-empty strong {
+  color: var(--toolbox-ink);
+  font-size: 17px;
+  font-weight: 650;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-empty p {
+  margin: 0;
+  color: var(--toolbox-muted);
+  font: 14px/1.6 system-ui, -apple-system, sans-serif;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-empty-error {
+  display: block;
+  width: auto;
+  min-height: 0;
+  margin: 24px;
+  padding: 0;
+  border: 0;
+  color: var(--toolbox-red);
+  text-align: left;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-row {
+  min-height: 29px;
+  gap: 6px;
+  padding: 1px 3px;
+  border-radius: 4px;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-line-number {
+  width: 30px;
+  flex: 0 0 30px;
+  margin-right: 5px;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-toggle,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-toggle-spacer {
+  width: 19px;
+  height: 23px;
+  min-width: 19px;
+  min-height: 23px;
+  padding: 4px;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-children {
+  margin-left: 35px;
+  padding-left: 14px;
+  border-left: 1px solid var(--toolbox-line);
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-node-actions {
+  opacity: 0;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-row:hover .browser-toolbox-json-node-actions,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-node-actions:focus-within {
+  opacity: 1;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json #tool-metadata,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-responsive-hint,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-file {
+  display: none;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-footer {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  gap: 18px;
+  padding: 0 22px;
+  overflow: hidden;
+  border-top: 1px solid var(--toolbox-line);
+  background: var(--toolbox-surface);
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json #tool-status {
+  display: inline-flex;
+  order: 1;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
+  min-height: 0;
+  margin: 0;
+  color: var(--toolbox-ink);
+  font-size: 13px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json #tool-status:not(:empty)::before {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  border-radius: 50%;
+  background: var(--toolbox-green);
+  content: "";
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-summary {
+  display: flex;
+  order: 2;
+  flex: 0 1 auto;
+  align-items: center;
+  gap: 18px;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--toolbox-muted);
+  font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-json {
+    height: auto;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tools-page {
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tools-header {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "heading badge"
+      "toolbar toolbar";
+    height: auto;
+    min-height: 90px;
+    padding: 8px 10px;
+    gap: 8px;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-heading {
+    gap: 7px;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-eyebrow {
+    padding-right: 9px;
+    font-size: 13px;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-icon-wrap {
+    width: 22px;
+    height: 22px;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-icon-wrap .browser-toolbox-tool-icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-title-row h1 {
+    font-size: 16px;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-title-icon,
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-title-icon .browser-toolbox-tool-icon {
+    width: 15px;
+    height: 15px;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tools-header > .browser-toolbox-local-badge {
+    padding: 4px 7px;
+    font-size: 11px;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-header-toolbar {
+    width: 100%;
+    justify-content: flex-start;
+    padding-bottom: 2px;
+    overflow-x: auto;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-workspace {
+    display: flex;
+    height: auto;
+    min-height: 0;
+    flex-direction: column;
+    overflow: visible;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-input {
+    order: 1;
+    min-height: 300px;
+    flex: 0 0 45vh;
+    border-right: 0;
+    border-bottom: 1px solid var(--toolbox-line);
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-result {
+    order: 2;
+    min-height: 360px;
+    flex: 0 0 50vh;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-footer {
+    order: 3;
+    min-height: 48px;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    padding: 10px 14px;
+    overflow: visible;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-summary {
+    width: 100%;
+    flex: 0 0 100%;
+    gap: 14px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    font-size: 11px;
+  }
+}
+
+/* 排序使用本地菜单，保证选项文字和工具栏控件保持同一套视觉样式。 */
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-sort-group {
+  position: relative;
+  overflow: visible;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-sort-control {
+  position: relative;
+  display: flex;
+  height: 32px;
+  align-items: center;
+  border-left: 1px solid var(--toolbox-line);
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-sort-native {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-sort-trigger {
+  display: inline-flex;
+  height: 32px;
+  min-width: 78px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 9px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--toolbox-ink);
+  font: 650 13px/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-sort-trigger:hover,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-sort-trigger:focus-visible {
+  background: var(--toolbox-blue-soft);
+  color: var(--toolbox-blue);
+  outline: none;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-sort-value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-sort-chevron {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 14px;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-sort-menu {
+  position: fixed;
+  top: var(--json-sort-menu-top, 110px);
+  left: var(--json-sort-menu-left, 12px);
+  z-index: 120;
+  display: none;
+  box-sizing: border-box;
+  width: var(--json-sort-menu-width, 128px);
+  max-width: calc(100vw - 24px);
+  gap: 2px;
+  padding: 6px;
+  border: 1px solid #d9e5f2;
+  border-radius: 10px;
+  background: var(--toolbox-surface);
+  box-shadow: 0 14px 30px rgb(30 55 90 / 16%), 0 2px 8px rgb(30 55 90 / 8%);
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-sort-menu.is-open {
+  display: grid;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-sort-option {
+  display: flex;
+  width: 100%;
+  min-height: 32px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 9px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--toolbox-ink);
+  font: 650 13px/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-sort-option:hover,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-sort-option:focus-visible,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-sort-option[aria-selected="true"] {
+  background: var(--toolbox-blue-soft);
+  color: var(--toolbox-blue);
+  outline: none;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-sort-option-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-sort-option-check {
+  width: 14px;
+  flex: 0 0 14px;
+  color: var(--toolbox-blue);
+  text-align: center;
+  visibility: hidden;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-json-sort-option[aria-selected="true"] .browser-toolbox-json-sort-option-check {
+  visibility: visible;
+}
+
+/* 时间转换页：按时间定义、双向转换、FILETIME 和世界时钟分区展示。 */
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time {
+  min-width: 320px;
+  overflow-x: hidden;
+  background: #fff;
+  color-scheme: light;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-tools-page {
+  width: 100%;
+  max-width: none;
+  min-height: 100vh;
+  padding: 28px 30px 44px;
+  gap: 0;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-tools-header {
+  display: none;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-workspace {
+  min-height: calc(100vh - 72px);
+  padding: 34px clamp(32px, 3.3vw, 68px) 44px;
+  border: 1px solid #d7e1ee;
+  border-radius: 28px;
+  background: #fff;
+  box-shadow: none;
+  color: #1c2a3d;
+  gap: 0;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-layout {
+  width: 100%;
+  min-width: 0;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-section {
+  margin: 0 0 34px;
+  padding: 0 0 30px;
+  border-bottom: 1px solid #d5dfec;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-section-heading {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin: 0 0 31px;
+  padding: 0 0 17px;
+  border-bottom: 1px solid #d5dfec;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-section-heading::after {
+  height: 1px;
+  flex: 1 1 auto;
+  background: #d5dfec;
+  content: "";
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-section-heading h2 {
+  margin: 0;
+  color: #172338;
+  font-size: clamp(18px, 1.25vw, 24px);
+  font-weight: 750;
+  letter-spacing: -.025em;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-row {
+  display: grid;
+  grid-template-columns: minmax(190px, 193px) minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  margin: 0 0 17px;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-row:last-child {
+  margin-bottom: 0;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-convert-row {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-label {
+  color: #172338;
+  font-size: clamp(16px, 1.1vw, 21px);
+  font-weight: 750;
+  line-height: 1.35;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-label-placeholder {
+  display: none;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-control-line {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 16px;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-convert-line {
+  flex-wrap: wrap;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-field,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-select {
+  min-height: 54px;
+  padding: 0 18px;
+  border: 2px solid #d3dfed;
+  border-radius: 13px;
+  outline: none;
+  background: #fff;
+  box-shadow: none;
+  color: #6a6f77;
+  font-size: clamp(16px, 1.05vw, 21px);
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time input[readonly] {
+  cursor: copy;
+  pointer-events: auto;
+  user-select: text;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time input[readonly].is-copied {
+  border-color: #2d67e8;
+  background: #edf4ff;
+  box-shadow: 0 0 0 3px rgb(45 103 232 / 15%);
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-field:focus-visible,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-select:focus-visible {
+  border-color: #2d67e8;
+  outline: 3px solid rgb(45 103 232 / 18%);
+  outline-offset: 1px;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-field::placeholder {
+  color: #777b81;
+  opacity: 1;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-current-field {
+  width: min(480px, 100%);
+  flex: 0 1 480px;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-value-field {
+  width: 240px;
+  flex: 0 1 240px;
+  background: #f8fafc;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-input-field {
+  width: min(480px, 100%);
+  flex: 0 1 480px;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-output-field {
+  min-width: 220px;
+  flex: 1 1 300px;
+  background: #f8fafc;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-filetime-input {
+  flex: 2 1 520px;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-unit-label {
+  flex: 0 0 auto;
+  color: #273348;
+  font-size: clamp(16px, 1vw, 20px);
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-select {
+  width: 130px;
+  flex: 0 0 130px;
+  padding-right: 12px;
+  cursor: pointer;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-button {
+  min-height: 54px;
+  flex: 0 0 auto;
+  padding: 0 31px;
+  border: 1px solid #2d67e8;
+  border-radius: 13px;
+  background: #2d67e8;
+  color: #fff;
+  cursor: pointer;
+  font-size: clamp(16px, 1.05vw, 21px);
+  font-weight: 750;
+  line-height: 1;
+  white-space: nowrap;
+  transition: background-color .16s ease, border-color .16s ease, transform .16s ease;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-button:hover,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-button:focus-visible {
+  border-color: #1d4ed8;
+  background: #1d4ed8;
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(45 103 232 / 18%);
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-button:active {
+  transform: translateY(1px);
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-secondary-button {
+  border-color: #d3dfed;
+  background: #fff;
+  color: #273348;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-secondary-button:hover,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-secondary-button:focus-visible {
+  border-color: #9bbcf7;
+  background: #f2f6ff;
+  color: #215bd5;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-table {
+  width: 100%;
+  min-width: 700px;
+  border: 1px solid #d5dfec;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 8px;
+  color: #26344a;
+  font-size: clamp(15px, 1vw, 20px);
+  overflow: hidden;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-table th,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-table td {
+  min-width: 0;
+  padding: 14px 16px;
+  border-right: 1px solid #d5dfec;
+  border-bottom: 1px solid #d5dfec;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-table th:nth-child(even),
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-table td:nth-child(even) {
+  width: 25%;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-table thead th {
+  background: #f7faff;
+  color: #50617a;
+  font-weight: 750;
+  text-align: center;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-table tbody th {
+  background: #fff;
+  font-weight: 750;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-table tbody td {
+  background: #fff;
+  font-weight: 500;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-table tr > :last-child {
+  border-right: 0;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-table tbody tr:last-child > * {
+  border-bottom: 0;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-status {
+  min-height: 1.3em;
+  margin: -17px 0 0;
+  color: #7a8799;
+  font-size: 12px;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-copy-toast {
+  position: fixed;
+  z-index: 20;
+  top: 50%;
+  left: 50%;
+  max-width: min(360px, calc(100vw - 32px));
+  padding: 12px 18px;
+  border: 1px solid #1d4ed8;
+  border-radius: 12px;
+  background: #2563eb;
+  box-shadow: 0 12px 30px rgb(30 64 175 / 24%);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.35;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(.96);
+  transition: opacity .18s ease, transform .18s ease;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-copy-toast.is-visible {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-field.is-error {
+  border-color: #d45a6c;
+  background: #fff8f8;
+}
+
+@media (max-width: 900px) {
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-tools-page {
+    padding: 12px;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-workspace {
+    min-height: calc(100vh - 24px);
+    padding: 24px 18px 30px;
+    border-radius: 20px;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-section {
+    margin-bottom: 27px;
+    padding-bottom: 25px;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-section-heading {
+    gap: 12px;
+    margin-bottom: 23px;
+    padding-bottom: 13px;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-section-heading h2 {
+    font-size: 18px;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-row {
+    grid-template-columns: 1fr;
+    gap: 9px;
+    margin-bottom: 18px;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-label {
+    font-size: 16px;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-control-line {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-field,
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-select,
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-button {
+    min-height: 48px;
+    font-size: 16px;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-current-field,
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-input-field,
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-output-field {
+    min-width: min(100%, 220px);
+    flex: 1 1 220px;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-value-field {
+    min-width: min(100%, 200px);
+    flex: 1 1 200px;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-select {
+    flex: 1 1 130px;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-button {
+    padding: 0 22px;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-copy-toast {
+    max-width: min(320px, calc(100vw - 32px));
+    text-align: center;
+  }
+}

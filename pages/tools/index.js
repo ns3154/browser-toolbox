@@ -279,6 +279,25 @@
     panel.style.setProperty("--json-advanced-panel-top", `${Math.round(top)}px`);
   }
 
+  function positionJsonSortMenu(menu, trigger) {
+    if (!menu?.classList.contains("is-open") || !trigger) return;
+    const viewportPadding = 12;
+    const menuWidth = Math.min(180, Math.max(120, globalThis.innerWidth - viewportPadding * 2));
+    const maxLeft = Math.max(viewportPadding, globalThis.innerWidth - viewportPadding - menuWidth);
+    const triggerRect = trigger.getBoundingClientRect();
+    const left = Math.min(maxLeft, Math.max(viewportPadding, triggerRect.right - menuWidth));
+    const provisionalTop = triggerRect.bottom + 8;
+    menu.style.setProperty("--json-sort-menu-left", `${Math.round(left)}px`);
+    menu.style.setProperty("--json-sort-menu-top", `${Math.round(provisionalTop)}px`);
+    menu.style.setProperty("--json-sort-menu-width", `${Math.round(menuWidth)}px`);
+    const menuRect = menu.getBoundingClientRect();
+    const maxTop = Math.max(viewportPadding, globalThis.innerHeight - viewportPadding - menuRect.height);
+    const top = provisionalTop + menuRect.height <= globalThis.innerHeight - viewportPadding
+      ? provisionalTop
+      : triggerRect.top - menuRect.height - 8;
+    menu.style.setProperty("--json-sort-menu-top", `${Math.round(Math.min(maxTop, Math.max(viewportPadding, top)))}px`);
+  }
+
   function buildJsonControls() {
     const controls = byId("tool-controls");
     controls.replaceChildren();
@@ -311,6 +330,11 @@
       run();
     });
 
+    const operationGroup = document.createElement("div");
+    operationGroup.className = "browser-toolbox-json-operation-group";
+    if (runButton) operationGroup.append(runButton);
+    operationGroup.append(compactAction);
+
     const sortControl = createOption("sortOrder");
     const sortGroup = document.createElement("div");
     sortGroup.className = "browser-toolbox-json-sort-group";
@@ -319,8 +343,71 @@
     const sortLabel = document.createElement("span");
     sortLabel.className = "browser-toolbox-json-sort-label";
     sortLabel.textContent = message("toolSort");
+
+    const sortNativeSelect = sortControl.input;
+    sortNativeSelect.classList.add("browser-toolbox-json-sort-native");
+    sortNativeSelect.tabIndex = -1;
+    sortNativeSelect.hidden = true;
+    sortNativeSelect.setAttribute("aria-hidden", "true");
+    const sortControlWrap = document.createElement("div");
+    sortControlWrap.className = "browser-toolbox-tool-control browser-toolbox-json-sort-control";
+    sortControl.label = sortControlWrap;
+
+    const sortTrigger = document.createElement("button");
+    sortTrigger.id = "json-sort-trigger";
+    sortTrigger.type = "button";
+    sortTrigger.className = "browser-toolbox-json-sort-trigger";
+    sortTrigger.setAttribute("aria-haspopup", "listbox");
+    sortTrigger.setAttribute("aria-expanded", "false");
+    sortTrigger.setAttribute("aria-controls", "json-sort-menu");
+    const sortValue = document.createElement("span");
+    sortValue.className = "browser-toolbox-json-sort-value";
+    const sortChevron = icon("chevron");
+    sortChevron.classList.add("browser-toolbox-json-sort-chevron");
+    sortTrigger.append(sortValue, sortChevron);
+
+    const sortMenu = document.createElement("div");
+    sortMenu.id = "json-sort-menu";
+    sortMenu.className = "browser-toolbox-json-sort-menu";
+    sortMenu.setAttribute("role", "listbox");
+    for (const option of sortNativeSelect.options) {
+      const optionButton = document.createElement("button");
+      optionButton.type = "button";
+      optionButton.className = "browser-toolbox-json-sort-option";
+      optionButton.dataset.sortValue = option.value;
+      optionButton.setAttribute("role", "option");
+      const optionLabel = document.createElement("span");
+      optionLabel.className = "browser-toolbox-json-sort-option-label";
+      optionLabel.textContent = option.textContent;
+      const optionCheck = document.createElement("span");
+      optionCheck.className = "browser-toolbox-json-sort-option-check";
+      optionCheck.setAttribute("aria-hidden", "true");
+      optionCheck.textContent = "✓";
+      optionButton.append(optionLabel, optionCheck);
+      optionButton.addEventListener("click", () => {
+        sortNativeSelect.value = option.value;
+        sortNativeSelect.dispatchEvent(new Event("change", { bubbles: true }));
+        sortMenu.classList.remove("is-open");
+        sortTrigger.setAttribute("aria-expanded", "false");
+      });
+      sortMenu.append(optionButton);
+    }
+
+    const syncSortMenu = () => {
+      const selected = [...sortNativeSelect.options].find((option) => option.value === sortNativeSelect.value);
+      sortValue.textContent = selected?.textContent || "";
+      sortTrigger.setAttribute("aria-label", `${message("toolSort")}: ${sortValue.textContent}`);
+      for (const optionButton of sortMenu.querySelectorAll("[role=option]")) {
+        const selectedOption = optionButton.dataset.sortValue === sortNativeSelect.value;
+        optionButton.setAttribute("aria-selected", String(selectedOption));
+      }
+    };
+    sortNativeSelect.addEventListener("change", syncSortMenu);
+    sortControlWrap.append(sortNativeSelect, sortTrigger);
+
     addControl(sortControl, "sortOrder", sortGroup);
     sortGroup.prepend(sortIcon, sortLabel);
+    sortGroup.append(sortMenu);
 
     const advanced = document.createElement("details");
     advanced.className = "browser-toolbox-json-advanced";
@@ -343,14 +430,40 @@
     restore.addEventListener("click", () => restoreInput());
     advancedPanel.append(restore);
     advanced.append(advancedSummary, advancedPanel);
-    const repositionAdvancedPanel = () => positionJsonAdvancedPanel(advanced);
+    const setSortMenuOpen = (open) => {
+      sortMenu.classList.toggle("is-open", open);
+      sortTrigger.setAttribute("aria-expanded", String(open));
+      if (open) {
+        advanced.open = false;
+        globalThis.requestAnimationFrame(() => positionJsonSortMenu(sortMenu, sortTrigger));
+      }
+    };
+    sortTrigger.addEventListener("click", () => setSortMenuOpen(!sortMenu.classList.contains("is-open")));
+    advancedSummary.addEventListener("click", () => setSortMenuOpen(false));
+    const repositionPanels = () => {
+      positionJsonAdvancedPanel(advanced);
+      positionJsonSortMenu(sortMenu, sortTrigger);
+    };
     advanced.addEventListener("toggle", () => {
-      if (advanced.open) globalThis.requestAnimationFrame(repositionAdvancedPanel);
+      if (advanced.open) globalThis.requestAnimationFrame(repositionPanels);
     });
-    globalThis.addEventListener("resize", repositionAdvancedPanel);
-    globalThis.addEventListener("scroll", repositionAdvancedPanel, { passive: true });
-    byId("tool-header-toolbar")?.addEventListener("scroll", repositionAdvancedPanel, { passive: true });
-    controls.append(compactAction, sortGroup, advanced);
+    document.addEventListener("click", (event) => {
+      if (!advanced.contains(event.target)) advanced.open = false;
+      if (!sortGroup.contains(event.target)) setSortMenuOpen(false);
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return;
+      if (advanced.open) advanced.open = false;
+      if (sortMenu.classList.contains("is-open")) {
+        setSortMenuOpen(false);
+        sortTrigger.focus();
+      }
+    });
+    globalThis.addEventListener("resize", repositionPanels);
+    globalThis.addEventListener("scroll", repositionPanels, { passive: true });
+    byId("tool-header-toolbar")?.addEventListener("scroll", repositionPanels, { passive: true });
+    controls.append(operationGroup, sortGroup, advanced);
+    syncSortMenu();
     syncJsonToolbarState();
   }
 
@@ -464,6 +577,246 @@
       const options = (control.options || []).map(([value, labelKey]) => [value, message(labelKey)]);
       addControl(optionControl(control.labelKey, control.type, options, control.defaultValue), control.key);
     }
+  }
+
+  function buildTimeLayout() {
+    const workspace = byId("tool-workspace");
+    if (!workspace) return;
+    workspace.classList.add("browser-toolbox-time-workspace");
+    workspace.replaceChildren();
+    workspace.innerHTML = `
+      <div class="browser-toolbox-time-layout">
+        <section class="browser-toolbox-time-section" aria-labelledby="time-definition-title">
+          <div class="browser-toolbox-time-section-heading">
+            <h2 id="time-definition-title" data-i18n="toolTimeDefinition"></h2>
+          </div>
+          <div class="browser-toolbox-time-row browser-toolbox-time-definition-row">
+            <label class="browser-toolbox-time-label" for="time-current-local" data-i18n="toolTimeCurrentLocal"></label>
+            <div class="browser-toolbox-time-control-line">
+              <input id="time-current-local" class="browser-toolbox-time-field browser-toolbox-time-current-field" type="text" readonly>
+              <button id="time-current-toggle" class="browser-toolbox-time-button" type="button" data-i18n="toolTimePause"></button>
+            </div>
+          </div>
+          <div class="browser-toolbox-time-row browser-toolbox-time-definition-row">
+            <span class="browser-toolbox-time-label" data-i18n="toolTimeCurrentUnix"></span>
+            <div class="browser-toolbox-time-control-line browser-toolbox-time-unix-values">
+              <input id="time-current-seconds" class="browser-toolbox-time-field browser-toolbox-time-value-field" type="text" readonly>
+              <span class="browser-toolbox-time-unit-label" data-i18n="toolTimeSecondsLabel"></span>
+              <input id="time-current-milliseconds" class="browser-toolbox-time-field browser-toolbox-time-value-field" type="text" readonly>
+              <span class="browser-toolbox-time-unit-label" data-i18n="toolTimeMillisecondsLabel"></span>
+            </div>
+          </div>
+        </section>
+
+        <section class="browser-toolbox-time-section" aria-labelledby="time-unix-title">
+          <div class="browser-toolbox-time-section-heading">
+            <h2 id="time-unix-title" data-i18n="toolTimeUnixToLocal"></h2>
+          </div>
+          <div class="browser-toolbox-time-row browser-toolbox-time-convert-row">
+            <label class="browser-toolbox-time-label browser-toolbox-time-label-placeholder" for="time-unix-input" data-i18n="toolTimeTimestampPlaceholder"></label>
+            <div class="browser-toolbox-time-control-line browser-toolbox-time-convert-line">
+              <input id="time-unix-input" class="browser-toolbox-time-field browser-toolbox-time-input-field" type="text" data-i18n-placeholder="toolTimeTimestampPlaceholder">
+              <select id="time-unix-unit" class="browser-toolbox-time-select" aria-label="时间戳单位">
+                <option value="seconds" data-i18n="toolTimeSecondsShort"></option>
+                <option value="milliseconds" data-i18n="toolTimeMillisecondsShort"></option>
+              </select>
+              <button id="time-unix-convert" class="browser-toolbox-time-button" type="button" data-i18n="toolConvert"></button>
+              <input id="time-unix-output" class="browser-toolbox-time-field browser-toolbox-time-output-field" type="text" readonly aria-label="当地时间输出">
+            </div>
+          </div>
+        </section>
+
+        <section class="browser-toolbox-time-section" aria-labelledby="time-local-title">
+          <div class="browser-toolbox-time-section-heading">
+            <h2 id="time-local-title" data-i18n="toolTimeLocalToUnix"></h2>
+          </div>
+          <div class="browser-toolbox-time-row browser-toolbox-time-convert-row">
+            <label class="browser-toolbox-time-label browser-toolbox-time-label-placeholder" for="time-local-input" data-i18n="toolTimeDatePlaceholder"></label>
+            <div class="browser-toolbox-time-control-line browser-toolbox-time-convert-line">
+              <input id="time-local-input" class="browser-toolbox-time-field browser-toolbox-time-input-field" type="text" data-i18n-placeholder="toolTimeDatePlaceholder">
+              <button id="time-local-convert" class="browser-toolbox-time-button" type="button" data-i18n="toolConvert"></button>
+              <input id="time-local-output" class="browser-toolbox-time-field browser-toolbox-time-output-field" type="text" readonly aria-label="Unix 时间戳输出">
+              <select id="time-local-unit" class="browser-toolbox-time-select" aria-label="时间戳单位">
+                <option value="seconds" data-i18n="toolTimeSecondsShort"></option>
+                <option value="milliseconds" data-i18n="toolTimeMillisecondsShort"></option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <section class="browser-toolbox-time-section" aria-labelledby="time-filetime-title">
+          <div class="browser-toolbox-time-section-heading">
+            <h2 id="time-filetime-title" data-i18n="toolTimeFiletime"></h2>
+          </div>
+          <div class="browser-toolbox-time-row browser-toolbox-time-convert-row">
+            <label class="browser-toolbox-time-label browser-toolbox-time-label-placeholder" for="time-filetime-input" data-i18n="toolTimeFiletimePlaceholder"></label>
+            <div class="browser-toolbox-time-control-line browser-toolbox-time-convert-line browser-toolbox-time-filetime-line">
+              <input id="time-filetime-input" class="browser-toolbox-time-field browser-toolbox-time-input-field browser-toolbox-time-filetime-input" type="text" data-i18n-placeholder="toolTimeFiletimePlaceholder">
+              <button id="time-filetime-date" class="browser-toolbox-time-button" type="button" data-i18n="toolTimeFiletimeToDate"></button>
+              <button id="time-current-filetime" class="browser-toolbox-time-button browser-toolbox-time-secondary-button" type="button" data-i18n="toolTimeCurrentToFiletime"></button>
+              <input id="time-filetime-output" class="browser-toolbox-time-field browser-toolbox-time-output-field" type="text" readonly aria-label="FILETIME 输出">
+            </div>
+          </div>
+        </section>
+
+        <section class="browser-toolbox-time-section browser-toolbox-time-world-section" aria-labelledby="time-world-title">
+          <div class="browser-toolbox-time-section-heading">
+            <h2 id="time-world-title" data-i18n="toolTimeWorldClock"></h2>
+          </div>
+          <div class="browser-toolbox-time-table-wrap">
+            <table class="browser-toolbox-time-table">
+              <thead>
+                <tr>
+                  <th scope="col" data-i18n="toolTimeRegion"></th>
+                  <th scope="col" data-i18n="toolTimeClockTime"></th>
+                  <th scope="col" data-i18n="toolTimeRegion"></th>
+                  <th scope="col" data-i18n="toolTimeClockTime"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row" data-i18n="toolTimeLocal"></th>
+                  <td data-time-zone-value="local"></td>
+                  <th scope="row" data-i18n="toolTimeGmt"></th>
+                  <td data-time-zone-value="Etc/UTC"></td>
+                </tr>
+                <tr>
+                  <th scope="row" data-i18n="toolTimeNewYork"></th>
+                  <td data-time-zone-value="America/New_York"></td>
+                  <th scope="row" data-i18n="toolTimeLondon"></th>
+                  <td data-time-zone-value="Europe/London"></td>
+                </tr>
+                <tr>
+                  <th scope="row" data-i18n="toolTimeTokyo"></th>
+                  <td data-time-zone-value="Asia/Tokyo"></td>
+                  <th scope="row" data-i18n="toolTimeBeijing"></th>
+                  <td data-time-zone-value="Asia/Shanghai"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+        <p id="tool-status" class="browser-toolbox-time-status" role="status" aria-live="polite"></p>
+        <div id="time-copy-toast" class="browser-toolbox-time-copy-toast" role="status" aria-live="polite" aria-atomic="true" hidden></div>
+      </div>
+    `;
+    globalThis.BrowserToolboxI18n?.apply?.(workspace);
+  }
+
+  function setTimeOutput(id, value, error = false) {
+    const output = byId(id);
+    if (!output) return;
+    output.value = error ? "" : String(value ?? "");
+    output.classList.toggle("is-error", error);
+  }
+
+  function showTimeToast(value) {
+    const toast = byId("time-copy-toast");
+    if (!toast) return;
+    if (state.timeCopyToastTimer) globalThis.clearTimeout(state.timeCopyToastTimer);
+    toast.textContent = value;
+    toast.hidden = false;
+    toast.classList.add("is-visible");
+    state.timeCopyToastTimer = globalThis.setTimeout(() => {
+      toast.classList.remove("is-visible");
+      globalThis.setTimeout(() => {
+        if (!toast.classList.contains("is-visible")) toast.hidden = true;
+      }, 180);
+    }, 1600);
+  }
+
+  async function copyTimeValue(event) {
+    const output = event.currentTarget;
+    const value = String(output?.value || "").trim();
+    if (!value) return;
+    const success = await globalThis.BrowserToolboxToolRuntime.copyText(value);
+    const status = success ? message("toolCopied") : message("toolCopyUnavailable");
+    setStatus(status);
+    showTimeToast(status);
+    if (!success) return;
+    output.classList.add("is-copied");
+    globalThis.setTimeout(() => output.classList.remove("is-copied"), 900);
+  }
+
+  function setupTimeCopyControls() {
+    for (const output of document.querySelectorAll(
+      ".browser-toolbox-tools-document.browser-toolbox-tool-is-time input[readonly]",
+    )) {
+      output.addEventListener("click", copyTimeValue);
+    }
+  }
+
+  function runTimeConversion(inputId, outputId, options) {
+    try {
+      const result = globalThis.BrowserToolboxTimeTool.run(byId(inputId)?.value || "", options);
+      setTimeOutput(outputId, result.output);
+      setStatus(message("toolReady"));
+    } catch (error) {
+      setTimeOutput(outputId, "", true);
+      setStatus(error.message || message("toolInvalid"));
+    }
+  }
+
+  function updateTimeSnapshot() {
+    const now = new Date();
+    const milliseconds = now.getTime();
+    byId("time-current-local").value = globalThis.BrowserToolboxTimeTool.formatLocalDate(milliseconds, false);
+    byId("time-current-seconds").value = String(Math.floor(milliseconds / 1000));
+    byId("time-current-milliseconds").value = String(milliseconds);
+    for (const cell of document.querySelectorAll("[data-time-zone-value]")) {
+      const zone = cell.dataset.timeZoneValue;
+      cell.textContent = zone === "local"
+        ? globalThis.BrowserToolboxTimeTool.formatLocalDate(milliseconds, false)
+        : globalThis.BrowserToolboxTimeTool.formatTimeZone(milliseconds, zone);
+    }
+  }
+
+  function setupTimeControls() {
+    state.timeClockPaused = false;
+    updateTimeSnapshot();
+    state.timeClockTimer = globalThis.setInterval(() => {
+      if (!state.timeClockPaused) updateTimeSnapshot();
+    }, 1000);
+
+    byId("time-current-toggle").addEventListener("click", (event) => {
+      state.timeClockPaused = !state.timeClockPaused;
+      event.currentTarget.textContent = message(state.timeClockPaused ? "toolTimeResume" : "toolTimePause");
+      event.currentTarget.setAttribute("aria-pressed", String(state.timeClockPaused));
+      if (!state.timeClockPaused) updateTimeSnapshot();
+    });
+    byId("time-unix-convert").addEventListener("click", () => {
+      const mode = byId("time-unix-unit").value === "milliseconds"
+        ? "unixMillisecondsToLocal"
+        : "unixSecondsToLocal";
+      runTimeConversion("time-unix-input", "time-unix-output", { mode });
+    });
+    byId("time-local-convert").addEventListener("click", () => {
+      const mode = byId("time-local-unit").value === "milliseconds"
+        ? "localToUnixMilliseconds"
+        : "localToUnixSeconds";
+      runTimeConversion("time-local-input", "time-local-output", { mode });
+    });
+    byId("time-filetime-date").addEventListener("click", () => {
+      runTimeConversion("time-filetime-input", "time-filetime-output", { mode: "filetimeToLocal" });
+    });
+    byId("time-current-filetime").addEventListener("click", () => {
+      try {
+        const result = globalThis.BrowserToolboxTimeTool.run(String(Date.now()), {
+          mode: "unixMillisecondsToFiletime",
+        });
+        setTimeOutput("time-filetime-output", result.output);
+        setStatus(message("toolReady"));
+      } catch (error) {
+        setTimeOutput("time-filetime-output", "", true);
+        setStatus(error.message || message("toolInvalid"));
+      }
+    });
+    if (byId("time-unix-input").value.trim()) {
+      byId("time-unix-convert").click();
+    } else if (!state.tokenInvalid) {
+      setStatus(message("toolReady"));
+    }
+    setupTimeCopyControls();
   }
 
   function jsonRenderOptions() {
@@ -649,15 +1002,33 @@
 
   function renderJsonTree() {
     const tree = byId("json-result-tree");
+    const panel = byId("json-result-panel");
+    const copyRoot = byId("json-copy-root");
     if (!tree) return;
     tree.replaceChildren();
     if (!state.jsonRoot) {
-      const empty = document.createElement("p");
+      panel?.classList.add("is-empty");
+      if (copyRoot) copyRoot.hidden = true;
+      const empty = document.createElement("div");
       empty.className = "browser-toolbox-json-empty";
-      empty.textContent = message("toolJsonNoResult");
+      if (currentInput().trim()) {
+        empty.classList.add("browser-toolbox-json-empty-error");
+        empty.textContent = message("toolJsonNoResult");
+      } else {
+        const badge = document.createElement("span");
+        badge.className = "browser-toolbox-json-empty-badge";
+        badge.textContent = "JSON";
+        const title = document.createElement("strong");
+        title.textContent = message("toolJsonEmptyTitle");
+        const hint = document.createElement("p");
+        hint.textContent = message("toolJsonEmptyHint");
+        empty.append(badge, title, hint);
+      }
       tree.append(empty);
       return;
     }
+    panel?.classList.remove("is-empty");
+    if (copyRoot) copyRoot.hidden = false;
     tree.append(renderJsonNode(state.jsonRoot, [], null, -1, { value: 0 }));
   }
 
@@ -714,6 +1085,7 @@
     document.body.classList.toggle("browser-toolbox-tool-is-json", descriptor.id === "json.format");
     document.body.classList.toggle("browser-toolbox-tool-is-diff", descriptor.id === "text.diff");
     document.body.classList.toggle("browser-toolbox-tool-is-codec", descriptor.id === "codec.transform");
+    document.body.classList.toggle("browser-toolbox-tool-is-time", descriptor.id === "time.convert");
     const inputLabel = byId("tool-input-label");
     const outputTitle = byId("tool-output-title");
     if (descriptor.id === "codec.transform") {
@@ -723,17 +1095,21 @@
       outputTitle.textContent = message("toolParsedOutput");
       byId("tool-run").textContent = message("toolConvert");
     } else if (descriptor.id === "json.format") {
-      inputLabel.dataset.i18n = "toolJsonInput";
-      inputLabel.textContent = message("toolJsonInput");
+      inputLabel.dataset.i18n = "toolInput";
+      inputLabel.textContent = message("toolInput");
       outputTitle.dataset.i18n = "toolJsonOutput";
       outputTitle.textContent = message("toolJsonOutput");
       byId("tool-run").textContent = message("toolJsonFormatOperation");
+      byId("tool-input").dataset.i18nPlaceholder = "toolJsonInputHint";
+      byId("tool-input").placeholder = message("toolJsonInputHint");
     } else {
       inputLabel.dataset.i18n = descriptor.inputMode === "dual" ? "toolInputLeft" : "toolInput";
       inputLabel.textContent = message(inputLabel.dataset.i18n);
       outputTitle.dataset.i18n = "toolOutput";
       outputTitle.textContent = message("toolOutput");
       byId("tool-run").textContent = message("toolRun");
+      byId("tool-input").dataset.i18nPlaceholder = "toolInputHint";
+      byId("tool-input").placeholder = message("toolInputHint");
     }
     byId("json-result-panel").hidden = descriptor.id !== "json.format";
     byId("diff-result-panel").hidden = descriptor.id !== "text.diff";
@@ -750,7 +1126,10 @@
     state.jsonRoot = null;
     byId("tool-output").textContent = "";
     byId("codec-output").textContent = "";
-    byId("json-result-tree")?.replaceChildren();
+    if (descriptor?.id === "json.format") renderJsonTree();
+    else byId("json-result-tree")?.replaceChildren();
+    byId("json-result-panel")?.classList.toggle("is-empty", descriptor?.id === "json.format");
+    if (descriptor?.id === "json.format" && byId("json-copy-root")) byId("json-copy-root").hidden = true;
     byId("diff-result-list")?.replaceChildren();
     byId("tool-metadata").replaceChildren();
     byId("json-tool-summary").hidden = true;
@@ -795,6 +1174,11 @@
     const runRevision = state.inputRevision;
     byId("tool-run").disabled = true;
     try {
+      if (descriptor.id === "json.format" && !currentInput().trim()) {
+        clearResult();
+        setStatus(message("toolReady"));
+        return;
+      }
       const input = descriptor.inputMode === "none" ? "" : runtime.assertInput(currentInput(), descriptor);
       const options = currentOptions();
       const rightInput = descriptor.inputMode === "dual"
@@ -861,7 +1245,9 @@
       setStatus(message("toolTokenInvalid"));
       return;
     }
-    byId("tool-input").value = consumed.input ?? "";
+    const input = descriptor.id === "time.convert" ? byId("time-unix-input") : byId("tool-input");
+    if (!input) return;
+    input.value = consumed.input ?? "";
     state.originalInput = consumed.input ?? "";
     state.workingInput = state.originalInput;
     updateJsonInputLineNumbers();
@@ -892,8 +1278,11 @@
     setIcon("json-collapse-all-icon", "chevron");
     setIcon("json-expand-all-icon", "chevron");
     const toolIcon = byId("tool-icon");
-    toolIcon?.replaceChildren(icon("toolbox"));
+    toolIcon?.replaceChildren(icon(descriptor.id === "json.format" ? "braces" : "toolbox"));
     byId("tool-title").textContent = message(descriptor.titleKey);
+    const titleIcon = byId("tool-title-icon");
+    if (descriptor.id === "json.format") titleIcon?.replaceChildren(icon("document"));
+    else titleIcon?.replaceChildren();
     byId("tool-description").textContent = message(descriptor.descriptionKey);
     document.title = message(descriptor.titleKey);
   }
@@ -925,6 +1314,12 @@
     };
     setupHeader();
     applyLayout();
+    if (descriptor.id === "time.convert") {
+      buildTimeLayout();
+      await loadToken();
+      setupTimeControls();
+      return;
+    }
     if (descriptor.id === "json.format") buildJsonControls();
     else buildControls();
     await loadToken();

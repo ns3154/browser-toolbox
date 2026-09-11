@@ -48,6 +48,19 @@ context("BrowserToolbox local tool implementations", () => {
     assert.equal("2023-11-14T22:13:20.000Z", BrowserToolboxTimeTool.run("1700000000", {
       mode: "timestampToIso",
     }).output);
+    const localMilliseconds = new Date(2023, 10, 14, 22, 13, 20, 123).getTime();
+    assert.equal(String(localMilliseconds), BrowserToolboxTimeTool.run("2023-11-14 22:13:20.123", {
+      mode: "localToUnixMilliseconds",
+    }).output);
+    assert.equal("2023-11-14 22:13:20.123", BrowserToolboxTimeTool.run(String(localMilliseconds), {
+      mode: "unixMillisecondsToLocal",
+    }).output);
+    const filetime = BrowserToolboxTimeTool.run(String(localMilliseconds), {
+      mode: "unixMillisecondsToFiletime",
+    }).output;
+    assert.equal("2023-11-14 22:13:20.123", BrowserToolboxTimeTool.run(filetime, {
+      mode: "filetimeToLocal",
+    }).output);
     let ambiguousIso = false;
     try {
       BrowserToolboxTimeTool.run("2023-11-14T22:13:20", { mode: "isoToUnixSeconds" });
