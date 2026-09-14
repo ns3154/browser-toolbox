@@ -46,10 +46,9 @@ Help reflects your customized bindings. The table above lists common defaults.
 
 ## Mouse gestures
 
-Mouse gestures use the right button and eight-direction recognition by default. Hold the right
-button, move through the configured directions, and release to run the action. The settings page
-represents the eight directions as `↑`, `↓`, `←`, `→`, `↖`, `↗`, `↙`, and `↘`; multi-segment
-gestures use `·` as a separator.
+Mouse gestures use the right button and four-direction recognition by default. Hold the right
+button, move up, down, left, or right, and release to run the action. Multi-segment gestures use
+`·` as a separator.
 
 | Gesture                   | Default action                               |
 | ------------------------- | -------------------------------------------- |
@@ -67,8 +66,7 @@ gestures use `·` as a separator.
 
 When right-button context-menu capture is enabled, hold and move to perform a gesture. Without
 moving, right-click twice quickly in the same location to open the browser's native context menu.
-You can change the trigger button, direction mode, trail visibility, and action bindings in
-Settings.
+You can change the trigger button, trail visibility, and action bindings in Settings.
 
 ## Super drag
 

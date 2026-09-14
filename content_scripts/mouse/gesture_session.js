@@ -12,7 +12,7 @@
         turnHysteresisDegrees: 18,
         maxSegments: 8,
         maxDurationMs: 2500,
-        directionMode: "8-way",
+        directionMode: "4-way",
       }, options);
       this.sampler = new samplerApi.PathSampler({
         sampleDistancePx: this.options.sampleDistancePx,

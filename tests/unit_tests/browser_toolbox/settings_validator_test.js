@@ -14,7 +14,7 @@ context("BrowserToolbox settings validator", () => {
       registry,
     );
     assert.isTrue(result.ok);
-    assert.equal("8-way", BrowserToolboxSettingsSchema.DEFAULT_SETTINGS.mouse.directionMode);
+    assert.equal("4-way", BrowserToolboxSettingsSchema.DEFAULT_SETTINGS.mouse.directionMode);
     assert.equal(
       [
         "L:goBack",

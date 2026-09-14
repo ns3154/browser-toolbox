@@ -26,7 +26,7 @@
       this.points.push({ x: event.offsetX, y: event.offsetY });
       this.draw();
       const pattern = globalThis.BrowserToolboxDirectionQuantizer.quantizePoints(this.points, {
-        directionMode: "8-way",
+        directionMode: "4-way",
         minimumSegmentDistancePx: 12,
         sampleDistancePx: 2,
         maxSegments: 8,

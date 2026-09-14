@@ -1,16 +1,11 @@
-// 将屏幕坐标向量量化为稳定的四向或八向方向。
+// 将屏幕坐标向量量化为稳定的四向方向。
 (function () {
-  const DIRECTIONS = ["U", "D", "L", "R", "UL", "UR", "DL", "DR"];
-  const EIGHT_WAY_DIRECTIONS = ["R", "UR", "U", "UL", "L", "DL", "D", "DR"];
+  const DIRECTIONS = ["U", "D", "L", "R"];
   const DIRECTION_ARROWS = Object.freeze({
     U: "↑",
     D: "↓",
     L: "←",
     R: "→",
-    UL: "↖",
-    UR: "↗",
-    DL: "↙",
-    DR: "↘",
   });
   const ARROW_DIRECTIONS = Object.freeze(
     Object.fromEntries(
@@ -20,55 +15,10 @@
       ]),
     ),
   );
-  const EIGHT_WAY_SECTOR_RADIANS = Math.PI / 4;
-  const EIGHT_WAY_HALF_SECTOR_RADIANS = EIGHT_WAY_SECTOR_RADIANS / 2;
-
-  function angleOf(direction) {
-    return {
-      R: 0,
-      UR: Math.PI / 4,
-      U: Math.PI / 2,
-      UL: Math.PI * 3 / 4,
-      L: Math.PI,
-      DL: Math.PI * 5 / 4,
-      D: Math.PI * 3 / 2,
-      DR: Math.PI * 7 / 4,
-    }[direction];
-  }
-
-  function angleDistance(a, b) {
-    const distance = Math.abs(a - b) % (Math.PI * 2);
-    return Math.min(distance, Math.PI * 2 - distance);
-  }
-
-  function quantize(dx, dy, mode = "4-way", previous = null, hysteresisDegrees = 18) {
-    if (dx === 0 && dy === 0) return previous;
-    let direction;
-    if (mode === "8-way") {
-      const angle = (Math.atan2(-dy, dx) + Math.PI * 2) % (Math.PI * 2);
-      const index = Math.round(angle / EIGHT_WAY_SECTOR_RADIANS) % 8;
-      direction = EIGHT_WAY_DIRECTIONS[index];
-      const previousAngle = angleOf(previous);
-      if (direction !== previous && Number.isFinite(previousAngle)) {
-        // 跨过普通扇区边界后继续保留上一方向一小段角度，避免手部抖动反复切换。
-        // 迟滞最多限制在半个扇区以内，保证光标指向相邻方向中心时一定能完成转向。
-        const requestedHysteresis = Number.isFinite(hysteresisDegrees)
-          ? Math.max(0, hysteresisDegrees) * Math.PI / 180
-          : 0;
-        const hysteresis = Math.min(
-          requestedHysteresis,
-          EIGHT_WAY_HALF_SECTOR_RADIANS - Number.EPSILON,
-        );
-        if (
-          angleDistance(angle, previousAngle) < EIGHT_WAY_HALF_SECTOR_RADIANS + hysteresis
-        ) {
-          return previous;
-        }
-      }
-    } else {
-      direction = Math.abs(dx) >= Math.abs(dy) ? (dx < 0 ? "L" : "R") : (dy < 0 ? "U" : "D");
-    }
-    return direction;
+  function quantize(dx, dy, _mode = "4-way", previous = null) {
+    if (dx === 0 && dy === 0) return DIRECTIONS.includes(previous) ? previous : null;
+    // 保留 mode 参数以兼容旧调用方，但所有新轨迹统一按主轴归入四个直线方向。
+    return Math.abs(dx) >= Math.abs(dy) ? (dx < 0 ? "L" : "R") : (dy < 0 ? "U" : "D");
   }
 
   function quantizePoints(points, {
@@ -128,6 +78,5 @@
     quantizePoints,
     normalizePattern,
     formatPattern,
-    angleDistance,
   });
 })();

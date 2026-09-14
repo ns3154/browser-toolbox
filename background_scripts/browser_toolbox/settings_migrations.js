@@ -18,6 +18,7 @@
   const CURRENT_EXPORT_FORMAT_VERSION = 1;
   const EXPORT_FORMATS = Object.freeze([EXPORT_FORMAT, LEGACY_EXPORT_FORMAT]);
   const MAX_UNKNOWN_FIELDS = 100;
+  const CARDINAL_DIRECTIONS = new Set(["U", "D", "L", "R"]);
 
   const ROOT_SETTING_KEYS = new Set([
     "settingsVersion",
@@ -192,6 +193,22 @@
     const next = schema.mergeSettings(input);
     next.schemaVersion = 5;
     normalizeToolSettings(next, input?.tools);
+    return next;
+  }
+
+  function migrate5To6(input) {
+    const next = schema.mergeSettings(input);
+    next.schemaVersion = 6;
+    next.mouse.directionMode = "4-way";
+    // 斜向不再是可识别的单段方向；移除旧的斜向绑定，避免迁移后出现空轨迹或失效绑定。
+    for (const sectionName of ["mouse", "superDrag"]) {
+      const bindings = next[sectionName]?.bindings;
+      if (!Array.isArray(bindings)) continue;
+      next[sectionName].bindings = bindings.filter((binding) =>
+        !Array.isArray(binding?.pattern) ||
+        binding.pattern.every((direction) => CARDINAL_DIRECTIONS.has(direction))
+      );
+    }
     return next;
   }
 
@@ -480,6 +497,7 @@
       else if (version === 2) current = migrate2To3(current);
       else if (version === 3) current = migrate3To4(current);
       else if (version === 4) current = migrate4To5(current);
+      else if (version === 5) current = migrate5To6(current);
       else throw new Error(`Unsupported settings schema: ${version}`);
       version = current.schemaVersion;
     }
@@ -510,6 +528,7 @@
     migrate2To3,
     migrate3To4,
     migrate4To5,
+    migrate5To6,
     normalizeToolSettings,
     migrateCommandName,
     migrateCommandNamespaces,

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "__MSG_extensionName__", // 正式对外产品名由本地化消息提供；运行时技术标识统一为 BrowserToolbox。
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "__MSG_extensionDescription__",
   "default_locale": "en",
   "icons": {

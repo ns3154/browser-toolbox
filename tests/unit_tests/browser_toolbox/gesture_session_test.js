@@ -31,7 +31,7 @@ context("Gesture session", () => {
     assert.equal("ACTIVE", result.state);
   });
 
-  should("recognize diagonal movement in the default eight-way mode", () => {
+  should("recognize diagonal movement as one cardinal direction", () => {
     const session = new BrowserToolboxGestureSession({
       activationDistancePx: 5,
       minimumSegmentDistancePx: 10,
@@ -40,8 +40,8 @@ context("Gesture session", () => {
 
     const result = session.move({ x: 20, y: -20 }, 1010);
     assert.isTrue(result.activated);
-    assert.equal(["UR"], result.pattern);
-    assert.equal(["UR"], session.end(1020).pattern);
+    assert.equal(["R"], result.pattern);
+    assert.equal(["R"], session.end(1020).pattern);
   });
 
   should("cancel an expired active session without a command", () => {

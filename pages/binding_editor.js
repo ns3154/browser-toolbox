@@ -17,10 +17,6 @@
     D: "gestureDirectionDown",
     L: "gestureDirectionLeft",
     R: "gestureDirectionRight",
-    UL: "gestureDirectionUpLeft",
-    UR: "gestureDirectionUpRight",
-    DL: "gestureDirectionDownLeft",
-    DR: "gestureDirectionDownRight",
   });
 
   class BindingEditor {

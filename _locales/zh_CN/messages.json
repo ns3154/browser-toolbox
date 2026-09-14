@@ -1,7 +1,7 @@
 {
-  "extensionName": { "message": "浏览器工具箱", "description": "扩展名称" },
+  "extensionName": { "message": "Browser Toolbox", "description": "扩展名称" },
   "extensionDescription": {
-    "message": "永久免费、开源、本地优先的浏览器工作流工具箱，用键盘和鼠标执行网页导航与标签页操作；无广告、无账户、无遥测。",
+    "message": "使用键盘和鼠标导航网页、执行页面操作并管理标签页。 Navigate pages, run page actions, and manage tabs with keyboard and mouse.",
     "description": "扩展说明"
   },
   "browserToolbox": { "message": "浏览器工具箱", "description": "产品名称" },
@@ -244,10 +244,6 @@
   "gestureDirectionDown": { "message": "向下", "description": "手势方向" },
   "gestureDirectionLeft": { "message": "向左", "description": "手势方向" },
   "gestureDirectionRight": { "message": "向右", "description": "手势方向" },
-  "gestureDirectionUpLeft": { "message": "左上", "description": "手势方向" },
-  "gestureDirectionUpRight": { "message": "右上", "description": "手势方向" },
-  "gestureDirectionDownLeft": { "message": "左下", "description": "手势方向" },
-  "gestureDirectionDownRight": { "message": "右下", "description": "手势方向" },
   "browserRestriction": { "message": "此页面受浏览器限制。", "description": "浏览器限制提示" },
   "language": { "message": "语言", "description": "语言设置" },
   "languageAuto": { "message": "跟随浏览器", "description": "自动语言" },
@@ -258,9 +254,6 @@
     "message": "手势按键与超级拖拽或摇杆使用同一按键时，手势优先。手势按键为右键时，轻点或移动未达到激活阈值会保留原生菜单；启用菜单抑制后，越过阈值的右键手势才会拦截菜单，关闭后始终保留原生菜单，但右键轨迹可能冲突。",
     "description": "手势按键冲突行为"
   },
-  "directionMode": { "message": "方向模式", "description": "方向模式标签" },
-  "fourWay": { "message": "四方向", "description": "四方向模式" },
-  "eightWay": { "message": "八方向", "description": "八方向模式" },
   "activationDistance": { "message": "激活距离（像素）", "description": "手势阈值" },
   "sampleDistance": { "message": "采样距离（像素）", "description": "手势采样距离" },
   "minimumSegmentDistance": { "message": "最小分段距离（像素）", "description": "手势分段阈值" },

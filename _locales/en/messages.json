@@ -1,7 +1,7 @@
 {
   "extensionName": { "message": "Browser Toolbox", "description": "Extension name" },
   "extensionDescription": {
-    "message": "Free, local-first browser toolbox for keyboard and mouse navigation, page actions, and tab control. No ads, accounts, or telemetry.",
+    "message": "Navigate pages, run page actions, and manage tabs with keyboard and mouse. 使用键盘和鼠标导航网页、执行页面操作并管理标签页。",
     "description": "Extension description"
   },
   "browserToolbox": { "message": "Browser Toolbox", "description": "Product name" },
@@ -319,10 +319,6 @@
   "gestureDirectionDown": { "message": "Down", "description": "Gesture direction" },
   "gestureDirectionLeft": { "message": "Left", "description": "Gesture direction" },
   "gestureDirectionRight": { "message": "Right", "description": "Gesture direction" },
-  "gestureDirectionUpLeft": { "message": "Up left", "description": "Gesture direction" },
-  "gestureDirectionUpRight": { "message": "Up right", "description": "Gesture direction" },
-  "gestureDirectionDownLeft": { "message": "Down left", "description": "Gesture direction" },
-  "gestureDirectionDownRight": { "message": "Down right", "description": "Gesture direction" },
   "browserRestriction": {
     "message": "This page is restricted by the browser.",
     "description": "Browser limitation"
@@ -336,9 +332,6 @@
     "message": "The gesture button takes priority over super drag and rocker input when they use the same button. With the right button, a click or movement below the activation threshold keeps the native menu; when menu suppression is enabled, an activated gesture blocks it. Disabling suppression keeps the native menu but may conflict with gestures.",
     "description": "Gesture button conflict behavior"
   },
-  "directionMode": { "message": "Direction mode", "description": "Direction mode label" },
-  "fourWay": { "message": "Four directions", "description": "Four-way mode" },
-  "eightWay": { "message": "Eight directions", "description": "Eight-way mode" },
   "activationDistance": {
     "message": "Activation distance (px)",
     "description": "Gesture threshold"

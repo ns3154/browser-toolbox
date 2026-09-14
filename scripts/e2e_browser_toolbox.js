@@ -2640,7 +2640,7 @@ async function testMouseGestures(page, base127, browser, options) {
 
   await resetSettings(options);
   const defaultMouseSettings = (await readSettings(options)).mouse;
-  assertEqual(defaultMouseSettings.directionMode, "8-way", "默认手势应启用八方向识别");
+  assertEqual(defaultMouseSettings.directionMode, "4-way", "默认手势应启用四方向识别");
   const actualDefaultBindings = defaultMouseSettings.bindings.map((binding) =>
     `${binding.pattern.join(">")}:${binding.commandName}${binding.options.hard ? ":hard" : ""}`
   );
@@ -2906,23 +2906,23 @@ async function testMouseGestures(page, base127, browser, options) {
   await waitFor(() => temporary.isClosed());
   assertEqual((await browser.pages()).length, pageCount - 1, "关闭标签页手势关闭当前标签页");
 
-  console.log("E2E: 八方向轨迹");
+  console.log("E2E: 斜向轨迹归入四方向");
   await patchSettings(options, {
     mouse: {
       triggerButton: 0,
-      directionMode: "8-way",
+      directionMode: "4-way",
       bindings: [
         {
-          id: "e2e-diagonal-up-right",
+          id: "e2e-diagonal-right",
           enabled: true,
-          pattern: ["UR"],
+          pattern: ["R"],
           commandName: "scrollToTop",
           options: {},
         },
         {
-          id: "e2e-diagonal-up-left",
+          id: "e2e-diagonal-left",
           enabled: true,
-          pattern: ["UL"],
+          pattern: ["L"],
           commandName: "scrollToBottom",
           options: {},
         },

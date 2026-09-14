@@ -54,7 +54,6 @@ context("Settings section registry", () => {
       mouse: {
         enabled: true,
         triggerButton: 1,
-        directionMode: "8-way",
         activationDistancePx: 12,
         sampleDistancePx: 5,
         minimumSegmentDistancePx: 20,

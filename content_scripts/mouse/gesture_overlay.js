@@ -3,23 +3,15 @@
   const SVG_NS = "http://www.w3.org/2000/svg";
   const DIRECTION_ROTATIONS = Object.freeze({
     R: 0,
-    DR: 45,
     D: 90,
-    DL: 135,
     L: 180,
-    UL: -135,
     U: -90,
-    UR: -45,
   });
   const DIRECTION_MESSAGE_KEYS = Object.freeze({
     R: "gestureDirectionRight",
-    DR: "gestureDirectionDownRight",
     D: "gestureDirectionDown",
-    DL: "gestureDirectionDownLeft",
     L: "gestureDirectionLeft",
-    UL: "gestureDirectionUpLeft",
     U: "gestureDirectionUp",
-    UR: "gestureDirectionUpRight",
   });
 
   function svgIcon(document, pathData, className) {

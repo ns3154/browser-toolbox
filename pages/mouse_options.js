@@ -34,20 +34,12 @@
     D: "gestureDirectionDown",
     L: "gestureDirectionLeft",
     R: "gestureDirectionRight",
-    UL: "gestureDirectionUpLeft",
-    UR: "gestureDirectionUpRight",
-    DL: "gestureDirectionDownLeft",
-    DR: "gestureDirectionDownRight",
   });
   const mouseGestureCardDefinitions = Object.freeze([
     { pattern: ["U"], arrow: "↑", direction: "gestureDirectionUp" },
     { pattern: ["R"], arrow: "→", direction: "gestureDirectionRight" },
     { pattern: ["L"], arrow: "←", direction: "gestureDirectionLeft" },
     { pattern: ["D"], arrow: "↓", direction: "gestureDirectionDown" },
-    { pattern: ["D", "R"], arrow: "↳", direction: "gestureDirectionDownRight" },
-    { pattern: ["L", "U"], arrow: "↖", direction: "gestureDirectionUpLeft" },
-    { pattern: ["R", "D"], arrow: "↘", direction: "gestureDirectionDownRight" },
-    { pattern: ["R", "U"], arrow: "↗", direction: "gestureDirectionUpRight" },
   ]);
 
   function message(key) {
@@ -295,10 +287,6 @@
       "→": "M5 16h22m0 0-6-6m6 6-6 6",
       "←": "M27 16H5m0 0 6-6m-6 6 6 6",
       "↓": "M16 5v22m0 0-6-6m6 6 6-6",
-      "↳": "M8 7v18h17m0 0-6-6m6 6-6 6",
-      "↘": "M7 7l18 18m0 0V15m0 10H15",
-      "↖": "M25 25 7 7m0 0v10m0-10h10",
-      "↗": "M7 25 25 7m0 0H15m10 0v10",
     };
     path.setAttribute("d", paths[arrow] || paths["↑"]);
     svg.appendChild(path);
