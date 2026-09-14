@@ -12,6 +12,7 @@
   const moduleRegistry = globalThis.BrowserToolboxModuleRegistry;
   const matcher = globalThis.BrowserToolboxSiteRuleMatcher;
   const clone = globalThis.BrowserToolboxValueUtils.clone;
+  const schema = globalThis.BrowserToolboxSettingsSchema;
 
   function newId(prefix = "rule") {
     return `${prefix}-${globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`}`;
@@ -129,6 +130,142 @@
       }
     }
 
+    profileInput(field, section, name, value) {
+      const profile = this.ruleFor(field).profile;
+      if (section === "meta") {
+        if (value) profile[name] = value;
+        else delete profile[name];
+        return;
+      }
+      profile[section] ||= {};
+      if (field.type === "checkbox") profile[section][name] = field.checked;
+      else if (field.type === "number") {
+        if (field.value === "") delete profile[section][name];
+        else profile[section][name] = Number(field.value);
+      } else if (name === "triggerButton") {
+        if (field.value === "") delete profile[section][name];
+        else profile[section][name] = Number(field.value);
+      } else if (field.value === "") delete profile[section][name];
+      else profile[section][name] = field.value;
+    }
+
+    profileSectionLabel(section) {
+      return this.message({
+        mouse: "siteProfileMouse",
+        superDrag: "siteProfileSuperDrag",
+        wheel: "siteProfileWheel",
+        rocker: "rocker",
+      }[section] || section);
+    }
+
+    profileField(labelKey, section, name, type, value, options = {}) {
+      const label = this.document.createElement("label");
+      label.className = "browser-toolbox-site-profile-field";
+      const text = this.document.createElement("span");
+      text.textContent = this.message(labelKey);
+      const input = this.document.createElement(type === "select" ? "select" : "input");
+      if (type !== "select") input.type = type;
+      input.dataset.profileSection = section;
+      input.dataset.profileField = name;
+      input.setAttribute("aria-label", this.message(labelKey));
+      if (type === "checkbox") {
+        input.checked = Boolean(value);
+        input.indeterminate = value == null;
+        label.classList.add("browser-toolbox-check");
+      } else if (type === "select") {
+        for (const [optionValue, optionLabel] of options.options || []) {
+          const option = this.document.createElement("option");
+          option.value = optionValue;
+          option.textContent = this.message(optionLabel);
+          input.appendChild(option);
+        }
+        input.value = value == null ? "" : String(value);
+      } else {
+        if (value != null) input.value = String(value);
+        if (options.min != null) input.min = String(options.min);
+        if (options.max != null) input.max = String(options.max);
+        input.step = "1";
+      }
+      label.append(text, input);
+      return label;
+    }
+
+    renderProfile(rule) {
+      const profile = rule.profile || {};
+      const details = this.document.createElement("details");
+      details.className = "browser-toolbox-site-rule-profile";
+      details.open = Boolean(rule.profile);
+      const summary = this.document.createElement("summary");
+      summary.textContent = this.message("siteRuleProfile");
+      const hint = this.document.createElement("p");
+      hint.className = "browser-toolbox-site-profile-hint";
+      hint.textContent = this.message("siteRuleProfileHint");
+      const meta = this.document.createElement("div");
+      meta.className = "browser-toolbox-site-profile-meta";
+      meta.append(
+        this.profileField("siteRuleProfile", "meta", "preset", "select", profile.preset, {
+          options: [
+            ["", "siteRuleProfileInherit"],
+            ...Object.entries(schema?.SITE_PROFILE_PRESETS || {}).map(([value, preset]) => [
+              value,
+              preset.labelKey,
+            ]),
+            ["custom", "siteRuleProfileCustom"],
+          ],
+        }),
+        this.profileField("siteProfileName", "meta", "name", "text", profile.name),
+      );
+      const sections = this.document.createElement("div");
+      sections.className = "browser-toolbox-site-profile-sections";
+      const mouse = this.document.createElement("fieldset");
+      mouse.className = "browser-toolbox-site-profile-section";
+      const mouseLegend = this.document.createElement("legend");
+      mouseLegend.textContent = this.profileSectionLabel("mouse");
+      mouse.appendChild(mouseLegend);
+      mouse.append(
+        this.profileField("siteProfileEnabled", "mouse", "enabled", "checkbox", profile.mouse?.enabled),
+        this.profileField("siteProfileTriggerButton", "mouse", "triggerButton", "select", profile.mouse?.triggerButton, {
+          options: [["0", "leftButton"], ["1", "middleButton"], ["2", "rightButton"]],
+        }),
+        this.profileField("siteProfileActivationDistance", "mouse", "activationDistancePx", "number", profile.mouse?.activationDistancePx, { min: 1, max: 200 }),
+        this.profileField("siteProfileMinimumSegmentDistance", "mouse", "minimumSegmentDistancePx", "number", profile.mouse?.minimumSegmentDistancePx, { min: 2, max: 500 }),
+        this.profileField("siteProfileShowTrail", "mouse", "showTrail", "checkbox", profile.mouse?.showTrail),
+        this.profileField("siteProfileShowHud", "mouse", "showCommandHud", "checkbox", profile.mouse?.showCommandHud),
+      );
+      const superDrag = this.document.createElement("fieldset");
+      superDrag.className = "browser-toolbox-site-profile-section";
+      const superDragLegend = this.document.createElement("legend");
+      superDragLegend.textContent = this.profileSectionLabel("superDrag");
+      superDrag.append(
+        superDragLegend,
+        this.profileField("siteProfileEnabled", "superDrag", "enabled", "checkbox", profile.superDrag?.enabled),
+        this.profileField("siteProfileBypassModifier", "superDrag", "nativeBypassModifier", "select", profile.superDrag?.nativeBypassModifier, {
+          options: [["Alt", "modifierAlt"], ["Control", "modifierControl"], ["Meta", "modifierMeta"], ["Shift", "modifierShift"]],
+        }),
+      );
+      const wheel = this.document.createElement("fieldset");
+      wheel.className = "browser-toolbox-site-profile-section";
+      const wheelLegend = this.document.createElement("legend");
+      wheelLegend.textContent = this.profileSectionLabel("wheel");
+      wheel.append(
+        wheelLegend,
+        this.profileField("siteProfileEnabled", "wheel", "enabled", "checkbox", profile.wheel?.enabled),
+        this.profileField("siteProfileWheelThreshold", "wheel", "threshold", "number", profile.wheel?.threshold, { min: 10, max: 2000 }),
+        this.profileField("siteProfileCooldown", "wheel", "cooldownMs", "number", profile.wheel?.cooldownMs, { min: 0, max: 5000 }),
+      );
+      const rocker = this.document.createElement("fieldset");
+      rocker.className = "browser-toolbox-site-profile-section";
+      const rockerLegend = this.document.createElement("legend");
+      rockerLegend.textContent = this.profileSectionLabel("rocker");
+      rocker.append(
+        rockerLegend,
+        this.profileField("siteProfileEnabled", "rocker", "enabled", "checkbox", profile.rocker?.enabled),
+      );
+      sections.append(mouse, superDrag, wheel, rocker);
+      details.append(summary, hint, meta, sections);
+      return details;
+    }
+
     /**
      * 重绘全部规则行。
      * @returns {void}
@@ -237,7 +374,7 @@
         label.append(checkbox, this.document.createTextNode(this.message(module.labelKey)));
         moduleOptions.appendChild(label);
       }
-      modules.append(modulesTitle, moduleOptions);
+      modules.append(modulesTitle, moduleOptions, this.renderProfile(rule));
       const modulesCell = this.cell(modules, "browser-toolbox-rule-modules-cell");
 
       const priority = this.document.createElement("div");
@@ -274,10 +411,32 @@
      * @returns {void}
      */
     handleField(event) {
-      const field = event.target.closest?.("[data-field], [data-module]");
+      const field = event.target.closest?.("[data-field], [data-module], [data-profile-field]");
       if (!field) return;
       const rule = this.ruleFor(field);
       if (!rule) return;
+      if (field.dataset.profileField) {
+        const section = field.dataset.profileSection;
+        const name = field.dataset.profileField;
+        const value = field.type === "checkbox" ? field.checked : field.value;
+        if (section === "meta" && name === "preset") {
+          if (!value) delete rule.profile;
+          else if (value !== "custom" && schema?.SITE_PROFILE_PRESETS?.[value]) {
+            rule.profile = clone(schema.SITE_PROFILE_PRESETS[value].profile);
+          } else {
+            rule.profile ||= {};
+            rule.profile.preset = "custom";
+          }
+          this.render();
+          this.onChange({ type: "profile", rule });
+          return;
+        }
+        rule.profile ||= { preset: "custom" };
+        rule.profile.preset = "custom";
+        this.profileInput(field, section, name, value);
+        this.onChange({ type: "profile", rule });
+        return;
+      }
       if (field.dataset.field === "pattern") rule.pattern = field.value;
       if (field.dataset.field === "matchType") {
         rule.matchType = field.value;

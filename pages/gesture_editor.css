@@ -532,6 +532,87 @@ button.primary:hover:not(:disabled) {
   font-size: 13px;
 }
 
+.browser-toolbox-site-rule-profile {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--toolbox-border-strong);
+}
+
+.browser-toolbox-site-rule-profile summary {
+  color: var(--toolbox-text);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.browser-toolbox-site-profile-hint {
+  margin: 7px 0 10px;
+  color: var(--toolbox-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.browser-toolbox-site-profile-meta,
+.browser-toolbox-site-profile-sections {
+  display: grid;
+  gap: 10px;
+}
+
+.browser-toolbox-site-profile-meta {
+  grid-template-columns: minmax(160px, 1fr) minmax(150px, 1fr);
+  margin-bottom: 10px;
+}
+
+.browser-toolbox-site-profile-sections {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.browser-toolbox-site-profile-section {
+  min-width: 0;
+  margin: 0;
+  padding: 10px;
+  border: 1px solid var(--toolbox-border);
+  border-radius: 9px;
+}
+
+.browser-toolbox-site-profile-section legend {
+  padding: 0 5px;
+  color: var(--toolbox-text);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.browser-toolbox-site-profile-field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(66px, 110px);
+  align-items: center;
+  gap: 8px;
+  min-height: 30px;
+  color: var(--toolbox-muted);
+  font-size: 12px;
+}
+
+.browser-toolbox-site-profile-field.browser-toolbox-check {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.browser-toolbox-site-profile-field input[type="checkbox"] {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+}
+
+.browser-toolbox-site-profile-field input:not([type="checkbox"]),
+.browser-toolbox-site-profile-field select {
+  width: 100%;
+  min-width: 0;
+  min-height: 30px;
+  padding: 4px 6px;
+  font-size: 12px;
+}
+
 .browser-toolbox-rule-actions {
   display: flex;
   align-items: center;
@@ -792,6 +873,17 @@ button.primary:hover:not(:disabled) {
   font: 700 24px/1.35 -apple-system, BlinkMacSystemFont, "Segoe UI Symbol", system-ui, sans-serif;
   letter-spacing: 0.08em;
 }
+
+#gesture-lab-status {
+  min-height: 20px;
+  margin: 5px 0 0;
+  color: var(--toolbox-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+#gesture-lab-status.is-warning { color: var(--toolbox-warning); }
+#gesture-lab-status.is-success { color: var(--toolbox-success, #18794e); }
 .browser-toolbox-pattern-input {
   max-width: 420px;
   margin-top: 12px;
@@ -896,6 +988,10 @@ button.primary:hover:not(:disabled) {
     margin-right: 0;
   }
   .browser-toolbox-site-rule-module-options {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .browser-toolbox-site-profile-meta,
+  .browser-toolbox-site-profile-sections {
     grid-template-columns: minmax(0, 1fr);
   }
   .browser-toolbox-site-rule-test-controls {

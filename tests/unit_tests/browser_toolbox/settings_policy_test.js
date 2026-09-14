@@ -77,4 +77,28 @@ context("Settings policy", () => {
     );
     assert.isTrue(afterRemoval.mouse);
   });
+
+  should("apply the most specific site profile before resolving module defaults", () => {
+    const schema = globalThis.BrowserToolboxSettingsSchema;
+    const policy = globalThis.BrowserToolboxSettingsPolicy;
+    const settings = schema.mergeSettings({
+      mouse: { activationDistancePx: 10, showTrail: true },
+      siteRules: [
+        {
+          pattern: "https://*.example.com/*",
+          profile: { preset: "reading", mouse: { activationDistancePx: 14, showTrail: false } },
+        },
+        {
+          pattern: "https://docs.example.com/*",
+          profile: { mouse: { enabled: false } },
+        },
+      ],
+    });
+    const effective = policy.withEffectiveSettings(settings, "https://docs.example.com/page");
+    assert.equal(14, effective.mouse.activationDistancePx);
+    assert.isFalse(effective.mouse.showTrail);
+    assert.isFalse(effective.effectiveModules.mouse);
+    assert.equal("reading", effective.effectiveSiteProfile.preset);
+    assert.equal(false, effective.effectiveSiteProfile.mouse.enabled);
+  });
 });

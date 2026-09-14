@@ -457,6 +457,7 @@ const defaultKeyMappings = {
   "B": "Vomnibar.activateBookmarksInNewTab",
   "ge": "Vomnibar.activateEditUrl",
   "gE": "Vomnibar.activateEditUrlInNewTab",
+  ":": "BrowserToolbox.openCommandCenter",
 
   // Navigating history
   "H": "goBack",

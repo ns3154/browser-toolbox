@@ -1162,18 +1162,28 @@ async function injectContentScriptsAndCSSIntoExistingTabs() {
   }
 }
 
-async function initializeExtension() {
-  await Settings.onLoaded();
-  await browserToolboxSettingsRepository.ensureLoaded(globalThis.BrowserToolboxCommandRegistry);
-  try {
-    await browserToolboxToolInputTokenStore.cleanup();
-  } catch (_) {
-    // session storage 暂时不可用时不阻断既有 Vimium 能力；后续启动会再次清理。
-  }
-  await Commands.init();
-  await browserToolboxToolContextMenuManager.reconcile(
-    browserToolboxSettingsRepository.getSettings(),
-  );
+let browserToolboxInitializationPromise = null;
+
+function initializeExtension() {
+  if (browserToolboxInitializationPromise) return browserToolboxInitializationPromise;
+  const run = (async () => {
+    await Settings.onLoaded();
+    await browserToolboxSettingsRepository.ensureLoaded(globalThis.BrowserToolboxCommandRegistry);
+    try {
+      await browserToolboxToolInputTokenStore.cleanup();
+    } catch (_) {
+      // session storage 暂时不可用时不阻断既有 Vimium 能力；后续启动会再次清理。
+    }
+    await Commands.init();
+    await browserToolboxToolContextMenuManager.reconcile(
+      browserToolboxSettingsRepository.getSettings(),
+    );
+  })();
+  const promise = run.finally(() => {
+    if (browserToolboxInitializationPromise === promise) browserToolboxInitializationPromise = null;
+  });
+  browserToolboxInitializationPromise = promise;
+  return promise;
 }
 
 // The browser may have tabs already open. We inject the content scripts and Vimium's CSS

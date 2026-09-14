@@ -49,4 +49,40 @@ context("BrowserToolbox context menu manager", () => {
     assert.isTrue(ids.includes("browser-toolbox.tool.table.convert"));
     assert.equal(4, created.filter((item) => item.parentId === "browser-toolbox.root").length - 2);
   });
+
+  should("serialize overlapping reconciliations", async () => {
+    const created = [];
+    let activeCreates = 0;
+    let maxActiveCreates = 0;
+    const contextMenus = {
+      create(properties, callback) {
+        activeCreates++;
+        maxActiveCreates = Math.max(maxActiveCreates, activeCreates);
+        created.push(properties);
+        queueMicrotask(() => {
+          activeCreates--;
+          callback?.();
+        });
+      },
+      removeAll(callback) {
+        created.length = 0;
+        queueMicrotask(callback);
+      },
+      onClicked: { addListener() {} },
+    };
+    const manager = new BrowserToolboxToolContextMenuManager.ToolContextMenuManager({
+      contextMenus,
+      settingsRepository: {
+        getSettings: () => ({
+          tools: {
+            enabled: true,
+            contextMenu: { enabled: true, toolIds: ["json.format"] },
+          },
+        }),
+      },
+    });
+    await Promise.all([manager.reconcile(), manager.reconcile()]);
+    assert.equal(1, maxActiveCreates);
+    assert.equal(created.length, new Set(created.map((item) => item.id)).size);
+  });
 });

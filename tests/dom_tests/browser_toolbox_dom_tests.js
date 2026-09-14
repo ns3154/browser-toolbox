@@ -28,6 +28,7 @@ context("BrowserToolbox DOM integration", () => {
     assert.isTrue(popup.querySelector("#browser-toolbox-site-details") === null);
     assert.isTrue(popup.querySelector("#exclusion-rule-template") === null);
     assert.isTrue(Boolean(popup.querySelector("#browser-toolbox-all-tools")));
+    assert.isTrue(Boolean(popup.querySelector("#browser-toolbox-open-command-center")));
   });
 
   should("expose exactly three settings groups and fifteen navigable panels", async () => {
@@ -41,6 +42,14 @@ context("BrowserToolbox DOM integration", () => {
     assert.equal(6, settings.querySelectorAll("[data-panel=jsonFormatter] input[type=checkbox]").length);
     assert.isTrue(Boolean(settings.querySelector("#browser-tool-directory-search")));
     assert.isTrue(Boolean(settings.querySelector("#browser-tool-directory")));
+    assert.isTrue(Boolean(settings.querySelector("#gesture-lab-status")));
+  });
+
+  should("provide a keyboard-friendly command center page", async () => {
+    const commandCenter = await loadMarkup("../../pages/command_center.html");
+    assert.isTrue(Boolean(commandCenter.querySelector("#command-center-search")));
+    assert.equal("listbox", commandCenter.querySelector("#command-center-results").getAttribute("role"));
+    assert.isTrue(Boolean(commandCenter.querySelector("#command-center-status[role=status]")));
   });
 
   should("keep each utility on a standalone page with its own result affordances", async () => {

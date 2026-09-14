@@ -191,4 +191,36 @@ context("BrowserToolbox settings validator", () => {
       );
     }
   });
+
+  should("validate bounded site profile overrides", () => {
+    const valid = BrowserToolboxSettingsSchema.mergeSettings({
+      siteRules: [{
+        pattern: "https://editor.example.com/*",
+        profile: {
+          preset: "editor",
+          name: "Editor mode",
+          mouse: { enabled: false, activationDistancePx: 24, showTrail: false },
+          superDrag: { enabled: false, nativeBypassModifier: "Control" },
+          wheel: { threshold: 160, cooldownMs: 240, continuousTabSwitching: true },
+          rocker: { enabled: false },
+        },
+      }],
+    });
+    assert.isTrue(BrowserToolboxSettingsValidator.validate(valid, registry).ok);
+    const invalid = BrowserToolboxSettingsSchema.mergeSettings({
+      siteRules: [{
+        pattern: "https://editor.example.com/*",
+        profile: {
+          preset: "unknown",
+          mouse: { activationDistancePx: 0, unexpected: true },
+          wheel: { cooldownMs: 6000 },
+        },
+      }],
+    });
+    const result = BrowserToolboxSettingsValidator.validate(invalid, registry);
+    assert.isFalse(result.ok);
+    assert.isTrue(result.errors.some((error) => error.includes("preset")));
+    assert.isTrue(result.errors.some((error) => error.includes("activationDistancePx")));
+    assert.isTrue(result.errors.some((error) => error.includes("cooldownMs")));
+  });
 });

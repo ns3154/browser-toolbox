@@ -24,9 +24,32 @@
         }));
       this.listenerInstalled = false;
       this.currentIds = new Set();
+      this.reconcilePromise = null;
+      this.reconcileQueued = false;
     }
 
-    async reconcile(settings = this.settingsRepository?.getSettings?.()) {
+    reconcile(settings = this.settingsRepository?.getSettings?.()) {
+      this.pendingSettings = settings;
+      this.reconcileQueued = true;
+      if (this.reconcilePromise) return this.reconcilePromise;
+      const run = (async () => {
+        let result = false;
+        while (this.reconcileQueued) {
+          this.reconcileQueued = false;
+          const nextSettings = this.pendingSettings;
+          this.pendingSettings = undefined;
+          result = await this.reconcileOnce(nextSettings);
+        }
+        return result;
+      })();
+      const promise = run.finally(() => {
+        if (this.reconcilePromise === promise) this.reconcilePromise = null;
+      });
+      this.reconcilePromise = promise;
+      return promise;
+    }
+
+    async reconcileOnce(settings) {
       if (!this.contextMenus?.removeAll || !this.contextMenus?.create) return false;
       await new Promise((resolve, reject) => {
         let settled = false;
@@ -99,7 +122,25 @@
     async create(properties) {
       this.currentIds.add(properties.id);
       try {
-        await Promise.resolve(this.contextMenus.create(properties));
+        await new Promise((resolve, reject) => {
+          let settled = false;
+          const finish = (error) => {
+            if (settled) return;
+            settled = true;
+            if (error) reject(error);
+            else resolve();
+          };
+          try {
+            const result = this.contextMenus.create(properties, () => {
+              const lastError = globalThis.chrome?.runtime?.lastError;
+              finish(lastError ? new Error(lastError.message) : null);
+            });
+            if (result?.then) result.then(() => finish(), finish);
+            else if (this.contextMenus.create.length < 2) finish();
+          } catch (error) {
+            finish(error);
+          }
+        });
       } catch (_) {
         // 浏览器在扩展重载期间可能短暂返回重复 ID；下一次 reconcile 会完整重建。
       }

@@ -203,6 +203,13 @@ context("Browser command adapter", () => {
       "chrome-extension://test/pages/mouse_options.html",
       openedSettingsUrl,
     );
+    assert.isTrue(
+      (await adapter.execute(invocation("BrowserToolbox.openCommandCenter"), { tab })).ok,
+    );
+    assert.equal(
+      "chrome-extension://test/pages/command_center.html?tabId=9",
+      openedSettingsUrl,
+    );
     const calls = [];
     const existing = await adapter.executeExisting(
       "scrollDown",
@@ -215,6 +222,19 @@ context("Browser command adapter", () => {
     assert.isTrue(existing.ok);
     assert.equal(1, calls.length);
     assert.equal(9, calls[0].details.tabId);
+
+    let receivedOptions;
+    const reload = await adapter.executeExisting(
+      "reload",
+      invocation("reload"),
+      { tab },
+      {
+        reload: async (details) => receivedOptions = details.registryEntry.options,
+      },
+    );
+    assert.isTrue(reload.ok);
+    assert.equal({}, receivedOptions);
+
     assert.equal(
       "UNKNOWN_COMMAND",
       (await adapter.executeExisting(

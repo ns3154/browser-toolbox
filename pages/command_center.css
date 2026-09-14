@@ -1,0 +1,166 @@
+/* 命令中心使用独立的窄布局，保证搜索和结果在小窗口中仍然可操作。 */
+:root {
+  color-scheme: light dark;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f4f7fb;
+  color: #1f2937;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-width: 280px;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background:
+    radial-gradient(circle at 90% 0, rgba(80, 130, 255, .13), transparent 34rem),
+    #f4f7fb;
+}
+
+.browser-toolbox-command-shell {
+  width: min(860px, 100%);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 32px clamp(16px, 4vw, 48px) 40px;
+}
+
+.browser-toolbox-command-header,
+.browser-toolbox-command-brand,
+.browser-toolbox-command-context,
+.browser-toolbox-command-result,
+.browser-toolbox-command-result-copy,
+.browser-toolbox-command-result-meta {
+  display: flex;
+  align-items: center;
+}
+
+.browser-toolbox-command-header {
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.browser-toolbox-command-brand { gap: 12px; min-width: 0; }
+.browser-toolbox-command-brand img { width: 40px; height: 40px; border-radius: 11px; }
+.browser-toolbox-command-kicker,
+.browser-toolbox-command-context-label,
+.browser-toolbox-command-result-category,
+.browser-toolbox-command-kicker {
+  color: #64748b;
+  font-size: 12px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+h1 { margin: 2px 0 0; font-size: clamp(24px, 4vw, 34px); line-height: 1.1; }
+.browser-toolbox-command-subtitle { margin: 12px 0 20px; color: #64748b; }
+
+.browser-toolbox-command-close {
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  padding: 8px 12px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.browser-toolbox-command-context {
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  border: 1px solid #dbe4f0;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .68);
+}
+
+#command-center-context {
+  min-width: 0;
+  overflow: hidden;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.browser-toolbox-command-search { display: block; }
+.browser-toolbox-command-search > span { display: block; margin-bottom: 7px; font-size: 13px; font-weight: 650; }
+.browser-toolbox-command-search input {
+  width: 100%;
+  border: 2px solid #94b7ff;
+  border-radius: 13px;
+  padding: 13px 15px;
+  outline: none;
+  background: #fff;
+  color: #0f172a;
+  font: inherit;
+  box-shadow: 0 8px 24px rgba(35, 74, 145, .08);
+}
+.browser-toolbox-command-search input:focus { border-color: #4f7cff; box-shadow: 0 0 0 4px rgba(79, 124, 255, .18); }
+.browser-toolbox-command-status { min-height: 20px; margin: 10px 0 8px; color: #64748b; font-size: 13px; }
+.browser-toolbox-command-status.is-error { color: #b42318; }
+
+.browser-toolbox-command-results { display: grid; gap: 8px; }
+.browser-toolbox-command-group { margin: 14px 0 4px; color: #64748b; font-size: 12px; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+.browser-toolbox-command-result {
+  width: 100%;
+  gap: 12px;
+  border: 1px solid #dbe4f0;
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, .8);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color .12s ease, background .12s ease, transform .12s ease;
+}
+.browser-toolbox-command-result:hover,
+.browser-toolbox-command-result.is-selected,
+.browser-toolbox-command-result:focus-visible {
+  border-color: #6c92ff;
+  outline: none;
+  background: #fff;
+  transform: translateY(-1px);
+}
+.browser-toolbox-command-result.is-danger { border-left: 3px solid #d97706; }
+.browser-toolbox-command-result-icon {
+  display: grid;
+  flex: 0 0 34px;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: #edf3ff;
+  color: #4169d8;
+}
+.browser-toolbox-command-result-icon svg { width: 19px; height: 19px; }
+.browser-toolbox-command-result-copy { align-items: flex-start; flex: 1; flex-direction: column; min-width: 0; gap: 3px; }
+.browser-toolbox-command-result-title { font-weight: 700; }
+.browser-toolbox-command-result-description { overflow: hidden; max-width: 100%; color: #64748b; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.browser-toolbox-command-result-meta { align-items: center; gap: 8px; margin-left: auto; }
+.browser-toolbox-command-result-category { letter-spacing: .02em; text-transform: none; }
+.browser-toolbox-command-result-danger { color: #b45309; font-size: 12px; }
+.browser-toolbox-command-empty { margin: 28px 0; color: #64748b; text-align: center; }
+.browser-toolbox-command-help { margin-top: 18px; color: #94a3b8; font-size: 12px; text-align: center; }
+
+@media (prefers-color-scheme: dark) {
+  :root, body { background: #101827; color: #e5edf9; }
+  .browser-toolbox-command-context,
+  .browser-toolbox-command-result { border-color: #2b3b54; background: rgba(23, 35, 55, .82); }
+  .browser-toolbox-command-close { border-color: #40516b; }
+  #command-center-context, .browser-toolbox-command-subtitle,
+  .browser-toolbox-command-result-description, .browser-toolbox-command-status,
+  .browser-toolbox-command-empty, .browser-toolbox-command-help { color: #9cafc8; }
+  .browser-toolbox-command-search input { border-color: #526fae; background: #172337; color: #eef4ff; }
+  .browser-toolbox-command-result:hover,
+  .browser-toolbox-command-result.is-selected,
+  .browser-toolbox-command-result:focus-visible { border-color: #7fa1ff; background: #1c2b43; }
+  .browser-toolbox-command-result-icon { background: #24385d; color: #abc0ff; }
+}
+
+@media (max-width: 520px) {
+  .browser-toolbox-command-shell { padding-top: 20px; }
+  .browser-toolbox-command-result-meta { display: none; }
+}

@@ -87,6 +87,13 @@
      */
     async dispatchToPage(invocation, sender, topFrame) {
       let tab = sender.tab;
+      if (!tab && invocation.context?.tabId != null) {
+        try {
+          tab = await chrome.tabs.get(invocation.context.tabId);
+        } catch (_) {
+          // 来源标签页已关闭时继续尝试当前活动标签页，保持 UI 调用的可恢复性。
+        }
+      }
       if (!tab) {
         const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
         tab = tabs?.[0];

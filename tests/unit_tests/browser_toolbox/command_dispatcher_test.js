@@ -38,6 +38,29 @@ context("Command dispatcher", () => {
     assert.equal("browserToolbox.executePageCommand", received.handler);
   });
 
+  should("honor the invocation tab when a command center has no sender tab", async () => {
+    let sentTabId;
+    stub(chrome.tabs, "get", async (tabId) => ({ id: tabId }));
+    stub(chrome.tabs, "sendMessage", async (tabId) => {
+      sentTabId = tabId;
+      return { ok: true, code: "OK" };
+    });
+    const dispatcher = new BrowserToolboxCommandDispatcher({
+      registry: registry(),
+      browserAdapter: {},
+      backgroundCommands: {},
+    });
+    const invocation = BrowserToolboxCommandInvocation.createInvocation(
+      "scrollDown",
+      {},
+      { type: "ui" },
+      { tabId: 19, pageUrl: "https://example.com/", topFrame: true },
+    );
+    const result = await dispatcher.dispatch(invocation, {});
+    assert.isTrue(result.ok);
+    assert.equal(19, sentTabId);
+  });
+
   should("deduplicate dangerous requests", async () => {
     const browserAdapter = {
       executeExisting: async () => ({ ok: true, code: "OK" }),

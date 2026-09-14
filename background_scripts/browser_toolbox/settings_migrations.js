@@ -99,7 +99,37 @@
     "modules",
     "passKeys",
     "notes",
+    "profile",
   ]);
+  const SITE_PROFILE_KEYS = new Set([
+    "preset",
+    "name",
+    "mouse",
+    "superDrag",
+    "wheel",
+    "rocker",
+  ]);
+  const SITE_PROFILE_MOUSE_KEYS = new Set([
+    "enabled",
+    "triggerButton",
+    "activationDistancePx",
+    "sampleDistancePx",
+    "minimumSegmentDistancePx",
+    "turnHysteresisDegrees",
+    "maxSegments",
+    "maxDurationMs",
+    "showTrail",
+    "showCommandHud",
+    "suppressContextMenuAfterActivation",
+  ]);
+  const SITE_PROFILE_SUPER_DRAG_KEYS = new Set(["enabled", "nativeBypassModifier"]);
+  const SITE_PROFILE_WHEEL_KEYS = new Set([
+    "enabled",
+    "threshold",
+    "cooldownMs",
+    "continuousTabSwitching",
+  ]);
+  const SITE_PROFILE_ROCKER_KEYS = new Set(["enabled"]);
   const SITE_RULE_MODULE_KEYS = new Set([
     "keyboard",
     "mouse",
@@ -209,6 +239,13 @@
         binding.pattern.every((direction) => CARDINAL_DIRECTIONS.has(direction))
       );
     }
+    return next;
+  }
+
+  function migrate6To7(input) {
+    const next = schema.mergeSettings(input);
+    next.schemaVersion = 7;
+    // 站点配置档是可选字段；旧设置无需补写 profile，继续继承全局配置即可。
     return next;
   }
 
@@ -402,6 +439,32 @@
         const path = `siteRules[${index}]`;
         collectObjectUnknownFields(rule, SITE_RULE_KEYS, path, output);
         collectObjectUnknownFields(rule?.modules, SITE_RULE_MODULE_KEYS, `${path}.modules`, output);
+        const profilePath = `${path}.profile`;
+        collectObjectUnknownFields(rule?.profile, SITE_PROFILE_KEYS, profilePath, output);
+        collectObjectUnknownFields(
+          rule?.profile?.mouse,
+          SITE_PROFILE_MOUSE_KEYS,
+          `${profilePath}.mouse`,
+          output,
+        );
+        collectObjectUnknownFields(
+          rule?.profile?.superDrag,
+          SITE_PROFILE_SUPER_DRAG_KEYS,
+          `${profilePath}.superDrag`,
+          output,
+        );
+        collectObjectUnknownFields(
+          rule?.profile?.wheel,
+          SITE_PROFILE_WHEEL_KEYS,
+          `${profilePath}.wheel`,
+          output,
+        );
+        collectObjectUnknownFields(
+          rule?.profile?.rocker,
+          SITE_PROFILE_ROCKER_KEYS,
+          `${profilePath}.rocker`,
+          output,
+        );
       }
     }
     if (Array.isArray(settings.exclusionRules)) {
@@ -498,6 +561,7 @@
       else if (version === 3) current = migrate3To4(current);
       else if (version === 4) current = migrate4To5(current);
       else if (version === 5) current = migrate5To6(current);
+      else if (version === 6) current = migrate6To7(current);
       else throw new Error(`Unsupported settings schema: ${version}`);
       version = current.schemaVersion;
     }
@@ -529,6 +593,7 @@
     migrate3To4,
     migrate4To5,
     migrate5To6,
+    migrate6To7,
     normalizeToolSettings,
     migrateCommandName,
     migrateCommandNamespaces,

@@ -11,7 +11,7 @@ context("Settings migrations", () => {
       schemaVersion: 0,
       gestureBindings: [{ pattern: ["R"], commandName: "OpenKeyMouse.newWindow" }],
     });
-    assert.equal(6, migrated.schemaVersion);
+      assert.equal(7, migrated.schemaVersion);
     assert.equal(["R"], migrated.mouse.bindings[0].pattern);
     assert.equal("BrowserToolbox.newWindow", migrated.mouse.bindings[0].commandName);
     assert.isFalse(migrated.privacy.telemetry);
@@ -49,7 +49,7 @@ context("Settings migrations", () => {
       "BrowserToolbox.openLinkForeground",
       migrated.superDrag.bindings[0].commandName,
     );
-    assert.equal(6, migrated.schemaVersion);
+      assert.equal(7, migrated.schemaVersion);
     assert.equal("regex", migrated.siteRules[0].matchType);
     assert.isTrue(migrated.siteRules[0].enabled);
     assert.equal("browser-toolbox-settings", BrowserToolboxSettingsMigrations.EXPORT_FORMAT);
@@ -85,6 +85,24 @@ context("Settings migrations", () => {
     assert.equal([], migrated.superDrag.bindings);
   });
 
+  should("upgrade site profiles without dropping their explicit overrides", () => {
+    const migrated = BrowserToolboxSettingsMigrations.migrate({
+      schemaVersion: 6,
+      siteRules: [{
+        pattern: "https://editor.example.com/*",
+        profile: {
+          preset: "editor",
+          mouse: { enabled: false, activationDistancePx: 24 },
+        },
+      }],
+    });
+    assert.equal(7, migrated.schemaVersion);
+    assert.equal({
+      preset: "editor",
+      mouse: { enabled: false, activationDistancePx: 24 },
+    }, migrated.siteRules[0].profile);
+  });
+
   should("parse and migrate canonical and legacy export wrappers", () => {
     const migrations = globalThis.BrowserToolboxSettingsMigrations;
     const payload = migrations.createExportPayload({
@@ -96,7 +114,7 @@ context("Settings migrations", () => {
     });
     const parsed = migrations.migrateExportPayload(payload);
     assert.isTrue(parsed.ok);
-    assert.equal(6, parsed.settings.schemaVersion);
+      assert.equal(7, parsed.settings.schemaVersion);
     assert.equal("BrowserToolbox.newWindow", parsed.settings.mouse.bindings[0].commandName);
     assert.equal([], payload.localAssets);
 

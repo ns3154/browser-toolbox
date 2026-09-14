@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="color-scheme" content="light dark">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title data-i18n="commandCenterTitle">Command center</title>
+    <link rel="stylesheet" href="command_center.css">
+    <script src="../lib/i18n.js"></script>
+    <script src="../lib/browser_toolbox/value_utils.js"></script>
+    <script src="../lib/browser_toolbox/tools/tool_contract.js"></script>
+    <script src="../lib/browser_toolbox/tools/tool_registry.js"></script>
+    <script src="../lib/browser_toolbox/tools/tool_registry_validator.js"></script>
+    <script src="../lib/browser_toolbox/tools/tool_icons.js"></script>
+    <script src="../lib/browser_toolbox/command_invocation.js"></script>
+    <script src="../lib/browser_toolbox/command_center.js"></script>
+    <script type="module" src="command_center.js"></script>
+  </head>
+  <body class="browser-toolbox-command-center">
+    <main class="browser-toolbox-command-shell" aria-labelledby="command-center-title">
+      <header class="browser-toolbox-command-header">
+        <div class="browser-toolbox-command-brand">
+          <img src="../icons/icon48.png" alt="" aria-hidden="true">
+          <div>
+            <span class="browser-toolbox-command-kicker" data-i18n="browserToolbox">Browser Toolbox</span>
+            <h1 id="command-center-title" data-i18n="commandCenterTitle">Command center</h1>
+          </div>
+        </div>
+        <button id="command-center-close" class="browser-toolbox-command-close" type="button"
+          data-i18n="close" data-i18n-aria-label="close">Close</button>
+      </header>
+      <p id="command-center-subtitle" class="browser-toolbox-command-subtitle"
+        data-i18n="commandCenterSubtitle">Search commands, tools, and settings.</p>
+      <section class="browser-toolbox-command-context" aria-live="polite">
+        <span class="browser-toolbox-command-context-label" data-i18n="commandCenterContext">Target</span>
+        <strong id="command-center-context">—</strong>
+      </section>
+      <label class="browser-toolbox-command-search" for="command-center-search">
+        <span data-i18n="commandCenterSearchLabel">Search</span>
+        <input id="command-center-search" type="search" autocomplete="off" spellcheck="false"
+          data-i18n-placeholder="commandCenterSearchHint"
+          data-i18n-aria-label="commandCenterSearchLabel"
+          aria-controls="command-center-results">
+      </label>
+      <p id="command-center-status" class="browser-toolbox-command-status" role="status"
+        aria-live="polite"></p>
+      <div id="command-center-results" class="browser-toolbox-command-results" role="listbox"
+        aria-label="Command center results" data-i18n-aria-label="commandCenterResults"></div>
+      <p class="browser-toolbox-command-help" data-i18n="commandCenterKeyboardHint">
+        Use ↑ and ↓ to choose, Enter to run, and Escape to close.
+      </p>
+    </main>
+  </body>
+</html>

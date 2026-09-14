@@ -7,6 +7,7 @@ import * as testHelper from "../test_helper.js";
 import "../../../lib/browser_toolbox/value_utils.js";
 import "../../../lib/browser_toolbox/regex_safety.js";
 import "../../../lib/browser_toolbox/module_registry.js";
+import "../../../lib/browser_toolbox/settings_schema.js";
 import "../../../lib/browser_toolbox/site_rule_matcher.js";
 import "../../../pages/site_rules_editor.js";
 
@@ -115,5 +116,34 @@ context("Site rules editor", () => {
       Array.from(document.querySelectorAll(".browser-toolbox-site-rule-warning"))
         .every((warning) => !warning.hidden),
     );
+  });
+
+  should("render and persist a built-in site profile preset", () => {
+    rules = [{
+      id: "profile-rule",
+      pattern: "https://editor.example.com/*",
+      matchType: "glob",
+      modules: {},
+    }];
+    editor.render();
+    const preset = document.querySelector("#site-rules [data-profile-section='meta'][data-profile-field='preset']");
+    assert.isTrue(Boolean(preset));
+    assert.equal(
+      ["", "balanced", "editor", "reading", "custom"],
+      [...preset.options].map((option) => option.value),
+    );
+    preset.value = "editor";
+    preset.dispatchEvent(new window.Event("change", { bubbles: true }));
+    assert.equal("editor", rules[0].profile.preset);
+    assert.isFalse(rules[0].profile.mouse.enabled);
+    assert.isFalse(rules[0].profile.superDrag.enabled);
+    assert.equal("editor", document.querySelector("#site-rules [data-profile-field='preset']").value);
+
+    const triggerButton = document.querySelector(
+      "#site-rules [data-profile-section='mouse'][data-profile-field='triggerButton']",
+    );
+    triggerButton.value = "1";
+    triggerButton.dispatchEvent(new window.Event("change", { bubbles: true }));
+    assert.equal(1, rules[0].profile.mouse.triggerButton);
   });
 });

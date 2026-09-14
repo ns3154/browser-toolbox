@@ -66,7 +66,11 @@ import * as userSearchEngines from "../user_search_engines.js";
       const tab = await this.getTab(invocation, sender);
       if (
         !tab &&
-        !["BrowserToolbox.newWindow", "BrowserToolbox.openSettings"].includes(
+        ![
+          "BrowserToolbox.newWindow",
+          "BrowserToolbox.openSettings",
+          "BrowserToolbox.openCommandCenter",
+        ].includes(
           invocation.commandName,
         )
       ) {
@@ -96,6 +100,13 @@ import * as userSearchEngines from "../user_search_engines.js";
         case "BrowserToolbox.openSettings":
           await chrome.tabs.create({ url: chrome.runtime.getURL("pages/mouse_options.html") });
           return invocationApi.createResult(true);
+        case "BrowserToolbox.openCommandCenter": {
+          const tabQuery = tab?.id == null ? "" : `?tabId=${encodeURIComponent(tab.id)}`;
+          await chrome.tabs.create({
+            url: chrome.runtime.getURL(`pages/command_center.html${tabQuery}`),
+          });
+          return invocationApi.createResult(true);
+        }
         case "BrowserToolbox.openTool": {
           const toolId = invocation.options?.toolId;
           const source = invocation.options?.source ||
@@ -220,10 +231,11 @@ import * as userSearchEngines from "../user_search_engines.js";
         return invocationApi.createResult(false, invocationApi.ERROR_CODES.UNKNOWN_COMMAND);
       }
       const registry = globalThis.BrowserToolboxCommandRegistry?.getCommand(commandName);
-      const registryEntry = Object.assign({
+      // 注册表中的 options 是参数说明，不是本次调用的参数；UI 调用必须保留经过协议校验的实际值。
+      const registryEntry = Object.assign({}, registry || {}, {
         command: commandName,
         options: invocation.options || {},
-      }, registry || {});
+      });
       try {
         await command({
           count: invocation.count,

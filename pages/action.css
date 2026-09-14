@@ -575,7 +575,7 @@ body.browser-toolbox-action-page {
 
 .browser-toolbox-action-page .browser-toolbox-action-footer {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 5px;
   margin-top: auto;
   padding: 4px 0 0;
@@ -664,7 +664,7 @@ body.browser-toolbox-action-page {
   }
 
   .browser-toolbox-action-page .browser-toolbox-action-footer {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
@@ -970,7 +970,7 @@ body.browser-toolbox-action-page {
 }
 
 .browser-toolbox-action-page .browser-toolbox-action-footer {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 2px;
   margin-top: auto;
   padding: 8px 10px 9px;

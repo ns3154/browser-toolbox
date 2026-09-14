@@ -647,6 +647,14 @@ const allCommands = [
     noRepeat: true,
   },
   {
+    name: "BrowserToolbox.openCommandCenter",
+    desc: "Open Browser Toolbox command center",
+    group: "settings",
+    background: true,
+    noRepeat: true,
+    supportedInputs: ["keyboard", "ui"],
+  },
+  {
     name: "BrowserToolbox.openTool",
     desc: "Open a Browser Toolbox utility",
     group: "tools",

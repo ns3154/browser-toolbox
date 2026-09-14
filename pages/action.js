@@ -118,6 +118,22 @@ const ActionPage = {
     container.style.display = "block";
     document.querySelector("#browser-toolbox-enhancement-summary").style.display = "block";
     this.setStaticPageLinks();
+    document.querySelector("#browser-toolbox-open-command-center")?.addEventListener(
+      "click",
+      async () => {
+        const invocation = BrowserToolboxCommandInvocation.createInvocation(
+          "BrowserToolbox.openCommandCenter",
+          {},
+          { type: "ui" },
+          { tabId: activeTab.id, pageUrl: activeTab.url || "", topFrame: true },
+        );
+        try {
+          await chrome.runtime.sendMessage({ handler: "browserToolbox.invoke", invocation });
+        } finally {
+          globalThis.close();
+        }
+      },
+    );
     document.querySelector("#browser-toolbox-all-tools")?.addEventListener("click", async () => {
       await chrome.tabs.create({
         url: chrome.runtime.getURL("pages/mouse_options.html#toolsOverview"),

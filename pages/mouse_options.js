@@ -5,8 +5,10 @@
   const schema = globalThis.BrowserToolboxSettingsSchema;
   const validator = globalThis.BrowserToolboxSettingsValidator;
   const moduleRegistry = globalThis.BrowserToolboxModuleRegistry;
+  const settingsPolicy = globalThis.BrowserToolboxSettingsPolicy;
   const toolSettingsApi = globalThis.BrowserToolboxToolSettings;
   const quantizer = globalThis.BrowserToolboxDirectionQuantizer;
+  const gestureLab = globalThis.BrowserToolboxGestureLab;
   const draftApi = globalThis.BrowserToolboxSettingsDraft;
   const applicationServiceApi = globalThis.BrowserToolboxSettingsApplicationService;
   const sectionsApi = globalThis.BrowserToolboxSettingsSections;
@@ -149,6 +151,7 @@
     BrowserToolboxI18n.apply(document);
     renderMouseEnabledStatus();
     renderMouseGestureCards();
+    renderGestureLabStatus();
     if (navigation) {
       const result = navigation.filter(document.querySelector("#settings-section-search")?.value);
       updateSettingsSearchStatus(result);
@@ -354,6 +357,7 @@
     bindingEditor?.renderAll();
     renderMouseEnabledStatus();
     renderMouseGestureCards();
+    renderGestureLabStatus();
   }
 
   function renderSiteRules() {
@@ -400,13 +404,19 @@
         matches.appendChild(item);
       }
     }
-    effective.textContent = `${message("siteRuleEffectiveState")}: ${stateText}`;
+    const profile = explanation.effectiveProfile;
+    const profileName = profile?.name ||
+      (profile?.preset && schema?.SITE_PROFILE_PRESETS?.[profile.preset]
+        ? message(schema.SITE_PROFILE_PRESETS[profile.preset].labelKey)
+        : profile?.preset);
+    effective.textContent = `${message("siteRuleEffectiveState")}: ${stateText}` +
+      (profileName ? ` · ${message("siteRuleProfile")}: ${profileName}` : "");
     panel.hidden = false;
   }
 
   function testSiteRules() {
     readForm();
-    const matcher = globalThis.BrowserToolboxSiteRuleMatcher;
+  const matcher = globalThis.BrowserToolboxSiteRuleMatcher;
     const result = document.querySelector("#site-rule-test-result");
     if (!matcher || !result) return;
     const url = document.querySelector("#site-rule-test-url")?.value.trim() || "";
@@ -434,7 +444,10 @@
       effectiveRule: matcher.effectiveRule(settings.siteRules, url),
       effective: matcher.resolve(settings.siteRules, url, defaults),
     };
-    const effectiveState = explanation.effective;
+    const effectiveSettings = settingsPolicy?.withEffectiveSettings?.(settings, url) || settings;
+    const effectiveState = effectiveSettings.effectiveModules || explanation.effective;
+    explanation.effective = effectiveState;
+    explanation.effectiveProfile = effectiveSettings.effectiveSiteProfile || explanation.effectiveProfile;
     if (effectiveState.enabled === false) {
       moduleRegistry.disableAll(effectiveState);
     }
@@ -878,7 +891,45 @@
     if (updateInput) {
       document.querySelector("#gesture-pattern-input").value = formatted;
     }
-    document.querySelector("#add-gesture-binding").disabled = previewPattern.length === 0;
+    renderGestureLabStatus();
+  }
+
+  function renderGestureLabStatus() {
+    const status = document.querySelector("#gesture-lab-status");
+    const addButton = document.querySelector("#add-gesture-binding");
+    if (!status || !addButton) return;
+    const analysis = gestureLab?.analyze?.(previewPattern, settings?.mouse?.bindings, registry) || {
+      pattern: previewPattern,
+      exact: [],
+      prefixes: [],
+      longer: [],
+    };
+    status.className = "browser-toolbox-note";
+    if (previewPattern.length === 0) {
+      status.textContent = message("gestureLabHint");
+      addButton.disabled = true;
+      return;
+    }
+    if (analysis.exact.length > 0) {
+      const commands = analysis.exact.slice(0, 2).map((binding) =>
+        commandLabel(registry?.getCommand(binding.commandName))
+      ).join(", ");
+      status.classList.add("is-warning");
+      status.textContent = `${message("gestureLabDuplicateWarning")}: ${commands}`;
+      addButton.disabled = true;
+      return;
+    }
+    const warnings = [];
+    if (analysis.prefixes.length > 0) warnings.push(message("gestureLabPrefixWarning"));
+    if (analysis.longer.length > 0) warnings.push(message("gestureLabLongerWarning"));
+    addButton.disabled = false;
+    if (warnings.length > 0) {
+      status.classList.add("is-warning");
+      status.textContent = warnings.join(" ");
+    } else {
+      status.classList.add("is-success");
+      status.textContent = message("gestureLabReady");
+    }
   }
 
   function setupNavigation() {
@@ -1010,6 +1061,7 @@
       });
       bindingEditor?.render("mouse");
       renderMouseGestureCards();
+      renderGestureLabStatus();
       markDraftDirty();
     });
     document.querySelector("#gesture-pattern-input").addEventListener("input", (event) => {
@@ -1019,6 +1071,10 @@
       setPreviewPattern(event.target.value);
     });
     document.addEventListener("input", (event) => {
+      if (event.target.closest?.("#mouse-bindings")) {
+        bindingEditor?.sync();
+        renderGestureLabStatus();
+      }
       if (
         !event.target.closest("#site-rules") &&
         event.target.id !== "gesture-pattern-input" &&
@@ -1026,6 +1082,7 @@
       ) markDraftDirty({ sync: true });
     });
     document.addEventListener("change", (event) => {
+      if (event.target.closest?.("#mouse-bindings")) renderGestureLabStatus();
       if (
         !event.target.closest("#site-rules") &&
         event.target.id !== "import-settings" &&
@@ -1094,7 +1151,10 @@
       markDirty: () => markDraftDirty(),
       idFactory: siteRulesApi.newId,
       onBindingsChange: (kind) => {
-        if (kind === "mouse") renderMouseGestureCards();
+        if (kind === "mouse") {
+          renderMouseGestureCards();
+          renderGestureLabStatus();
+        }
       },
     });
     BrowserToolboxI18n.setLocale(settings.general.language);

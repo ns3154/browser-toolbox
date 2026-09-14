@@ -106,6 +106,25 @@ context("Site rule matcher", () => {
     );
   });
 
+  should("merge site profiles by precedence at the field level", () => {
+    const matcher = BrowserToolboxSiteRuleMatcher;
+    const rulesWithProfiles = [
+      {
+        pattern: "https://*.example.com/*",
+        profile: { preset: "reading", mouse: { showTrail: false }, wheel: { threshold: 120 } },
+      },
+      {
+        pattern: "https://docs.example.com/*",
+        profile: { mouse: { activationDistancePx: 24 }, wheel: { cooldownMs: 300 } },
+      },
+    ];
+    const profile = matcher.effectiveProfile(rulesWithProfiles, "https://docs.example.com/page");
+    assert.equal("reading", profile.preset);
+    assert.equal({ showTrail: false, activationDistancePx: 24 }, profile.mouse);
+    assert.equal({ threshold: 120, cooldownMs: 300 }, profile.wheel);
+    assert.equal(profile, matcher.explain(rulesWithProfiles, "https://docs.example.com/page").effectiveProfile);
+  });
+
   should("diagnose duplicate matching patterns without guessing partial overlaps", () => {
     const diagnostics = BrowserToolboxSiteRuleMatcher.diagnose([
       { pattern: "https://*.example.com/*" },

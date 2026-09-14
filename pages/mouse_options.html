@@ -28,6 +28,7 @@
     <script src="../background_scripts/browser_toolbox/settings_repository.js"></script>
     <script src="../content_scripts/mouse/direction_quantizer.js"></script>
     <script src="../content_scripts/mouse/cursor_controller.js"></script>
+    <script src="../lib/browser_toolbox/gesture_lab.js"></script>
     <script src="gesture_editor.js"></script>
     <script src="settings_draft.js"></script>
     <script src="settings_commit_coordinator.js"></script>
@@ -325,6 +326,8 @@
                 <input id="gesture-pattern-input" type="text" autocomplete="off" spellcheck="false" aria-describedby="gesture-preview">
               </label>
               <div id="gesture-preview" aria-live="polite"></div>
+              <p id="gesture-lab-status" class="browser-toolbox-note" role="status" aria-live="polite"
+                data-i18n="gestureLabHint">The gesture lab checks duplicates and prefix conflicts before adding a binding.</p>
               <div class="browser-toolbox-actions"><button id="clear-gesture" data-i18n="reset">Reset</button><button id="add-gesture-binding" class="primary" data-i18n="addBinding">Add binding</button></div>
               <div id="mouse-binding-error" class="browser-toolbox-error" role="alert"></div>
               <table class="browser-toolbox-table">
