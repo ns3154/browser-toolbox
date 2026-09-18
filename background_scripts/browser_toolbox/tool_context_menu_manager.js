@@ -88,7 +88,8 @@
           id: configuredToolIdForMenu(toolId),
           parentId: ROOT_ID,
           title: globalThis.BrowserToolboxI18n?.message(registry.get(toolId).titleKey) || toolId,
-          contexts: ["selection"],
+          // 工具页既支持接收选中文本，也支持从空白输入开始使用。
+          contexts: ["all"],
         }));
       }
       await this.create(menuProperties({ id: SEPARATOR_ID, parentId: ROOT_ID, type: "separator" }));
@@ -103,7 +104,8 @@
           id: toolIdForMenu(descriptor.id),
           parentId: ALL_TOOLS_ID,
           title: globalThis.BrowserToolboxI18n?.message(descriptor.titleKey) || descriptor.id,
-          contexts: ["selection"],
+          // 没有选中文本时仍保留入口，点击后打开空白工具页。
+          contexts: ["all"],
         }));
       }
       await this.create(menuProperties({

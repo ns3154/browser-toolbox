@@ -6,6 +6,7 @@
     <title data-i18n="tools">Browser Toolbox Tools</title>
     <link rel="stylesheet" href="../options.css">
     <link rel="stylesheet" href="tools.css">
+    <link rel="stylesheet" href="properties_yaml.css">
     <script src="../../lib/i18n.js"></script>
     <script src="../../lib/browser_toolbox/tools/tool_contract.js"></script>
     <script src="../../lib/browser_toolbox/tools/tool_registry.js"></script>
@@ -18,6 +19,8 @@
     <script src="time_tool.js"></script>
     <script src="generator_tools.js"></script>
     <script src="table_tool.js"></script>
+    <script type="module" src="properties_yaml_tool.js"></script>
+    <script src="properties_yaml_view.js"></script>
     <script src="tool_loader.js"></script>
     <script src="index.js" defer></script>
   </head>
@@ -103,10 +106,18 @@
         </section>
         <div class="browser-toolbox-tool-footer">
           <p id="tool-status" role="status" aria-live="polite"></p>
-          <label class="browser-toolbox-tool-file" for="tool-file">
-            <span data-i18n="toolFile">Local file</span>
-            <input id="tool-file" type="file" accept=".txt,.json,.xml,.css,.js,.mjs,.cjs,.java,.csv,.tsv,text/*,application/json,application/xml">
-          </label>
+          <div class="browser-toolbox-tool-file">
+            <span id="tool-file-label" data-i18n="toolFile">Local file</span>
+            <div class="browser-toolbox-file-picker">
+              <button id="tool-file-trigger" class="browser-toolbox-file-trigger" type="button"
+                aria-controls="tool-file" data-i18n="toolFileChoose">Choose file</button>
+              <span id="tool-file-name" class="browser-toolbox-file-name" aria-live="polite"
+                data-i18n="toolFileNone">No file selected</span>
+              <input id="tool-file" type="file" tabindex="-1"
+                aria-labelledby="tool-file-label tool-file-name"
+                accept=".txt,.json,.xml,.css,.js,.mjs,.cjs,.java,.csv,.tsv,text/*,application/json,application/xml">
+            </div>
+          </div>
           <div id="json-tool-summary" class="browser-toolbox-json-summary" hidden>
             <span id="json-cursor-summary"></span>
             <span id="json-character-summary"></span>

@@ -40,7 +40,11 @@
   }
 
   function downloadText(value, filename, mime = "text/plain;charset=utf-8") {
-    const blob = new Blob([String(value)], { type: mime });
+    downloadBytes(String(value), filename, mime);
+  }
+
+  function downloadBytes(value, filename, mime = "application/octet-stream") {
+    const blob = new Blob([value], { type: mime });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
     anchor.href = url;
@@ -61,6 +65,7 @@
     assertInput,
     copyText,
     downloadText,
+    downloadBytes,
     randomBytes,
   });
 })();

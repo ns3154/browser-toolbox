@@ -7,6 +7,7 @@ const roots = [
   "pages/mouse_options.js",
   "pages/tab_list.js",
   "pages/tools",
+  "vendor/yaml.js",
 ];
 const patterns = [
   [/\bfetch\s*\(/, "fetch"],

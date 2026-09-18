@@ -1,6 +1,6 @@
 {
   "fmt": {
-    "exclude": ["icons/*.svg"],
+    "exclude": ["icons/*.svg", "vendor/yaml.js"],
     "lineWidth": 100
   },
   "imports": {

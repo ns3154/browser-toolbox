@@ -9,6 +9,7 @@ context("BrowserToolbox static tool registry", () => {
     assert.equal(
       [
         "json.format",
+        "config.convert",
         "text.diff",
         "codec.transform",
         "time.convert",
@@ -21,6 +22,9 @@ context("BrowserToolbox static tool registry", () => {
     assert.equal([], BrowserToolboxToolContract.validateRegistry(registry.entries));
     assert.isTrue(registry.get("json.format").localOnly);
     assert.isFalse(registry.has("json.format.v2"));
+    assert.equal("developer", registry.get("config.convert").categoryId);
+    assert.equal(["json.format", "text.diff", "codec.transform"], registry.DEFAULT_CONTEXT_MENU_TOOL_IDS);
+    assert.equal("password.generate", registry.DEFAULT_ACTION_TOOL_IDS[5]);
   });
 
   should("limit configurable action and context menu tools", () => {

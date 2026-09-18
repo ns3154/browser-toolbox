@@ -66,6 +66,8 @@ context("BrowserToolbox DOM integration", () => {
     assert.isTrue(tools.querySelector("#tool-catalog") === null);
     assert.isTrue(Boolean(tools.querySelector("#tool-input")));
     assert.isTrue(Boolean(tools.querySelector("#tool-input-right")));
+    assert.isTrue(Boolean(tools.querySelector("#tool-file-trigger")));
+    assert.isTrue(Boolean(tools.querySelector("#tool-file-name")));
   });
 
   should("render formatted source as text without creating executable DOM", () => {

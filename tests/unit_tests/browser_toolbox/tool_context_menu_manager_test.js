@@ -48,6 +48,18 @@ context("BrowserToolbox context menu manager", () => {
     assert.isTrue(ids.includes("browser-toolbox.configured-tool.json.format"));
     assert.isTrue(ids.includes("browser-toolbox.tool.table.convert"));
     assert.equal(4, created.filter((item) => item.parentId === "browser-toolbox.root").length - 2);
+    assert.isTrue(
+      created
+        .filter((item) =>
+          item.parentId === "browser-toolbox.root" && item.id.includes("configured-tool")
+        )
+        .every((item) => item.contexts.includes("all")),
+    );
+    assert.isTrue(
+      created
+        .filter((item) => item.parentId === "browser-toolbox.all-tools")
+        .every((item) => item.contexts.includes("all")),
+    );
   });
 
   should("serialize overlapping reconciliations", async () => {
@@ -84,5 +96,48 @@ context("BrowserToolbox context menu manager", () => {
     await Promise.all([manager.reconcile(), manager.reconcile()]);
     assert.equal(1, maxActiveCreates);
     assert.equal(created.length, new Set(created.map((item) => item.id)).size);
+  });
+
+  should("preserve selected input and open an empty tool page without selection", async () => {
+    const originalGetURL = chrome.runtime.getURL;
+    const originalCreateTab = chrome.tabs.create;
+    const opened = [];
+    chrome.runtime.getURL = (path) => `chrome-extension://test/${path}`;
+    chrome.tabs.create = async (properties) => {
+      opened.push(properties);
+      return { id: 42 };
+    };
+    const manager = new BrowserToolboxToolContextMenuManager.ToolContextMenuManager({
+      contextMenus: {},
+      openSettings: () => {},
+    });
+    try {
+      await manager.handleClick(
+        {
+          menuItemId: "browser-toolbox.tool.json.format",
+          selectionText: '{"ok":true}',
+        },
+        { id: 7, index: 2 },
+      );
+      const selectedUrl = new URL(opened[0].url);
+      assert.equal(selectedUrl.searchParams.get("source"), "selection");
+      assert.isTrue(Boolean(selectedUrl.searchParams.get("inputToken")));
+      assert.equal(opened[0].index, 3);
+
+      await manager.handleClick(
+        {
+          menuItemId: "browser-toolbox.tool.json.format",
+          selectionText: "",
+        },
+        { id: 7, index: 2 },
+      );
+      const emptyUrl = new URL(opened[1].url);
+      assert.equal(emptyUrl.searchParams.get("source"), "selection");
+      assert.equal(emptyUrl.searchParams.get("inputToken"), null);
+      assert.equal(emptyUrl.searchParams.get("notice"), "empty-selection");
+    } finally {
+      chrome.runtime.getURL = originalGetURL;
+      chrome.tabs.create = originalCreateTab;
+    }
   });
 });

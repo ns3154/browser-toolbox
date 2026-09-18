@@ -9,6 +9,7 @@ import "../../../pages/tools/codec_tool.js";
 import "../../../pages/tools/time_tool.js";
 import "../../../pages/tools/generator_tools.js";
 import "../../../pages/tools/table_tool.js";
+import "../../../pages/tools/properties_yaml_tool.js";
 import "../../../pages/tools/tool_loader.js";
 
 context("BrowserToolbox local tool implementations", () => {

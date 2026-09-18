@@ -1,0 +1,405 @@
+/* 配置转换沿用 JSON 页的扁平双栏工作台，所有规则限定于当前工具。 */
+body.browser-toolbox-tool-is-config {
+  background: var(--toolbox-surface);
+  min-width: 0;
+}
+@media (max-width: 360px) {
+  .browser-toolbox-tool-is-config .browser-toolbox-result-heading { flex-wrap: wrap; }
+  .browser-toolbox-tool-is-config .config-result-actions { flex-basis: 100%; justify-content: flex-end; }
+}
+.browser-toolbox-tool-is-config .browser-toolbox-tools-page {
+  width: 100%;
+  height: 100dvh;
+  min-height: 500px;
+  padding: 0;
+  gap: 0;
+}
+.browser-toolbox-tool-is-config .browser-toolbox-tools-header {
+  display: flex;
+  flex-wrap: wrap;
+  flex: 0 0 auto;
+  gap: 10px 14px;
+  min-height: 58px;
+  padding: 10px 16px;
+  border: 0;
+  border-bottom: 1px solid var(--toolbox-line);
+  border-radius: 0;
+  box-shadow: none;
+}
+.browser-toolbox-tool-is-config .browser-toolbox-tool-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.browser-toolbox-tool-is-config .browser-toolbox-tool-icon-wrap {
+  width: 26px;
+  height: 30px;
+  background: transparent;
+}
+.browser-toolbox-tool-is-config .browser-toolbox-eyebrow {
+  margin: 0;
+  color: var(--toolbox-ink);
+  font-size: 13px;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+}
+.browser-toolbox-tool-is-config .config-brand-divider {
+  height: 18px;
+  margin-inline: 2px;
+  border-left: 1px solid var(--toolbox-line);
+}
+.browser-toolbox-tool-is-config #tool-title {
+  margin: 0;
+  color: var(--toolbox-ink);
+  font-size: 20px;
+  font-weight: 750;
+  letter-spacing: -.03em;
+  white-space: nowrap;
+}
+.browser-toolbox-tool-is-config #tool-header-toolbar {
+  flex: 1 1 auto;
+  gap: 8px;
+}
+.browser-toolbox-tool-is-config #tool-controls {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: visible;
+  gap: 8px;
+}
+.browser-toolbox-tool-is-config .config-directions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 4px;
+}
+.browser-toolbox-tool-is-config .config-direction,
+.browser-toolbox-tool-is-config .config-text-button,
+.browser-toolbox-tool-is-config .config-indent,
+.browser-toolbox-tool-is-config #tool-file-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 34px;
+  min-height: 34px;
+  min-width: 0;
+  padding: 6px 10px;
+  border: 1px solid var(--toolbox-line);
+  border-radius: 7px;
+  background: var(--toolbox-surface);
+  box-shadow: 0 1px 2px rgb(32 63 104 / 5%);
+  color: var(--toolbox-ink);
+  font: 600 12px/1.3 system-ui, sans-serif;
+  white-space: nowrap;
+  cursor: pointer;
+  text-shadow: none;
+}
+.browser-toolbox-tool-is-config .config-direction[aria-pressed="true"] {
+  border-color: var(--toolbox-blue);
+  background: var(--toolbox-blue);
+  color: white;
+}
+.browser-toolbox-tool-is-config #tool-run {
+  min-width: 60px;
+  min-height: 34px;
+  border-radius: 7px;
+  font-size: 12px;
+}
+.browser-toolbox-tool-is-config .browser-toolbox-tool-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+}
+.browser-toolbox-tool-is-config .browser-toolbox-tool-icon-wrap .browser-toolbox-tool-icon {
+  width: 25px;
+  height: 25px;
+}
+.browser-toolbox-tool-is-config button:disabled {
+  opacity: .45;
+  cursor: default;
+  box-shadow: none;
+}
+.browser-toolbox-tool-is-config :is(button, select):focus-visible {
+  outline: 2px solid var(--toolbox-blue);
+  outline-offset: 2px;
+}
+.browser-toolbox-tool-is-config #tool-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: hidden;
+}
+.browser-toolbox-tool-is-config .browser-toolbox-workspace-heading,
+.browser-toolbox-tool-is-config #tool-input-label,
+.browser-toolbox-tool-is-config #tool-metadata,
+.browser-toolbox-tool-is-config #tool-file-label,
+.browser-toolbox-tool-is-config .browser-toolbox-json-responsive-hint {
+  display: none;
+}
+.browser-toolbox-tool-is-config .config-input-panel {
+  display: flex;
+  grid-column: 1;
+  grid-row: 1;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  border-right: 1px solid var(--toolbox-line);
+}
+.browser-toolbox-tool-is-config #tool-result-workspace {
+  display: flex;
+  order: 1;
+  grid-column: 2;
+  grid-row: 1;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+  border: 0;
+  border-radius: 0;
+  background: var(--toolbox-surface);
+}
+.browser-toolbox-tool-is-config .config-panel-heading,
+.browser-toolbox-tool-is-config .browser-toolbox-result-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 0 0 auto;
+  gap: 12px;
+  min-height: 56px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--toolbox-line);
+}
+.browser-toolbox-tool-is-config .config-panel-label,
+.browser-toolbox-tool-is-config .config-result-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.browser-toolbox-tool-is-config :is(#tool-input-title, #tool-output-title) {
+  margin: 0;
+  color: var(--toolbox-ink);
+  font-size: 18px;
+  font-weight: 700;
+}
+.browser-toolbox-tool-is-config .config-kind {
+  color: var(--toolbox-muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+.browser-toolbox-tool-is-config .browser-toolbox-tool-file {
+  display: block;
+  width: auto;
+  flex: 0 1 auto;
+  order: 0;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+}
+.browser-toolbox-tool-is-config .browser-toolbox-file-picker {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 8px;
+}
+.browser-toolbox-tool-is-config #tool-file-name {
+  max-width: 115px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+}
+.browser-toolbox-tool-is-config .browser-toolbox-tool-input-grid {
+  display: block;
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 0;
+}
+.browser-toolbox-tool-is-config .browser-toolbox-tool-input {
+  display: block;
+  height: 100%;
+  min-height: 0;
+}
+.browser-toolbox-tool-is-config .browser-toolbox-tool-editor,
+.browser-toolbox-tool-is-config .config-output-editor {
+  display: grid;
+  position: relative;
+  grid-template-columns: 44px minmax(0, 1fr);
+  flex: 1 1 auto;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+.browser-toolbox-tool-is-config :is(#json-input-highlight, #tool-input, #tool-output) {
+  grid-column: 2;
+  grid-row: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  max-height: none;
+  margin: 0;
+  padding: 16px 14px;
+  border: 0;
+  border-radius: 0;
+  outline: none;
+  box-shadow: none;
+  background: transparent;
+  color: var(--toolbox-ink);
+  font: 14px/1.8 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  white-space: pre;
+  overflow-wrap: normal;
+  word-break: normal;
+  tab-size: 2;
+  resize: none;
+}
+.browser-toolbox-tool-is-config #json-input-highlight {
+  overflow: hidden;
+  pointer-events: none;
+}
+.browser-toolbox-tool-is-config #tool-input {
+  z-index: 1;
+  color: transparent;
+  caret-color: var(--toolbox-ink);
+  overflow: auto;
+  -webkit-text-fill-color: transparent;
+}
+.browser-toolbox-tool-is-config #tool-input::placeholder {
+  color: var(--toolbox-muted);
+  -webkit-text-fill-color: var(--toolbox-muted);
+}
+.browser-toolbox-tool-is-config #tool-input.config-plain-input {
+  color: var(--toolbox-ink);
+  -webkit-text-fill-color: var(--toolbox-ink);
+}
+.browser-toolbox-tool-is-config #tool-output {
+  overflow: auto;
+}
+.browser-toolbox-tool-is-config #tool-output:empty::after {
+  content: attr(data-placeholder);
+  color: var(--toolbox-muted);
+  white-space: pre-wrap;
+}
+.browser-toolbox-tool-is-config #tool-output:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--toolbox-blue);
+}
+.browser-toolbox-tool-is-config #json-input-line-numbers,
+.browser-toolbox-tool-is-config .config-output-lines {
+  grid-column: 1;
+  grid-row: 1;
+  min-height: 0;
+  padding: 16px 10px 16px 0;
+  border-right: 1px solid var(--toolbox-line);
+  color: var(--toolbox-muted);
+  font: 14px/1.8 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  text-align: right;
+  white-space: pre;
+  overflow: hidden;
+  user-select: none;
+}
+.browser-toolbox-tool-is-config .config-token-key { color: #1558d6; }
+.browser-toolbox-tool-is-config .config-token-value { color: #18833e; }
+.browser-toolbox-tool-is-config .config-token-comment { color: var(--toolbox-muted); }
+.browser-toolbox-tool-is-config .browser-toolbox-tool-footer {
+  display: grid;
+  order: 2;
+  grid-column: 1 / -1;
+  grid-row: 2;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px 12px;
+  padding: 10px 18px 8px;
+  border-top: 1px solid var(--toolbox-line);
+  background: var(--toolbox-surface);
+}
+.browser-toolbox-tool-is-config #tool-status {
+  display: block;
+  grid-column: 1;
+  grid-row: 1;
+  order: 0;
+  min-width: 0;
+  margin: 0;
+  color: var(--toolbox-ink);
+  overflow-wrap: anywhere;
+  font-size: 12px;
+}
+.browser-toolbox-tool-is-config #tool-status::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: var(--toolbox-green);
+}
+.browser-toolbox-tool-is-config #tool-status.is-error { color: var(--toolbox-red); }
+.browser-toolbox-tool-is-config #tool-status.is-error::before { background: var(--toolbox-red); }
+.browser-toolbox-tool-is-config .config-summary {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
+  color: var(--toolbox-muted);
+  font-size: 11px;
+}
+.browser-toolbox-tool-is-config .config-note {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  margin: 0;
+  color: var(--toolbox-muted);
+  font-size: 11px;
+}
+@media (prefers-color-scheme: dark) {
+  .browser-toolbox-tool-is-config .config-token-key { color: #8ab4ff; }
+  .browser-toolbox-tool-is-config .config-token-value { color: #80cfa0; }
+}
+@media (max-width: 1100px) {
+  .browser-toolbox-tool-is-config #tool-header-toolbar {
+    order: 3;
+    flex-basis: 100%;
+    justify-content: flex-start;
+  }
+  .browser-toolbox-tool-is-config .browser-toolbox-local-badge { margin-left: auto; }
+  .browser-toolbox-tool-is-config #tool-file-name { display: none; }
+}
+@media (max-width: 720px) {
+  .browser-toolbox-tool-is-config .browser-toolbox-tools-page { height: auto; min-height: 100dvh; }
+  .browser-toolbox-tool-is-config .browser-toolbox-tools-header { padding: 10px 12px; }
+  .browser-toolbox-tool-is-config .browser-toolbox-eyebrow,
+  .browser-toolbox-tool-is-config .config-brand-divider { display: none; }
+  .browser-toolbox-tool-is-config #tool-title { font-size: 20px; }
+  .browser-toolbox-tool-is-config #tool-controls { display: contents; }
+  .browser-toolbox-tool-is-config #tool-header-toolbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    overflow: visible;
+  }
+  .browser-toolbox-tool-is-config .config-directions { grid-column: 1 / -1; grid-row: 1; }
+  .browser-toolbox-tool-is-config .config-direction { flex: 1 1 0; }
+  .browser-toolbox-tool-is-config #config-swap { grid-column: 1; grid-row: 2; justify-self: start; }
+  .browser-toolbox-tool-is-config .browser-toolbox-tool-actions { grid-column: 2; grid-row: 2; }
+  .browser-toolbox-tool-is-config #tool-workspace { display: flex; flex-direction: column; overflow: visible; }
+  .browser-toolbox-tool-is-config .config-input-panel { height: 350px; flex: 0 0 auto; border-right: 0; }
+  .browser-toolbox-tool-is-config #tool-result-workspace { height: 420px; flex: 0 0 auto; border-top: 1px solid var(--toolbox-line); }
+  .browser-toolbox-tool-is-config .config-panel-heading,
+  .browser-toolbox-tool-is-config .browser-toolbox-result-heading { padding: 10px 12px; gap: 8px; }
+  .browser-toolbox-tool-is-config .config-kind { display: none; }
+  .browser-toolbox-tool-is-config .config-result-actions { gap: 5px; }
+  .browser-toolbox-tool-is-config .config-text-button,
+  .browser-toolbox-tool-is-config .config-indent { padding-inline: 8px; }
+  .browser-toolbox-tool-is-config .browser-toolbox-tool-footer { padding-inline: 12px; }
+}

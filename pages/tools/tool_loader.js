@@ -32,6 +32,9 @@
     "text.diff": () => ({
       run: ({ input, rightInput }) => globalThis.BrowserToolboxDiffTool.run(input, rightInput),
     }),
+    "config.convert": () => ({
+      run: ({ input, options }) => globalThis.BrowserToolboxPropertiesYamlTool.runInWorker(input, options),
+    }),
     "codec.transform": () => ({
       run: ({ input, options }) => globalThis.BrowserToolboxCodecTool.run(input, options),
     }),

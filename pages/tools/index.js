@@ -7,6 +7,7 @@
   let descriptor;
   let implementation;
   let state;
+  let configView;
 
   const message = (key) => globalThis.BrowserToolboxI18n?.message(key) || key;
   const byId = (id) => document.querySelector(`#${id}`);
@@ -55,20 +56,21 @@
   });
 
   const CODEC_TYPES = Object.freeze([
-    Object.freeze({ id: "unicode", labelKey: "toolCodecUnicode", encode: "unicodeEncode", decode: "unicodeDecode" }),
-    Object.freeze({ id: "url", labelKey: "toolCodecUrl", encode: "urlEncode", decode: "urlDecode" }),
-    Object.freeze({ id: "utf8", labelKey: "toolCodecUtf8", encode: "utf8Encode", decode: "utf8Decode" }),
-    Object.freeze({ id: "base64", labelKey: "toolCodecBase64", encode: "base64Encode", decode: "base64Decode" }),
-    Object.freeze({ id: "hex", labelKey: "toolCodecHex", encode: "hexEncode", decode: "hexDecode" }),
-    Object.freeze({ id: "utf16", labelKey: "toolCodecUtf16", encode: "utf16Encode", decode: "utf16Decode" }),
-    Object.freeze({ id: "html", labelKey: "toolCodecHtml", encode: "htmlEncode", decode: "htmlDecode" }),
+    { id: "base64", labelKey: "toolCodecBase64", hintKey: "toolCodecBase64Hint", encode: "base64Encode", decode: "base64Decode" },
+    { id: "url", labelKey: "toolCodecUrl", hintKey: "toolCodecUrlHint", encode: "urlEncode", decode: "urlDecode" },
+    { id: "uri", labelKey: "toolCodecUri", hintKey: "toolCodecUriHint", encode: "uriEncode", decode: "uriDecode" },
+    { id: "unicode", labelKey: "toolCodecUnicode", hintKey: "toolCodecUnicodeHint", encode: "unicodeEncode", decode: "unicodeDecode" },
+    { id: "unicodeEscape", labelKey: "toolCodecUnicodeEscape", hintKey: "toolCodecUnicodeEscapeHint", encode: "unicodeEscapeEncode", decode: "unicodeEscapeDecode" },
+    { id: "jsonString", labelKey: "toolCodecJsonString", hintKey: "toolCodecJsonStringHint", encode: "jsonStringEncode", decode: "jsonStringDecode" },
+    { id: "xml", labelKey: "toolCodecXml", hintKey: "toolCodecXmlHint", encode: "xmlEncode", decode: "xmlDecode" },
+    { id: "ascii", labelKey: "toolCodecAscii", hintKey: "toolCodecAsciiHint", encode: "asciiEncode", decode: "asciiDecode" },
   ]);
   const ADVANCED_CODEC_TYPES = Object.freeze([
-    Object.freeze({ id: "jwt", labelKey: "toolJwtDecode", mode: "jwtDecode" }),
-    Object.freeze({ id: "cookie", labelKey: "toolCookieParse", mode: "cookieParse" }),
-    Object.freeze({ id: "gzip", labelKey: "toolGzipCompress", encode: "gzipCompress", decode: "gzipDecompress" }),
-    Object.freeze({ id: "md5", labelKey: "toolMd5", mode: "md5" }),
-    Object.freeze({ id: "sha1", labelKey: "toolSha1", mode: "sha1" }),
+    { id: "binary", labelKey: "toolCodecBinary", hintKey: "toolCodecBytesHint", encode: "binaryEncode", decode: "binaryDecode" },
+    { id: "octal", labelKey: "toolCodecOctal", hintKey: "toolCodecBytesHint", encode: "octalEncode", decode: "octalDecode" },
+    { id: "decimal", labelKey: "toolCodecDecimal", hintKey: "toolCodecBytesHint", encode: "decimalEncode", decode: "decimalDecode" },
+    { id: "dataUrl", labelKey: "toolCodecDataUrl", hintKey: "toolCodecDataUrlHint", encode: "dataUrlEncode", decode: "dataUrlDecode" },
+    { id: "md5", labelKey: "toolCodecMd5", hintKey: "toolCodecMd5Hint", mode: "md5" },
   ]);
 
   function icon(name) {
@@ -82,9 +84,12 @@
     if (slot) slot.replaceChildren(icon(name));
   }
 
-  function setStatus(value) {
+  function setStatus(value, error = false) {
     const status = byId("tool-status");
-    if (status) status.textContent = value;
+    if (status) {
+      status.textContent = value;
+      status.classList.toggle("is-error", error);
+    }
   }
 
   function renderMetadata(metadata = {}) {
@@ -133,7 +138,8 @@
   }
 
   function currentOptions() {
-    if (descriptor.id === "codec.transform") return { mode: state.codecMode };
+    if (configView) return configView.options();
+    if (descriptor.id === "codec.transform") return { mode: state.codecMode, file: state.codecFile };
     const options = {};
     for (const input of byId("tool-controls")?.querySelectorAll("[data-tool-option]") || []) {
       const key = input.dataset.toolOption;
@@ -467,27 +473,130 @@
     syncJsonToolbarState();
   }
 
+  function buildCodecLayout() {
+    const main = document.querySelector(".browser-toolbox-tools-page");
+    const heading = document.querySelector(".browser-toolbox-tool-heading");
+    heading.prepend(byId("tool-icon"));
+    const sidebar = byId("tool-header-toolbar");
+    sidebar.setAttribute("role", "region");
+    sidebar.setAttribute("aria-label", message("toolCodecOperation"));
+    main.insertBefore(sidebar, byId("tool-workspace"));
+    byId("tool-workspace").removeAttribute("aria-labelledby");
+    byId("tool-workspace").setAttribute("aria-label", message("toolCodecTransform"));
+
+    const inputPanel = document.createElement("section");
+    inputPanel.className = "browser-toolbox-codec-input-panel";
+    inputPanel.setAttribute("aria-labelledby", "tool-input-title");
+    const inputHeading = document.querySelector(".browser-toolbox-workspace-heading");
+    inputHeading.firstElementChild.append(byId("tool-input-label"));
+    byId("tool-input").setAttribute("aria-labelledby", "tool-input-label");
+    byId("tool-input").setAttribute("aria-describedby", "codec-type-hint");
+    const fileControl = document.querySelector(".browser-toolbox-tool-file");
+    inputHeading.append(fileControl);
+    const fileButton = byId("tool-file-trigger");
+    const fileLabel = document.createElement("span");
+    fileLabel.textContent = message("toolFileChoose");
+    fileButton.removeAttribute("data-i18n");
+    fileButton.replaceChildren(icon("document"), fileLabel);
+    const inputGrid = document.querySelector(".browser-toolbox-tool-input-grid");
+    const oldInputWrap = inputGrid.querySelector('label[for="tool-input"]');
+    const inputWrap = document.createElement("div");
+    inputWrap.className = oldInputWrap.className;
+    inputWrap.append(...oldInputWrap.childNodes);
+    oldInputWrap.replaceWith(inputWrap);
+    inputPanel.append(inputHeading, inputGrid);
+    byId("tool-workspace").prepend(inputPanel);
+
+    const fileSource = document.createElement("div");
+    fileSource.id = "codec-file-source";
+    fileSource.hidden = true;
+    const fileInfo = document.createElement("p");
+    fileInfo.id = "codec-file-info";
+    const useText = document.createElement("button");
+    useText.type = "button";
+    useText.className = "browser-toolbox-file-trigger";
+    useText.textContent = message("toolCodecUseText");
+    useText.addEventListener("click", () => {
+      state.codecFile = null;
+      byId("tool-input").value = "";
+      state.inputRevision++;
+      updateFileName();
+      updateCodecFileSource();
+      scheduleAutoRun();
+      byId("tool-input").focus();
+    });
+    fileSource.append(icon("document"), fileInfo, useText);
+    inputGrid.querySelector(".browser-toolbox-tool-editor").append(fileSource);
+
+    const resultHeading = document.querySelector(".browser-toolbox-result-heading");
+    const resultLabel = document.createElement("div");
+    resultLabel.className = "browser-toolbox-codec-result-label";
+    const subtitle = document.createElement("span");
+    subtitle.id = "codec-output-label";
+    resultLabel.append(byId("tool-output-title"), subtitle);
+    const resultActions = document.createElement("div");
+    resultActions.className = "browser-toolbox-codec-result-actions";
+    resultActions.append(byId("tool-copy"), byId("tool-download"));
+    resultHeading.prepend(resultLabel, resultActions);
+    const copyLabel = document.createElement("span");
+    copyLabel.textContent = message("toolCodecCopyShort");
+    byId("tool-copy").append(copyLabel);
+    const restoreLabel = document.createElement("span");
+    restoreLabel.textContent = message("toolRestore");
+    byId("tool-restore").append(restoreLabel);
+    byId("codec-output").setAttribute("aria-labelledby", "tool-output-title codec-output-label");
+    const resultNote = document.createElement("p");
+    resultNote.id = "codec-result-note";
+    resultNote.hidden = true;
+    resultHeading.after(resultNote);
+    byId("tool-result-workspace").append(byId("tool-status"));
+    byId("tool-metadata").hidden = true;
+    document.querySelector(".browser-toolbox-tool-footer").hidden = true;
+  }
+
+  function updateCodecFileSource() {
+    if (descriptor.id !== "codec.transform") return;
+    const active = state.codecMode === "dataUrlEncode" && Boolean(state.codecFile);
+    byId("codec-file-source").hidden = !active;
+    byId("tool-input").hidden = active;
+    if (active) {
+      byId("codec-file-info").textContent = `${state.codecFile.name}\n${state.codecFile.mime || "application/octet-stream"} · ${state.codecFile.bytes.length.toLocaleString()} ${message("toolCodecByteUnit")}`;
+    }
+  }
+
   function codecModeForType(type) {
     if (type.mode) return type.mode;
     return type[state.codecOperation] || type.encode;
   }
 
   function markCodecSelection() {
-    for (const button of document.querySelectorAll("[data-codec-mode]")) {
-      const selected = button.dataset.codecMode === state.codecMode;
+    const type = [...CODEC_TYPES, ...ADVANCED_CODEC_TYPES].find((candidate) => candidate.id === state.codecType);
+    for (const button of document.querySelectorAll("[data-codec-type]")) {
+      const selected = button.dataset.codecType === state.codecType;
       button.setAttribute("aria-pressed", String(selected));
       button.classList.toggle("is-selected", selected);
     }
     for (const button of document.querySelectorAll("[data-codec-operation]")) {
-      const selected = button.dataset.codecOperation === state.codecOperation;
+      const selected = button.dataset.codecOperation === (type.mode ? "encode" : state.codecOperation);
       button.setAttribute("aria-pressed", String(selected));
       button.classList.toggle("is-selected", selected);
+      button.disabled = Boolean(type.mode) && button.dataset.codecOperation === "decode";
+      button.textContent = message(button.dataset.codecOperation === "decode" ? "toolDecode" : type.mode ? "toolCodecDigest" : "toolEncode");
     }
+    byId("tool-run").textContent = message(type.mode ? "toolCodecDigest" : "toolConvert");
+    byId("codec-type-hint").textContent = message(type.hintKey);
+    byId("codec-output-label").textContent = `${message(type.labelKey)} · ${message(type.mode ? "toolCodecDigest" : state.codecOperation === "encode" ? "toolEncode" : "toolDecode")}`;
+    const fileInput = byId("tool-file");
+    if (!fileInput.dataset.textAccept) fileInput.dataset.textAccept = fileInput.accept;
+    fileInput.accept = state.codecMode === "dataUrlEncode" ? "" : fileInput.dataset.textAccept;
+    updateCodecFileSource();
   }
 
   function selectCodecType(type) {
     state.codecType = type.id;
     state.codecMode = codecModeForType(type);
+    state.inputRevision++;
+    clearResult();
     markCodecSelection();
     scheduleAutoRun();
   }
@@ -528,6 +637,8 @@
         const type = CODEC_TYPES.find((candidate) => candidate.id === state.codecType) ||
           ADVANCED_CODEC_TYPES.find((candidate) => candidate.id === state.codecType);
         if (type && !type.mode) state.codecMode = codecModeForType(type);
+        state.inputRevision++;
+        clearResult();
         markCodecSelection();
         scheduleAutoRun();
       });
@@ -547,6 +658,7 @@
 
     const advanced = document.createElement("details");
     advanced.className = "browser-toolbox-codec-advanced";
+    advanced.open = true;
     const summary = document.createElement("summary");
     summary.textContent = message("toolCodecAdvanced");
     const advancedGrid = document.createElement("div");
@@ -555,7 +667,9 @@
     ADVANCED_CODEC_TYPES.forEach((type) => advancedGrid.append(createCodecTypeButton(type)));
     advanced.append(summary, advancedGrid);
     typeGroup.append(typeLabel, typeGrid, advanced);
-    controls.append(operationGroup, typeGroup);
+    const hint = document.createElement("p");
+    hint.id = "codec-type-hint";
+    controls.append(operationGroup, typeGroup, hint);
     markCodecSelection();
   }
 
@@ -1086,13 +1200,14 @@
     document.body.classList.toggle("browser-toolbox-tool-is-diff", descriptor.id === "text.diff");
     document.body.classList.toggle("browser-toolbox-tool-is-codec", descriptor.id === "codec.transform");
     document.body.classList.toggle("browser-toolbox-tool-is-time", descriptor.id === "time.convert");
+    document.body.classList.toggle("browser-toolbox-tool-is-config", descriptor.id === "config.convert");
     const inputLabel = byId("tool-input-label");
     const outputTitle = byId("tool-output-title");
     if (descriptor.id === "codec.transform") {
       inputLabel.dataset.i18n = "toolRawInput";
       inputLabel.textContent = message("toolRawInput");
-      outputTitle.dataset.i18n = "toolParsedOutput";
-      outputTitle.textContent = message("toolParsedOutput");
+      outputTitle.dataset.i18n = "toolOutput";
+      outputTitle.textContent = message("toolOutput");
       byId("tool-run").textContent = message("toolConvert");
     } else if (descriptor.id === "json.format") {
       inputLabel.dataset.i18n = "toolInput";
@@ -1133,11 +1248,22 @@
     byId("diff-result-list")?.replaceChildren();
     byId("tool-metadata").replaceChildren();
     byId("json-tool-summary").hidden = true;
+    configView?.clear();
+    if (descriptor.id === "codec.transform") {
+      byId("tool-copy").disabled = true;
+      byId("tool-download").disabled = true;
+      byId("codec-result-note").hidden = true;
+    }
   }
 
   function applyResult(result, automatic = false) {
     state.output = String(result.output ?? "");
     state.lastResult = result;
+    if (configView) {
+      configView.applyResult(result);
+      setStatus(message(result.output ? "toolConfigConverted" : "toolReady"));
+      return;
+    }
     if (descriptor.id === "json.format") {
       state.jsonRoot = cloneJsonNode(result.root);
       byId("tool-output").textContent = state.output;
@@ -1148,12 +1274,21 @@
       renderDiff(result);
     } else if (descriptor.id === "codec.transform") {
       byId("codec-output").textContent = state.output;
+      byId("tool-copy").disabled = Boolean(result.binary);
+      byId("tool-download").disabled = false;
+      const note = byId("codec-result-note");
+      note.hidden = !result.binary;
+      note.textContent = result.binary
+        ? `${message("toolCodecBinaryResult")} ${result.metadata.mime} · ${result.metadata.bytes.toLocaleString()} ${message("toolCodecByteUnit")}`
+        : "";
     } else {
       byId("tool-output").textContent = state.output;
     }
-    renderMetadata(result.metadata);
+    if (descriptor.id !== "codec.transform") renderMetadata(result.metadata);
     updateJsonSummary(result.metadata);
-    setStatus(message(automatic ? "toolAutoParsed" : "toolReady"));
+    setStatus(message(descriptor.id === "codec.transform"
+      ? automatic ? "toolCodecAutoConverted" : "toolCodecConverted"
+      : automatic ? "toolAutoParsed" : "toolReady"));
   }
 
   function scheduleAutoRun() {
@@ -1171,6 +1306,10 @@
       return;
     }
     state.running = true;
+    if (state.autoRunTimer) {
+      globalThis.clearTimeout(state.autoRunTimer);
+      state.autoRunTimer = null;
+    }
     const runRevision = state.inputRevision;
     byId("tool-run").disabled = true;
     try {
@@ -1179,7 +1318,20 @@
         setStatus(message("toolReady"));
         return;
       }
-      const input = descriptor.inputMode === "none" ? "" : runtime.assertInput(currentInput(), descriptor);
+      if (descriptor.id === "codec.transform" && automatic && !currentInput() &&
+        !(state.codecMode === "dataUrlEncode" && state.codecFile)) {
+        clearResult();
+        setStatus(message("toolReady"));
+        return;
+      }
+      // Data URL 的文本比原文件大，解码允许读取本工具生成的完整 Base64 包装。
+      const inputDescriptor = descriptor.id === "codec.transform" && state.codecMode === "dataUrlDecode"
+        ? { ...descriptor, maxInputBytes: runtime.MAX_RENDER_BYTES }
+        : descriptor;
+      if (configView && runtime.byteLength(currentInput()) > descriptor.maxInputBytes) {
+        throw new Error(message("toolConfigLimit"));
+      }
+      const input = descriptor.inputMode === "none" ? "" : runtime.assertInput(currentInput(), inputDescriptor);
       const options = currentOptions();
       const rightInput = descriptor.inputMode === "dual"
         ? runtime.assertInput(byId("tool-input-right").value, descriptor)
@@ -1192,10 +1344,15 @@
         confirm: globalThis.confirm,
         confirmMessage: message("toolRepairConfirm"),
       });
-      applyResult(result, automatic);
+      if (!["codec.transform", "config.convert"].includes(descriptor.id) || runRevision === state.inputRevision) applyResult(result, automatic);
     } catch (error) {
-      clearResult();
-      setStatus(error.message || message("toolInvalid"));
+      if (!["codec.transform", "config.convert"].includes(descriptor.id) || runRevision === state.inputRevision) {
+        clearResult();
+        let detail = error.messageKey ? message(error.messageKey) : error.message || message("toolInvalid");
+        if (configView && error.line) detail = message("toolConfigErrorLocation")
+          .replace("{line}", error.line).replace("{column}", error.column || 1).replace("{message}", detail);
+        setStatus(detail, true);
+      }
     } finally {
       state.running = false;
       byId("tool-run").disabled = false;
@@ -1207,11 +1364,27 @@
   }
 
   async function copy() {
+    if (configView && !state.lastResult?.output) return;
     const success = await runtime.copyText(state.output);
     setStatus(success ? message("toolCopied") : message("toolCopyUnavailable"));
   }
 
   function download() {
+    if (configView) {
+      if (!state.lastResult?.output) return;
+      const extension = state.lastResult.extension;
+      const base = state.originalFilename.replace(/\.[^.]+$/, "").replace(/[\\/:*?"<>|]/g, "_") || "application";
+      runtime.downloadText(state.output, `${base}.${extension}`, extension === "yaml"
+        ? "application/yaml;charset=utf-8" : "text/plain;charset=utf-8");
+      setStatus(message("toolDownloaded"));
+      return;
+    }
+    if (descriptor.id === "codec.transform" && state.lastResult?.download) {
+      const { bytes, filename, mime } = state.lastResult.download;
+      runtime.downloadBytes(bytes, filename, mime);
+      setStatus(message("toolDownloaded"));
+      return;
+    }
     const isJson = descriptor.id === "json.format";
     const filename = isJson
       ? `browser-toolbox-${Date.now()}.json`
@@ -1225,9 +1398,20 @@
     byId("tool-input-right").value = state.originalRightInput;
     state.workingInput = state.originalInput;
     state.repairApplied = false;
+    state.inputRevision++;
+    if (descriptor.id === "codec.transform") {
+      state.codecFile = state.originalCodecFile;
+      if (state.codecFile) {
+        state.codecType = "dataUrl";
+        state.codecOperation = "encode";
+        state.codecMode = "dataUrlEncode";
+      }
+      updateFileName(state.originalFilename);
+      markCodecSelection();
+    }
     updateJsonInputLineNumbers();
     await run();
-    setStatus(message("toolRestored"));
+    if (descriptor.id !== "codec.transform" || state.lastResult) setStatus(message("toolRestored"));
   }
 
   async function loadToken() {
@@ -1251,23 +1435,55 @@
     state.originalInput = consumed.input ?? "";
     state.workingInput = state.originalInput;
     updateJsonInputLineNumbers();
+    configView?.updateInput();
   }
 
   async function loadFile(file) {
     if (!file) return;
-    if (file.size > Math.min(descriptor.maxInputBytes, runtime.MAX_RENDER_BYTES)) {
-      setStatus(message("toolFileTooLarge"));
+    const fileLimit = descriptor.id === "codec.transform" && state.codecMode === "dataUrlDecode"
+      ? runtime.MAX_RENDER_BYTES
+      : Math.min(descriptor.maxInputBytes, runtime.MAX_RENDER_BYTES);
+    if (file.size > fileLimit) {
+      setStatus(message("toolFileTooLarge"), true);
       return;
     }
-    const input = await file.text();
+    const fileRevision = ++state.fileLoadRevision;
+    const inputRevision = state.inputRevision;
+    const asDataUrl = descriptor.id === "codec.transform" && state.codecMode === "dataUrlEncode";
+    const bytes = asDataUrl ? new Uint8Array(await file.arrayBuffer()) : null;
+    let input;
+    try {
+      input = asDataUrl ? "" : configView
+        ? new TextDecoder("utf-8", { fatal: true }).decode(await file.arrayBuffer())
+        : await file.text();
+    } catch (error) {
+      if (configView) throw new Error(message("toolConfigEncoding"));
+      throw error;
+    }
+    if (fileRevision !== state.fileLoadRevision || inputRevision !== state.inputRevision) return;
     byId("tool-input").value = input;
     state.originalInput = input;
     state.workingInput = input;
     state.originalFilename = file.name;
+    state.codecFile = bytes ? { bytes, mime: file.type, name: file.name } : null;
+    state.originalCodecFile = state.codecFile;
+    state.inputRevision++;
     state.repairApplied = false;
+    updateFileName(file.name);
+    configView?.selectFile(file.name);
+    configView?.updateInput();
+    if (configView) clearResult();
+    updateCodecFileSource();
     updateJsonInputLineNumbers();
     setStatus(`${message("toolFileLoaded")}: ${file.name}`);
     await run(true);
+  }
+
+  function updateFileName(name = "") {
+    const label = byId("tool-file-name");
+    if (!label) return;
+    label.textContent = name || message("toolFileNone");
+    if (configView) label.hidden = !name;
   }
 
   function setupHeader() {
@@ -1278,7 +1494,7 @@
     setIcon("json-collapse-all-icon", "chevron");
     setIcon("json-expand-all-icon", "chevron");
     const toolIcon = byId("tool-icon");
-    toolIcon?.replaceChildren(icon(descriptor.id === "json.format" ? "braces" : "toolbox"));
+    toolIcon?.replaceChildren(icon(["json.format", "config.convert"].includes(descriptor.id) ? "braces" : "toolbox"));
     byId("tool-title").textContent = message(descriptor.titleKey);
     const titleIcon = byId("tool-title-icon");
     if (descriptor.id === "json.format") titleIcon?.replaceChildren(icon("document"));
@@ -1304,6 +1520,9 @@
       codecOperation: "encode",
       codecType: "base64",
       codecMode: "base64Encode",
+      codecFile: null,
+      originalCodecFile: null,
+      fileLoadRevision: 0,
       repairApplied: false,
       originalFilename: "",
       tokenInvalid: false,
@@ -1314,6 +1533,23 @@
     };
     setupHeader();
     applyLayout();
+    if (descriptor.id === "config.convert") {
+      configView = globalThis.BrowserToolboxPropertiesYamlView.create({
+        message, icon,
+        onDirectionChange() { state.inputRevision++; clearResult(); scheduleAutoRun(); },
+        onIndentChange() { state.inputRevision++; clearResult(); scheduleAutoRun(); },
+        onSwap() {
+          if (!state.lastResult?.output) return;
+          byId("tool-input").value = state.output;
+          configView.setDirection(configView.options().direction === "propertiesToYaml" ? "yamlToProperties" : "propertiesToYaml");
+          state.inputRevision++;
+          updateFileName();
+          clearResult();
+          run(true);
+        },
+      });
+    }
+    if (descriptor.id === "codec.transform") buildCodecLayout();
     if (descriptor.id === "time.convert") {
       buildTimeLayout();
       await loadToken();
@@ -1321,7 +1557,7 @@
       return;
     }
     if (descriptor.id === "json.format") buildJsonControls();
-    else buildControls();
+    else if (!configView) buildControls();
     await loadToken();
     byId("tool-run").addEventListener("click", () => {
       if (descriptor.id === "json.format") {
@@ -1346,8 +1582,12 @@
       state.jsonCollapsed.clear();
       renderJsonTree();
     });
+    byId("tool-file-trigger")?.addEventListener("click", () => {
+      byId("tool-file")?.click();
+    });
     byId("tool-file")?.addEventListener("change", (event) => {
-      loadFile(event.target.files?.[0]).catch((error) => setStatus(error.message));
+      const file = event.target.files?.[0];
+      loadFile(file).catch((error) => setStatus(error.message, true));
       event.target.value = "";
     });
     byId("tool-controls")?.addEventListener("change", () => {
@@ -1359,6 +1599,12 @@
         state.repairApplied = false;
         state.workingInput = byId("tool-input").value;
         state.inputRevision++;
+        if (configView) { configView.updateInput(); clearResult(); updateFileName(); }
+        if (descriptor.id === "codec.transform") {
+          state.codecFile = null;
+          updateFileName();
+          clearResult();
+        }
         updateJsonInputLineNumbers();
         updateJsonSummary(state.lastResult?.metadata);
         scheduleAutoRun();
