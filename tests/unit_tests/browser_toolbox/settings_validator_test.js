@@ -8,6 +8,17 @@ import "../../../lib/browser_toolbox/settings_validator.js";
 context("BrowserToolbox settings validator", () => {
   const registry = { getCommand: (name) => name ? { name } : null };
 
+  should("accept every supported language in saved or imported settings", () => {
+    for (const language of ["auto", "en", "zh_CN", "zh_TW", "ja", "es"]) {
+      const settings = BrowserToolboxSettingsSchema.mergeSettings({ general: { language } });
+      const result = BrowserToolboxSettingsValidator.validate(settings, registry);
+      assert.isTrue(result.ok);
+      assert.equal(language, result.value.general.language);
+    }
+    const invalid = BrowserToolboxSettingsSchema.mergeSettings({ general: { language: "ja-JP" } });
+    assert.isFalse(BrowserToolboxSettingsValidator.validate(invalid, registry).ok);
+  });
+
   should("accept the complete default configuration", () => {
     const result = BrowserToolboxSettingsValidator.validate(
       BrowserToolboxSettingsSchema.DEFAULT_SETTINGS,

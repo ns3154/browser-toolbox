@@ -1,0 +1,2588 @@
+{
+  "extensionName": {
+    "message": "Browser Toolbox"
+  },
+  "extensionDescription": {
+    "message": "Navega por páginas, ejecuta acciones y gestiona pestañas con el teclado y el ratón."
+  },
+  "browserToolbox": {
+    "message": "Browser Toolbox"
+  },
+  "save": {
+    "message": "Guardar"
+  },
+  "saved": {
+    "message": "Guardado"
+  },
+  "saving": {
+    "message": "Guardando…"
+  },
+  "saveChanges": {
+    "message": "Guardar cambios"
+  },
+  "noChanges": {
+    "message": "Sin cambios"
+  },
+  "cancel": {
+    "message": "Cancelar"
+  },
+  "close": {
+    "message": "Cerrar"
+  },
+  "reset": {
+    "message": "Restablecer"
+  },
+  "enabled": {
+    "message": "Activado"
+  },
+  "disabled": {
+    "message": "Desactivado"
+  },
+  "general": {
+    "message": "General"
+  },
+  "globalShowHud": {
+    "message": "Mostrar indicaciones de comandos"
+  },
+  "browserSyncEnabled": {
+    "message": "Sincronizar ajustes con el navegador"
+  },
+  "browserSyncNote": {
+    "message": "Si se desactiva, los ajustes se guardan solo en este navegador y no se sincronizan."
+  },
+  "keyboard": {
+    "message": "Teclado"
+  },
+  "mouseGestures": {
+    "message": "Gestos del ratón"
+  },
+  "superDrag": {
+    "message": "Superarrastre"
+  },
+  "wheelRocker": {
+    "message": "Rueda y botones"
+  },
+  "rocker": {
+    "message": "Gestos con botones"
+  },
+  "siteRules": {
+    "message": "Reglas por sitio"
+  },
+  "backupRestore": {
+    "message": "Copia de seguridad y restauración"
+  },
+  "privacy": {
+    "message": "Privacidad"
+  },
+  "privacyTitle": {
+    "message": "Privacidad de Browser Toolbox"
+  },
+  "aboutLicenses": {
+    "message": "Acerca de y licencias"
+  },
+  "openSettings": {
+    "message": "Abrir ajustes"
+  },
+  "openBrowserToolboxSettings": {
+    "message": "Ajustes de ratón, arrastre, rueda y privacidad de Browser Toolbox"
+  },
+  "browserToolboxSettings": {
+    "message": "Ajustes de Browser Toolbox"
+  },
+  "browserToolboxHelpTitle": {
+    "message": "Ayuda de Browser Toolbox"
+  },
+  "browserToolboxHelpIntro": {
+    "message": "La navegación con teclado se basa en Vimium. Aquí se resumen los módulos de Browser Toolbox y el estado de la página actual."
+  },
+  "browserToolboxCurrentPage": {
+    "message": "Estado de la página actual"
+  },
+  "browserToolboxAllModulesEnabled": {
+    "message": "Todos los módulos de Browser Toolbox están activados en esta página."
+  },
+  "browserToolboxDisabledModules": {
+    "message": "Módulos desactivados en esta página"
+  },
+  "browserToolboxStatusUnavailable": {
+    "message": "No se puede obtener el estado de la página actual."
+  },
+  "browserToolboxAppliedRule": {
+    "message": "Regla de sitio aplicada"
+  },
+  "browserToolboxNoMatchingRule": {
+    "message": "Ninguna regla de Browser Toolbox coincide con esta página."
+  },
+  "browserToolboxVimiumExcluded": {
+    "message": "Una regla de Vimium desactiva aquí la navegación con teclado."
+  },
+  "browserToolboxBrowserLimit": {
+    "message": "Algunas páginas del navegador no permiten ejecutar extensiones y ciertos controles pueden no estar disponibles."
+  },
+  "browserToolboxMouseHelp": {
+    "message": "Dibuja un gesto configurado con su botón. Si está activado el control del menú del botón derecho, mantén pulsado y mueve el ratón para ejecutar el gesto; haz dos clics derechos rápidos en el mismo punto para abrir el menú nativo. Al desactivar este control, el primer clic abre el menú nativo, pero puede interferir con los gestos."
+  },
+  "browserToolboxSuperDragHelp": {
+    "message": "Arrastra enlaces, texto o imágenes para ejecutar acciones configuradas. Se mantiene el comportamiento nativo de cargas de archivos, editores, campos de contraseña y elementos arrastrables."
+  },
+  "browserToolboxWheelHelp": {
+    "message": "Usa la rueda con el botón configurado para ejecutar una acción al alcanzar el umbral, sin alterar el desplazamiento habitual."
+  },
+  "browserToolboxRockerHelp": {
+    "message": "Mantén pulsado un botón y haz clic con el otro para ejecutar el gesto configurado. Las combinaciones sin asignar conservan los clics normales."
+  },
+  "browserToolboxSiteRulesHelp": {
+    "message": "Configura cada módulo por sitio con reglas Glob o expresiones regulares. La página principal determina el comportamiento de todos los marcos."
+  },
+  "browserToolboxPrivacyHelp": {
+    "message": "Browser Toolbox no incluye telemetría, cuentas, anuncios, funciones de pago, código remoto ni solicitudes a servidores del proyecto."
+  },
+  "browserToolboxLicenseHelp": {
+    "message": "El código del proyecto está disponible bajo GPL-3.0-or-later."
+  },
+  "openBrowserToolboxSettingsPage": {
+    "message": "Abrir ajustes de Browser Toolbox"
+  },
+  "openPrivacyPolicy": {
+    "message": "Política de privacidad"
+  },
+  "openLicense": {
+    "message": "Licencia"
+  },
+  "keyboardBaselineNotice": {
+    "message": "Base de navegación con teclado: Vimium v2.4.2."
+  },
+  "help": {
+    "message": "Ayuda"
+  },
+  "wiki": {
+    "message": "Wiki"
+  },
+  "navigatingThePage": {
+    "message": "Navegación por la página"
+  },
+  "usingTheVomnibar": {
+    "message": "Uso de Vomnibar"
+  },
+  "usingFind": {
+    "message": "Uso de la búsqueda"
+  },
+  "navigatingHistory": {
+    "message": "Navegación por el historial"
+  },
+  "manipulatingTabs": {
+    "message": "Gestión de pestañas"
+  },
+  "linksAndSelections": {
+    "message": "Enlaces y selecciones"
+  },
+  "windows": {
+    "message": "Ventanas"
+  },
+  "miscellaneous": {
+    "message": "Otros"
+  },
+  "showAdvancedCommands": {
+    "message": "Mostrar comandos avanzados"
+  },
+  "hideAdvancedCommands": {
+    "message": "Ocultar comandos avanzados"
+  },
+  "whatsNew": {
+    "message": "Novedades"
+  },
+  "version": {
+    "message": "Versión"
+  },
+  "openHelp": {
+    "message": "Abrir ayuda"
+  },
+  "currentSite": {
+    "message": "Sitio actual"
+  },
+  "disableForSession": {
+    "message": "Desactivar durante esta sesión"
+  },
+  "sessionDisabled": {
+    "message": "Desactivado durante esta sesión"
+  },
+  "disabling": {
+    "message": "Desactivando…"
+  },
+  "sessionDisableFailed": {
+    "message": "No se pudo desactivar durante esta sesión. Inténtalo de nuevo."
+  },
+  "inactive": {
+    "message": "Inactivo"
+  },
+  "allModulesEnabled": {
+    "message": "Todos los módulos de Browser Toolbox están activados en este sitio."
+  },
+  "pageUnavailable": {
+    "message": "El navegador no permite ejecutar extensiones en esta página."
+  },
+  "actionPageTitle": {
+    "message": "Browser Toolbox"
+  },
+  "firefoxMissingHostsPermission": {
+    "message": "Vimium no tiene permiso para acceder a todos los sitios."
+  },
+  "firefoxPermissionHelp": {
+    "message": "Firefox requiere conceder este permiso manualmente. Puedes activarlo con el siguiente botón:"
+  },
+  "grantHostsPermission": {
+    "message": "Permitir acceso a todos los sitios"
+  },
+  "firefoxPermissionPathIntro": {
+    "message": "O accede a:"
+  },
+  "firefoxPermissionPath": {
+    "message": "about:addons > Vimium > Administrar (menú de tres puntos) > Permisos > activar «Acceder a tus datos para todos los sitios web»."
+  },
+  "seePermissionsHelp": {
+    "message": "Ver ayuda sobre permisos"
+  },
+  "vimiumKeysEnabledOnPage": {
+    "message": "Las teclas de Vimium están activadas en esta página."
+  },
+  "excludeKeysOnPage": {
+    "message": "Excluir teclas de Vimium en esta página"
+  },
+  "matchingPatterns": {
+    "message": "Patrones que coinciden con la página actual"
+  },
+  "keysToExclude": {
+    "message": "Teclas que se excluirán"
+  },
+  "seeExclusionRules": {
+    "message": "Consulta todas las reglas de exclusión en"
+  },
+  "optionsPage": {
+    "message": "Ajustes"
+  },
+  "page": {
+    "message": "."
+  },
+  "noTelemetry": {
+    "message": "Sin telemetría, cuentas, anuncios ni funciones de pago."
+  },
+  "pattern": {
+    "message": "Patrón"
+  },
+  "patternInput": {
+    "message": "Flechas del gesto (por ejemplo, ↑ · →)"
+  },
+  "gestureEditor": {
+    "message": "Editor de gestos"
+  },
+  "gestureLab": {
+    "message": "Prueba de gestos"
+  },
+  "gestureLabHint": {
+    "message": "Comprueba duplicados y conflictos entre los inicios de los gestos antes de añadir una asignación."
+  },
+  "gestureLabReady": {
+    "message": "Este patrón está disponible."
+  },
+  "gestureLabDuplicateWarning": {
+    "message": "Este patrón ya está asignado"
+  },
+  "gestureLabPrefixWarning": {
+    "message": "Este patrón coincide con el inicio de un gesto más largo."
+  },
+  "gestureLabLongerWarning": {
+    "message": "Ya existe un gesto más corto que coincide con el inicio de este patrón."
+  },
+  "command": {
+    "message": "Comando"
+  },
+  "options": {
+    "message": "Opciones"
+  },
+  "optionsDefault": {
+    "message": "Predeterminado"
+  },
+  "optionsHint": {
+    "message": "Objeto JSON; los valores se validan antes de guardar."
+  },
+  "dangerousCommandWarning": {
+    "message": "Puede cerrar pestañas o ventanas."
+  },
+  "addBinding": {
+    "message": "Añadir asignación"
+  },
+  "addRule": {
+    "message": "Añadir regla"
+  },
+  "removeBinding": {
+    "message": "Eliminar asignación"
+  },
+  "removeRule": {
+    "message": "Eliminar regla"
+  },
+  "moveUp": {
+    "message": "Subir"
+  },
+  "moveDown": {
+    "message": "Bajar"
+  },
+  "duplicateRule": {
+    "message": "Duplicar regla"
+  },
+  "discardChanges": {
+    "message": "Descartar cambios"
+  },
+  "unsavedChanges": {
+    "message": "Tienes cambios sin guardar."
+  },
+  "restoreDefaults": {
+    "message": "Restaurar valores predeterminados"
+  },
+  "restoreDefaultsConfirm": {
+    "message": "¿Restaurar los ajustes predeterminados de Browser Toolbox?"
+  },
+  "importSettings": {
+    "message": "Importar ajustes"
+  },
+  "exportSettings": {
+    "message": "Exportar ajustes"
+  },
+  "chooseFile": {
+    "message": "Elegir archivo"
+  },
+  "invalidSettings": {
+    "message": "El archivo de ajustes no es válido."
+  },
+  "settingsConflict": {
+    "message": "Los ajustes cambiaron en otra página o dispositivo de Browser Toolbox. Recarga antes de guardar."
+  },
+  "settingsConflictFields": {
+    "message": "Campos en conflicto"
+  },
+  "settingsConflictMore": {
+    "message": "campos adicionales omitidos"
+  },
+  "settingsRecoveryFailed": {
+    "message": "No se pudo guardar y la recuperación automática quedó incompleta. Recarga antes de seguir editando."
+  },
+  "validationUnknownCommand": {
+    "message": "Comando desconocido"
+  },
+  "validationUnsupportedInput": {
+    "message": "Este comando no está disponible para esta entrada"
+  },
+  "validationInvalidOptions": {
+    "message": "Opciones de comando no válidas"
+  },
+  "validationDuplicate": {
+    "message": "Asignación duplicada"
+  },
+  "validationInvalidPattern": {
+    "message": "Patrón de gesto no válido"
+  },
+  "validationInvalidRegex": {
+    "message": "Expresión regular no válida"
+  },
+  "validationRegexComplexity": {
+    "message": "La expresión regular es demasiado compleja"
+  },
+  "siteRuleDuplicateWarning": {
+    "message": "Otra regla usa este patrón. Para los campos que coincidan, tendrá prioridad la regla configurada más tarde."
+  },
+  "validationInvalidSiteRule": {
+    "message": "Regla de sitio no válida"
+  },
+  "validationOutOfRange": {
+    "message": "El valor está fuera del intervalo permitido"
+  },
+  "validationPrivacy": {
+    "message": "No se pueden modificar las garantías de privacidad"
+  },
+  "validationSchema": {
+    "message": "Esquema de ajustes no compatible"
+  },
+  "gestureUnrecognized": {
+    "message": "Gesto no reconocido"
+  },
+  "gestureCancelled": {
+    "message": "Gesto cancelado"
+  },
+  "gestureDirectionUp": {
+    "message": "Arriba"
+  },
+  "gestureDirectionDown": {
+    "message": "Abajo"
+  },
+  "gestureDirectionLeft": {
+    "message": "Izquierda"
+  },
+  "gestureDirectionRight": {
+    "message": "Derecha"
+  },
+  "browserRestriction": {
+    "message": "El navegador restringe esta página."
+  },
+  "language": {
+    "message": "Idioma"
+  },
+  "languageAuto": {
+    "message": "Usar idioma del navegador"
+  },
+  "languageEnglish": {
+    "message": "English"
+  },
+  "languageChinese": {
+    "message": "简体中文"
+  },
+  "triggerButton": {
+    "message": "Botón para gestos"
+  },
+  "mouseTriggerButtonHint": {
+    "message": "El botón de gestos tiene prioridad sobre el superarrastre y los gestos con botones si usan el mismo botón. Con el control del menú derecho activado, mantén pulsado y mueve para ejecutar el gesto; haz dos clics derechos rápidos en el mismo punto para abrir el menú nativo. Al desactivarlo, el primer clic abre el menú nativo, pero puede interferir con los gestos."
+  },
+  "activationDistance": {
+    "message": "Distancia de activación (px)"
+  },
+  "sampleDistance": {
+    "message": "Distancia de muestreo (px)"
+  },
+  "minimumSegmentDistance": {
+    "message": "Longitud mínima del tramo (px)"
+  },
+  "turnHysteresis": {
+    "message": "Histéresis de giro (grados)"
+  },
+  "maxSegments": {
+    "message": "Máximo de tramos"
+  },
+  "maxDuration": {
+    "message": "Duración máxima (ms)"
+  },
+  "showTrail": {
+    "message": "Mostrar trayectoria del gesto"
+  },
+  "showHud": {
+    "message": "Mostrar indicador de comandos"
+  },
+  "suppressContextMenu": {
+    "message": "Controlar el menú nativo para gestos con el botón derecho"
+  },
+  "privacyImmutable": {
+    "message": "La telemetría, la configuración remota y el acceso a la red en segundo plano están desactivados permanentemente."
+  },
+  "tabs": {
+    "message": "Pestañas"
+  },
+  "cursor": {
+    "message": "Puntero personalizado"
+  },
+  "cursorAsset": {
+    "message": "Puntero PNG local"
+  },
+  "cursorHotspotX": {
+    "message": "Punto activo X"
+  },
+  "cursorHotspotY": {
+    "message": "Punto activo Y"
+  },
+  "noCursorAsset": {
+    "message": "No se ha elegido ningún puntero local."
+  },
+  "resetCursor": {
+    "message": "Eliminar puntero local"
+  },
+  "wheelThreshold": {
+    "message": "Umbral de la rueda"
+  },
+  "cooldown": {
+    "message": "Intervalo entre acciones (ms)"
+  },
+  "continuousTabSwitching": {
+    "message": "Cambio continuo de pestañas"
+  },
+  "button": {
+    "message": "Botón"
+  },
+  "direction": {
+    "message": "Dirección"
+  },
+  "sequence": {
+    "message": "Secuencia"
+  },
+  "leftButton": {
+    "message": "Botón izquierdo"
+  },
+  "rightButton": {
+    "message": "Botón derecho"
+  },
+  "middleButton": {
+    "message": "Botón central"
+  },
+  "up": {
+    "message": "Arriba"
+  },
+  "down": {
+    "message": "Abajo"
+  },
+  "holdRightThenClickLeft": {
+    "message": "Mantener el derecho y hacer clic con el izquierdo"
+  },
+  "holdLeftThenClickRight": {
+    "message": "Mantener el izquierdo y hacer clic con el derecho"
+  },
+  "urlPattern": {
+    "message": "Patrón de URL"
+  },
+  "modules": {
+    "message": "Módulos"
+  },
+  "siteRuleMatchType": {
+    "message": "Tipo de coincidencia"
+  },
+  "siteRuleGlob": {
+    "message": "Glob"
+  },
+  "siteRuleRegex": {
+    "message": "Expresión regular"
+  },
+  "siteRuleEnabled": {
+    "message": "Activar la caja de herramientas en este sitio"
+  },
+  "siteRuleDisableModules": {
+    "message": "Desactivar módulos en este sitio"
+  },
+  "siteRuleModuleHint": {
+    "message": "Marca los módulos que quieras desactivar en este sitio."
+  },
+  "siteRuleDefaultHint": {
+    "message": "Las reglas integradas de sitios con conflictos desactivan los módulos de ratón de forma predeterminada. Puedes editarlas o eliminarlas."
+  },
+  "siteRuleGlobHint": {
+    "message": "Ejemplo: https://*.example.com/*"
+  },
+  "siteRuleRegexHint": {
+    "message": "Ejemplo: ^https://(www\\.)?example\\.com/"
+  },
+  "siteRulePriority": {
+    "message": "Prioridad"
+  },
+  "siteRuleOrder": {
+    "message": "Orden de configuración"
+  },
+  "siteRulePrecedence": {
+    "message": "Prioridad de coincidencia"
+  },
+  "siteRuleActions": {
+    "message": "Acciones"
+  },
+  "siteRuleNoRules": {
+    "message": "Aún no hay reglas por sitio. Añade una para configurar una URL."
+  },
+  "testSiteUrl": {
+    "message": "Probar URL"
+  },
+  "siteRuleTestUrl": {
+    "message": "URL que se probará"
+  },
+  "siteRuleTestUrlHint": {
+    "message": "https://example.com/path"
+  },
+  "siteRuleTestUrlHelp": {
+    "message": "Introduce una URL. Este campo no se guarda."
+  },
+  "siteRuleEnterTestUrl": {
+    "message": "Introduce una URL para probar."
+  },
+  "siteRuleInvalidTestUrl": {
+    "message": "Introduce una URL válida."
+  },
+  "siteRuleMatched": {
+    "message": "La URL coincide con una regla de sitio:"
+  },
+  "siteRuleNotMatched": {
+    "message": "La URL no coincide con ninguna regla de sitio."
+  },
+  "siteRuleEffectiveState": {
+    "message": "Módulos efectivos"
+  },
+  "siteRuleDisabledModules": {
+    "message": "Módulos desactivados"
+  },
+  "siteRuleAllModulesEnabled": {
+    "message": "Todos los módulos están activados"
+  },
+  "siteRuleExplanationTitle": {
+    "message": "Por qué se aplica este resultado"
+  },
+  "siteRuleNoMatchingRules": {
+    "message": "Ninguna regla de Browser Toolbox coincide con esta URL."
+  },
+  "patternDoesNotMatch": {
+    "message": "El patrón no coincide con la URL actual"
+  },
+  "untitledTab": {
+    "message": "(sin título)"
+  },
+  "allKeys": {
+    "message": "Todas"
+  },
+  "noKeys": {
+    "message": "Ninguna"
+  },
+  "someKeys": {
+    "message": "Algunas"
+  },
+  "context": {
+    "message": "Contexto"
+  },
+  "contextLink": {
+    "message": "Enlace"
+  },
+  "contextSelection": {
+    "message": "Texto seleccionado"
+  },
+  "contextImage": {
+    "message": "Imagen"
+  },
+  "openOnboarding": {
+    "message": "Abrir introducción"
+  },
+  "projectCharter": {
+    "message": "Principios del proyecto"
+  },
+  "thirdPartyNotices": {
+    "message": "Avisos de terceros"
+  },
+  "command_BrowserToolbox_closeWindow": {
+    "message": "Cerrar ventana actual"
+  },
+  "command_BrowserToolbox_newWindow": {
+    "message": "Abrir una ventana nueva"
+  },
+  "command_BrowserToolbox_toggleFullscreen": {
+    "message": "Alternar pantalla completa"
+  },
+  "command_BrowserToolbox_minimizeWindow": {
+    "message": "Minimizar ventana actual"
+  },
+  "command_BrowserToolbox_maximizeWindow": {
+    "message": "Maximizar ventana actual"
+  },
+  "command_BrowserToolbox_showTabList": {
+    "message": "Mostrar lista de pestañas"
+  },
+  "command_BrowserToolbox_openCommandCenter": {
+    "message": "Abrir centro de comandos"
+  },
+  "command_BrowserToolbox_openSettings": {
+    "message": "Abrir ajustes de Browser Toolbox"
+  },
+  "command_BrowserToolbox_openTool": {
+    "message": "Abrir una herramienta de Browser Toolbox"
+  },
+  "command_BrowserToolbox_toggleKeyboard": {
+    "message": "Activar o desactivar la navegación con teclado"
+  },
+  "command_BrowserToolbox_toggleMouseGestures": {
+    "message": "Activar o desactivar los gestos del ratón"
+  },
+  "command_BrowserToolbox_toggleSuperDrag": {
+    "message": "Activar o desactivar el superarrastre"
+  },
+  "command_BrowserToolbox_copySelection": {
+    "message": "Copiar texto seleccionado"
+  },
+  "command_BrowserToolbox_copyLinkText": {
+    "message": "Copiar texto del enlace"
+  },
+  "command_BrowserToolbox_copyLinkUrl": {
+    "message": "Copiar URL del enlace"
+  },
+  "command_BrowserToolbox_copyImageUrl": {
+    "message": "Copiar URL de la imagen"
+  },
+  "command_BrowserToolbox_searchSelection": {
+    "message": "Buscar texto seleccionado"
+  },
+  "command_BrowserToolbox_openLinkForeground": {
+    "message": "Abrir enlace en primer plano"
+  },
+  "command_BrowserToolbox_openLinkBackground": {
+    "message": "Abrir enlace en segundo plano"
+  },
+  "command_BrowserToolbox_openImageForeground": {
+    "message": "Abrir imagen en primer plano"
+  },
+  "command_BrowserToolbox_openImageBackground": {
+    "message": "Abrir imagen en segundo plano"
+  },
+  "command_BrowserToolbox_downloadImage": {
+    "message": "Descargar imagen"
+  },
+  "command_goBack": {
+    "message": "Atrás"
+  },
+  "command_goForward": {
+    "message": "Adelante"
+  },
+  "command_removeTab": {
+    "message": "Cerrar pestaña"
+  },
+  "command_restoreTab": {
+    "message": "Restaurar pestaña cerrada"
+  },
+  "command_scrollToTop": {
+    "message": "Ir al inicio de la página"
+  },
+  "command_scrollToBottom": {
+    "message": "Ir al final de la página"
+  },
+  "command_scrollFullPageUp": {
+    "message": "Subir una página"
+  },
+  "command_scrollFullPageDown": {
+    "message": "Bajar una página"
+  },
+  "command_reload": {
+    "message": "Recargar"
+  },
+  "command_reloadHard": {
+    "message": "Recargar sin caché"
+  },
+  "command_previousTab": {
+    "message": "Pestaña anterior"
+  },
+  "command_nextTab": {
+    "message": "Pestaña siguiente"
+  },
+  "settingsSections": {
+    "message": "Secciones de ajustes"
+  },
+  "settingsSearch": {
+    "message": "Buscar ajustes"
+  },
+  "settingsSearchHint": {
+    "message": "Buscar ajustes"
+  },
+  "settingsSearchMatches": {
+    "message": "Secciones coincidentes"
+  },
+  "settingsSearchNoResults": {
+    "message": "No hay secciones coincidentes."
+  },
+  "browsingEnhancement": {
+    "message": "Mejoras de navegación"
+  },
+  "utilityTools": {
+    "message": "Utilidades"
+  },
+  "system": {
+    "message": "Sistema"
+  },
+  "quickTools": {
+    "message": "Herramientas rápidas"
+  },
+  "running": {
+    "message": "En ejecución"
+  },
+  "active": {
+    "message": "Activo"
+  },
+  "currentSiteDetails": {
+    "message": "Detalles del sitio actual"
+  },
+  "actionFooter": {
+    "message": "Enlaces de acciones"
+  },
+  "commandCenter": {
+    "message": "Centro de comandos"
+  },
+  "commandCenterTitle": {
+    "message": "Centro de comandos"
+  },
+  "commandCenterSubtitle": {
+    "message": "Busca comandos, herramientas y ajustes."
+  },
+  "commandCenterContext": {
+    "message": "Destino"
+  },
+  "commandCenterNoTarget": {
+    "message": "No hay ninguna página seleccionada"
+  },
+  "commandCenterSearchLabel": {
+    "message": "Buscar"
+  },
+  "commandCenterSearchHint": {
+    "message": "Buscar comandos, herramientas o ajustes…"
+  },
+  "commandCenterResults": {
+    "message": "Resultados del centro de comandos"
+  },
+  "commandCenterKeyboardHint": {
+    "message": "Usa ↑ y ↓ para elegir, Intro para ejecutar y Escape para cerrar."
+  },
+  "commandCenterCommands": {
+    "message": "Comandos"
+  },
+  "commandCenterTools": {
+    "message": "Herramientas"
+  },
+  "commandCenterSettings": {
+    "message": "Ajustes"
+  },
+  "commandCenterResultCount": {
+    "message": "resultados"
+  },
+  "commandCenterEmpty": {
+    "message": "No hay entradas disponibles."
+  },
+  "commandCenterNoResults": {
+    "message": "No hay entradas coincidentes."
+  },
+  "commandCenterLoadFailed": {
+    "message": "No se pudieron cargar las entradas del centro de comandos."
+  },
+  "commandCenterExecuteFailed": {
+    "message": "No se pudo ejecutar la entrada seleccionada."
+  },
+  "commandCenterDangerousConfirm": {
+    "message": "Esta acción puede cerrar una pestaña o ventana. ¿Continuar?"
+  },
+  "commandCenterMouseSettings": {
+    "message": "Ajustes del ratón y los gestos"
+  },
+  "commandCenterMouseSettingsDescription": {
+    "message": "Ajusta el reconocimiento de gestos y sus asignaciones."
+  },
+  "commandCenterSiteRules": {
+    "message": "Perfiles y reglas por sitio"
+  },
+  "commandCenterSiteRulesDescription": {
+    "message": "Configura el comportamiento de cada sitio."
+  },
+  "commandCenterToolSettings": {
+    "message": "Ajustes de herramientas"
+  },
+  "commandCenterToolSettingsDescription": {
+    "message": "Elige herramientas locales y entradas del menú contextual."
+  },
+  "actionKeyboardSummary": {
+    "message": "Navegación con teclado de Vimium"
+  },
+  "actionMouseSummary": {
+    "message": "Mantén el botón derecho y dibuja un gesto"
+  },
+  "actionSuperDragSummary": {
+    "message": "Arrastra enlaces, imágenes o texto"
+  },
+  "actionWheelSummary": {
+    "message": "Cambia pestañas con la rueda o los botones"
+  },
+  "navigationKeyboard": {
+    "message": "Navegación y teclado"
+  },
+  "mouseDrag": {
+    "message": "Ratón y arrastre"
+  },
+  "searchTabs": {
+    "message": "Búsqueda y pestañas"
+  },
+  "appearanceBehavior": {
+    "message": "Apariencia y comportamiento"
+  },
+  "sitePrivacy": {
+    "message": "Sitios y privacidad"
+  },
+  "backupAbout": {
+    "message": "Copias de seguridad e información"
+  },
+  "tools": {
+    "message": "Herramientas"
+  },
+  "documentFormatter": {
+    "message": "Formateador de documentos"
+  },
+  "actionTools": {
+    "message": "Herramientas del panel emergente"
+  },
+  "actionToolsHint": {
+    "message": "Elige hasta seis herramientas para el panel emergente."
+  },
+  "contextMenuTools": {
+    "message": "Herramientas del menú contextual"
+  },
+  "contextMenuToolsHint": {
+    "message": "Elige hasta tres herramientas para el menú contextual nativo. Se utilizará el texto seleccionado cuando lo haya."
+  },
+  "toolSelectionLimit": {
+    "message": "Límite de selección"
+  },
+  "toolLocalOnly": {
+    "message": "Todas las herramientas se ejecutan localmente. Las entradas se transfieren mediante un token de sesión temporal de un solo uso."
+  },
+  "allTools": {
+    "message": "Todas las herramientas"
+  },
+  "manageTools": {
+    "message": "Gestionar herramientas"
+  },
+  "toolConfigConvert": {
+    "message": "Properties ↔ YAML"
+  },
+  "toolConfigConvertDescription": {
+    "message": "Convierte archivos de configuración Properties y YAML locales en ambas direcciones."
+  },
+  "toolKeywordProperties": {
+    "message": "Properties"
+  },
+  "toolKeywordYaml": {
+    "message": "YAML YML"
+  },
+  "toolKeywordConfig": {
+    "message": "configuración Spring aplicación"
+  },
+  "toolConfigDirection": {
+    "message": "Dirección de conversión"
+  },
+  "toolConfigSwap": {
+    "message": "Intercambiar"
+  },
+  "toolConfigSwapHint": {
+    "message": "Usar el resultado como entrada e invertir la conversión"
+  },
+  "toolConfigCopy": {
+    "message": "Copiar"
+  },
+  "toolConfigPropertiesHint": {
+    "message": "Pega Properties, por ejemplo: server.port=8080"
+  },
+  "toolConfigYamlHint": {
+    "message": "Pega la configuración YAML"
+  },
+  "toolConfigOutputHint": {
+    "message": "El resultado de la conversión aparecerá aquí"
+  },
+  "toolConfigSemantics": {
+    "message": "Los puntos crean niveles; [0] indica un índice de matriz. Los valores se conservan como texto; se pierden los comentarios y los tipos YAML."
+  },
+  "toolConfigConverted": {
+    "message": "Conversión completada"
+  },
+  "toolConfigLineSummary": {
+    "message": "Entrada: {input} líneas · Salida: {output} líneas"
+  },
+  "toolConfigErrorLocation": {
+    "message": "Línea {line}, columna {column}: {message}"
+  },
+  "toolConfigUnicodeError": {
+    "message": "Escape Unicode de Properties no válido; usa exactamente cuatro dígitos hexadecimales después de \\u."
+  },
+  "toolConfigInvalidPath": {
+    "message": "Ruta de clave no válida. Separa los nombres con puntos y usa índices no negativos como [0]."
+  },
+  "toolConfigConflict": {
+    "message": "Una clave se usa como valor y contenedor a la vez, o mezcla rutas de objetos y matrices."
+  },
+  "toolConfigDuplicate": {
+    "message": "Clave duplicada. Resuelve el duplicado antes de convertir."
+  },
+  "toolConfigSparseArray": {
+    "message": "Los índices de matriz deben empezar en 0 y ser consecutivos."
+  },
+  "toolConfigYamlSyntax": {
+    "message": "Sintaxis YAML no válida o no compatible. Revisa sangrías, comillas, separadores de documentos y etiquetas."
+  },
+  "toolConfigRoot": {
+    "message": "YAML debe contener un único documento de tipo mapa o secuencia."
+  },
+  "toolConfigEmptyCollection": {
+    "message": "Properties no puede representar objetos ni matrices YAML vacíos. Trátalos explícitamente."
+  },
+  "toolConfigNull": {
+    "message": "Properties no puede representar null de YAML. Usa una cadena vacía entre comillas si esa es tu intención."
+  },
+  "toolConfigAlias": {
+    "message": "Expande los alias y las claves de fusión YAML antes de convertir."
+  },
+  "toolConfigAmbiguousKey": {
+    "message": "Las claves YAML vacías o con puntos o corchetes resultan ambiguas como rutas de Properties."
+  },
+  "toolConfigLimit": {
+    "message": "Se superó el límite: 1 MiB de entrada, 5 MiB de salida, 20.000 nodos o 64 niveles."
+  },
+  "toolConfigTimeout": {
+    "message": "La conversión tardó demasiado. Reduce la entrada o simplifica los niveles."
+  },
+  "toolConfigWorkerError": {
+    "message": "No se pudo iniciar el conversor local. Recarga la herramienta e inténtalo de nuevo."
+  },
+  "toolConfigEncoding": {
+    "message": "Importa un archivo de texto UTF-8; usa escapes Unicode para texto Properties antiguo."
+  },
+  "yamlLicenseNotice": {
+    "message": "Analizador yaml 2.9.1: licencia ISC"
+  },
+  "toolJsonFormat": {
+    "message": "Formateador JSON"
+  },
+  "toolJsonInput": {
+    "message": "JSON de entrada"
+  },
+  "toolJsonOutput": {
+    "message": "Resultado del análisis"
+  },
+  "toolJsonFormatDescription": {
+    "message": "Formatea JSON conservando las claves duplicadas y la representación de los números."
+  },
+  "toolTextDiff": {
+    "message": "Comparador de texto"
+  },
+  "toolTextDiffDescription": {
+    "message": "Compara dos textos localmente."
+  },
+  "toolCodecTransform": {
+    "message": "Codificación y conversión"
+  },
+  "toolCodecTransformDescription": {
+    "message": "Convierte Base64, URL, Unicode, XML, bytes y Data URL localmente, o calcula MD5."
+  },
+  "toolTimeConvert": {
+    "message": "Conversor de fechas"
+  },
+  "toolTimeConvertDescription": {
+    "message": "Convierte fechas ISO y marcas de tiempo Unix localmente."
+  },
+  "toolTimeDefinition": {
+    "message": "Definición de marca de tiempo Unix"
+  },
+  "toolTimeCurrentLocal": {
+    "message": "Hora local actual:"
+  },
+  "toolTimeCurrentUnix": {
+    "message": "Marca de tiempo Unix actual:"
+  },
+  "toolTimePause": {
+    "message": "Pausar"
+  },
+  "toolTimeResume": {
+    "message": "Reanudar"
+  },
+  "toolTimeUnixToLocal": {
+    "message": "Marca de tiempo Unix a hora local"
+  },
+  "toolTimeLocalToUnix": {
+    "message": "Hora local a marca de tiempo Unix"
+  },
+  "toolTimeFiletime": {
+    "message": "Conversión de Windows FILETIME"
+  },
+  "toolTimeWorldClock": {
+    "message": "Reloj mundial"
+  },
+  "toolTimeTimestampPlaceholder": {
+    "message": "Marca de tiempo (ej.: 1388307215)"
+  },
+  "toolTimeDatePlaceholder": {
+    "message": "Fecha y hora (ej.: 2015-04-01 10:01:01.620)"
+  },
+  "toolTimeFiletimePlaceholder": {
+    "message": "Windows FILETIME (ej.: 133574880000000000)"
+  },
+  "toolTimeSecondsShort": {
+    "message": "segundos (s)"
+  },
+  "toolTimeMillisecondsShort": {
+    "message": "milisegundos (ms)"
+  },
+  "toolTimeSecondsLabel": {
+    "message": "segundos"
+  },
+  "toolTimeMillisecondsLabel": {
+    "message": "milisegundos"
+  },
+  "toolTimeFiletimeToDate": {
+    "message": "FileTime → fecha"
+  },
+  "toolTimeCurrentToFiletime": {
+    "message": "Hora actual → FileTime"
+  },
+  "toolTimeRegion": {
+    "message": "Región"
+  },
+  "toolTimeClockTime": {
+    "message": "Hora"
+  },
+  "toolTimeLocal": {
+    "message": "Hora local"
+  },
+  "toolTimeGmt": {
+    "message": "Hora del meridiano de Greenwich (GMT)"
+  },
+  "toolTimeNewYork": {
+    "message": "Hora del este de EE. UU. (EST)"
+  },
+  "toolTimeLondon": {
+    "message": "Hora de Londres (GMT)"
+  },
+  "toolTimeTokyo": {
+    "message": "Hora estándar de Japón (JST)"
+  },
+  "toolTimeBeijing": {
+    "message": "Hora estándar de China (CST)"
+  },
+  "toolIdGenerate": {
+    "message": "Generador de ID"
+  },
+  "toolIdGenerateDescription": {
+    "message": "Genera UUID e identificadores ordenables localmente."
+  },
+  "toolPasswordGenerate": {
+    "message": "Generador de contraseñas"
+  },
+  "toolPasswordGenerateDescription": {
+    "message": "Genera una contraseña local con aleatoriedad criptográfica."
+  },
+  "toolTableConvert": {
+    "message": "Conversor CSV / TSV"
+  },
+  "toolTableConvertDescription": {
+    "message": "Convierte texto delimitado en una tabla segura o en CSV."
+  },
+  "toolCatalog": {
+    "message": "Catálogo de herramientas"
+  },
+  "toolCatalogSearch": {
+    "message": "Buscar herramientas"
+  },
+  "toolCatalogSearchHint": {
+    "message": "Buscar por nombre, descripción, palabra clave o ID"
+  },
+  "toolCatalogNoResults": {
+    "message": "No hay herramientas coincidentes."
+  },
+  "toolOpen": {
+    "message": "Abrir herramienta"
+  },
+  "toolsOverview": {
+    "message": "Resumen de herramientas"
+  },
+  "jsonFormatter": {
+    "message": "Formateador JSON"
+  },
+  "textDiff": {
+    "message": "Comparación de contenido"
+  },
+  "codecTransform": {
+    "message": "Codificación y conversión"
+  },
+  "timeAndId": {
+    "message": "Fechas e identificadores"
+  },
+  "toolOverviewDescription": {
+    "message": "Elige las herramientas locales que aparecen en el panel y el menú contextual nativo. Se utilizará el texto seleccionado cuando lo haya."
+  },
+  "toolEnabledHint": {
+    "message": "Permitir el uso de herramientas desde las páginas de la extensión."
+  },
+  "contextMenuEnabledHint": {
+    "message": "Mostrar herramientas en el menú nativo y usar el texto seleccionado cuando lo haya."
+  },
+  "toolDirectory": {
+    "message": "Directorio de herramientas"
+  },
+  "toolDirectoryHint": {
+    "message": "Aquí se muestran todas las herramientas locales con su categoría y acceso."
+  },
+  "toolDirectorySearch": {
+    "message": "Buscar en el directorio"
+  },
+  "toolDirectorySearchHint": {
+    "message": "Buscar en el directorio local"
+  },
+  "jsonFormatterDescription": {
+    "message": "Formatea documentos JSON localmente y conserva el acceso a la página original."
+  },
+  "documentFormatterEnabledHint": {
+    "message": "Solo se lee el contenido de documentos compatibles; no se suben datos de la página."
+  },
+  "documentFormatterJsonHint": {
+    "message": "Datos estructurados"
+  },
+  "documentFormatterXmlHint": {
+    "message": "Documentos de marcado"
+  },
+  "documentFormatterCssHint": {
+    "message": "Hojas de estilo"
+  },
+  "documentFormatterJavascriptHint": {
+    "message": "Scripts"
+  },
+  "documentFormatterJavaHint": {
+    "message": "Archivos de código fuente"
+  },
+  "textDiffSettingsDescription": {
+    "message": "Compara dos textos localmente sin enviar su contenido."
+  },
+  "codecTransformSettingsDescription": {
+    "message": "Codifica, decodifica y convierte texto local con operaciones explícitas."
+  },
+  "timeAndIdSettingsDescription": {
+    "message": "Convierte marcas de tiempo y genera identificadores localmente."
+  },
+  "toolEnabled": {
+    "message": "Activar herramientas locales"
+  },
+  "contextMenuEnabled": {
+    "message": "Activar herramientas del menú contextual nativo"
+  },
+  "documentFormatterEnabled": {
+    "message": "Activar el formato automático de documentos"
+  },
+  "documentFormatterAutoFormat": {
+    "message": "Formatos automáticos"
+  },
+  "documentFormatterAutoJson": {
+    "message": "JSON"
+  },
+  "documentFormatterAutoXml": {
+    "message": "XML"
+  },
+  "documentFormatterAutoCss": {
+    "message": "CSS"
+  },
+  "documentFormatterAutoJavascript": {
+    "message": "JavaScript"
+  },
+  "documentFormatterAutoJava": {
+    "message": "Java"
+  },
+  "documentFormatterMaxAutoBytes": {
+    "message": "Límite de formato automático (bytes)"
+  },
+  "documentFormatterJsonDefaults": {
+    "message": "Valores predeterminados de JSON"
+  },
+  "toolFile": {
+    "message": "Archivo local"
+  },
+  "toolFileChoose": {
+    "message": "Elegir archivo"
+  },
+  "toolFileNone": {
+    "message": "Ningún archivo seleccionado"
+  },
+  "toolChooseFile": {
+    "message": "Importar archivo de texto local"
+  },
+  "toolFileLoaded": {
+    "message": "Archivo local cargado"
+  },
+  "toolFileTooLarge": {
+    "message": "El archivo elegido supera el límite de entrada local de esta herramienta."
+  },
+  "toolCategoryDeveloper": {
+    "message": "Desarrollo"
+  },
+  "toolCategoryText": {
+    "message": "Texto"
+  },
+  "toolCategoryGenerate": {
+    "message": "Generación"
+  },
+  "toolCategoryData": {
+    "message": "Datos"
+  },
+  "toolCompact": {
+    "message": "Compactar salida"
+  },
+  "toolExpandEscaped": {
+    "message": "Expandir JSON escapado"
+  },
+  "toolJsonOperation": {
+    "message": "Operación JSON"
+  },
+  "toolJsonFormatOperation": {
+    "message": "Formatear"
+  },
+  "toolJsonCompactOperation": {
+    "message": "Compactar"
+  },
+  "toolJsonValidateOperation": {
+    "message": "Validar"
+  },
+  "toolJsonSortOperation": {
+    "message": "Ordenar claves"
+  },
+  "toolJsonMoreOptions": {
+    "message": "Más opciones"
+  },
+  "toolDownloadShort": {
+    "message": "Descargar"
+  },
+  "toolJsonLine": {
+    "message": "Línea"
+  },
+  "toolJsonColumn": {
+    "message": "Columna"
+  },
+  "toolJsonCharacters": {
+    "message": "Caracteres"
+  },
+  "toolJsonLength": {
+    "message": "Longitud"
+  },
+  "toolJsonObject": {
+    "message": "Objeto JSON"
+  },
+  "toolJsonArray": {
+    "message": "Matriz JSON"
+  },
+  "toolJsonValue": {
+    "message": "Valor JSON"
+  },
+  "toolJsonDepth": {
+    "message": "Profundidad"
+  },
+  "toolJsonResponsiveHint": {
+    "message": "En pantallas estrechas, el título se ajusta y la barra se desplaza horizontalmente"
+  },
+  "toolTimezone": {
+    "message": "Zona horaria"
+  },
+  "toolIndent2": {
+    "message": "2 espacios"
+  },
+  "toolIndent4": {
+    "message": "4 espacios"
+  },
+  "toolIndent8": {
+    "message": "8 espacios"
+  },
+  "toolIndentTab": {
+    "message": "Tabulación"
+  },
+  "toolSortDescending": {
+    "message": "Descendente"
+  },
+  "toolBase64Encode": {
+    "message": "Codificar Base64"
+  },
+  "toolBase64Decode": {
+    "message": "Decodificar Base64"
+  },
+  "toolUnicodeEncode": {
+    "message": "Codificar puntos de código Unicode"
+  },
+  "toolUnicodeDecode": {
+    "message": "Decodificar puntos de código Unicode"
+  },
+  "toolUtf8Encode": {
+    "message": "Codificar UTF-8"
+  },
+  "toolUtf8Decode": {
+    "message": "Decodificar UTF-8"
+  },
+  "toolHexEncode": {
+    "message": "Codificar en hexadecimal"
+  },
+  "toolHexDecode": {
+    "message": "Decodificar hexadecimal"
+  },
+  "toolUtf16Encode": {
+    "message": "Codificar UTF-16"
+  },
+  "toolUtf16Decode": {
+    "message": "Decodificar UTF-16"
+  },
+  "toolUrlEncode": {
+    "message": "Codificar URL"
+  },
+  "toolUrlDecode": {
+    "message": "Decodificar URL"
+  },
+  "toolHtmlEncode": {
+    "message": "Codificar HTML"
+  },
+  "toolHtmlDecode": {
+    "message": "Decodificar HTML"
+  },
+  "toolJwtDecode": {
+    "message": "Decodificar estructura JWT"
+  },
+  "toolCookieParse": {
+    "message": "Analizar cabecera Cookie"
+  },
+  "toolGzipCompress": {
+    "message": "Comprimir con Gzip"
+  },
+  "toolGzipDecompress": {
+    "message": "Descomprimir Gzip"
+  },
+  "toolMd5": {
+    "message": "MD5 (compatibilidad antigua; no usar para seguridad)"
+  },
+  "toolSha1": {
+    "message": "SHA-1 (compatibilidad antigua; no usar para seguridad)"
+  },
+  "toolIsoToUnixSeconds": {
+    "message": "ISO a segundos Unix"
+  },
+  "toolIsoToUnixMilliseconds": {
+    "message": "ISO a milisegundos Unix"
+  },
+  "toolUnixSecondsToIso": {
+    "message": "Segundos Unix a ISO"
+  },
+  "toolUnixMillisecondsToIso": {
+    "message": "Milisegundos Unix a ISO"
+  },
+  "toolIsoToTimezone": {
+    "message": "ISO a zona horaria"
+  },
+  "toolUnixToFiletime": {
+    "message": "Segundos Unix a FILETIME"
+  },
+  "toolFiletimeToUnix": {
+    "message": "FILETIME a segundos Unix"
+  },
+  "toolUuid": {
+    "message": "UUID v4"
+  },
+  "toolUlid": {
+    "message": "ID de estilo ULID"
+  },
+  "toolSnowflake": {
+    "message": "ID de estilo Snowflake"
+  },
+  "toolNanoid": {
+    "message": "ID de estilo NanoID"
+  },
+  "toolCount1": {
+    "message": "1 valor"
+  },
+  "toolCount5": {
+    "message": "5 valores"
+  },
+  "toolCount10": {
+    "message": "10 valores"
+  },
+  "toolLength12": {
+    "message": "12 caracteres"
+  },
+  "toolLength20": {
+    "message": "20 caracteres"
+  },
+  "toolLength32": {
+    "message": "32 caracteres"
+  },
+  "toolLength64": {
+    "message": "64 caracteres"
+  },
+  "toolCsvToMarkdown": {
+    "message": "CSV a Markdown"
+  },
+  "toolTsvToMarkdown": {
+    "message": "TSV a Markdown"
+  },
+  "toolCsvToTsv": {
+    "message": "CSV a TSV"
+  },
+  "toolTsvToCsv": {
+    "message": "TSV a CSV"
+  },
+  "toolCsvToJson": {
+    "message": "CSV a JSON"
+  },
+  "toolTsvToJson": {
+    "message": "TSV a JSON"
+  },
+  "toolCsvToXml": {
+    "message": "CSV a XML"
+  },
+  "toolTsvToXml": {
+    "message": "TSV a XML"
+  },
+  "toolCsvToMysql": {
+    "message": "CSV a INSERT de MySQL"
+  },
+  "toolTsvToMysql": {
+    "message": "TSV a INSERT de MySQL"
+  },
+  "toolCsvToPhp": {
+    "message": "CSV a matriz PHP"
+  },
+  "toolTsvToPhp": {
+    "message": "TSV a matriz PHP"
+  },
+  "toolKeywordJson": {
+    "message": "JSON"
+  },
+  "toolKeywordFormat": {
+    "message": "formatear"
+  },
+  "toolKeywordValidate": {
+    "message": "validar"
+  },
+  "toolKeywordDiff": {
+    "message": "diferencias"
+  },
+  "toolKeywordText": {
+    "message": "texto"
+  },
+  "toolKeywordCodec": {
+    "message": "codificación"
+  },
+  "toolKeywordBase64": {
+    "message": "Base64"
+  },
+  "toolKeywordJwt": {
+    "message": "JWT"
+  },
+  "toolKeywordTime": {
+    "message": "fecha hora"
+  },
+  "toolKeywordUnix": {
+    "message": "Unix"
+  },
+  "toolKeywordTimezone": {
+    "message": "zona horaria"
+  },
+  "toolKeywordId": {
+    "message": "ID"
+  },
+  "toolKeywordUuid": {
+    "message": "UUID"
+  },
+  "toolKeywordSnowflake": {
+    "message": "Snowflake"
+  },
+  "toolKeywordPassword": {
+    "message": "contraseña"
+  },
+  "toolKeywordRandom": {
+    "message": "aleatorio"
+  },
+  "toolKeywordCsv": {
+    "message": "CSV"
+  },
+  "toolKeywordTsv": {
+    "message": "TSV"
+  },
+  "toolKeywordSql": {
+    "message": "SQL"
+  },
+  "toolBack": {
+    "message": "Volver a las herramientas"
+  },
+  "toolSettings": {
+    "message": "Abrir ajustes de herramientas"
+  },
+  "toolWorkspace": {
+    "message": "Área de trabajo"
+  },
+  "toolLocalBadge": {
+    "message": "Solo local"
+  },
+  "toolInputHint": {
+    "message": "Pega o escribe texto local aquí"
+  },
+  "toolInputLeft": {
+    "message": "Entrada izquierda"
+  },
+  "toolRawInput": {
+    "message": "Entrada original"
+  },
+  "toolParsedOutput": {
+    "message": "Resultado del análisis"
+  },
+  "toolConvert": {
+    "message": "Convertir"
+  },
+  "toolPicker": {
+    "message": "Herramienta"
+  },
+  "toolInput": {
+    "message": "Entrada"
+  },
+  "toolInputRight": {
+    "message": "Entrada derecha"
+  },
+  "toolRun": {
+    "message": "Ejecutar"
+  },
+  "toolCopy": {
+    "message": "Copiar salida"
+  },
+  "toolDownload": {
+    "message": "Descargar salida"
+  },
+  "toolRestore": {
+    "message": "Restaurar original"
+  },
+  "toolOutput": {
+    "message": "Salida"
+  },
+  "toolIndent": {
+    "message": "Sangría"
+  },
+  "toolSort": {
+    "message": "Ordenar"
+  },
+  "toolKeepOrder": {
+    "message": "Original"
+  },
+  "toolSortAscending": {
+    "message": "Ascendente"
+  },
+  "toolCollapse": {
+    "message": "Contraer"
+  },
+  "toolExpand": {
+    "message": "Expandir"
+  },
+  "toolCopyNode": {
+    "message": "Copiar nodo"
+  },
+  "toolDeleteNode": {
+    "message": "Eliminar nodo"
+  },
+  "toolCollapseNode": {
+    "message": "Contraer nodo"
+  },
+  "toolExpandNode": {
+    "message": "Expandir nodo"
+  },
+  "toolCollapseAll": {
+    "message": "Contraer todos los nodos"
+  },
+  "toolExpandAll": {
+    "message": "Expandir todos los nodos"
+  },
+  "toolJsonNoResult": {
+    "message": "No hay ningún resultado JSON formateado"
+  },
+  "toolJsonNodeDeleted": {
+    "message": "Nodo JSON eliminado"
+  },
+  "toolCodecOperation": {
+    "message": "Operación"
+  },
+  "toolCodecType": {
+    "message": "Tipo de conversión"
+  },
+  "toolCodecAdvanced": {
+    "message": "Más transformaciones locales"
+  },
+  "toolEncode": {
+    "message": "Codificar"
+  },
+  "toolDecode": {
+    "message": "Decodificar"
+  },
+  "toolCodecUnicode": {
+    "message": "Puntos de código Unicode"
+  },
+  "toolCodecUrl": {
+    "message": "Parámetro de URL"
+  },
+  "toolCodecUtf8": {
+    "message": "UTF-8"
+  },
+  "toolCodecBase64": {
+    "message": "Base64"
+  },
+  "toolCodecHex": {
+    "message": "Hexadecimal"
+  },
+  "toolCodecUtf16": {
+    "message": "UTF-16"
+  },
+  "toolCodecHtml": {
+    "message": "HTML"
+  },
+  "toolCodecUri": {
+    "message": "URL completa"
+  },
+  "toolCodecUnicodeEscape": {
+    "message": "Escapes Unicode"
+  },
+  "toolCodecJsonString": {
+    "message": "Escapes de cadenas JSON"
+  },
+  "toolCodecXml": {
+    "message": "Entidades XML"
+  },
+  "toolCodecBinary": {
+    "message": "Bytes binarios"
+  },
+  "toolCodecOctal": {
+    "message": "Bytes octales"
+  },
+  "toolCodecDecimal": {
+    "message": "Bytes decimales"
+  },
+  "toolCodecDataUrl": {
+    "message": "Data URL"
+  },
+  "toolCodecAscii": {
+    "message": "ASCII"
+  },
+  "toolCodecMd5": {
+    "message": "MD5"
+  },
+  "toolCodecDigest": {
+    "message": "Hash"
+  },
+  "toolCodecCopyShort": {
+    "message": "Copiar"
+  },
+  "toolCodecUseText": {
+    "message": "Cambiar a entrada de texto"
+  },
+  "toolCodecByteUnit": {
+    "message": "bytes"
+  },
+  "toolCodecAutoConverted": {
+    "message": "Convertido automáticamente"
+  },
+  "toolCodecConverted": {
+    "message": "Conversión completada"
+  },
+  "toolCodecBinaryResult": {
+    "message": "Datos binarios · Vista hexadecimal. Descarga para recuperar el archivo."
+  },
+  "toolCodecBase64Hint": {
+    "message": "Convierte texto UTF-8 a Base64 y viceversa."
+  },
+  "toolCodecUrlHint": {
+    "message": "Codifica un valor de parámetro. Los espacios pasan a %20; al decodificar, + sigue siendo un signo más."
+  },
+  "toolCodecUriHint": {
+    "message": "Convierte una URL completa conservando separadores como : / ? & = #."
+  },
+  "toolCodecUnicodeHint": {
+    "message": "Puntos de código Unicode separados por espacios, p. ej., U+4F60 U+597D."
+  },
+  "toolCodecUnicodeEscapeHint": {
+    "message": "Codifica como \\uXXXX; decodifica \\uXXXX o \\u{1F600}."
+  },
+  "toolCodecJsonStringHint": {
+    "message": "Codifica o decodifica una cadena JSON completa, incluidas las comillas dobles exteriores."
+  },
+  "toolCodecXmlHint": {
+    "message": "Escapa las cinco entidades XML. Decodifica entidades con nombre o numéricas decimales y hexadecimales."
+  },
+  "toolCodecBytesHint": {
+    "message": "Bytes UTF-8 separados por espacios. La decodificación admite espacios, saltos de línea o comas."
+  },
+  "toolCodecAsciiHint": {
+    "message": "Caracteres ASCII y códigos decimales de 0 a 127. Para texto chino, usa bytes decimales."
+  },
+  "toolCodecDataUrlHint": {
+    "message": "Codifica texto o un archivo local. Decodifica para previsualizar texto o descargar los bytes originales."
+  },
+  "toolCodecMd5Hint": {
+    "message": "MD5 es un hash unidireccional para compatibilidad antigua. No se puede decodificar ni es adecuado para seguridad."
+  },
+  "toolCodecInvalidUtf8": {
+    "message": "La secuencia de bytes no es texto válido en esta codificación."
+  },
+  "toolCodecInvalidBase64": {
+    "message": "Formato Base64 no válido."
+  },
+  "toolCodecInvalidCodePoint": {
+    "message": "Punto de código Unicode no válido. Usa el formato U+4F60; no se admiten valores superiores a U+10FFFF ni sustitutos."
+  },
+  "toolCodecInvalidEscape": {
+    "message": "Escape Unicode no válido. Usa \\u4f60 o \\u{1f600}."
+  },
+  "toolCodecInvalidJsonString": {
+    "message": "Introduce una cadena JSON completa con sus comillas dobles."
+  },
+  "toolCodecInvalidXml": {
+    "message": "Entidad o carácter XML no válido. Solo se admiten entidades XML predefinidas y numéricas."
+  },
+  "toolCodecInvalidAscii": {
+    "message": "ASCII solo admite caracteres y códigos decimales de 0 a 127."
+  },
+  "toolCodecInvalidByte": {
+    "message": "Introduce bytes válidos separados por espacios, con valores entre 0 y 255."
+  },
+  "toolCodecInvalidUrl": {
+    "message": "Escape de URL no válido. Comprueba que los escapes porcentuales contienen bytes UTF-8 completos."
+  },
+  "toolCodecInvalidDataUrl": {
+    "message": "Data URL no válida. Revisa el tipo de medio, los parámetros y el contenido codificado."
+  },
+  "toolCodecOutputTooLarge": {
+    "message": "La salida supera los 10 MiB. Reduce la entrada e inténtalo de nuevo."
+  },
+  "toolUriEncode": {
+    "message": "Codificar URL completa"
+  },
+  "toolUriDecode": {
+    "message": "Decodificar URL completa"
+  },
+  "toolUnicodeEscapeEncode": {
+    "message": "Codificar escapes Unicode"
+  },
+  "toolUnicodeEscapeDecode": {
+    "message": "Decodificar escapes Unicode"
+  },
+  "toolJsonStringEncode": {
+    "message": "Codificar cadena JSON"
+  },
+  "toolJsonStringDecode": {
+    "message": "Decodificar cadena JSON"
+  },
+  "toolXmlEncode": {
+    "message": "Codificar entidades XML"
+  },
+  "toolXmlDecode": {
+    "message": "Decodificar entidades XML"
+  },
+  "toolBinaryEncode": {
+    "message": "Codificar bytes binarios"
+  },
+  "toolBinaryDecode": {
+    "message": "Decodificar bytes binarios"
+  },
+  "toolOctalEncode": {
+    "message": "Codificar bytes octales"
+  },
+  "toolOctalDecode": {
+    "message": "Decodificar bytes octales"
+  },
+  "toolDecimalEncode": {
+    "message": "Codificar bytes decimales"
+  },
+  "toolDecimalDecode": {
+    "message": "Decodificar bytes decimales"
+  },
+  "toolDataUrlEncode": {
+    "message": "Codificar Data URL"
+  },
+  "toolDataUrlDecode": {
+    "message": "Decodificar Data URL"
+  },
+  "toolAsciiEncode": {
+    "message": "Codificar ASCII"
+  },
+  "toolAsciiDecode": {
+    "message": "Decodificar ASCII"
+  },
+  "toolDiffPanel": {
+    "message": "Diferencias"
+  },
+  "toolRepair": {
+    "message": "Reparar texto mal codificado"
+  },
+  "toolMode": {
+    "message": "Modo"
+  },
+  "toolCount": {
+    "message": "Cantidad"
+  },
+  "toolLength": {
+    "message": "Longitud"
+  },
+  "toolSymbols": {
+    "message": "Incluir símbolos"
+  },
+  "toolRepairConfirm": {
+    "message": "¿Previsualizar y aplicar la reparación reversible del texto?"
+  },
+  "toolReady": {
+    "message": "Listo"
+  },
+  "toolAutoParsed": {
+    "message": "Analizado automáticamente (se actualiza al cambiar la entrada)"
+  },
+  "toolInvalid": {
+    "message": "Entrada no válida"
+  },
+  "toolCopied": {
+    "message": "Copiado localmente"
+  },
+  "toolCopyUnavailable": {
+    "message": "El portapapeles no está disponible; selecciona la salida para copiarla."
+  },
+  "toolDownloaded": {
+    "message": "Descargado localmente"
+  },
+  "toolRestored": {
+    "message": "Original restaurado"
+  },
+  "toolTokenInvalid": {
+    "message": "El token de entrada de un solo uso no es válido o ha caducado."
+  },
+  "toolEmptySelection": {
+    "message": "No se transfirió ningún texto seleccionado. Pega texto o importa un archivo local."
+  },
+  "toolSelectionTooLarge": {
+    "message": "La selección supera el límite de transferencia. Pega texto o importa un archivo local."
+  },
+  "toolMetadataField": {
+    "message": "Metadatos"
+  },
+  "toolMetadataMode": {
+    "message": "Modo"
+  },
+  "toolMetadataRepresentation": {
+    "message": "Representación"
+  },
+  "toolMetadataOutputEncoding": {
+    "message": "Codificación de salida"
+  },
+  "toolMetadataInputEncoding": {
+    "message": "Codificación de entrada"
+  },
+  "toolMetadataMilliseconds": {
+    "message": "Milisegundos"
+  },
+  "toolMetadataTimezone": {
+    "message": "Zona horaria"
+  },
+  "toolMetadataUnit": {
+    "message": "Unidad"
+  },
+  "toolMetadataCount": {
+    "message": "Cantidad"
+  },
+  "toolMetadataLength": {
+    "message": "Longitud"
+  },
+  "toolMetadataSymbols": {
+    "message": "Símbolos"
+  },
+  "toolMetadataValid": {
+    "message": "Válido"
+  },
+  "toolMetadataOperation": {
+    "message": "Operación"
+  },
+  "toolMetadataExpandedEscaped": {
+    "message": "JSON escapado expandido"
+  },
+  "toolMetadataLeftLines": {
+    "message": "Líneas de la izquierda"
+  },
+  "toolMetadataRightLines": {
+    "message": "Líneas de la derecha"
+  },
+  "toolMetadataRows": {
+    "message": "Filas"
+  },
+  "toolMetadataColumns": {
+    "message": "Columnas"
+  },
+  "toolMetadataFormulaCells": {
+    "message": "Celdas similares a fórmulas"
+  },
+  "toolMetadataFormulaWarning": {
+    "message": "Aviso de fórmulas"
+  },
+  "toolMetadataWarning": {
+    "message": "Advertencia"
+  },
+  "toolMetadataBytes": {
+    "message": "Bytes"
+  },
+  "toolMetadataNodes": {
+    "message": "Nodos"
+  },
+  "toolMetadataStrings": {
+    "message": "Cadenas"
+  },
+  "toolMetadataNumbers": {
+    "message": "Números"
+  },
+  "toolMetadataBooleans": {
+    "message": "Booleanos"
+  },
+  "toolMetadataNulls": {
+    "message": "Valores null"
+  },
+  "toolMetadataUnsafeNumbers": {
+    "message": "Literales enteros no seguros"
+  },
+  "toolMetadataStringCharacters": {
+    "message": "Caracteres de cadenas"
+  },
+  "toolMetadataCharacters": {
+    "message": "Caracteres"
+  },
+  "toolMetadataObjects": {
+    "message": "Objetos"
+  },
+  "toolMetadataArrays": {
+    "message": "Matrices"
+  },
+  "toolMetadataKeys": {
+    "message": "Claves"
+  },
+  "toolMetadataDuplicateKeys": {
+    "message": "Claves duplicadas"
+  },
+  "toolMetadataDuplicateKeyPositions": {
+    "message": "Posiciones de claves duplicadas"
+  },
+  "toolMetadataMaxDepth": {
+    "message": "Profundidad máxima"
+  },
+  "toolMetadataParseMs": {
+    "message": "Tiempo de análisis (ms)"
+  },
+  "toolMetadataFormatMs": {
+    "message": "Tiempo de formato (ms)"
+  },
+  "toolMetadataSortOrder": {
+    "message": "Orden"
+  },
+  "toolMetadataCollapsed": {
+    "message": "Contraído"
+  },
+  "toolMetadataLines": {
+    "message": "Líneas"
+  },
+  "toolMetadataConservative": {
+    "message": "Formato conservador"
+  },
+  "toolJwtWarning": {
+    "message": "Solo se decodifica la estructura del JWT; no se verifican su firma ni su autenticidad."
+  },
+  "toolMd5Warning": {
+    "message": "MD5 solo sirve para compatibilidad antigua y no es adecuado para seguridad."
+  },
+  "toolSha1Warning": {
+    "message": "SHA-1 solo sirve para compatibilidad antigua y no es adecuado para seguridad."
+  },
+  "toolFormulaWarning": {
+    "message": "Puede interpretarse como una fórmula de hoja de cálculo; revísalo antes de importar."
+  },
+  "toolSqlWarning": {
+    "message": "La salida SQL es texto escapado; utiliza consultas parametrizadas."
+  },
+  "documentFormatterTitleSuffix": {
+    "message": "Formato automático"
+  },
+  "documentFormatterToolbar": {
+    "message": "Formateador de documentos de Browser Toolbox"
+  },
+  "documentFormatterIndent": {
+    "message": "Tamaño de sangría"
+  },
+  "documentFormatterTab": {
+    "message": "Tabulación"
+  },
+  "documentFormatterSpaces": {
+    "message": "espacios"
+  },
+  "documentFormatterSortAria": {
+    "message": "Ordenar claves JSON"
+  },
+  "documentFormatterKeepOrder": {
+    "message": "Mantener orden de claves"
+  },
+  "documentFormatterSort": {
+    "message": "Ordenar claves"
+  },
+  "documentFormatterSortAscending": {
+    "message": "Ordenar claves de forma ascendente"
+  },
+  "documentFormatterSortDescending": {
+    "message": "Ordenar claves de forma descendente"
+  },
+  "documentFormatterRepair": {
+    "message": "Reparar texto mal codificado"
+  },
+  "documentFormatterUndoRepair": {
+    "message": "Deshacer reparación"
+  },
+  "documentFormatterCollapse": {
+    "message": "Contraer"
+  },
+  "documentFormatterExpand": {
+    "message": "Expandir"
+  },
+  "documentFormatterCopy": {
+    "message": "Copiar"
+  },
+  "documentFormatterDownload": {
+    "message": "Descargar"
+  },
+  "documentFormatterRestore": {
+    "message": "Restaurar original"
+  },
+  "documentFormatterViewOriginal": {
+    "message": "Ver original"
+  },
+  "documentFormatterRestoreView": {
+    "message": "Restaurar vista formateada"
+  },
+  "documentFormatterShowingOriginal": {
+    "message": "Mostrando texto original"
+  },
+  "documentFormatterKeptOriginal": {
+    "message": "Original conservado"
+  },
+  "documentFormatterCopied": {
+    "message": "Copiado localmente"
+  },
+  "documentFormatterCopyUnavailable": {
+    "message": "El portapapeles no está disponible; selecciona la salida para copiarla."
+  },
+  "documentFormatterDownloaded": {
+    "message": "Descargado localmente"
+  },
+  "documentFormatterNoRepair": {
+    "message": "No se encontraron reparaciones reversibles para el texto mal codificado."
+  },
+  "documentFormatterRepairConfirm": {
+    "message": "¿Previsualizar y aplicar la reparación reversible del texto?"
+  },
+  "documentFormatterRepairPreviewCount": {
+    "message": "Cadenas afectadas"
+  },
+  "documentFormatterRepairPreviewBefore": {
+    "message": "Antes"
+  },
+  "documentFormatterRepairPreviewAfter": {
+    "message": "Después"
+  },
+  "documentFormatterLargeConfirm": {
+    "message": "¿Formatear este documento local de gran tamaño?"
+  },
+  "documentFormatterBytes": {
+    "message": "bytes"
+  },
+  "documentFormatterKeys": {
+    "message": "claves"
+  },
+  "documentFormatterDuplicateKeys": {
+    "message": "claves duplicadas"
+  },
+  "documentFormatterDuplicateKeyPositions": {
+    "message": "posiciones de claves duplicadas"
+  },
+  "documentFormatterTooLarge": {
+    "message": "demasiado grande"
+  },
+  "documentFormatterRepairApplied": {
+    "message": "reparación de texto aplicada"
+  },
+  "documentFormatterMetadata": {
+    "message": "Metadatos del documento"
+  },
+  "documentFormatterCharacters": {
+    "message": "caracteres"
+  },
+  "documentFormatterRootType": {
+    "message": "tipo de raíz"
+  },
+  "documentFormatterObjects": {
+    "message": "objetos"
+  },
+  "documentFormatterArrays": {
+    "message": "matrices"
+  },
+  "documentFormatterStrings": {
+    "message": "cadenas"
+  },
+  "documentFormatterNumbers": {
+    "message": "números"
+  },
+  "documentFormatterBooleans": {
+    "message": "booleanos"
+  },
+  "documentFormatterNulls": {
+    "message": "valores null"
+  },
+  "documentFormatterMaxDepth": {
+    "message": "profundidad máxima"
+  },
+  "documentFormatterUnsafeNumbers": {
+    "message": "literales enteros no seguros"
+  },
+  "documentFormatterContentType": {
+    "message": "tipo de contenido"
+  },
+  "documentFormatterCharset": {
+    "message": "juego de caracteres"
+  },
+  "documentFormatterParseMs": {
+    "message": "tiempo de análisis (ms)"
+  },
+  "documentFormatterRenderMs": {
+    "message": "tiempo de renderizado (ms)"
+  },
+  "documentFormatterSortState": {
+    "message": "estado de ordenación"
+  },
+  "documentFormatterCollapseState": {
+    "message": "estado de contracción"
+  },
+  "documentFormatterDefaultCollapseDepth": {
+    "message": "Nivel de contracción predeterminado"
+  },
+  "documentFormatterRepairState": {
+    "message": "reparación de texto"
+  },
+  "documentFormatterExpanded": {
+    "message": "expandido"
+  },
+  "documentFormatterApplied": {
+    "message": "aplicado"
+  },
+  "documentFormatterNotApplied": {
+    "message": "sin aplicar"
+  },
+  "documentFormatterCollapseNode": {
+    "message": "Contraer este nodo JSON"
+  },
+  "documentFormatterExpandNode": {
+    "message": "Expandir este nodo JSON"
+  },
+  "superDragSafety": {
+    "message": "La tecla modificadora elegida conserva siempre el arrastre nativo. No se interceptan cargas de archivos, editores, campos de contraseña, elementos arrastrables personalizados ni URL no válidas."
+  },
+  "nativeBypassModifier": {
+    "message": "Tecla para usar el arrastre nativo"
+  },
+  "modifierAlt": {
+    "message": "Alt"
+  },
+  "modifierControl": {
+    "message": "Control"
+  },
+  "modifierMeta": {
+    "message": "Command / Meta"
+  },
+  "modifierShift": {
+    "message": "Mayús"
+  },
+  "siteRuleSpecificity": {
+    "message": "Se prioriza el patrón Glob más específico; con igual prioridad, gana la regla posterior. También se admiten expresiones regulares explícitas. La URL principal determina las reglas de todos los marcos."
+  },
+  "siteRuleProfile": {
+    "message": "Perfil del sitio"
+  },
+  "siteRuleProfileHint": {
+    "message": "Personaliza el comportamiento de entrada de este sitio. Los campos vacíos heredan los ajustes globales."
+  },
+  "siteRuleProfileInherit": {
+    "message": "Heredar ajustes globales"
+  },
+  "siteRuleProfileCustom": {
+    "message": "Perfil personalizado"
+  },
+  "siteProfileBalanced": {
+    "message": "Equilibrado"
+  },
+  "siteProfileBalancedDescription": {
+    "message": "Navegación habitual con umbrales estándar."
+  },
+  "siteProfileEditor": {
+    "message": "Protección en editores"
+  },
+  "siteProfileEditorDescription": {
+    "message": "Evita gestos accidentales en editores y herramientas de diseño."
+  },
+  "siteProfileReading": {
+    "message": "Lectura"
+  },
+  "siteProfileReadingDescription": {
+    "message": "Indicaciones discretas para sesiones de lectura largas."
+  },
+  "siteProfileName": {
+    "message": "Nombre del perfil"
+  },
+  "siteProfileMouse": {
+    "message": "Gestos del ratón"
+  },
+  "siteProfileSuperDrag": {
+    "message": "Superarrastre"
+  },
+  "siteProfileWheel": {
+    "message": "Rueda"
+  },
+  "siteProfileTriggerButton": {
+    "message": "Botón de activación"
+  },
+  "siteProfileActivationDistance": {
+    "message": "Distancia de activación (px)"
+  },
+  "siteProfileMinimumSegmentDistance": {
+    "message": "Tramo mínimo (px)"
+  },
+  "siteProfileShowTrail": {
+    "message": "Mostrar trayectoria del gesto"
+  },
+  "siteProfileShowHud": {
+    "message": "Mostrar indicador de comandos"
+  },
+  "siteProfileEnabled": {
+    "message": "Activado"
+  },
+  "siteProfileBypassModifier": {
+    "message": "Usar arrastre nativo"
+  },
+  "siteProfileWheelThreshold": {
+    "message": "Umbral de la rueda"
+  },
+  "siteProfileCooldown": {
+    "message": "Intervalo entre acciones (ms)"
+  },
+  "backupContents": {
+    "message": "Las exportaciones solo incluyen ajustes. Nunca incluyen contenido de páginas, historial, marcadores, gestos temporales ni recursos remotos."
+  },
+  "privacyNetwork": {
+    "message": "Solo la navegación, las búsquedas y las páginas locales de la extensión iniciadas por el usuario pueden generar actividad de red. No se contacta con servidores del proyecto."
+  },
+  "licenseGpl": {
+    "message": "GPL-3.0-or-later"
+  },
+  "aboutText": {
+    "message": "Browser Toolbox usa Vimium v2.4.2 como base de navegación con teclado y sigue siendo gratuito y de código abierto."
+  },
+  "cleanRoomText": {
+    "message": "Se conservan los avisos de Vimium y shoulda.js en el repositorio. Las funciones del ratón son una implementación independiente basada solo en descripciones públicas de comportamiento."
+  },
+  "dataHandling": {
+    "message": "Tratamiento de datos"
+  },
+  "privacyData": {
+    "message": "Browser Toolbox no envía URL, historial, marcadores, contenido de páginas, texto seleccionado, búsquedas, pulsaciones, trayectorias del ratón, imágenes de punteros, ajustes, identificadores del dispositivo o de instalación ni informes de fallos a servidores del proyecto o servicios de análisis de terceros."
+  },
+  "localStorage": {
+    "message": "Almacenamiento local"
+  },
+  "privacyStorage": {
+    "message": "Los ajustes se guardan en el almacenamiento del navegador. Los recursos de punteros personalizados permanecen en el almacenamiento local y no se sincronizan ni se suben."
+  },
+  "security": {
+    "message": "Seguridad"
+  },
+  "charterFree": {
+    "message": "Browser Toolbox es gratuito, de código abierto y ofrece las mismas funciones completas a todos los usuarios."
+  },
+  "charterPrivacy": {
+    "message": "El proyecto no incorpora telemetría, cuentas, anuncios, funciones de pago, configuración remota ni recopilación de datos en segundo plano."
+  },
+  "securityBoundary": {
+    "message": "Browser Toolbox mantiene los datos del navegador y las entradas en el navegador local. No carga código remoto ni permite que las páginas invoquen directamente acciones privilegiadas."
+  },
+  "securityImport": {
+    "message": "Los ajustes importados se analizan, validan, previsualizan y confirman antes de guardarse. Nunca se ejecutan los archivos importados como HTML o scripts."
+  },
+  "securityReport": {
+    "message": "No incluyas credenciales, cookies, tokens, datos personales ni datos completos de navegación en incidencias públicas."
+  },
+  "vimiumLicenseNotice": {
+    "message": "Código y recursos de Vimium v2.4.2: licencia MIT"
+  },
+  "shouldaLicenseNotice": {
+    "message": "Framework de pruebas shoulda.js: licencia MIT"
+  },
+  "onboardingIntro": {
+    "message": "Una caja de herramientas local para navegadores Chromium, con navegación por teclado y módulos independientes de entrada con ratón."
+  },
+  "onboardingGesture": {
+    "message": "Con el control del menú derecho activado, mantén pulsado y mueve para ejecutar el gesto; haz dos clics derechos rápidos en el mismo punto para abrir el menú nativo. Al desactivarlo, el primer clic abre el menú nativo, pero puede interferir con los gestos."
+  },
+  "onboardingDrag": {
+    "message": "El superarrastre conserva el funcionamiento de cargas de archivos, editores, campos de contraseña y elementos arrastrables personalizados."
+  },
+  "onboardingInvocation": {
+    "message": "Cada acción se ejecuta mediante una invocación de comando validada."
+  },
+  "search": {
+    "message": "Buscar"
+  },
+  "searchSettings": {
+    "message": "Buscar"
+  },
+  "vomnibarSearchOrOpen": {
+    "message": "Buscar o abrir"
+  },
+  "vomnibarSearchBookmarks": {
+    "message": "Buscar marcadores"
+  },
+  "vomnibarSearchTabs": {
+    "message": "Buscar pestañas"
+  },
+  "vomnibarPlaceholderOmni": {
+    "message": "Introduce un término de búsqueda o una URL"
+  },
+  "vomnibarPlaceholderBookmarks": {
+    "message": "Introduce un título de marcador o una URL"
+  },
+  "vomnibarPlaceholderTabs": {
+    "message": "Introduce un título de pestaña o una URL"
+  },
+  "vomnibarNewTab": {
+    "message": "Nueva pestaña"
+  },
+  "vomnibarHintSelect": {
+    "message": "Seleccionar"
+  },
+  "vomnibarHintOpen": {
+    "message": "Abrir"
+  },
+  "vomnibarHintClose": {
+    "message": "Cerrar"
+  },
+  "appearance": {
+    "message": "Apariencia"
+  },
+  "keyMappings": {
+    "message": "Asignaciones de teclado"
+  },
+  "searchEngines": {
+    "message": "Motores de búsqueda"
+  },
+  "keyboardMappingNote": {
+    "message": "Las asignaciones compatibles con Vimium se importan a los ajustes de teclado existentes."
+  },
+  "searchEngineNote": {
+    "message": "Las búsquedas solo se envían cuando ejecutas explícitamente un comando de búsqueda."
+  },
+  "vimiumBackup": {
+    "message": "También puedes importar una copia JSON de Vimium. Los campos reconocidos se copian a los ajustes compatibles de Vimium y Browser Toolbox; los desconocidos se notifican, se conservan si es posible o se ignoran."
+  },
+  "importSummary": {
+    "message": "Importar estos ajustes"
+  },
+  "changedSettings": {
+    "message": "Ajustes modificados"
+  },
+  "ignoredFields": {
+    "message": "Campos ignorados"
+  },
+  "unrecognizedFields": {
+    "message": "Ajustes no reconocidos (conservados)"
+  },
+  "importPreviewTitle": {
+    "message": "Revisar importación de ajustes"
+  },
+  "importPreviewDescription": {
+    "message": "Revisa los cambios antes de guardar nada."
+  },
+  "importPreviewAdded": {
+    "message": "Añadido"
+  },
+  "importPreviewChanged": {
+    "message": "Modificado"
+  },
+  "importPreviewRemoved": {
+    "message": "Eliminado"
+  },
+  "importPreviewConfirm": {
+    "message": "Importar estos cambios"
+  },
+  "importPreviewCancel": {
+    "message": "Cancelar importación"
+  },
+  "importPreviewNoChanges": {
+    "message": "No cambiará ningún ajuste de Browser Toolbox."
+  },
+  "importPreviewTruncated": {
+    "message": "Se omiten algunos cambios detallados en esta vista previa."
+  },
+  "none": {
+    "message": "Ninguno"
+  },
+  "saveSettings": {
+    "message": "Guardar ajustes"
+  },
+  "saveOnlyOnSave": {
+    "message": "Los cambios se aplican después de guardar."
+  },
+  "mouseSettingsSubtitle": {
+    "message": "Mantén pulsado el botón derecho y arrastra para ejecutar una acción."
+  },
+  "mouseRightClickHow": {
+    "message": "Cómo funciona el botón derecho"
+  },
+  "mouseRightClick": {
+    "message": "Clic derecho"
+  },
+  "mouseOpenBrowserMenu": {
+    "message": "Abrir el menú del navegador"
+  },
+  "mouseHoldAndDrag": {
+    "message": "Mantener pulsado y arrastrar"
+  },
+  "mouseRunGesture": {
+    "message": "Ejecutar un gesto del ratón"
+  },
+  "mouseGestureActions": {
+    "message": "Gestos y acciones"
+  },
+  "mouseRecognitionSettings": {
+    "message": "Ajustes de reconocimiento"
+  },
+  "mouseRecognitionHint": {
+    "message": "Una distancia mayor reduce las activaciones accidentales; una menor responde más rápido."
+  },
+  "mouseContextMenuSettings": {
+    "message": "Menú del botón derecho"
+  },
+  "mouseNativeMenuHint": {
+    "message": "Un clic normal que no supera la distancia de activación conserva siempre el menú del navegador."
+  },
+  "mouseAdvancedSettings": {
+    "message": "Reconocimiento y asignaciones avanzados"
+  },
+  "mouseEnabledStatus": {
+    "message": "Activado"
+  },
+  "mouseDisabledStatus": {
+    "message": "Desactivado"
+  },
+  "mouseTriggerDistance": {
+    "message": "Distancia de activación"
+  },
+  "mouseTrailHint": {
+    "message": "Indicador de trayectoria"
+  },
+  "mouseTrailDescription": {
+    "message": "Muestra la trayectoria al arrastrar para aprender y comprobar los gestos."
+  },
+  "mouseNormalClickMenu": {
+    "message": "Mantener el menú del navegador con clics normales"
+  },
+  "manageToolMenu": {
+    "message": "Gestionar menú de herramientas"
+  },
+  "searchAndTabs": {
+    "message": "Búsqueda y pestañas"
+  },
+  "unassigned": {
+    "message": "Sin asignar"
+  },
+  "toolJsonInputHint": {
+    "message": "Pega JSON para formatear"
+  },
+  "toolJsonEmptyTitle": {
+    "message": "Pega JSON para formatearlo automáticamente"
+  },
+  "toolJsonEmptyHint": {
+    "message": "Formatea, compacta, ordena y explora JSON localmente."
+  },
+  "documentFormatterAutoFormatted": {
+    "message": "Formateado automáticamente"
+  },
+  "documentFormatterKeyCount": {
+    "message": "claves"
+  },
+  "languageChineseTraditional": {
+    "message": "繁體中文"
+  },
+  "languageJapanese": {
+    "message": "日本語"
+  },
+  "languageSpanish": {
+    "message": "Español"
+  }
+}

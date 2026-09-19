@@ -176,6 +176,36 @@ context("keyBy", () => {
   });
 });
 
+context("shared runtime message channel", () => {
+  should("leave BrowserToolbox messages to their own listener without responding", () => {
+    let listener;
+    let calls = 0;
+    stub(chrome.runtime.onMessage, "addListener", (callback) => listener = callback);
+    Utils.addChromeRuntimeOnMessageListener(["ping"], () => calls++);
+    const result = listener(
+      { protocolVersion: 1, type: "browserToolbox.settingsChanged" },
+      {},
+      () => calls++,
+    );
+    assert.equal(false, result);
+    assert.equal(0, calls);
+  });
+
+  should("preserve asynchronous Vimium replies and malformed-message validation", async () => {
+    let listener;
+    stub(chrome.runtime.onMessage, "addListener", (callback) => listener = callback);
+    Utils.addChromeRuntimeOnMessageListener(["ping"], async (request) => request.value);
+    let respond;
+    const response = new Promise((resolve) => respond = resolve);
+    assert.equal(true, listener({ handler: "ping", value: 42 }, {}, respond));
+    assert.equal(42, await response);
+    assert.equal(false, listener({ handler: "unrelated" }, {}, () => {}));
+    stub(console, "assert", () => {});
+    assert.throwsError(() => listener({}, {}, () => {}));
+    assert.throwsError(() => listener({ type: "unrelated" }, {}, () => {}));
+  });
+});
+
 context("assertType", () => {
   should("fail if schema or object is null", () => {
     assert.throwsError(() => Utils.assertType(null, { a: 1 }));

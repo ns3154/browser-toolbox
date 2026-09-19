@@ -1716,6 +1716,7 @@ body.browser-toolbox-settings-page {
   left: 290px;
   z-index: 3;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 14px;
   margin: 0;
@@ -1739,7 +1740,7 @@ body.browser-toolbox-settings-page {
   min-width: 0;
   color: var(--toolbox-muted);
   font-size: 14px;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .browser-toolbox-settings-page .browser-toolbox-save-hint > span:first-child {
@@ -1755,6 +1756,7 @@ body.browser-toolbox-settings-page {
 
 .browser-toolbox-settings-page .browser-toolbox-save-bar > .browser-toolbox-actions {
   display: inline-flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 18px;
   margin: 0 0 0 auto;
@@ -1835,6 +1837,24 @@ body.browser-toolbox-settings-page {
   .browser-toolbox-settings-page .browser-toolbox-save-bar:has(#save-settings:not(:disabled)) {
     position: static;
     padding: 12px 18px;
+  }
+
+  .browser-toolbox-settings-page .browser-toolbox-save-bar > .browser-toolbox-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .browser-toolbox-settings-page .browser-toolbox-save-bar #discard-changes,
+  .browser-toolbox-settings-page .browser-toolbox-save-bar #save-settings {
+    min-width: 0;
+    padding: 12px 8px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .browser-toolbox-settings-page .browser-toolbox-save-bar #save-status {
+    grid-column: 1 / -1;
   }
 
   .browser-toolbox-settings-page .browser-toolbox-settings-hero {

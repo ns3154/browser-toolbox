@@ -41,7 +41,10 @@ async function auditDescriptions() {
   }
 
   const i18nSource = await Deno.readTextFile("lib/i18n.js");
-  const fallbackMatch = i18nSource.match(/extensionDescription:\s*"([^"]+)"/);
+  // 兼容生成目录中的带引号键名，同时继续检查实际内置英文说明。
+  const fallbackMatch = i18nSource.match(
+    /(?:"extensionDescription"|extensionDescription):\s*"([^"]+)"/,
+  );
   if (!fallbackMatch) {
     errors.push("缺少英文扩展说明 fallback");
   } else if (Array.from(fallbackMatch[1]).length > maxDescriptionLength) {

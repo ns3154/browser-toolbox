@@ -53,6 +53,29 @@ context("Settings runtime client", () => {
 
   teardown(() => BrowserToolboxI18n.setLocale("auto"));
 
+  should("apply new languages to content scripts after settings notifications", async () => {
+    let language = "zh_TW";
+    const { client, listeners } = createHarness(() => settingsWithHud(true, language));
+    try {
+      for (
+        const [nextLanguage, expected] of [
+          ["zh_TW", "儲存"],
+          ["ja", "保存"],
+          ["es", "Guardar"],
+          ["en", "Save"],
+        ]
+      ) {
+        language = nextLanguage;
+        listeners[0](BrowserToolboxMessageProtocol.create("browserToolbox.settingsChanged"));
+        await client.ensureLoaded("https://example.com/");
+        assert.equal(nextLanguage, BrowserToolboxI18n.locale());
+        assert.equal(expected, BrowserToolboxI18n.message("save"));
+      }
+    } finally {
+      client.destroy();
+    }
+  });
+
   should("cache one defensive snapshot for the same context", async () => {
     const { client, messages } = createHarness(() => settingsWithHud(true));
     const first = await client.ensureLoaded("https://example.com/one");

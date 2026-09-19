@@ -1,0 +1,2588 @@
+{
+  "extensionName": {
+    "message": "Browser Toolbox"
+  },
+  "extensionDescription": {
+    "message": "キーボードとマウスでページを移動し、各種操作やタブ管理を行えます。"
+  },
+  "browserToolbox": {
+    "message": "Browser Toolbox"
+  },
+  "save": {
+    "message": "保存"
+  },
+  "saved": {
+    "message": "保存しました"
+  },
+  "saving": {
+    "message": "保存中…"
+  },
+  "saveChanges": {
+    "message": "変更を保存"
+  },
+  "noChanges": {
+    "message": "変更なし"
+  },
+  "cancel": {
+    "message": "キャンセル"
+  },
+  "close": {
+    "message": "閉じる"
+  },
+  "reset": {
+    "message": "リセット"
+  },
+  "enabled": {
+    "message": "有効"
+  },
+  "disabled": {
+    "message": "無効"
+  },
+  "general": {
+    "message": "一般"
+  },
+  "globalShowHud": {
+    "message": "ツールボックスのコマンドヒントを表示"
+  },
+  "browserSyncEnabled": {
+    "message": "ブラウザーで設定を同期"
+  },
+  "browserSyncNote": {
+    "message": "無効にすると、設定はこのブラウザーにのみ保存され、同期されません。"
+  },
+  "keyboard": {
+    "message": "キーボード"
+  },
+  "mouseGestures": {
+    "message": "マウスジェスチャー"
+  },
+  "superDrag": {
+    "message": "スーパードラッグ"
+  },
+  "wheelRocker": {
+    "message": "ホイール・ロッカー"
+  },
+  "rocker": {
+    "message": "ロッカージェスチャー"
+  },
+  "siteRules": {
+    "message": "サイトルール"
+  },
+  "backupRestore": {
+    "message": "バックアップと復元"
+  },
+  "privacy": {
+    "message": "プライバシー"
+  },
+  "privacyTitle": {
+    "message": "Browser Toolbox のプライバシー"
+  },
+  "aboutLicenses": {
+    "message": "概要とライセンス"
+  },
+  "openSettings": {
+    "message": "設定を開く"
+  },
+  "openBrowserToolboxSettings": {
+    "message": "Browser Toolbox のマウス、ドラッグ、ホイール、プライバシー設定"
+  },
+  "browserToolboxSettings": {
+    "message": "Browser Toolbox の設定"
+  },
+  "browserToolboxHelpTitle": {
+    "message": "Browser Toolbox のヘルプ"
+  },
+  "browserToolboxHelpIntro": {
+    "message": "キーボード操作は Vimium を基盤としています。ここでは Browser Toolbox の各機能と現在のページの状態を確認できます。"
+  },
+  "browserToolboxCurrentPage": {
+    "message": "現在のページの状態"
+  },
+  "browserToolboxAllModulesEnabled": {
+    "message": "このページでは Browser Toolbox のすべてのモジュールが有効です。"
+  },
+  "browserToolboxDisabledModules": {
+    "message": "このページで無効なモジュール"
+  },
+  "browserToolboxStatusUnavailable": {
+    "message": "現在のページの状態を取得できません。"
+  },
+  "browserToolboxAppliedRule": {
+    "message": "適用中のサイトルール"
+  },
+  "browserToolboxNoMatchingRule": {
+    "message": "このページに一致する Browser Toolbox のサイトルールはありません。"
+  },
+  "browserToolboxVimiumExcluded": {
+    "message": "Vimium のページルールにより、ここではキーボード操作が無効になっています。"
+  },
+  "browserToolboxBrowserLimit": {
+    "message": "ブラウザーが管理する一部のページでは拡張機能を実行できず、操作が利用できないことがあります。"
+  },
+  "browserToolboxMouseHelp": {
+    "message": "ジェスチャーボタンで設定済みの軌跡を描きます。右クリックメニューの制御が有効な場合、最初の右クリックを押したまま動かすとジェスチャーを実行し、同じ位置で素早く 2 回右クリックすると標準メニューが開きます。制御を無効にすると最初の右クリックで標準メニューが開きますが、ジェスチャーと競合することがあります。"
+  },
+  "browserToolboxSuperDragHelp": {
+    "message": "リンク、テキスト、画像をドラッグすると、設定した操作を実行します。ファイルのアップロード、エディター、パスワード欄、ドラッグ可能なウィジェットの標準動作は維持されます。"
+  },
+  "browserToolboxWheelHelp": {
+    "message": "設定したマウスボタンを押しながらホイールを動かすと、しきい値に達した時点で操作を実行します。通常のスクロールには影響しません。"
+  },
+  "browserToolboxRockerHelp": {
+    "message": "片方のマウスボタンを押したままもう片方をクリックすると、設定したロッカージェスチャーを実行します。未割り当ての組み合わせは通常のクリックとして動作します。"
+  },
+  "browserToolboxSiteRulesHelp": {
+    "message": "Glob または正規表現のルールでサイトごとに各モジュールを設定します。最上位ページの設定がすべてのフレームに適用されます。"
+  },
+  "browserToolboxPrivacyHelp": {
+    "message": "Browser Toolbox にはテレメトリー、アカウント、広告、有料機能、リモートコード、プロジェクトのサーバーへの通信はありません。"
+  },
+  "browserToolboxLicenseHelp": {
+    "message": "プロジェクトのコードは GPL-3.0-or-later で公開されています。"
+  },
+  "openBrowserToolboxSettingsPage": {
+    "message": "Browser Toolbox の設定を開く"
+  },
+  "openPrivacyPolicy": {
+    "message": "プライバシーポリシー"
+  },
+  "openLicense": {
+    "message": "ライセンス"
+  },
+  "keyboardBaselineNotice": {
+    "message": "キーボード操作の基盤：Vimium v2.4.2。"
+  },
+  "help": {
+    "message": "ヘルプ"
+  },
+  "wiki": {
+    "message": "Wiki"
+  },
+  "navigatingThePage": {
+    "message": "ページ内の移動"
+  },
+  "usingTheVomnibar": {
+    "message": "Vomnibar の使い方"
+  },
+  "usingFind": {
+    "message": "ページ内検索の使い方"
+  },
+  "navigatingHistory": {
+    "message": "履歴の移動"
+  },
+  "manipulatingTabs": {
+    "message": "タブの操作"
+  },
+  "linksAndSelections": {
+    "message": "リンクと選択範囲"
+  },
+  "windows": {
+    "message": "ウィンドウ"
+  },
+  "miscellaneous": {
+    "message": "その他"
+  },
+  "showAdvancedCommands": {
+    "message": "詳細コマンドを表示"
+  },
+  "hideAdvancedCommands": {
+    "message": "詳細コマンドを隠す"
+  },
+  "whatsNew": {
+    "message": "更新情報"
+  },
+  "version": {
+    "message": "バージョン"
+  },
+  "openHelp": {
+    "message": "ヘルプを開く"
+  },
+  "currentSite": {
+    "message": "現在のサイト"
+  },
+  "disableForSession": {
+    "message": "このセッションのみ無効にする"
+  },
+  "sessionDisabled": {
+    "message": "このセッションでは無効"
+  },
+  "disabling": {
+    "message": "無効化中…"
+  },
+  "sessionDisableFailed": {
+    "message": "このセッションで無効にできませんでした。もう一度お試しください。"
+  },
+  "inactive": {
+    "message": "停止中"
+  },
+  "allModulesEnabled": {
+    "message": "このサイトでは Browser Toolbox のすべてのモジュールが有効です。"
+  },
+  "pageUnavailable": {
+    "message": "このページではブラウザーが拡張機能の実行を許可していません。"
+  },
+  "actionPageTitle": {
+    "message": "Browser Toolbox"
+  },
+  "firefoxMissingHostsPermission": {
+    "message": "Vimium に「すべてのサイト」へのアクセス権限がありません。"
+  },
+  "firefoxPermissionHelp": {
+    "message": "Firefox ではこの権限を手動で付与する必要があります。下のボタンで有効にできます。"
+  },
+  "grantHostsPermission": {
+    "message": "すべてのサイトへのアクセスを許可"
+  },
+  "firefoxPermissionPathIntro": {
+    "message": "または、次の手順で設定します："
+  },
+  "firefoxPermissionPath": {
+    "message": "about:addons > Vimium > 管理（3 点メニュー）> 権限 > 「すべてのウェブサイトのユーザーデータへのアクセス」を有効にします。"
+  },
+  "seePermissionsHelp": {
+    "message": "権限のヘルプを表示"
+  },
+  "vimiumKeysEnabledOnPage": {
+    "message": "このページでは Vimium のキー操作が有効です。"
+  },
+  "excludeKeysOnPage": {
+    "message": "このページで Vimium のキーを除外"
+  },
+  "matchingPatterns": {
+    "message": "現在のページに一致するパターン"
+  },
+  "keysToExclude": {
+    "message": "除外するキー"
+  },
+  "seeExclusionRules": {
+    "message": "すべての除外ルールは"
+  },
+  "optionsPage": {
+    "message": "設定"
+  },
+  "page": {
+    "message": "ページで確認できます。"
+  },
+  "noTelemetry": {
+    "message": "テレメトリー、アカウント、広告、有料機能はありません。"
+  },
+  "pattern": {
+    "message": "パターン"
+  },
+  "patternInput": {
+    "message": "ジェスチャーの矢印（例：↑ · →）"
+  },
+  "gestureEditor": {
+    "message": "ジェスチャーエディター"
+  },
+  "gestureLab": {
+    "message": "ジェスチャーテスト"
+  },
+  "gestureLabHint": {
+    "message": "割り当てを追加する前に、重複や軌跡の先頭部分の競合を確認します。"
+  },
+  "gestureLabReady": {
+    "message": "このパターンは使用できます。"
+  },
+  "gestureLabDuplicateWarning": {
+    "message": "このパターンはすでに割り当てられています"
+  },
+  "gestureLabPrefixWarning": {
+    "message": "このパターンは、より長い割り当ての先頭部分と一致します。"
+  },
+  "gestureLabLongerWarning": {
+    "message": "このパターンの先頭部分には、すでに短い割り当てがあります。"
+  },
+  "command": {
+    "message": "コマンド"
+  },
+  "options": {
+    "message": "オプション"
+  },
+  "optionsDefault": {
+    "message": "既定"
+  },
+  "optionsHint": {
+    "message": "JSON オブジェクトで指定します。保存前に値を検証します。"
+  },
+  "dangerousCommandWarning": {
+    "message": "タブやウィンドウを閉じる可能性があります。"
+  },
+  "addBinding": {
+    "message": "割り当てを追加"
+  },
+  "addRule": {
+    "message": "ルールを追加"
+  },
+  "removeBinding": {
+    "message": "割り当てを削除"
+  },
+  "removeRule": {
+    "message": "ルールを削除"
+  },
+  "moveUp": {
+    "message": "上へ移動"
+  },
+  "moveDown": {
+    "message": "下へ移動"
+  },
+  "duplicateRule": {
+    "message": "ルールを複製"
+  },
+  "discardChanges": {
+    "message": "変更を破棄"
+  },
+  "unsavedChanges": {
+    "message": "保存されていない変更があります。"
+  },
+  "restoreDefaults": {
+    "message": "既定値に戻す"
+  },
+  "restoreDefaultsConfirm": {
+    "message": "Browser Toolbox の設定を既定値に戻しますか？"
+  },
+  "importSettings": {
+    "message": "設定をインポート"
+  },
+  "exportSettings": {
+    "message": "設定をエクスポート"
+  },
+  "chooseFile": {
+    "message": "ファイルを選択"
+  },
+  "invalidSettings": {
+    "message": "設定ファイルが無効です。"
+  },
+  "settingsConflict": {
+    "message": "別の Browser Toolbox ページまたは端末で設定が変更されました。保存する前に再読み込みしてください。"
+  },
+  "settingsConflictFields": {
+    "message": "競合する項目"
+  },
+  "settingsConflictMore": {
+    "message": "ほかの項目は省略されています"
+  },
+  "settingsRecoveryFailed": {
+    "message": "保存に失敗し、自動復旧も完了しませんでした。編集を続ける前に再読み込みしてください。"
+  },
+  "validationUnknownCommand": {
+    "message": "不明なコマンド"
+  },
+  "validationUnsupportedInput": {
+    "message": "この入力ではコマンドを使用できません"
+  },
+  "validationInvalidOptions": {
+    "message": "無効なコマンドオプション"
+  },
+  "validationDuplicate": {
+    "message": "割り当てが重複しています"
+  },
+  "validationInvalidPattern": {
+    "message": "無効なジェスチャーパターン"
+  },
+  "validationInvalidRegex": {
+    "message": "無効な正規表現"
+  },
+  "validationRegexComplexity": {
+    "message": "正規表現が複雑すぎます"
+  },
+  "siteRuleDuplicateWarning": {
+    "message": "このパターンは別のルールでも使用されています。重複する項目には後から設定したルールが優先されます。"
+  },
+  "validationInvalidSiteRule": {
+    "message": "無効なサイトルール"
+  },
+  "validationOutOfRange": {
+    "message": "値が許容範囲外です"
+  },
+  "validationPrivacy": {
+    "message": "プライバシー保護の設定は変更できません"
+  },
+  "validationSchema": {
+    "message": "未対応の設定スキーマ"
+  },
+  "gestureUnrecognized": {
+    "message": "ジェスチャーを認識できません"
+  },
+  "gestureCancelled": {
+    "message": "ジェスチャーをキャンセルしました"
+  },
+  "gestureDirectionUp": {
+    "message": "上"
+  },
+  "gestureDirectionDown": {
+    "message": "下"
+  },
+  "gestureDirectionLeft": {
+    "message": "左"
+  },
+  "gestureDirectionRight": {
+    "message": "右"
+  },
+  "browserRestriction": {
+    "message": "このページはブラウザーにより制限されています。"
+  },
+  "language": {
+    "message": "言語"
+  },
+  "languageAuto": {
+    "message": "ブラウザーに合わせる"
+  },
+  "languageEnglish": {
+    "message": "English"
+  },
+  "languageChinese": {
+    "message": "简体中文"
+  },
+  "triggerButton": {
+    "message": "ジェスチャーボタン"
+  },
+  "mouseTriggerButtonHint": {
+    "message": "スーパードラッグやロッカージェスチャーと同じボタンを使う場合、ジェスチャーが優先されます。右クリックメニューの制御が有効な場合、最初の右クリックを押したまま動かすとジェスチャーを実行し、同じ位置で素早く 2 回右クリックすると標準メニューが開きます。制御を無効にすると最初の右クリックで標準メニューが開きますが、ジェスチャーと競合することがあります。"
+  },
+  "activationDistance": {
+    "message": "開始距離（px）"
+  },
+  "sampleDistance": {
+    "message": "サンプリング間隔（px）"
+  },
+  "minimumSegmentDistance": {
+    "message": "最小線分長（px）"
+  },
+  "turnHysteresis": {
+    "message": "方向転換のヒステリシス（度）"
+  },
+  "maxSegments": {
+    "message": "最大線分数"
+  },
+  "maxDuration": {
+    "message": "最大継続時間（ms）"
+  },
+  "showTrail": {
+    "message": "ジェスチャーの軌跡を表示"
+  },
+  "showHud": {
+    "message": "コマンド表示を有効にする"
+  },
+  "suppressContextMenu": {
+    "message": "右クリックジェスチャーで標準メニューを制御"
+  },
+  "privacyImmutable": {
+    "message": "テレメトリー、リモート設定、バックグラウンド通信は常に無効です。"
+  },
+  "tabs": {
+    "message": "タブ"
+  },
+  "cursor": {
+    "message": "カスタムポインター"
+  },
+  "cursorAsset": {
+    "message": "ローカル PNG ポインター"
+  },
+  "cursorHotspotX": {
+    "message": "ホットスポット X"
+  },
+  "cursorHotspotY": {
+    "message": "ホットスポット Y"
+  },
+  "noCursorAsset": {
+    "message": "ローカルポインターが選択されていません。"
+  },
+  "resetCursor": {
+    "message": "ローカルポインターを削除"
+  },
+  "wheelThreshold": {
+    "message": "ホイールのしきい値"
+  },
+  "cooldown": {
+    "message": "待機時間（ms）"
+  },
+  "continuousTabSwitching": {
+    "message": "連続でタブを切り替える"
+  },
+  "button": {
+    "message": "ボタン"
+  },
+  "direction": {
+    "message": "方向"
+  },
+  "sequence": {
+    "message": "順序"
+  },
+  "leftButton": {
+    "message": "左ボタン"
+  },
+  "rightButton": {
+    "message": "右ボタン"
+  },
+  "middleButton": {
+    "message": "中央ボタン"
+  },
+  "up": {
+    "message": "上"
+  },
+  "down": {
+    "message": "下"
+  },
+  "holdRightThenClickLeft": {
+    "message": "右を押しながら左をクリック"
+  },
+  "holdLeftThenClickRight": {
+    "message": "左を押しながら右をクリック"
+  },
+  "urlPattern": {
+    "message": "URL パターン"
+  },
+  "modules": {
+    "message": "モジュール"
+  },
+  "siteRuleMatchType": {
+    "message": "一致方式"
+  },
+  "siteRuleGlob": {
+    "message": "Glob"
+  },
+  "siteRuleRegex": {
+    "message": "正規表現"
+  },
+  "siteRuleEnabled": {
+    "message": "このサイトでツールボックスを有効にする"
+  },
+  "siteRuleDisableModules": {
+    "message": "このサイトで無効にするモジュール"
+  },
+  "siteRuleModuleHint": {
+    "message": "チェックしたモジュールはこのサイトで無効になります。"
+  },
+  "siteRuleDefaultHint": {
+    "message": "競合しやすいサイトの組み込みルールは、マウス機能を既定で無効にします。ルールは編集・削除できます。"
+  },
+  "siteRuleGlobHint": {
+    "message": "例：https://*.example.com/*"
+  },
+  "siteRuleRegexHint": {
+    "message": "例：^https://(www\\.)?example\\.com/"
+  },
+  "siteRulePriority": {
+    "message": "優先度"
+  },
+  "siteRuleOrder": {
+    "message": "設定順"
+  },
+  "siteRulePrecedence": {
+    "message": "適用の優先順位"
+  },
+  "siteRuleActions": {
+    "message": "操作"
+  },
+  "siteRuleNoRules": {
+    "message": "サイトルールはまだありません。追加して URL を設定してください。"
+  },
+  "testSiteUrl": {
+    "message": "URL をテスト"
+  },
+  "siteRuleTestUrl": {
+    "message": "テストする URL"
+  },
+  "siteRuleTestUrlHint": {
+    "message": "https://example.com/path"
+  },
+  "siteRuleTestUrlHelp": {
+    "message": "URL を入力してください。この欄は保存されません。"
+  },
+  "siteRuleEnterTestUrl": {
+    "message": "テストする URL を入力してください。"
+  },
+  "siteRuleInvalidTestUrl": {
+    "message": "有効な URL を入力してください。"
+  },
+  "siteRuleMatched": {
+    "message": "この URL は次のサイトルールに一致します："
+  },
+  "siteRuleNotMatched": {
+    "message": "この URL に一致するサイトルールはありません。"
+  },
+  "siteRuleEffectiveState": {
+    "message": "有効なモジュール"
+  },
+  "siteRuleDisabledModules": {
+    "message": "無効なモジュール"
+  },
+  "siteRuleAllModulesEnabled": {
+    "message": "すべてのモジュールが有効です"
+  },
+  "siteRuleExplanationTitle": {
+    "message": "この結果が適用される理由"
+  },
+  "siteRuleNoMatchingRules": {
+    "message": "この URL に一致する Browser Toolbox のサイトルールはありません。"
+  },
+  "patternDoesNotMatch": {
+    "message": "パターンが現在の URL と一致しません"
+  },
+  "untitledTab": {
+    "message": "（無題）"
+  },
+  "allKeys": {
+    "message": "すべて"
+  },
+  "noKeys": {
+    "message": "なし"
+  },
+  "someKeys": {
+    "message": "一部"
+  },
+  "context": {
+    "message": "対象"
+  },
+  "contextLink": {
+    "message": "リンク"
+  },
+  "contextSelection": {
+    "message": "選択したテキスト"
+  },
+  "contextImage": {
+    "message": "画像"
+  },
+  "openOnboarding": {
+    "message": "使い方を開く"
+  },
+  "projectCharter": {
+    "message": "プロジェクト憲章"
+  },
+  "thirdPartyNotices": {
+    "message": "サードパーティーの表記"
+  },
+  "command_BrowserToolbox_closeWindow": {
+    "message": "現在のウィンドウを閉じる"
+  },
+  "command_BrowserToolbox_newWindow": {
+    "message": "新しいウィンドウを開く"
+  },
+  "command_BrowserToolbox_toggleFullscreen": {
+    "message": "全画面表示を切り替える"
+  },
+  "command_BrowserToolbox_minimizeWindow": {
+    "message": "現在のウィンドウを最小化"
+  },
+  "command_BrowserToolbox_maximizeWindow": {
+    "message": "現在のウィンドウを最大化"
+  },
+  "command_BrowserToolbox_showTabList": {
+    "message": "タブ一覧を表示"
+  },
+  "command_BrowserToolbox_openCommandCenter": {
+    "message": "コマンドセンターを開く"
+  },
+  "command_BrowserToolbox_openSettings": {
+    "message": "Browser Toolbox の設定を開く"
+  },
+  "command_BrowserToolbox_openTool": {
+    "message": "Browser Toolbox のツールを開く"
+  },
+  "command_BrowserToolbox_toggleKeyboard": {
+    "message": "キーボード操作を切り替える"
+  },
+  "command_BrowserToolbox_toggleMouseGestures": {
+    "message": "マウスジェスチャーを切り替える"
+  },
+  "command_BrowserToolbox_toggleSuperDrag": {
+    "message": "スーパードラッグを切り替える"
+  },
+  "command_BrowserToolbox_copySelection": {
+    "message": "選択したテキストをコピー"
+  },
+  "command_BrowserToolbox_copyLinkText": {
+    "message": "リンクのテキストをコピー"
+  },
+  "command_BrowserToolbox_copyLinkUrl": {
+    "message": "リンクの URL をコピー"
+  },
+  "command_BrowserToolbox_copyImageUrl": {
+    "message": "画像の URL をコピー"
+  },
+  "command_BrowserToolbox_searchSelection": {
+    "message": "選択したテキストを検索"
+  },
+  "command_BrowserToolbox_openLinkForeground": {
+    "message": "リンクを前面のタブで開く"
+  },
+  "command_BrowserToolbox_openLinkBackground": {
+    "message": "リンクを背面のタブで開く"
+  },
+  "command_BrowserToolbox_openImageForeground": {
+    "message": "画像を前面のタブで開く"
+  },
+  "command_BrowserToolbox_openImageBackground": {
+    "message": "画像を背面のタブで開く"
+  },
+  "command_BrowserToolbox_downloadImage": {
+    "message": "画像をダウンロード"
+  },
+  "command_goBack": {
+    "message": "戻る"
+  },
+  "command_goForward": {
+    "message": "進む"
+  },
+  "command_removeTab": {
+    "message": "タブを閉じる"
+  },
+  "command_restoreTab": {
+    "message": "閉じたタブを復元"
+  },
+  "command_scrollToTop": {
+    "message": "ページの先頭へ"
+  },
+  "command_scrollToBottom": {
+    "message": "ページの末尾へ"
+  },
+  "command_scrollFullPageUp": {
+    "message": "1 ページ上へ"
+  },
+  "command_scrollFullPageDown": {
+    "message": "1 ページ下へ"
+  },
+  "command_reload": {
+    "message": "再読み込み"
+  },
+  "command_reloadHard": {
+    "message": "キャッシュを無視して再読み込み"
+  },
+  "command_previousTab": {
+    "message": "前のタブ"
+  },
+  "command_nextTab": {
+    "message": "次のタブ"
+  },
+  "settingsSections": {
+    "message": "設定項目"
+  },
+  "settingsSearch": {
+    "message": "設定を検索"
+  },
+  "settingsSearchHint": {
+    "message": "設定を検索"
+  },
+  "settingsSearchMatches": {
+    "message": "一致する設定項目"
+  },
+  "settingsSearchNoResults": {
+    "message": "一致する設定項目がありません。"
+  },
+  "browsingEnhancement": {
+    "message": "ブラウジング機能"
+  },
+  "utilityTools": {
+    "message": "便利なツール"
+  },
+  "system": {
+    "message": "システム"
+  },
+  "quickTools": {
+    "message": "クイックツール"
+  },
+  "running": {
+    "message": "動作中"
+  },
+  "active": {
+    "message": "有効"
+  },
+  "currentSiteDetails": {
+    "message": "現在のサイトの詳細"
+  },
+  "actionFooter": {
+    "message": "操作リンク"
+  },
+  "commandCenter": {
+    "message": "コマンドセンター"
+  },
+  "commandCenterTitle": {
+    "message": "コマンドセンター"
+  },
+  "commandCenterSubtitle": {
+    "message": "コマンド、ツール、設定を検索します。"
+  },
+  "commandCenterContext": {
+    "message": "対象"
+  },
+  "commandCenterNoTarget": {
+    "message": "ページが選択されていません"
+  },
+  "commandCenterSearchLabel": {
+    "message": "検索"
+  },
+  "commandCenterSearchHint": {
+    "message": "コマンド、ツール、設定を検索…"
+  },
+  "commandCenterResults": {
+    "message": "コマンドセンターの検索結果"
+  },
+  "commandCenterKeyboardHint": {
+    "message": "↑ と ↓ で選択、Enter で実行、Escape で閉じます。"
+  },
+  "commandCenterCommands": {
+    "message": "コマンド"
+  },
+  "commandCenterTools": {
+    "message": "ツール"
+  },
+  "commandCenterSettings": {
+    "message": "設定"
+  },
+  "commandCenterResultCount": {
+    "message": "件"
+  },
+  "commandCenterEmpty": {
+    "message": "利用できる項目がありません。"
+  },
+  "commandCenterNoResults": {
+    "message": "一致する項目がありません。"
+  },
+  "commandCenterLoadFailed": {
+    "message": "コマンドセンターの項目を読み込めませんでした。"
+  },
+  "commandCenterExecuteFailed": {
+    "message": "選択した項目を実行できませんでした。"
+  },
+  "commandCenterDangerousConfirm": {
+    "message": "この操作はタブやウィンドウを閉じる可能性があります。続行しますか？"
+  },
+  "commandCenterMouseSettings": {
+    "message": "マウスとジェスチャーの設定"
+  },
+  "commandCenterMouseSettingsDescription": {
+    "message": "ジェスチャーの認識と割り当てを調整します。"
+  },
+  "commandCenterSiteRules": {
+    "message": "サイト別プロファイルとルール"
+  },
+  "commandCenterSiteRulesDescription": {
+    "message": "サイトごとの動作を設定します。"
+  },
+  "commandCenterToolSettings": {
+    "message": "ツール設定"
+  },
+  "commandCenterToolSettingsDescription": {
+    "message": "ローカルツールと右クリックメニューの項目を選択します。"
+  },
+  "actionKeyboardSummary": {
+    "message": "Vimium のキーボード操作"
+  },
+  "actionMouseSummary": {
+    "message": "右ボタンを押しながら軌跡を描く"
+  },
+  "actionSuperDragSummary": {
+    "message": "リンク、画像、テキストをドラッグして操作"
+  },
+  "actionWheelSummary": {
+    "message": "ホイールやボタンの組み合わせでタブを切り替える"
+  },
+  "navigationKeyboard": {
+    "message": "ナビゲーションとキーボード"
+  },
+  "mouseDrag": {
+    "message": "マウスとドラッグ"
+  },
+  "searchTabs": {
+    "message": "検索とタブ"
+  },
+  "appearanceBehavior": {
+    "message": "外観と動作"
+  },
+  "sitePrivacy": {
+    "message": "サイトとプライバシー"
+  },
+  "backupAbout": {
+    "message": "バックアップと概要"
+  },
+  "tools": {
+    "message": "ツール"
+  },
+  "documentFormatter": {
+    "message": "ドキュメント整形"
+  },
+  "actionTools": {
+    "message": "ポップアップのツール"
+  },
+  "actionToolsHint": {
+    "message": "ポップアップに表示するツールを最大 6 個選択します。"
+  },
+  "contextMenuTools": {
+    "message": "右クリックメニューのツール"
+  },
+  "contextMenuToolsHint": {
+    "message": "標準の右クリックメニューに表示するツールを最大 3 個選択します。選択したテキストがあれば入力に引き継がれます。"
+  },
+  "toolSelectionLimit": {
+    "message": "選択数の上限"
+  },
+  "toolLocalOnly": {
+    "message": "すべてのツールはローカルで動作します。入力の受け渡しには短時間のみ有効な使い捨てのセッショントークンを使います。"
+  },
+  "allTools": {
+    "message": "すべてのツール"
+  },
+  "manageTools": {
+    "message": "ツールを管理"
+  },
+  "toolConfigConvert": {
+    "message": "Properties ↔ YAML"
+  },
+  "toolConfigConvertDescription": {
+    "message": "ローカルの Properties と YAML 設定ファイルを相互変換します。"
+  },
+  "toolKeywordProperties": {
+    "message": "Properties"
+  },
+  "toolKeywordYaml": {
+    "message": "YAML YML"
+  },
+  "toolKeywordConfig": {
+    "message": "設定 Spring アプリケーション"
+  },
+  "toolConfigDirection": {
+    "message": "変換方向"
+  },
+  "toolConfigSwap": {
+    "message": "入れ替え"
+  },
+  "toolConfigSwapHint": {
+    "message": "結果を入力に使い、変換方向を反転"
+  },
+  "toolConfigCopy": {
+    "message": "コピー"
+  },
+  "toolConfigPropertiesHint": {
+    "message": "Properties を貼り付けてください。例：server.port=8080"
+  },
+  "toolConfigYamlHint": {
+    "message": "YAML 設定を貼り付けてください"
+  },
+  "toolConfigOutputHint": {
+    "message": "変換結果がここに表示されます"
+  },
+  "toolConfigSemantics": {
+    "message": "ドットは階層、[0] は配列の添字を表します。値は文字列のまま保持され、コメントと YAML の型は保持されません。"
+  },
+  "toolConfigConverted": {
+    "message": "変換しました"
+  },
+  "toolConfigLineSummary": {
+    "message": "入力 {input} 行 · 出力 {output} 行"
+  },
+  "toolConfigErrorLocation": {
+    "message": "{line} 行、{column} 列：{message}"
+  },
+  "toolConfigUnicodeError": {
+    "message": "Properties の Unicode エスケープが無効です。\\u の後には 16 進数を正確に 4 桁指定してください。"
+  },
+  "toolConfigInvalidPath": {
+    "message": "キーのパスが無効です。名前をドットで区切り、配列の添字には [0] などの非負整数を使ってください。"
+  },
+  "toolConfigConflict": {
+    "message": "同じキーが値とコンテナーの両方に使われているか、オブジェクトと配列のパスが混在しています。"
+  },
+  "toolConfigDuplicate": {
+    "message": "キーが重複しています。変換前に重複を解消してください。"
+  },
+  "toolConfigSparseArray": {
+    "message": "配列の添字は 0 から始まる連続した整数である必要があります。"
+  },
+  "toolConfigYamlSyntax": {
+    "message": "YAML の構文が無効か未対応です。インデント、引用符、ドキュメント区切り、タグを確認してください。"
+  },
+  "toolConfigRoot": {
+    "message": "YAML にはマッピングまたはシーケンスのドキュメントが 1 つ必要です。"
+  },
+  "toolConfigEmptyCollection": {
+    "message": "空の YAML オブジェクトや配列は Properties で表現できません。明示的に処理してください。"
+  },
+  "toolConfigNull": {
+    "message": "Properties では YAML の null を表現できません。空文字列を意図する場合は引用符で囲んだ空文字列を使ってください。"
+  },
+  "toolConfigAlias": {
+    "message": "YAML のエイリアスとマージキーは変換前に展開してください。"
+  },
+  "toolConfigAmbiguousKey": {
+    "message": "ドットや角括弧を含む YAML キー、および空のキーは、Properties のパスとして曖昧になります。"
+  },
+  "toolConfigLimit": {
+    "message": "変換の上限を超えました：入力 1 MiB、出力 5 MiB、20,000 ノード、または 64 階層。"
+  },
+  "toolConfigTimeout": {
+    "message": "変換に時間がかかりすぎました。入力を減らすか、階層を簡素化してください。"
+  },
+  "toolConfigWorkerError": {
+    "message": "ローカル変換処理を開始できませんでした。ツールを再読み込みしてお試しください。"
+  },
+  "toolConfigEncoding": {
+    "message": "UTF-8 のテキストファイルをインポートしてください。従来の Properties テキストには Unicode エスケープを使ってください。"
+  },
+  "yamlLicenseNotice": {
+    "message": "yaml 2.9.1 パーサー：ISC ライセンス"
+  },
+  "toolJsonFormat": {
+    "message": "JSON 整形"
+  },
+  "toolJsonInput": {
+    "message": "JSON を入力"
+  },
+  "toolJsonOutput": {
+    "message": "解析結果"
+  },
+  "toolJsonFormatDescription": {
+    "message": "重複キーと数値の表記を保持して JSON を整形します。"
+  },
+  "toolTextDiff": {
+    "message": "テキスト差分"
+  },
+  "toolTextDiffDescription": {
+    "message": "2 つのローカルテキストを比較します。"
+  },
+  "toolCodecTransform": {
+    "message": "エンコード・変換"
+  },
+  "toolCodecTransformDescription": {
+    "message": "Base64、URL、Unicode、XML、バイト列、Data URL をローカルで変換し、MD5 を計算します。"
+  },
+  "toolTimeConvert": {
+    "message": "日時変換"
+  },
+  "toolTimeConvertDescription": {
+    "message": "ISO 形式の日時と Unix タイムスタンプをローカルで変換します。"
+  },
+  "toolTimeDefinition": {
+    "message": "Unix タイムスタンプとは"
+  },
+  "toolTimeCurrentLocal": {
+    "message": "現在のローカル時刻："
+  },
+  "toolTimeCurrentUnix": {
+    "message": "現在の Unix タイムスタンプ："
+  },
+  "toolTimePause": {
+    "message": "一時停止"
+  },
+  "toolTimeResume": {
+    "message": "再開"
+  },
+  "toolTimeUnixToLocal": {
+    "message": "Unix タイムスタンプからローカル日時へ"
+  },
+  "toolTimeLocalToUnix": {
+    "message": "ローカル日時から Unix タイムスタンプへ"
+  },
+  "toolTimeFiletime": {
+    "message": "Windows FILETIME 変換"
+  },
+  "toolTimeWorldClock": {
+    "message": "世界時計"
+  },
+  "toolTimeTimestampPlaceholder": {
+    "message": "タイムスタンプ（例：1388307215）"
+  },
+  "toolTimeDatePlaceholder": {
+    "message": "日時（例：2015-04-01 10:01:01.620）"
+  },
+  "toolTimeFiletimePlaceholder": {
+    "message": "Windows FILETIME（例：133574880000000000）"
+  },
+  "toolTimeSecondsShort": {
+    "message": "秒（s）"
+  },
+  "toolTimeMillisecondsShort": {
+    "message": "ミリ秒（ms）"
+  },
+  "toolTimeSecondsLabel": {
+    "message": "秒"
+  },
+  "toolTimeMillisecondsLabel": {
+    "message": "ミリ秒"
+  },
+  "toolTimeFiletimeToDate": {
+    "message": "FileTime → 日時"
+  },
+  "toolTimeCurrentToFiletime": {
+    "message": "現在の日時 → FileTime"
+  },
+  "toolTimeRegion": {
+    "message": "地域"
+  },
+  "toolTimeClockTime": {
+    "message": "時刻"
+  },
+  "toolTimeLocal": {
+    "message": "ローカル時刻"
+  },
+  "toolTimeGmt": {
+    "message": "グリニッジ標準時（GMT）"
+  },
+  "toolTimeNewYork": {
+    "message": "米国東部時間（EST）"
+  },
+  "toolTimeLondon": {
+    "message": "ロンドン時間（GMT）"
+  },
+  "toolTimeTokyo": {
+    "message": "日本標準時（JST）"
+  },
+  "toolTimeBeijing": {
+    "message": "中国標準時（CST）"
+  },
+  "toolIdGenerate": {
+    "message": "ID 生成"
+  },
+  "toolIdGenerateDescription": {
+    "message": "UUID と並べ替え可能な ID をローカルで生成します。"
+  },
+  "toolPasswordGenerate": {
+    "message": "パスワード生成"
+  },
+  "toolPasswordGenerateDescription": {
+    "message": "暗号学的に安全な乱数を使ってパスワードをローカルで生成します。"
+  },
+  "toolTableConvert": {
+    "message": "CSV / TSV 変換"
+  },
+  "toolTableConvertDescription": {
+    "message": "区切り文字付きテキストを安全な表や CSV に変換します。"
+  },
+  "toolCatalog": {
+    "message": "ツール一覧"
+  },
+  "toolCatalogSearch": {
+    "message": "ツールを検索"
+  },
+  "toolCatalogSearchHint": {
+    "message": "名前、説明、キーワード、ID で検索"
+  },
+  "toolCatalogNoResults": {
+    "message": "一致するツールがありません。"
+  },
+  "toolOpen": {
+    "message": "ツールを開く"
+  },
+  "toolsOverview": {
+    "message": "ツールの概要"
+  },
+  "jsonFormatter": {
+    "message": "JSON 整形"
+  },
+  "textDiff": {
+    "message": "内容の比較"
+  },
+  "codecTransform": {
+    "message": "エンコードと変換"
+  },
+  "timeAndId": {
+    "message": "日時と ID"
+  },
+  "toolOverviewDescription": {
+    "message": "ポップアップと標準の右クリックメニューに表示するローカルツールを選択します。選択したテキストがあれば入力に引き継がれます。"
+  },
+  "toolEnabledHint": {
+    "message": "拡張機能のページからツールを利用できるようにします。"
+  },
+  "contextMenuEnabledHint": {
+    "message": "有効にすると標準メニューにツールを表示し、選択したテキストがあれば入力に引き継ぎます。"
+  },
+  "toolDirectory": {
+    "message": "ツールディレクトリ"
+  },
+  "toolDirectoryHint": {
+    "message": "すべてのローカルツールを分類と起動リンク付きで表示します。"
+  },
+  "toolDirectorySearch": {
+    "message": "ツールディレクトリを検索"
+  },
+  "toolDirectorySearchHint": {
+    "message": "ローカルツールを検索"
+  },
+  "jsonFormatterDescription": {
+    "message": "JSON ドキュメントをローカルで整形し、元のページにも戻れます。"
+  },
+  "documentFormatterEnabledHint": {
+    "message": "対象のドキュメントだけを読み取ります。ページのデータはアップロードされません。"
+  },
+  "documentFormatterJsonHint": {
+    "message": "構造化データ"
+  },
+  "documentFormatterXmlHint": {
+    "message": "マークアップ文書"
+  },
+  "documentFormatterCssHint": {
+    "message": "スタイルシート"
+  },
+  "documentFormatterJavascriptHint": {
+    "message": "スクリプト"
+  },
+  "documentFormatterJavaHint": {
+    "message": "ソースファイル"
+  },
+  "textDiffSettingsDescription": {
+    "message": "内容を外部に送信せず、2 つのローカルテキストを比較します。"
+  },
+  "codecTransformSettingsDescription": {
+    "message": "操作を選択してローカルテキストをエンコード、デコード、変換します。"
+  },
+  "timeAndIdSettingsDescription": {
+    "message": "タイムスタンプの変換と ID の生成をローカルで行います。"
+  },
+  "toolEnabled": {
+    "message": "ローカルツールを有効にする"
+  },
+  "contextMenuEnabled": {
+    "message": "標準の右クリックメニューツールを有効にする"
+  },
+  "documentFormatterEnabled": {
+    "message": "ドキュメントの自動整形を有効にする"
+  },
+  "documentFormatterAutoFormat": {
+    "message": "自動整形する形式"
+  },
+  "documentFormatterAutoJson": {
+    "message": "JSON"
+  },
+  "documentFormatterAutoXml": {
+    "message": "XML"
+  },
+  "documentFormatterAutoCss": {
+    "message": "CSS"
+  },
+  "documentFormatterAutoJavascript": {
+    "message": "JavaScript"
+  },
+  "documentFormatterAutoJava": {
+    "message": "Java"
+  },
+  "documentFormatterMaxAutoBytes": {
+    "message": "自動整形の上限（バイト）"
+  },
+  "documentFormatterJsonDefaults": {
+    "message": "JSON の既定値"
+  },
+  "toolFile": {
+    "message": "ローカルファイル"
+  },
+  "toolFileChoose": {
+    "message": "ファイルを選択"
+  },
+  "toolFileNone": {
+    "message": "ファイル未選択"
+  },
+  "toolChooseFile": {
+    "message": "ローカルテキストファイルをインポート"
+  },
+  "toolFileLoaded": {
+    "message": "ローカルファイルを読み込みました"
+  },
+  "toolFileTooLarge": {
+    "message": "選択したファイルは、このツールの入力サイズ上限を超えています。"
+  },
+  "toolCategoryDeveloper": {
+    "message": "開発"
+  },
+  "toolCategoryText": {
+    "message": "テキスト"
+  },
+  "toolCategoryGenerate": {
+    "message": "生成"
+  },
+  "toolCategoryData": {
+    "message": "データ"
+  },
+  "toolCompact": {
+    "message": "出力を圧縮"
+  },
+  "toolExpandEscaped": {
+    "message": "エスケープされた JSON を展開"
+  },
+  "toolJsonOperation": {
+    "message": "JSON の操作"
+  },
+  "toolJsonFormatOperation": {
+    "message": "整形"
+  },
+  "toolJsonCompactOperation": {
+    "message": "圧縮"
+  },
+  "toolJsonValidateOperation": {
+    "message": "検証"
+  },
+  "toolJsonSortOperation": {
+    "message": "キーを並べ替え"
+  },
+  "toolJsonMoreOptions": {
+    "message": "その他のオプション"
+  },
+  "toolDownloadShort": {
+    "message": "ダウンロード"
+  },
+  "toolJsonLine": {
+    "message": "行"
+  },
+  "toolJsonColumn": {
+    "message": "列"
+  },
+  "toolJsonCharacters": {
+    "message": "文字数"
+  },
+  "toolJsonLength": {
+    "message": "長さ"
+  },
+  "toolJsonObject": {
+    "message": "JSON オブジェクト"
+  },
+  "toolJsonArray": {
+    "message": "JSON 配列"
+  },
+  "toolJsonValue": {
+    "message": "JSON 値"
+  },
+  "toolJsonDepth": {
+    "message": "深さ"
+  },
+  "toolJsonResponsiveHint": {
+    "message": "狭い画面ではタイトルが折り返され、ツールバーは横にスクロールできます"
+  },
+  "toolTimezone": {
+    "message": "タイムゾーン"
+  },
+  "toolIndent2": {
+    "message": "スペース 2 個"
+  },
+  "toolIndent4": {
+    "message": "スペース 4 個"
+  },
+  "toolIndent8": {
+    "message": "スペース 8 個"
+  },
+  "toolIndentTab": {
+    "message": "タブ"
+  },
+  "toolSortDescending": {
+    "message": "降順"
+  },
+  "toolBase64Encode": {
+    "message": "Base64 エンコード"
+  },
+  "toolBase64Decode": {
+    "message": "Base64 デコード"
+  },
+  "toolUnicodeEncode": {
+    "message": "Unicode コードポイントへ変換"
+  },
+  "toolUnicodeDecode": {
+    "message": "Unicode コードポイントを復元"
+  },
+  "toolUtf8Encode": {
+    "message": "UTF-8 エンコード"
+  },
+  "toolUtf8Decode": {
+    "message": "UTF-8 デコード"
+  },
+  "toolHexEncode": {
+    "message": "16 進数へエンコード"
+  },
+  "toolHexDecode": {
+    "message": "16 進数をデコード"
+  },
+  "toolUtf16Encode": {
+    "message": "UTF-16 エンコード"
+  },
+  "toolUtf16Decode": {
+    "message": "UTF-16 デコード"
+  },
+  "toolUrlEncode": {
+    "message": "URL エンコード"
+  },
+  "toolUrlDecode": {
+    "message": "URL デコード"
+  },
+  "toolHtmlEncode": {
+    "message": "HTML エンコード"
+  },
+  "toolHtmlDecode": {
+    "message": "HTML デコード"
+  },
+  "toolJwtDecode": {
+    "message": "JWT の構造をデコード"
+  },
+  "toolCookieParse": {
+    "message": "Cookie ヘッダーを解析"
+  },
+  "toolGzipCompress": {
+    "message": "Gzip 圧縮"
+  },
+  "toolGzipDecompress": {
+    "message": "Gzip 展開"
+  },
+  "toolMd5": {
+    "message": "MD5（従来形式との互換用・セキュリティ用途不可）"
+  },
+  "toolSha1": {
+    "message": "SHA-1（従来形式との互換用・セキュリティ用途不可）"
+  },
+  "toolIsoToUnixSeconds": {
+    "message": "ISO → Unix 秒"
+  },
+  "toolIsoToUnixMilliseconds": {
+    "message": "ISO → Unix ミリ秒"
+  },
+  "toolUnixSecondsToIso": {
+    "message": "Unix 秒 → ISO"
+  },
+  "toolUnixMillisecondsToIso": {
+    "message": "Unix ミリ秒 → ISO"
+  },
+  "toolIsoToTimezone": {
+    "message": "ISO → 指定タイムゾーン"
+  },
+  "toolUnixToFiletime": {
+    "message": "Unix 秒 → FILETIME"
+  },
+  "toolFiletimeToUnix": {
+    "message": "FILETIME → Unix 秒"
+  },
+  "toolUuid": {
+    "message": "UUID v4"
+  },
+  "toolUlid": {
+    "message": "ULID 形式の ID"
+  },
+  "toolSnowflake": {
+    "message": "Snowflake 形式の ID"
+  },
+  "toolNanoid": {
+    "message": "NanoID 形式の ID"
+  },
+  "toolCount1": {
+    "message": "1 個"
+  },
+  "toolCount5": {
+    "message": "5 個"
+  },
+  "toolCount10": {
+    "message": "10 個"
+  },
+  "toolLength12": {
+    "message": "12 文字"
+  },
+  "toolLength20": {
+    "message": "20 文字"
+  },
+  "toolLength32": {
+    "message": "32 文字"
+  },
+  "toolLength64": {
+    "message": "64 文字"
+  },
+  "toolCsvToMarkdown": {
+    "message": "CSV → Markdown"
+  },
+  "toolTsvToMarkdown": {
+    "message": "TSV → Markdown"
+  },
+  "toolCsvToTsv": {
+    "message": "CSV → TSV"
+  },
+  "toolTsvToCsv": {
+    "message": "TSV → CSV"
+  },
+  "toolCsvToJson": {
+    "message": "CSV → JSON"
+  },
+  "toolTsvToJson": {
+    "message": "TSV → JSON"
+  },
+  "toolCsvToXml": {
+    "message": "CSV → XML"
+  },
+  "toolTsvToXml": {
+    "message": "TSV → XML"
+  },
+  "toolCsvToMysql": {
+    "message": "CSV → MySQL INSERT"
+  },
+  "toolTsvToMysql": {
+    "message": "TSV → MySQL INSERT"
+  },
+  "toolCsvToPhp": {
+    "message": "CSV → PHP 配列"
+  },
+  "toolTsvToPhp": {
+    "message": "TSV → PHP 配列"
+  },
+  "toolKeywordJson": {
+    "message": "JSON"
+  },
+  "toolKeywordFormat": {
+    "message": "整形"
+  },
+  "toolKeywordValidate": {
+    "message": "検証"
+  },
+  "toolKeywordDiff": {
+    "message": "差分"
+  },
+  "toolKeywordText": {
+    "message": "テキスト"
+  },
+  "toolKeywordCodec": {
+    "message": "エンコード デコード"
+  },
+  "toolKeywordBase64": {
+    "message": "Base64"
+  },
+  "toolKeywordJwt": {
+    "message": "JWT"
+  },
+  "toolKeywordTime": {
+    "message": "日時"
+  },
+  "toolKeywordUnix": {
+    "message": "Unix"
+  },
+  "toolKeywordTimezone": {
+    "message": "タイムゾーン"
+  },
+  "toolKeywordId": {
+    "message": "ID"
+  },
+  "toolKeywordUuid": {
+    "message": "UUID"
+  },
+  "toolKeywordSnowflake": {
+    "message": "Snowflake"
+  },
+  "toolKeywordPassword": {
+    "message": "パスワード"
+  },
+  "toolKeywordRandom": {
+    "message": "ランダム"
+  },
+  "toolKeywordCsv": {
+    "message": "CSV"
+  },
+  "toolKeywordTsv": {
+    "message": "TSV"
+  },
+  "toolKeywordSql": {
+    "message": "SQL"
+  },
+  "toolBack": {
+    "message": "ツール一覧に戻る"
+  },
+  "toolSettings": {
+    "message": "ツール設定を開く"
+  },
+  "toolWorkspace": {
+    "message": "ワークスペース"
+  },
+  "toolLocalBadge": {
+    "message": "ローカルのみ"
+  },
+  "toolInputHint": {
+    "message": "ここにテキストを貼り付けるか入力してください"
+  },
+  "toolInputLeft": {
+    "message": "左側の入力"
+  },
+  "toolRawInput": {
+    "message": "元の入力"
+  },
+  "toolParsedOutput": {
+    "message": "解析結果"
+  },
+  "toolConvert": {
+    "message": "変換"
+  },
+  "toolPicker": {
+    "message": "ツール"
+  },
+  "toolInput": {
+    "message": "入力"
+  },
+  "toolInputRight": {
+    "message": "右側の入力"
+  },
+  "toolRun": {
+    "message": "実行"
+  },
+  "toolCopy": {
+    "message": "出力をコピー"
+  },
+  "toolDownload": {
+    "message": "出力をダウンロード"
+  },
+  "toolRestore": {
+    "message": "元に戻す"
+  },
+  "toolOutput": {
+    "message": "出力"
+  },
+  "toolIndent": {
+    "message": "インデント"
+  },
+  "toolSort": {
+    "message": "並べ替え"
+  },
+  "toolKeepOrder": {
+    "message": "元の順序"
+  },
+  "toolSortAscending": {
+    "message": "昇順"
+  },
+  "toolCollapse": {
+    "message": "折りたたむ"
+  },
+  "toolExpand": {
+    "message": "展開"
+  },
+  "toolCopyNode": {
+    "message": "ノードをコピー"
+  },
+  "toolDeleteNode": {
+    "message": "ノードを削除"
+  },
+  "toolCollapseNode": {
+    "message": "ノードを折りたたむ"
+  },
+  "toolExpandNode": {
+    "message": "ノードを展開"
+  },
+  "toolCollapseAll": {
+    "message": "すべてのノードを折りたたむ"
+  },
+  "toolExpandAll": {
+    "message": "すべてのノードを展開"
+  },
+  "toolJsonNoResult": {
+    "message": "整形済みの JSON がありません"
+  },
+  "toolJsonNodeDeleted": {
+    "message": "JSON ノードを削除しました"
+  },
+  "toolCodecOperation": {
+    "message": "操作"
+  },
+  "toolCodecType": {
+    "message": "変換の種類"
+  },
+  "toolCodecAdvanced": {
+    "message": "その他のローカル変換"
+  },
+  "toolEncode": {
+    "message": "エンコード"
+  },
+  "toolDecode": {
+    "message": "デコード"
+  },
+  "toolCodecUnicode": {
+    "message": "Unicode コードポイント"
+  },
+  "toolCodecUrl": {
+    "message": "URL パラメーター"
+  },
+  "toolCodecUtf8": {
+    "message": "UTF-8"
+  },
+  "toolCodecBase64": {
+    "message": "Base64"
+  },
+  "toolCodecHex": {
+    "message": "16 進数"
+  },
+  "toolCodecUtf16": {
+    "message": "UTF-16"
+  },
+  "toolCodecHtml": {
+    "message": "HTML"
+  },
+  "toolCodecUri": {
+    "message": "URL 全体"
+  },
+  "toolCodecUnicodeEscape": {
+    "message": "Unicode エスケープ"
+  },
+  "toolCodecJsonString": {
+    "message": "JSON 文字列のエスケープ"
+  },
+  "toolCodecXml": {
+    "message": "XML エンティティー"
+  },
+  "toolCodecBinary": {
+    "message": "2 進数バイト列"
+  },
+  "toolCodecOctal": {
+    "message": "8 進数バイト列"
+  },
+  "toolCodecDecimal": {
+    "message": "10 進数バイト列"
+  },
+  "toolCodecDataUrl": {
+    "message": "Data URL"
+  },
+  "toolCodecAscii": {
+    "message": "ASCII"
+  },
+  "toolCodecMd5": {
+    "message": "MD5"
+  },
+  "toolCodecDigest": {
+    "message": "ハッシュ"
+  },
+  "toolCodecCopyShort": {
+    "message": "コピー"
+  },
+  "toolCodecUseText": {
+    "message": "テキスト入力に切り替え"
+  },
+  "toolCodecByteUnit": {
+    "message": "バイト"
+  },
+  "toolCodecAutoConverted": {
+    "message": "自動変換しました"
+  },
+  "toolCodecConverted": {
+    "message": "変換しました"
+  },
+  "toolCodecBinaryResult": {
+    "message": "バイナリデータの 16 進数プレビューです。ファイルを復元するにはダウンロードしてください。"
+  },
+  "toolCodecBase64Hint": {
+    "message": "UTF-8 テキストと Base64 を相互変換します。"
+  },
+  "toolCodecUrlHint": {
+    "message": "パラメーターの値をエンコードします。スペースは %20 になり、デコード時に + はプラス記号のまま残ります。"
+  },
+  "toolCodecUriHint": {
+    "message": ": / ? & = # などの区切り記号を保持して URL 全体を変換します。"
+  },
+  "toolCodecUnicodeHint": {
+    "message": "Unicode コードポイントをスペースで区切ります。例：U+4F60 U+597D。"
+  },
+  "toolCodecUnicodeEscapeHint": {
+    "message": "\\uXXXX 形式にエンコードし、\\uXXXX または \\u{1F600} をデコードします。"
+  },
+  "toolCodecJsonStringHint": {
+    "message": "両端の二重引用符を含む完全な JSON 文字列をエンコードまたはデコードします。"
+  },
+  "toolCodecXmlHint": {
+    "message": "XML の 5 種類のエンティティーをエスケープします。名前付き、10 進数、16 進数のエンティティーをデコードできます。"
+  },
+  "toolCodecBytesHint": {
+    "message": "UTF-8 バイトをスペースで区切ります。デコード時にはスペース、改行、カンマを区切りに使えます。"
+  },
+  "toolCodecAsciiHint": {
+    "message": "ASCII 文字と 0～127 の 10 進数コードを扱います。中国語のテキストには 10 進数バイト列を使ってください。"
+  },
+  "toolCodecDataUrlHint": {
+    "message": "テキストやローカルファイルをエンコードします。デコード後にテキストをプレビューしたり、元のバイト列をダウンロードできます。"
+  },
+  "toolCodecMd5Hint": {
+    "message": "MD5 は従来形式との互換用の一方向ハッシュです。デコードできず、セキュリティ用途には適しません。"
+  },
+  "toolCodecInvalidUtf8": {
+    "message": "バイト列がこの文字コードの有効なテキストではありません。"
+  },
+  "toolCodecInvalidBase64": {
+    "message": "Base64 の形式が無効です。"
+  },
+  "toolCodecInvalidCodePoint": {
+    "message": "Unicode コードポイントが無効です。U+4F60 のように指定し、U+10FFFF を超える値やサロゲートは使わないでください。"
+  },
+  "toolCodecInvalidEscape": {
+    "message": "Unicode エスケープが無効です。\\u4f60 または \\u{1f600} を使ってください。"
+  },
+  "toolCodecInvalidJsonString": {
+    "message": "二重引用符を含む完全な JSON 文字列を入力してください。"
+  },
+  "toolCodecInvalidXml": {
+    "message": "XML のエンティティーまたは文字が無効です。定義済みエンティティーと数値文字参照のみ対応しています。"
+  },
+  "toolCodecInvalidAscii": {
+    "message": "ASCII は 0～127 の文字と 10 進数コードのみ対応しています。"
+  },
+  "toolCodecInvalidByte": {
+    "message": "0～255 の有効なバイト値をスペースで区切って入力してください。"
+  },
+  "toolCodecInvalidUrl": {
+    "message": "URL エスケープが無効です。パーセントエンコードが完全な UTF-8 バイト列か確認してください。"
+  },
+  "toolCodecInvalidDataUrl": {
+    "message": "Data URL が無効です。メディアタイプ、パラメーター、エンコードされた内容を確認してください。"
+  },
+  "toolCodecOutputTooLarge": {
+    "message": "出力が 10 MiB を超えています。入力を減らしてお試しください。"
+  },
+  "toolUriEncode": {
+    "message": "URL 全体をエンコード"
+  },
+  "toolUriDecode": {
+    "message": "URL 全体をデコード"
+  },
+  "toolUnicodeEscapeEncode": {
+    "message": "Unicode エスケープへ変換"
+  },
+  "toolUnicodeEscapeDecode": {
+    "message": "Unicode エスケープを復元"
+  },
+  "toolJsonStringEncode": {
+    "message": "JSON 文字列へエンコード"
+  },
+  "toolJsonStringDecode": {
+    "message": "JSON 文字列をデコード"
+  },
+  "toolXmlEncode": {
+    "message": "XML エンティティーへ変換"
+  },
+  "toolXmlDecode": {
+    "message": "XML エンティティーを復元"
+  },
+  "toolBinaryEncode": {
+    "message": "2 進数バイト列へエンコード"
+  },
+  "toolBinaryDecode": {
+    "message": "2 進数バイト列をデコード"
+  },
+  "toolOctalEncode": {
+    "message": "8 進数バイト列へエンコード"
+  },
+  "toolOctalDecode": {
+    "message": "8 進数バイト列をデコード"
+  },
+  "toolDecimalEncode": {
+    "message": "10 進数バイト列へエンコード"
+  },
+  "toolDecimalDecode": {
+    "message": "10 進数バイト列をデコード"
+  },
+  "toolDataUrlEncode": {
+    "message": "Data URL へエンコード"
+  },
+  "toolDataUrlDecode": {
+    "message": "Data URL をデコード"
+  },
+  "toolAsciiEncode": {
+    "message": "ASCII エンコード"
+  },
+  "toolAsciiDecode": {
+    "message": "ASCII デコード"
+  },
+  "toolDiffPanel": {
+    "message": "差分"
+  },
+  "toolRepair": {
+    "message": "文字化けを修復"
+  },
+  "toolMode": {
+    "message": "モード"
+  },
+  "toolCount": {
+    "message": "個数"
+  },
+  "toolLength": {
+    "message": "長さ"
+  },
+  "toolSymbols": {
+    "message": "記号を含める"
+  },
+  "toolRepairConfirm": {
+    "message": "元に戻せる文字修復をプレビューして適用しますか？"
+  },
+  "toolReady": {
+    "message": "準備完了"
+  },
+  "toolAutoParsed": {
+    "message": "自動解析済み（入力の変更時に更新）"
+  },
+  "toolInvalid": {
+    "message": "無効な入力"
+  },
+  "toolCopied": {
+    "message": "コピーしました"
+  },
+  "toolCopyUnavailable": {
+    "message": "クリップボードを利用できません。出力を選択してコピーしてください。"
+  },
+  "toolDownloaded": {
+    "message": "ダウンロードしました"
+  },
+  "toolRestored": {
+    "message": "元に戻しました"
+  },
+  "toolTokenInvalid": {
+    "message": "使い捨ての入力トークンが無効か期限切れです。"
+  },
+  "toolEmptySelection": {
+    "message": "選択したテキストが引き継がれませんでした。テキストを貼り付けるか、ローカルファイルをインポートしてください。"
+  },
+  "toolSelectionTooLarge": {
+    "message": "選択したテキストが受け渡しの上限を超えました。テキストを貼り付けるか、ローカルファイルをインポートしてください。"
+  },
+  "toolMetadataField": {
+    "message": "メタデータ"
+  },
+  "toolMetadataMode": {
+    "message": "モード"
+  },
+  "toolMetadataRepresentation": {
+    "message": "表現形式"
+  },
+  "toolMetadataOutputEncoding": {
+    "message": "出力エンコーディング"
+  },
+  "toolMetadataInputEncoding": {
+    "message": "入力エンコーディング"
+  },
+  "toolMetadataMilliseconds": {
+    "message": "ミリ秒"
+  },
+  "toolMetadataTimezone": {
+    "message": "タイムゾーン"
+  },
+  "toolMetadataUnit": {
+    "message": "単位"
+  },
+  "toolMetadataCount": {
+    "message": "個数"
+  },
+  "toolMetadataLength": {
+    "message": "長さ"
+  },
+  "toolMetadataSymbols": {
+    "message": "記号"
+  },
+  "toolMetadataValid": {
+    "message": "有効"
+  },
+  "toolMetadataOperation": {
+    "message": "操作"
+  },
+  "toolMetadataExpandedEscaped": {
+    "message": "展開したエスケープ JSON"
+  },
+  "toolMetadataLeftLines": {
+    "message": "左側の行数"
+  },
+  "toolMetadataRightLines": {
+    "message": "右側の行数"
+  },
+  "toolMetadataRows": {
+    "message": "行数"
+  },
+  "toolMetadataColumns": {
+    "message": "列数"
+  },
+  "toolMetadataFormulaCells": {
+    "message": "数式とみなされるセル"
+  },
+  "toolMetadataFormulaWarning": {
+    "message": "数式の警告"
+  },
+  "toolMetadataWarning": {
+    "message": "警告"
+  },
+  "toolMetadataBytes": {
+    "message": "バイト数"
+  },
+  "toolMetadataNodes": {
+    "message": "ノード数"
+  },
+  "toolMetadataStrings": {
+    "message": "文字列数"
+  },
+  "toolMetadataNumbers": {
+    "message": "数値の数"
+  },
+  "toolMetadataBooleans": {
+    "message": "真偽値の数"
+  },
+  "toolMetadataNulls": {
+    "message": "null 値の数"
+  },
+  "toolMetadataUnsafeNumbers": {
+    "message": "安全範囲外の整数リテラル"
+  },
+  "toolMetadataStringCharacters": {
+    "message": "文字列の文字数"
+  },
+  "toolMetadataCharacters": {
+    "message": "文字数"
+  },
+  "toolMetadataObjects": {
+    "message": "オブジェクト数"
+  },
+  "toolMetadataArrays": {
+    "message": "配列数"
+  },
+  "toolMetadataKeys": {
+    "message": "キー数"
+  },
+  "toolMetadataDuplicateKeys": {
+    "message": "重複キー数"
+  },
+  "toolMetadataDuplicateKeyPositions": {
+    "message": "重複キーの位置"
+  },
+  "toolMetadataMaxDepth": {
+    "message": "最大の深さ"
+  },
+  "toolMetadataParseMs": {
+    "message": "解析時間（ms）"
+  },
+  "toolMetadataFormatMs": {
+    "message": "整形時間（ms）"
+  },
+  "toolMetadataSortOrder": {
+    "message": "並べ替え順序"
+  },
+  "toolMetadataCollapsed": {
+    "message": "折りたたみ済み"
+  },
+  "toolMetadataLines": {
+    "message": "行数"
+  },
+  "toolMetadataConservative": {
+    "message": "保守的な整形"
+  },
+  "toolJwtWarning": {
+    "message": "JWT の構造のみをデコードします。署名や信頼性は検証しません。"
+  },
+  "toolMd5Warning": {
+    "message": "MD5 は従来形式との互換用であり、セキュリティ用途には適しません。"
+  },
+  "toolSha1Warning": {
+    "message": "SHA-1 は従来形式との互換用であり、セキュリティ用途には適しません。"
+  },
+  "toolFormulaWarning": {
+    "message": "表計算ソフトで数式と解釈される可能性があります。インポート前に確認してください。"
+  },
+  "toolSqlWarning": {
+    "message": "SQL 出力はエスケープ済みテキストです。パラメーター化クエリを使用してください。"
+  },
+  "documentFormatterTitleSuffix": {
+    "message": "自動整形"
+  },
+  "documentFormatterToolbar": {
+    "message": "Browser Toolbox ドキュメント整形"
+  },
+  "documentFormatterIndent": {
+    "message": "インデント幅"
+  },
+  "documentFormatterTab": {
+    "message": "タブ"
+  },
+  "documentFormatterSpaces": {
+    "message": "スペース"
+  },
+  "documentFormatterSortAria": {
+    "message": "JSON キーを並べ替え"
+  },
+  "documentFormatterKeepOrder": {
+    "message": "キーの順序を保持"
+  },
+  "documentFormatterSort": {
+    "message": "キーを並べ替え"
+  },
+  "documentFormatterSortAscending": {
+    "message": "キーを昇順に並べ替え"
+  },
+  "documentFormatterSortDescending": {
+    "message": "キーを降順に並べ替え"
+  },
+  "documentFormatterRepair": {
+    "message": "文字化けを修復"
+  },
+  "documentFormatterUndoRepair": {
+    "message": "修復を取り消す"
+  },
+  "documentFormatterCollapse": {
+    "message": "折りたたむ"
+  },
+  "documentFormatterExpand": {
+    "message": "展開"
+  },
+  "documentFormatterCopy": {
+    "message": "コピー"
+  },
+  "documentFormatterDownload": {
+    "message": "ダウンロード"
+  },
+  "documentFormatterRestore": {
+    "message": "元に戻す"
+  },
+  "documentFormatterViewOriginal": {
+    "message": "原文を表示"
+  },
+  "documentFormatterRestoreView": {
+    "message": "整形表示に戻す"
+  },
+  "documentFormatterShowingOriginal": {
+    "message": "原文を表示中"
+  },
+  "documentFormatterKeptOriginal": {
+    "message": "原文を保持しました"
+  },
+  "documentFormatterCopied": {
+    "message": "コピーしました"
+  },
+  "documentFormatterCopyUnavailable": {
+    "message": "クリップボードを利用できません。出力を選択してコピーしてください。"
+  },
+  "documentFormatterDownloaded": {
+    "message": "ダウンロードしました"
+  },
+  "documentFormatterNoRepair": {
+    "message": "元に戻せる文字化けの修復候補がありません。"
+  },
+  "documentFormatterRepairConfirm": {
+    "message": "元に戻せる文字修復をプレビューして適用しますか？"
+  },
+  "documentFormatterRepairPreviewCount": {
+    "message": "対象の文字列"
+  },
+  "documentFormatterRepairPreviewBefore": {
+    "message": "修復前"
+  },
+  "documentFormatterRepairPreviewAfter": {
+    "message": "修復後"
+  },
+  "documentFormatterLargeConfirm": {
+    "message": "この大きなローカルドキュメントを整形しますか？"
+  },
+  "documentFormatterBytes": {
+    "message": "バイト"
+  },
+  "documentFormatterKeys": {
+    "message": "キー"
+  },
+  "documentFormatterDuplicateKeys": {
+    "message": "重複キー"
+  },
+  "documentFormatterDuplicateKeyPositions": {
+    "message": "重複キーの位置"
+  },
+  "documentFormatterTooLarge": {
+    "message": "サイズ超過"
+  },
+  "documentFormatterRepairApplied": {
+    "message": "文字修復を適用済み"
+  },
+  "documentFormatterMetadata": {
+    "message": "ドキュメントのメタデータ"
+  },
+  "documentFormatterCharacters": {
+    "message": "文字"
+  },
+  "documentFormatterRootType": {
+    "message": "ルートの型"
+  },
+  "documentFormatterObjects": {
+    "message": "オブジェクト"
+  },
+  "documentFormatterArrays": {
+    "message": "配列"
+  },
+  "documentFormatterStrings": {
+    "message": "文字列"
+  },
+  "documentFormatterNumbers": {
+    "message": "数値"
+  },
+  "documentFormatterBooleans": {
+    "message": "真偽値"
+  },
+  "documentFormatterNulls": {
+    "message": "null 値"
+  },
+  "documentFormatterMaxDepth": {
+    "message": "最大の深さ"
+  },
+  "documentFormatterUnsafeNumbers": {
+    "message": "安全範囲外の整数リテラル"
+  },
+  "documentFormatterContentType": {
+    "message": "コンテンツタイプ"
+  },
+  "documentFormatterCharset": {
+    "message": "文字セット"
+  },
+  "documentFormatterParseMs": {
+    "message": "解析時間（ms）"
+  },
+  "documentFormatterRenderMs": {
+    "message": "描画時間（ms）"
+  },
+  "documentFormatterSortState": {
+    "message": "並べ替えの状態"
+  },
+  "documentFormatterCollapseState": {
+    "message": "折りたたみの状態"
+  },
+  "documentFormatterDefaultCollapseDepth": {
+    "message": "既定の折りたたみ階層"
+  },
+  "documentFormatterRepairState": {
+    "message": "文字修復"
+  },
+  "documentFormatterExpanded": {
+    "message": "展開済み"
+  },
+  "documentFormatterApplied": {
+    "message": "適用済み"
+  },
+  "documentFormatterNotApplied": {
+    "message": "未適用"
+  },
+  "documentFormatterCollapseNode": {
+    "message": "この JSON ノードを折りたたむ"
+  },
+  "documentFormatterExpandNode": {
+    "message": "この JSON ノードを展開"
+  },
+  "superDragSafety": {
+    "message": "指定した修飾キーを押すと常に標準のドラッグ動作を使います。ファイルのアップロード、エディター、パスワード欄、独自のドラッグ可能なウィジェット、無効な URL は処理しません。"
+  },
+  "nativeBypassModifier": {
+    "message": "標準ドラッグに切り替える修飾キー"
+  },
+  "modifierAlt": {
+    "message": "Alt"
+  },
+  "modifierControl": {
+    "message": "Control"
+  },
+  "modifierMeta": {
+    "message": "Command / Meta"
+  },
+  "modifierShift": {
+    "message": "Shift"
+  },
+  "siteRuleSpecificity": {
+    "message": "Glob ルールは最も具体的なパターンが優先され、同じ優先度では後のルールが優先されます。正規表現も明示的に選択できます。最上位ページの URL がすべてのフレームに適用されます。"
+  },
+  "siteRuleProfile": {
+    "message": "サイトプロファイル"
+  },
+  "siteRuleProfileHint": {
+    "message": "このサイトの入力動作を上書きします。空欄は全体設定を引き継ぎます。"
+  },
+  "siteRuleProfileInherit": {
+    "message": "全体設定を引き継ぐ"
+  },
+  "siteRuleProfileCustom": {
+    "message": "カスタムプロファイル"
+  },
+  "siteProfileBalanced": {
+    "message": "バランス"
+  },
+  "siteProfileBalancedDescription": {
+    "message": "標準のしきい値で通常のブラウジングを行います。"
+  },
+  "siteProfileEditor": {
+    "message": "エディター向け"
+  },
+  "siteProfileEditorDescription": {
+    "message": "エディターやデザインツールでの誤操作を防ぎます。"
+  },
+  "siteProfileReading": {
+    "message": "読書"
+  },
+  "siteProfileReadingDescription": {
+    "message": "長時間の読書に適した控えめな操作表示です。"
+  },
+  "siteProfileName": {
+    "message": "プロファイル名"
+  },
+  "siteProfileMouse": {
+    "message": "マウスジェスチャー"
+  },
+  "siteProfileSuperDrag": {
+    "message": "スーパードラッグ"
+  },
+  "siteProfileWheel": {
+    "message": "ホイール"
+  },
+  "siteProfileTriggerButton": {
+    "message": "操作ボタン"
+  },
+  "siteProfileActivationDistance": {
+    "message": "開始距離（px）"
+  },
+  "siteProfileMinimumSegmentDistance": {
+    "message": "最小線分長（px）"
+  },
+  "siteProfileShowTrail": {
+    "message": "ジェスチャーの軌跡を表示"
+  },
+  "siteProfileShowHud": {
+    "message": "コマンド表示を有効にする"
+  },
+  "siteProfileEnabled": {
+    "message": "有効"
+  },
+  "siteProfileBypassModifier": {
+    "message": "標準ドラッグに切り替え"
+  },
+  "siteProfileWheelThreshold": {
+    "message": "ホイールのしきい値"
+  },
+  "siteProfileCooldown": {
+    "message": "待機時間（ms）"
+  },
+  "backupContents": {
+    "message": "エクスポートには設定のみが含まれます。ページ内容、履歴、ブックマーク、一時的なジェスチャー、リモート素材は含まれません。"
+  },
+  "privacyNetwork": {
+    "message": "ユーザーが開始したページ移動、検索、ローカル拡張ページの操作に伴う通信のみが発生する場合があります。プロジェクトのサーバーには接続しません。"
+  },
+  "licenseGpl": {
+    "message": "GPL-3.0-or-later"
+  },
+  "aboutText": {
+    "message": "Browser Toolbox は Vimium v2.4.2 をキーボード操作の基盤とし、無料のオープンソースとして提供されます。"
+  },
+  "cleanRoomText": {
+    "message": "Vimium と shoulda.js の権利表記はリポジトリに保持されています。マウス機能は公開された動作の説明のみに基づいて独立実装されています。"
+  },
+  "dataHandling": {
+    "message": "データの取り扱い"
+  },
+  "privacyData": {
+    "message": "Browser Toolbox は URL、履歴、ブックマーク、ページ内容、選択テキスト、検索語、キー入力、マウス軌跡、ポインター画像、設定、端末 ID、インストール ID、クラッシュレポートを、プロジェクトのサーバーや第三者の分析サービスに送信しません。"
+  },
+  "localStorage": {
+    "message": "ローカル保存"
+  },
+  "privacyStorage": {
+    "message": "設定はブラウザーのストレージに保存されます。カスタムポインターの素材は、有効にした場合もローカルに保持され、同期やアップロードはされません。"
+  },
+  "security": {
+    "message": "セキュリティ"
+  },
+  "charterFree": {
+    "message": "Browser Toolbox は無料のオープンソースで、すべてのユーザーに同じ完全な機能を提供します。"
+  },
+  "charterPrivacy": {
+    "message": "テレメトリー、アカウント、広告、有料機能、リモート設定、バックグラウンドでのデータ収集は追加しません。"
+  },
+  "securityBoundary": {
+    "message": "Browser Toolbox はブラウザーのデータとユーザー入力をローカルに保持します。リモートコードを読み込まず、ウェブページから権限の必要な操作を直接実行させません。"
+  },
+  "securityImport": {
+    "message": "インポートする設定は解析、検証、プレビュー、確認を行ってから保存します。インポートファイルを HTML やスクリプトとして実行することはありません。"
+  },
+  "securityReport": {
+    "message": "公開の issue に認証情報、Cookie、トークン、個人情報、完全な閲覧データを含めないでください。"
+  },
+  "vimiumLicenseNotice": {
+    "message": "Vimium v2.4.2 のコードと素材：MIT ライセンス"
+  },
+  "shouldaLicenseNotice": {
+    "message": "shoulda.js テストフレームワーク：MIT ライセンス"
+  },
+  "onboardingIntro": {
+    "message": "Chromium ブラウザー向けのローカルツールボックスです。キーボード操作と独立したマウス入力モジュールを備えています。"
+  },
+  "onboardingGesture": {
+    "message": "右クリックメニューの制御が有効な場合、最初の右クリックを押したまま動かすとジェスチャーを実行し、同じ位置で素早く 2 回右クリックすると標準メニューが開きます。制御を無効にすると最初の右クリックで標準メニューが開きますが、ジェスチャーと競合することがあります。"
+  },
+  "onboardingDrag": {
+    "message": "スーパードラッグはファイルのアップロード、エディター、パスワード欄、独自のドラッグ可能なウィジェットの動作を維持します。"
+  },
+  "onboardingInvocation": {
+    "message": "すべての操作は検証済みのコマンド呼び出しを通じて実行されます。"
+  },
+  "search": {
+    "message": "検索"
+  },
+  "searchSettings": {
+    "message": "検索"
+  },
+  "vomnibarSearchOrOpen": {
+    "message": "検索または開く"
+  },
+  "vomnibarSearchBookmarks": {
+    "message": "ブックマークを検索"
+  },
+  "vomnibarSearchTabs": {
+    "message": "タブを検索"
+  },
+  "vomnibarPlaceholderOmni": {
+    "message": "検索語または URL を入力"
+  },
+  "vomnibarPlaceholderBookmarks": {
+    "message": "ブックマークのタイトルまたは URL を入力"
+  },
+  "vomnibarPlaceholderTabs": {
+    "message": "タブのタイトルまたは URL を入力"
+  },
+  "vomnibarNewTab": {
+    "message": "新しいタブ"
+  },
+  "vomnibarHintSelect": {
+    "message": "選択"
+  },
+  "vomnibarHintOpen": {
+    "message": "開く"
+  },
+  "vomnibarHintClose": {
+    "message": "閉じる"
+  },
+  "appearance": {
+    "message": "外観"
+  },
+  "keyMappings": {
+    "message": "キー割り当て"
+  },
+  "searchEngines": {
+    "message": "検索エンジン"
+  },
+  "keyboardMappingNote": {
+    "message": "Vimium 互換のキー割り当ては既存のキーボード設定に取り込まれます。"
+  },
+  "searchEngineNote": {
+    "message": "検索コマンドを明示的に実行した場合のみ、検索を送信します。"
+  },
+  "vimiumBackup": {
+    "message": "Vimium の JSON バックアップもインポートできます。認識できる項目は互換性のある Vimium 設定と Browser Toolbox 設定にコピーされます。不明な項目は報告され、可能な場合は保持され、それ以外は無視されます。"
+  },
+  "importSummary": {
+    "message": "この設定をインポート"
+  },
+  "changedSettings": {
+    "message": "変更される設定"
+  },
+  "ignoredFields": {
+    "message": "無視される項目"
+  },
+  "unrecognizedFields": {
+    "message": "不明な設定（保持）"
+  },
+  "importPreviewTitle": {
+    "message": "設定のインポートを確認"
+  },
+  "importPreviewDescription": {
+    "message": "保存する前に変更内容を確認してください。"
+  },
+  "importPreviewAdded": {
+    "message": "追加"
+  },
+  "importPreviewChanged": {
+    "message": "変更"
+  },
+  "importPreviewRemoved": {
+    "message": "削除"
+  },
+  "importPreviewConfirm": {
+    "message": "この変更をインポート"
+  },
+  "importPreviewCancel": {
+    "message": "インポートをキャンセル"
+  },
+  "importPreviewNoChanges": {
+    "message": "Browser Toolbox の設定は変更されません。"
+  },
+  "importPreviewTruncated": {
+    "message": "一部の詳細な変更はこのプレビューで省略されています。"
+  },
+  "none": {
+    "message": "なし"
+  },
+  "saveSettings": {
+    "message": "設定を保存"
+  },
+  "saveOnlyOnSave": {
+    "message": "変更は保存後に適用されます。"
+  },
+  "mouseSettingsSubtitle": {
+    "message": "右ボタンを押したままドラッグして操作を実行します。"
+  },
+  "mouseRightClickHow": {
+    "message": "右ボタンの使い方"
+  },
+  "mouseRightClick": {
+    "message": "右クリック"
+  },
+  "mouseOpenBrowserMenu": {
+    "message": "ブラウザーメニューを開く"
+  },
+  "mouseHoldAndDrag": {
+    "message": "押したままドラッグ"
+  },
+  "mouseRunGesture": {
+    "message": "マウスジェスチャーを実行"
+  },
+  "mouseGestureActions": {
+    "message": "ジェスチャーと操作"
+  },
+  "mouseRecognitionSettings": {
+    "message": "認識設定"
+  },
+  "mouseRecognitionHint": {
+    "message": "距離を長くすると誤操作が減り、短くすると反応が速くなります。"
+  },
+  "mouseContextMenuSettings": {
+    "message": "右クリックメニュー"
+  },
+  "mouseNativeMenuHint": {
+    "message": "開始距離を超えない通常のクリックでは、ブラウザーメニューを常に保持します。"
+  },
+  "mouseAdvancedSettings": {
+    "message": "認識と割り当ての詳細設定"
+  },
+  "mouseEnabledStatus": {
+    "message": "有効"
+  },
+  "mouseDisabledStatus": {
+    "message": "無効"
+  },
+  "mouseTriggerDistance": {
+    "message": "開始距離"
+  },
+  "mouseTrailHint": {
+    "message": "軌跡の表示"
+  },
+  "mouseTrailDescription": {
+    "message": "ドラッグ中の軌跡を表示し、ジェスチャーの練習や確認に使えます。"
+  },
+  "mouseNormalClickMenu": {
+    "message": "通常のクリックではブラウザーメニューを保持"
+  },
+  "manageToolMenu": {
+    "message": "ツールメニューを管理"
+  },
+  "searchAndTabs": {
+    "message": "検索とタブ"
+  },
+  "unassigned": {
+    "message": "未割り当て"
+  },
+  "toolJsonInputHint": {
+    "message": "整形する JSON を貼り付けてください"
+  },
+  "toolJsonEmptyTitle": {
+    "message": "JSON を貼り付けると自動で整形します"
+  },
+  "toolJsonEmptyHint": {
+    "message": "JSON の整形、圧縮、並べ替え、ツリー表示をローカルで行います。"
+  },
+  "documentFormatterAutoFormatted": {
+    "message": "自動整形済み"
+  },
+  "documentFormatterKeyCount": {
+    "message": "キー"
+  },
+  "languageChineseTraditional": {
+    "message": "繁體中文"
+  },
+  "languageJapanese": {
+    "message": "日本語"
+  },
+  "languageSpanish": {
+    "message": "Español"
+  }
+}

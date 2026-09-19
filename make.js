@@ -11,6 +11,7 @@ import * as shoulda from "./tests/vendor/shoulda.js";
 import JSON5 from "npm:json5";
 import { DOMParser } from "@b-fuze/deno-dom";
 import * as fileServer from "@std/http/file-server";
+import { synchronizeCatalogs } from "./scripts/sync_i18n.js";
 
 const projectPath = new URL(".", import.meta.url).pathname;
 
@@ -92,6 +93,7 @@ async function parseManifestFile() {
 }
 
 async function checkForBuildIssues() {
+  await synchronizeCatalogs({ check: true });
   // Ensure the version number is properly formed.
   const chromeManifest = await parseManifestFile();
   const version = chromeManifest["version"];

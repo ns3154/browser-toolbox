@@ -127,7 +127,7 @@ context("help dialog", () => {
       const dialog = HelpDialogPage.dialogElement;
       const status = dialog.querySelector("#browser-toolbox-help-status");
       const sections = [...dialog.querySelectorAll("section")];
-      assert.equal("zh_CN", document.documentElement.lang);
+      assert.equal("zh-CN", document.documentElement.lang);
       assert.equal("dialog", dialog.getAttribute("role"));
       assert.equal("true", dialog.getAttribute("aria-modal"));
       assert.equal(

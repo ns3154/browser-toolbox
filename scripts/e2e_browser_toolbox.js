@@ -1260,7 +1260,7 @@ async function testActionControls(browser, id, fixture, errors) {
     assert(/Wheel|滚轮/.test(initial.label), "动作页滚轮/摇杆开关应有可读标签");
     assert(/Open help|打开帮助/.test(initial.help), "动作页应提供打开帮助入口");
     assert(/Browser Toolbox|浏览器工具箱/.test(initial.title), "动作页标题应使用产品本地化文案");
-    assert(["en", "zh_CN"].includes(initial.lang), `动作页应设置有效语言：${initial.lang}`);
+    assert(["en", "zh-CN"].includes(initial.lang), `动作页应设置有效语言：${initial.lang}`);
     assert(
       initial.footerEntries === 3 && !initial.legacyDetails,
       "动作页不应显示旧版 Vimium 站点详情面板",

@@ -82,7 +82,7 @@
     "description": "Browser limitation note"
   },
   "browserToolboxMouseHelp": {
-    "message": "Draw a configured path with the gesture button. A light right click or movement below the activation threshold keeps the native context menu. When menu suppression is enabled, a right-button gesture blocks the menu after crossing the threshold; disabling it keeps the native menu but may conflict with gestures.",
+    "message": "Draw a configured path with the gesture button. When right-button menu capture is enabled, hold the first press and move to gesture, or right-click twice quickly in the same spot for the native menu. Disabling capture restores the native menu on the first click but may conflict with gestures.",
     "description": "Mouse gesture help"
   },
   "browserToolboxSuperDragHelp": {
@@ -219,7 +219,6 @@
     "message": "Gesture arrows (for example, ↑ · →)",
     "description": "Keyboard gesture pattern input"
   },
-  "gestureEditor": { "message": "Gesture editor", "description": "Gesture drawing area" },
   "gestureLab": { "message": "Gesture lab", "description": "Gesture conflict checker" },
   "gestureLabHint": {
     "message": "The gesture lab checks duplicates and prefix conflicts before adding a binding.",
@@ -338,7 +337,7 @@
   "languageChinese": { "message": "简体中文", "description": "Simplified Chinese language" },
   "triggerButton": { "message": "Gesture trigger button", "description": "Gesture trigger button" },
   "mouseTriggerButtonHint": {
-    "message": "The gesture button takes priority over super drag and rocker input when they use the same button. With the right button, a click or movement below the activation threshold keeps the native menu; when menu suppression is enabled, an activated gesture blocks it. Disabling suppression keeps the native menu but may conflict with gestures.",
+    "message": "The gesture button takes priority over super drag and rocker input when they use the same button. With right-button menu capture enabled, hold the first press and move to gesture; right-click twice quickly in the same spot for the native menu. Disabling capture restores the native menu on the first click but may conflict with gestures.",
     "description": "Gesture button conflict behavior"
   },
   "activationDistance": {
@@ -362,7 +361,7 @@
   "showTrail": { "message": "Show gesture trail", "description": "Trail toggle" },
   "showHud": { "message": "Show command HUD", "description": "HUD toggle" },
   "suppressContextMenu": {
-    "message": "Suppress context menu after gesture activation",
+    "message": "Capture context menu for right-button gestures",
     "description": "Context menu suppression during gesture sessions"
   },
   "privacyImmutable": {
@@ -617,7 +616,7 @@
   "settingsSections": { "message": "Settings sections", "description": "Settings navigation" },
   "settingsSearch": { "message": "Search settings", "description": "Settings navigation search" },
   "settingsSearchHint": {
-    "message": "Filter settings sections…",
+    "message": "Search settings",
     "description": "Settings navigation search hint"
   },
   "settingsSearchMatches": {
@@ -1100,7 +1099,7 @@
   "documentFormatterSortAscending": { "message": "Sort keys ascending", "description": "Document formatter sort" },
   "documentFormatterSortDescending": { "message": "Sort keys descending", "description": "Document formatter sort" },
   "documentFormatterRepair": { "message": "Repair mojibake", "description": "Document formatter repair" },
-  "documentFormatterUndoRepair": { "message": "Undo text repair", "description": "Document formatter undo" },
+  "documentFormatterUndoRepair": { "message": "Undo repair", "description": "Document formatter undo" },
   "documentFormatterCollapse": { "message": "Collapse", "description": "Document formatter collapse" },
   "documentFormatterExpand": { "message": "Expand", "description": "Document formatter expand" },
   "documentFormatterCopy": { "message": "Copy", "description": "Document formatter copy" },
@@ -1253,7 +1252,7 @@
     "description": "Onboarding introduction"
   },
   "onboardingGesture": {
-    "message": "A light right click keeps the native context menu. When menu suppression is enabled, a right-button gesture blocks the menu after crossing the activation threshold; disabling it keeps the native menu but may conflict with gestures.",
+    "message": "With right-button menu capture enabled, hold the first press and move to gesture, or right-click twice quickly in the same spot for the native menu. Disabling capture restores the native menu on the first click but may conflict with gestures.",
     "description": "Onboarding gesture"
   },
   "onboardingDrag": {
@@ -1346,5 +1345,36 @@
     "message": "Some detailed changes are omitted from this preview.",
     "description": "Import preview truncation notice"
   },
-  "none": { "message": "None", "description": "Empty summary" }
+  "none": { "message": "None", "description": "Empty summary" },
+  "saveSettings": { "message": "Save settings" },
+  "saveOnlyOnSave": { "message": "Changes take effect after saving." },
+  "mouseSettingsSubtitle": { "message": "Hold the right button and drag to run an action." },
+  "mouseRightClickHow": { "message": "How the right button works" },
+  "mouseRightClick": { "message": "Right-click" },
+  "mouseOpenBrowserMenu": { "message": "Open the browser menu" },
+  "mouseHoldAndDrag": { "message": "Hold and drag" },
+  "mouseRunGesture": { "message": "Run a mouse gesture" },
+  "mouseGestureActions": { "message": "Gestures & actions" },
+  "mouseRecognitionSettings": { "message": "Recognition settings" },
+  "mouseRecognitionHint": { "message": "A longer distance prevents accidental gestures while a shorter distance feels faster." },
+  "mouseContextMenuSettings": { "message": "Right-click menu" },
+  "mouseNativeMenuHint": { "message": "A normal click that does not cross the activation distance always keeps the browser menu." },
+  "mouseAdvancedSettings": { "message": "Advanced recognition and bindings" },
+  "mouseEnabledStatus": { "message": "Enabled" },
+  "mouseDisabledStatus": { "message": "Disabled" },
+  "mouseTriggerDistance": { "message": "Trigger distance" },
+  "mouseTrailHint": { "message": "Trail hint" },
+  "mouseTrailDescription": { "message": "Show the trail while dragging to learn and debug gestures." },
+  "mouseNormalClickMenu": { "message": "Keep the browser menu for normal clicks" },
+  "manageToolMenu": { "message": "Manage tool menu" },
+  "searchAndTabs": { "message": "Search & tabs" },
+  "unassigned": { "message": "Not assigned" },
+  "toolJsonInputHint": { "message": "Paste JSON to format" },
+  "toolJsonEmptyTitle": { "message": "Paste JSON to format automatically" },
+  "toolJsonEmptyHint": { "message": "Format, compact, sort, and browse JSON locally." },
+  "documentFormatterAutoFormatted": { "message": "Auto-formatted" },
+  "documentFormatterKeyCount": { "message": "keys" },
+  "languageChineseTraditional": { "message": "繁體中文" },
+  "languageJapanese": { "message": "日本語" },
+  "languageSpanish": { "message": "Español" }
 }
