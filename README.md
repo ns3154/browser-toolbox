@@ -2,11 +2,12 @@
 
 **English** | [简体中文](README.zh-CN.md)
 
-Browse the web, search, and manage tabs and windows with keyboard and mouse workflows.
+Browse the web, search, manage tabs, and work with text and data using keyboard shortcuts, mouse
+gestures, and local tools.
 
 ## Install
 
-Browser Toolbox is currently available from GitHub:
+To install from [GitHub](https://github.com/ns3154/browser-toolbox):
 
 1. Download and extract this repository.
 2. Open `chrome://extensions` in Chrome or Chromium.
@@ -14,15 +15,45 @@ Browser Toolbox is currently available from GitHub:
 4. Select **Load unpacked**, then choose the project directory that contains `manifest.json`.
 5. Select the extension icon in the browser toolbar, then choose **Open settings**.
 
-Extensions cannot run on browser-managed pages such as `chrome://` pages or the Chrome Web Store.
-Use Browser Toolbox on regular web pages.
+Keyboard and mouse navigation cannot run on browser-managed pages such as `chrome://` pages or the
+Chrome Web Store. You can still open **All tools** and Settings from the extension icon.
 
 ## Quick start
 
-- Press `?` on a web page to open Help and view all available shortcuts.
-- Select the extension icon to see the current site's status and temporarily toggle keyboard
-  navigation, mouse gestures, super drag, and wheel/rocker gestures.
-- Use **Open settings** to change features and action bindings, then select **Save**.
+1. Open a regular web page and press `?` to see the available keyboard shortcuts.
+2. On a long page, hold the right mouse button, move down, and release to scroll down one page.
+3. Select the extension icon, open **All tools**, and try formatting JSON or comparing two texts.
+4. If a page's own controls conflict with the extension, select **Pause all sites**, then use
+   **Restore this session** when ready. Session controls apply to all sites; use **Site Rules** for
+   a lasting exception on one site.
+
+Use **Open settings** to change actions, then select **Save**. Under **General → Language**, choose
+English, 简体中文, 繁體中文, 日本語, Español, or **Follow browser**.
+
+## Local tools
+
+Open **All tools** from the extension icon, then search or choose a tool:
+
+| Tool                | Use it to                                                 |
+| ------------------- | --------------------------------------------------------- |
+| JSON formatter      | Format, validate, sort, or compact JSON                   |
+| Properties ↔ YAML   | Convert configuration text between Properties and YAML    |
+| Text diff           | Find differences between two texts                        |
+| Codec transform     | Encode or decode text, such as Base64 and URL values      |
+| Time converter      | Convert timestamps, dates, and time zones                 |
+| ID generator        | Generate UUIDs and other common IDs                       |
+| Password generator  | Generate random passwords with a chosen length            |
+| CSV / TSV converter | Convert tabular text to Markdown, JSON, and other formats |
+
+These tools process input locally in the browser. In tool settings, choose any number of shortcuts for
+the popup and any of the supported tools for the browser's right-click menu. Select text on a web
+page and use a configured context-menu entry to send it to that tool.
+
+## Command center
+
+Press `:` on a regular web page, or select **Command center** from the extension icon. Search for
+commands, tools, and settings, use `↑` / `↓` to choose, and press `Enter` to open or run the result.
+Press `Esc` to close it.
 
 ## Common keyboard shortcuts
 
@@ -47,8 +78,8 @@ Help reflects your customized bindings. The table above lists common defaults.
 ## Mouse gestures
 
 Mouse gestures use the right button and four-direction recognition by default. Hold the right
-button, move up, down, left, or right, and release to run the action. Multi-segment gestures use
-`·` as a separator.
+button, move up, down, left, or right, and release to run the action. Multi-segment gestures use `·`
+as a separator.
 
 | Gesture                   | Default action                               |
 | ------------------------- | -------------------------------------------- |
@@ -105,7 +136,23 @@ Select **Open settings** from the extension menu to:
   & Drag**.
 - Show or hide trails and command feedback, or select a local PNG pointer under **Appearance &
   Behavior**.
-- Enable Browser Toolbox by URL or disable individual mouse modules for a site under **Site Rules**.
+- Set URL rules and choose a **Balanced**, **Editor safe**, **Reading**, or custom profile under
+  **Site Rules**. A profile can adjust gesture sensitivity and feedback for a specific site.
 - Export settings or preview and import an existing settings file under **Backup & Restore**.
 
 Select **Save** after changing settings.
+
+To adjust the current website, choose **Manage this site** in the popup. This opens an existing rule
+for the site's origin or prepares a new rule; review it and select **Save** to apply it. **Restore
+this session** clears temporary overrides and returns to your saved settings and site rules.
+
+The browser sync switch applies to Browser Toolbox settings, including mouse behavior, tools, and
+site rules. Custom keyboard mappings and search engines retain Vimium's browser sync behavior. If
+the toolbox settings exceed the sync limit, shorten the configuration or turn off toolbox sync and
+save locally. Export a backup before moving settings to another browser.
+
+## Feedback
+
+Report problems or suggest improvements in
+[Browser Toolbox issues](https://github.com/ns3154/browser-toolbox/issues). Include the extension
+version, browser version, and steps to reproduce the problem.

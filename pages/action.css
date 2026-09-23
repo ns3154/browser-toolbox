@@ -818,6 +818,28 @@ body.browser-toolbox-action-page {
   font-size: 11px;
 }
 
+.browser-toolbox-action-page .browser-toolbox-session-controls {
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-session-controls h2 {
+  margin: 0;
+  font-size: 12px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-session-status {
+  margin: 4px 0 0;
+  color: var(--toolbox-muted);
+  font-size: 11px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-session-controls button {
+  flex-shrink: 0;
+  max-width: 48%;
+}
+
 .browser-toolbox-action-page .browser-toolbox-secondary-button,
 .browser-toolbox-action-page .browser-toolbox-primary-button {
   min-height: 30px;
@@ -1049,7 +1071,6 @@ body.browser-toolbox-action-page {
     padding-right: 12px;
     padding-left: 12px;
   }
-
 }
 
 /* 窄弹窗也必须保留可读的文字列宽；浏览器缩放会把动作页压到 320px 以下。 */

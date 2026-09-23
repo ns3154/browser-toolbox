@@ -18,6 +18,33 @@
     return `${prefix}-${globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`}`;
   }
 
+  function parseSiteOrigin(value) {
+    if (typeof value !== "string" || value.length === 0 || value.length > 2048) return null;
+    try {
+      const url = new URL(value);
+      if (
+        !["http:", "https:"].includes(url.protocol) || !url.hostname ||
+        url.hostname.includes("*") || value !== url.origin
+      ) return null;
+      return url.origin;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function prepareSiteRuleDraft(rules, origin) {
+    const validOrigin = parseSiteOrigin(origin);
+    if (!validOrigin) return null;
+    const pattern = `${validOrigin}/*`;
+    const existing = rules.find((rule) =>
+      (rule.matchType || "glob") === "glob" && rule.pattern === pattern
+    );
+    if (existing) return { rule: existing, created: false };
+    const rule = { id: newId(), matchType: "glob", pattern, enabled: true, modules: {} };
+    rules.push(rule);
+    return { rule, created: true };
+  }
+
   /**
    * 检查站点规则的 glob/regex 匹配式。
    * @param {unknown} rule 待检查规则。
@@ -150,12 +177,14 @@
     }
 
     profileSectionLabel(section) {
-      return this.message({
-        mouse: "siteProfileMouse",
-        superDrag: "siteProfileSuperDrag",
-        wheel: "siteProfileWheel",
-        rocker: "rocker",
-      }[section] || section);
+      return this.message(
+        {
+          mouse: "siteProfileMouse",
+          superDrag: "siteProfileSuperDrag",
+          wheel: "siteProfileWheel",
+          rocker: "rocker",
+        }[section] || section,
+      );
     }
 
     profileField(labelKey, section, name, type, value, options = {}) {
@@ -223,14 +252,53 @@
       mouseLegend.textContent = this.profileSectionLabel("mouse");
       mouse.appendChild(mouseLegend);
       mouse.append(
-        this.profileField("siteProfileEnabled", "mouse", "enabled", "checkbox", profile.mouse?.enabled),
-        this.profileField("siteProfileTriggerButton", "mouse", "triggerButton", "select", profile.mouse?.triggerButton, {
-          options: [["0", "leftButton"], ["1", "middleButton"], ["2", "rightButton"]],
-        }),
-        this.profileField("siteProfileActivationDistance", "mouse", "activationDistancePx", "number", profile.mouse?.activationDistancePx, { min: 1, max: 200 }),
-        this.profileField("siteProfileMinimumSegmentDistance", "mouse", "minimumSegmentDistancePx", "number", profile.mouse?.minimumSegmentDistancePx, { min: 2, max: 500 }),
-        this.profileField("siteProfileShowTrail", "mouse", "showTrail", "checkbox", profile.mouse?.showTrail),
-        this.profileField("siteProfileShowHud", "mouse", "showCommandHud", "checkbox", profile.mouse?.showCommandHud),
+        this.profileField(
+          "siteProfileEnabled",
+          "mouse",
+          "enabled",
+          "checkbox",
+          profile.mouse?.enabled,
+        ),
+        this.profileField(
+          "siteProfileTriggerButton",
+          "mouse",
+          "triggerButton",
+          "select",
+          profile.mouse?.triggerButton,
+          {
+            options: [["0", "leftButton"], ["1", "middleButton"], ["2", "rightButton"]],
+          },
+        ),
+        this.profileField(
+          "siteProfileActivationDistance",
+          "mouse",
+          "activationDistancePx",
+          "number",
+          profile.mouse?.activationDistancePx,
+          { min: 1, max: 200 },
+        ),
+        this.profileField(
+          "siteProfileMinimumSegmentDistance",
+          "mouse",
+          "minimumSegmentDistancePx",
+          "number",
+          profile.mouse?.minimumSegmentDistancePx,
+          { min: 2, max: 500 },
+        ),
+        this.profileField(
+          "siteProfileShowTrail",
+          "mouse",
+          "showTrail",
+          "checkbox",
+          profile.mouse?.showTrail,
+        ),
+        this.profileField(
+          "siteProfileShowHud",
+          "mouse",
+          "showCommandHud",
+          "checkbox",
+          profile.mouse?.showCommandHud,
+        ),
       );
       const superDrag = this.document.createElement("fieldset");
       superDrag.className = "browser-toolbox-site-profile-section";
@@ -238,10 +306,26 @@
       superDragLegend.textContent = this.profileSectionLabel("superDrag");
       superDrag.append(
         superDragLegend,
-        this.profileField("siteProfileEnabled", "superDrag", "enabled", "checkbox", profile.superDrag?.enabled),
-        this.profileField("siteProfileBypassModifier", "superDrag", "nativeBypassModifier", "select", profile.superDrag?.nativeBypassModifier, {
-          options: [["Alt", "modifierAlt"], ["Control", "modifierControl"], ["Meta", "modifierMeta"], ["Shift", "modifierShift"]],
-        }),
+        this.profileField(
+          "siteProfileEnabled",
+          "superDrag",
+          "enabled",
+          "checkbox",
+          profile.superDrag?.enabled,
+        ),
+        this.profileField(
+          "siteProfileBypassModifier",
+          "superDrag",
+          "nativeBypassModifier",
+          "select",
+          profile.superDrag?.nativeBypassModifier,
+          {
+            options: [["Alt", "modifierAlt"], ["Control", "modifierControl"], [
+              "Meta",
+              "modifierMeta",
+            ], ["Shift", "modifierShift"]],
+          },
+        ),
       );
       const wheel = this.document.createElement("fieldset");
       wheel.className = "browser-toolbox-site-profile-section";
@@ -249,9 +333,29 @@
       wheelLegend.textContent = this.profileSectionLabel("wheel");
       wheel.append(
         wheelLegend,
-        this.profileField("siteProfileEnabled", "wheel", "enabled", "checkbox", profile.wheel?.enabled),
-        this.profileField("siteProfileWheelThreshold", "wheel", "threshold", "number", profile.wheel?.threshold, { min: 10, max: 2000 }),
-        this.profileField("siteProfileCooldown", "wheel", "cooldownMs", "number", profile.wheel?.cooldownMs, { min: 0, max: 5000 }),
+        this.profileField(
+          "siteProfileEnabled",
+          "wheel",
+          "enabled",
+          "checkbox",
+          profile.wheel?.enabled,
+        ),
+        this.profileField(
+          "siteProfileWheelThreshold",
+          "wheel",
+          "threshold",
+          "number",
+          profile.wheel?.threshold,
+          { min: 10, max: 2000 },
+        ),
+        this.profileField(
+          "siteProfileCooldown",
+          "wheel",
+          "cooldownMs",
+          "number",
+          profile.wheel?.cooldownMs,
+          { min: 0, max: 5000 },
+        ),
       );
       const rocker = this.document.createElement("fieldset");
       rocker.className = "browser-toolbox-site-profile-section";
@@ -259,7 +363,13 @@
       rockerLegend.textContent = this.profileSectionLabel("rocker");
       rocker.append(
         rockerLegend,
-        this.profileField("siteProfileEnabled", "rocker", "enabled", "checkbox", profile.rocker?.enabled),
+        this.profileField(
+          "siteProfileEnabled",
+          "rocker",
+          "enabled",
+          "checkbox",
+          profile.rocker?.enabled,
+        ),
       );
       sections.append(mouse, superDrag, wheel, rocker);
       details.append(summary, hint, meta, sections);
@@ -492,6 +602,8 @@
   globalThis.BrowserToolboxSiteRulesEditor = Object.freeze({
     SiteRulesEditor,
     newId,
+    parseSiteOrigin,
+    prepareSiteRuleDraft,
     validatePattern,
   });
 })();

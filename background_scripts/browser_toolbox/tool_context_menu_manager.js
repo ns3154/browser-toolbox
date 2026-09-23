@@ -72,7 +72,6 @@
       }
       globalThis.BrowserToolboxI18n?.setLocale?.(settings?.general?.language || "auto");
       const selected = registry.validateToolIds(settings?.tools?.contextMenu?.toolIds, {
-          max: 3,
           source: "selection",
           surface: "contextMenu",
         })

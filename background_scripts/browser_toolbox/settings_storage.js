@@ -15,6 +15,7 @@
   const SESSION_KEY = "browserToolboxSessionOverrides";
   const LEGACY_SESSION_KEY = "openKeyMouseSessionOverrides";
   const MAX_SYNC_BYTES = 100 * 1024;
+  const MAX_SYNC_ITEM_BYTES = 8 * 1024;
 
   const STORAGE_KEYS = Object.freeze({
     settings: SETTINGS_KEY,
@@ -53,9 +54,32 @@
     return new TextEncoder().encode(serialized).byteLength;
   }
 
-  function assertWithinSyncBudget(value) {
-    if (serializedSize(value) > MAX_SYNC_BYTES) {
-      throw new Error("Synchronized settings exceed the safe size limit.");
+  function serializedItemSize(key, value) {
+    return new TextEncoder().encode(key).byteLength + serializedSize(value);
+  }
+
+  function syncQuotaError(quota, requiredBytes, limitBytes) {
+    const message = quota === "item"
+      ? "Toolbox settings exceed the single-item browser sync limit."
+      : "The browser sync storage does not have enough space for toolbox settings.";
+    return Object.assign(
+      new Error(`${message} Disable toolbox settings sync to save locally, or export a backup.`),
+      { code: "browser-toolbox-sync-quota", quota, requiredBytes, limitBytes },
+    );
+  }
+
+  function assertWithinSyncBudget(value, {
+    itemLimit = MAX_SYNC_ITEM_BYTES,
+    totalLimit = MAX_SYNC_BYTES,
+    usedBytes = 0,
+    replacedBytes = 0,
+  } = {}) {
+    // 单项限额包含键名；整个 sync 区域还与 Vimium 的键位、搜索引擎等设置共享总配额。
+    const itemBytes = serializedItemSize(SETTINGS_KEY, value);
+    if (itemBytes > itemLimit) throw syncQuotaError("item", itemBytes, itemLimit);
+    const totalBytes = usedBytes - replacedBytes + itemBytes;
+    if (totalBytes > totalLimit) {
+      throw syncQuotaError("total", totalBytes, totalLimit);
     }
     return value;
   }
@@ -74,6 +98,33 @@
      */
     areaForSettings(value) {
       return value?.general?.browserSyncEnabled === false ? "local" : "sync";
+    }
+
+    async assertSyncBudget(value) {
+      const limits = {
+        itemLimit: this.sync.QUOTA_BYTES_PER_ITEM ?? MAX_SYNC_ITEM_BYTES,
+        totalLimit: this.sync.QUOTA_BYTES ?? MAX_SYNC_BYTES,
+      };
+      assertWithinSyncBudget(value, limits);
+      let usedBytes;
+      let replacedBytes;
+      if (typeof this.sync.getBytesInUse === "function") {
+        [usedBytes, replacedBytes] = await Promise.all([
+          this.sync.getBytesInUse(null),
+          this.sync.getBytesInUse(SETTINGS_KEY),
+        ]);
+      } else {
+        // 不提供计量 API 的兼容环境仍按同一规则检查，不能把其他 sync 键当作空闲空间。
+        const values = await this.sync.get(null);
+        usedBytes = Object.entries(values).reduce(
+          (total, [key, item]) => total + serializedItemSize(key, item),
+          0,
+        );
+        replacedBytes = Object.hasOwn(values, SETTINGS_KEY)
+          ? serializedItemSize(SETTINGS_KEY, values[SETTINGS_KEY])
+          : 0;
+      }
+      assertWithinSyncBudget(value, { ...limits, usedBytes, replacedBytes });
     }
 
     /**
@@ -147,7 +198,7 @@
     async writeSettings(value) {
       const area = this.areaForSettings(value);
       const target = area === "local" ? this.local : this.sync;
-      if (area === "sync") assertWithinSyncBudget(value);
+      if (area === "sync") await this.assertSyncBudget(value);
       const other = area === "local" ? this.sync : this.local;
       const previousTargetValues = await target.get(SETTINGS_KEY);
       const previousTarget = previousTargetValues?.[SETTINGS_KEY];
@@ -249,9 +300,11 @@
   globalThis.BrowserToolboxStorageKeys = STORAGE_KEYS;
   globalThis.BrowserToolboxSettingsStorage = Object.freeze({
     MAX_SYNC_BYTES,
+    MAX_SYNC_ITEM_BYTES,
     STORAGE_KEYS,
     preferredValue,
     serializedSize,
+    serializedItemSize,
     assertWithinSyncBudget,
   });
   globalThis.BrowserToolboxSettingsStorageAdapter = SettingsStorage;

@@ -60,6 +60,16 @@ context("BrowserToolbox context menu manager", () => {
         .filter((item) => item.parentId === "browser-toolbox.all-tools")
         .every((item) => item.contexts.includes("all")),
     );
+    const toolIds = BrowserToolboxToolRegistry.list({ source: "selection", surface: "contextMenu" })
+      .map((descriptor) => descriptor.id);
+    await manager.reconcile({ tools: { contextMenu: { enabled: true, toolIds } } });
+    assert.equal(
+      toolIds.map(BrowserToolboxToolContextMenuManager.configuredToolIdForMenu),
+      created.filter((item) => item.id.includes("configured-tool")).map((item) => item.id),
+    );
+    await manager.reconcile({ tools: { contextMenu: { enabled: true, toolIds: [] } } });
+    assert.equal(0, created.filter((item) => item.id.includes("configured-tool")).length);
+    assert.isTrue(created.some((item) => item.id === "browser-toolbox.all-tools"));
   });
 
   should("serialize overlapping reconciliations", async () => {

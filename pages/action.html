@@ -36,9 +36,11 @@
           <span id="browser-toolbox-site-badge" class="browser-toolbox-site-badge" aria-live="polite"
             data-i18n="active">Active</span>
         </div>
-        <p id="browser-toolbox-site-status" class="browser-toolbox-site-status" aria-live="polite"></p>
-        <button id="browser-toolbox-disable-session" class="browser-toolbox-secondary-button" type="button"
-          data-i18n="disableForSession">Disable for this session</button>
+        <p id="browser-toolbox-site-status" class="browser-toolbox-site-status"
+          aria-live="polite"></p>
+        <button id="browser-toolbox-manage-site" class="browser-toolbox-secondary-button"
+          type="button"
+          data-i18n="manageCurrentSite" hidden>Manage this site</button>
       </section>
 
       <section id="browser-toolbox-tools" class="browser-toolbox-action-section browser-toolbox-tools-panel"
@@ -55,6 +57,21 @@
           All tools run locally. Inputs use a short-lived, one-time session token.
         </p>
         <div id="browser-toolbox-tool-buttons" class="browser-toolbox-tool-buttons"></div>
+      </section>
+
+      <section id="browser-toolbox-session-controls"
+        class="browser-toolbox-action-section browser-toolbox-session-controls"
+        style="display: none" aria-labelledby="browser-toolbox-session-title">
+        <div>
+          <h2 id="browser-toolbox-session-title"
+            data-i18n="sessionAllSites">All sites this session</h2>
+          <p id="browser-toolbox-session-status" class="browser-toolbox-session-status"
+            role="status" aria-live="polite"
+            data-i18n="sessionScopeHint">Temporary switches affect all sites.</p>
+        </div>
+        <button id="browser-toolbox-disable-session" class="browser-toolbox-secondary-button"
+          type="button"
+          data-i18n="disableForSession">Pause all sites</button>
       </section>
 
       <section id="browser-toolbox-enhancement-summary" class="browser-toolbox-action-section"
@@ -152,7 +169,6 @@
           <span data-i18n="openHelp">Open help</span>
         </button>
       </nav>
-
     </main>
   </body>
 </html>

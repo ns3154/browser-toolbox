@@ -37,6 +37,7 @@
     <script src="tool_settings.js"></script>
     <script src="settings_navigation.js"></script>
     <script src="settings_change_summary.js"></script>
+    <script src="settings_error_formatter.js"></script>
     <script src="site_rules_editor.js"></script>
     <script src="binding_editor.js"></script>
     <script src="mouse_options.js" defer></script>
@@ -69,12 +70,12 @@
             <label
               class="browser-toolbox-check"><input id="global-show-hud" type="checkbox"> <span data-i18n="globalShowHud">Show toolbox command hints</span></label>
             <label
-              class="browser-toolbox-check"><input id="browser-sync-enabled" type="checkbox"> <span data-i18n="browserSyncEnabled">Sync settings with the browser</span></label>
+              class="browser-toolbox-check"><input id="browser-sync-enabled" type="checkbox"> <span data-i18n="browserSyncEnabled">Sync toolbox settings</span></label>
             <label
               class="browser-toolbox-field"><span data-i18n="language">Language</span><select id="language"><option value="auto" data-i18n="languageAuto">Follow browser</option><option value="en" data-i18n="languageEnglish">English</option><option value="zh_CN" data-i18n="languageChinese">简体中文</option><option value="zh_TW" data-i18n="languageChineseTraditional">繁體中文</option><option value="ja" data-i18n="languageJapanese">日本語</option><option value="es" data-i18n="languageSpanish">Español</option></select></label>
           </div>
           <p class="browser-toolbox-note"
-            data-i18n="browserSyncNote">When disabled, settings stay in this browser's local storage and are not synchronized.</p>
+            data-i18n="browserSyncNote">This switch only controls toolbox settings. When off, they stay on this device. Vimium settings, including keyboard shortcuts and search engines, still use browser sync.</p>
           <p class="browser-toolbox-note"
             data-i18n="noTelemetry">No telemetry, accounts, advertising, or paid features.</p>
         </section>
@@ -116,13 +117,13 @@
           </div>
           <h3 data-i18n="actionTools">Action popup tools</h3>
           <p id="action-tool-list-description" class="browser-toolbox-note"
-            data-i18n="actionToolsHint">Choose up to six tools to show in the action popup.</p>
+            data-i18n="actionToolsHint">Choose tools to show in the action popup.</p>
           <div id="action-tool-list" class="browser-toolbox-tool-list"
             aria-describedby="action-tool-list-description"></div>
           <p id="action-tool-list-status" class="browser-toolbox-error" role="status"></p>
           <h3 data-i18n="contextMenuTools">Context-menu tools</h3>
           <p id="context-menu-tool-list-description" class="browser-toolbox-note"
-            data-i18n="contextMenuToolsHint">Choose up to three tools for the native context menu. Selected text is passed in when available.</p>
+            data-i18n="contextMenuToolsHint">Choose tools for the native context menu. Selected text is passed in when available.</p>
           <div id="context-menu-tool-list" class="browser-toolbox-tool-list"
             aria-describedby="context-menu-tool-list-description"></div>
           <p id="context-menu-tool-list-status" class="browser-toolbox-error" role="status"></p>

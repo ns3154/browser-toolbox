@@ -45,10 +45,10 @@
     "message": "ツールボックスのコマンドヒントを表示"
   },
   "browserSyncEnabled": {
-    "message": "ブラウザーで設定を同期"
+    "message": "ツールボックス設定を同期"
   },
   "browserSyncNote": {
-    "message": "無効にすると、設定はこのブラウザーにのみ保存され、同期されません。"
+    "message": "このスイッチはツールボックス設定のみを対象とします。オフにするとこの端末に保存されます。ショートカットや検索エンジンなどの Vimium 設定は、引き続きブラウザーで同期されます。"
   },
   "keyboard": {
     "message": "キーボード"
@@ -201,10 +201,10 @@
     "message": "現在のサイト"
   },
   "disableForSession": {
-    "message": "このセッションのみ無効にする"
+    "message": "全サイトを一時停止"
   },
   "sessionDisabled": {
-    "message": "このセッションでは無効"
+    "message": "このセッションでは全サイトのブラウジング機能を一時停止しています。"
   },
   "disabling": {
     "message": "無効化中…"
@@ -906,13 +906,13 @@
     "message": "ポップアップのツール"
   },
   "actionToolsHint": {
-    "message": "ポップアップに表示するツールを最大 6 個選択します。"
+    "message": "ポップアップに表示するツールを選択します。"
   },
   "contextMenuTools": {
     "message": "右クリックメニューのツール"
   },
   "contextMenuToolsHint": {
-    "message": "標準の右クリックメニューに表示するツールを最大 3 個選択します。選択したテキストがあれば入力に引き継がれます。"
+    "message": "標準の右クリックメニューに表示するツールを選択します。選択したテキストがあれば入力に引き継がれます。"
   },
   "toolSelectionLimit": {
     "message": "選択数の上限"
@@ -2385,13 +2385,13 @@
     "message": "shoulda.js テストフレームワーク：MIT ライセンス"
   },
   "onboardingIntro": {
-    "message": "Chromium ブラウザー向けのローカルツールボックスです。キーボード操作と独立したマウス入力モジュールを備えています。"
+    "message": "3 つの操作でブラウザーツールボックスを使い始めましょう。"
   },
   "onboardingGesture": {
-    "message": "右クリックメニューの制御が有効な場合、最初の右クリックを押したまま動かすとジェスチャーを実行し、同じ位置で素早く 2 回右クリックすると標準メニューが開きます。制御を無効にすると最初の右クリックで標準メニューが開きますが、ジェスチャーと競合することがあります。"
+    "message": "通常のウェブページで右ボタンを押したまま下に動かし、離すと下へスクロールします。右クリックメニューの制御が有効な場合、同じ場所を素早く 2 回右クリックすると標準メニューが開きます。"
   },
   "onboardingDrag": {
-    "message": "スーパードラッグはファイルのアップロード、エディター、パスワード欄、独自のドラッグ可能なウィジェットの動作を維持します。"
+    "message": "? キーでキーボードヘルプを開きます。ドラッグ中に Alt を押すと、一時的にブラウザー標準のドラッグ操作を使えます。"
   },
   "onboardingInvocation": {
     "message": "すべての操作は検証済みのコマンド呼び出しを通じて実行されます。"
@@ -2584,5 +2584,23 @@
   },
   "languageSpanish": {
     "message": "Español"
-  }
+  },
+  "syncQuotaItemExceeded": {"message": "ツールボックス設定が項目ごとの同期上限（8 KiB）を超えています。「ツールボックス設定を同期」をオフにしてこの端末に保存するか、先にバックアップをエクスポートしてください。", "description": "项目体验完善文案"},
+  "syncQuotaTotalExceeded": {"message": "ブラウザーの同期ストレージが不足しています。「ツールボックス設定を同期」をオフにしてこの端末に保存するか、先にバックアップをエクスポートしてください。", "description": "项目体验完善文案"},
+  "toolTimeUnit": {"message": "タイムスタンプの単位", "description": "项目体验完善文案"},
+  "toolTimeLocalOutput": {"message": "現地時刻の出力", "description": "项目体验完善文案"},
+  "toolTimeUnixOutput": {"message": "Unix タイムスタンプの出力", "description": "项目体验完善文案"},
+  "toolTimeFiletimeOutput": {"message": "FILETIME の出力", "description": "项目体验完善文案"},
+  "onboardingTools": {"message": "拡張機能のポップアップから JSON 整形、テキスト比較、設定変換を開けます。すべてのツールは入力を端末内で処理します。", "description": "项目体验完善文案"},
+  "onboardingPauseTitle": {"message": "ページの操作と競合する場合", "description": "项目体验完善文案"},
+  "onboardingPause": {"message": "ポップアップですべてのサイトのキーボード・マウス機能を一時停止し、終わったら再開できます。特定のサイトだけ調整するには「このサイトを管理」からルールを作り、確認して保存します。", "description": "项目体验完善文案"},
+  "sessionAllSites": {"message": "全サイト · このセッション", "description": "会话与站点入口文案"},
+  "sessionScopeHint": {"message": "一時的な切り替えは全サイトに適用されます。復元すると保存済み設定に戻ります。", "description": "会话与站点入口文案"},
+  "restoreSession": {"message": "このセッションを復元", "description": "会话与站点入口文案"},
+  "sessionUpdating": {"message": "更新中…", "description": "会话与站点入口文案"},
+  "sessionUpdateFailed": {"message": "セッションの状態を更新できませんでした。もう一度お試しください。", "description": "会话与站点入口文案"},
+  "manageCurrentSite": {"message": "このサイトを管理", "description": "会话与站点入口文案"},
+  "siteRuleShortcutInvalid": {"message": "サイトの指定が無効です。通常のウェブページで拡張機能のポップアップから開き直してください。", "description": "会话与站点入口文案"},
+  "siteRuleShortcutDraft": {"message": "このサイトのルールの下書きを作成しました。調整後に保存してください。", "description": "会话与站点入口文案"},
+  "siteRuleShortcutExisting": {"message": "このサイトの既存ルールを選択しました。変更後に保存してください。", "description": "会话与站点入口文案"}
 }

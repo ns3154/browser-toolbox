@@ -189,10 +189,32 @@ context("Settings migrations", () => {
     assert.isTrue(Object.hasOwn(migrated.settings, "futureSection"));
   });
 
+  should("preserve every eligible context tool across reloads and export imports", () => {
+    const migrations = BrowserToolboxSettingsMigrations;
+    const toolIds = ["json.format", "text.diff", "codec.transform", "time.convert", "table.convert"];
+    for (const tools of [
+      { contextMenu: { toolIds: [...toolIds, "json.format", "password.generate", "unknown.tool"] } },
+      { contextMenuToolIds: toolIds },
+      { contextMenu: { toolIds: [] } },
+    ]) {
+      const expected = tools.contextMenu?.toolIds.length === 0 ? [] : toolIds;
+      const migrated = migrations.migrate({ schemaVersion: 4, tools });
+      assert.equal(expected, migrated.tools.contextMenu.toolIds);
+      assert.equal(expected, migrations.migrate(migrated).tools.contextMenu.toolIds);
+      const imported = migrations.migrateExportPayload(migrations.createExportPayload(migrated));
+      assert.isTrue(imported.ok);
+      assert.equal(expected, imported.settings.tools.contextMenu.toolIds);
+    }
+  });
+
   should("preserve unknown tool fields while normalizing known tool settings", () => {
     const migrated = BrowserToolboxSettingsMigrations.migrate({
       schemaVersion: 4,
       tools: {
+        pinnedIds: [
+          "json.format", "config.convert", "text.diff", "codec.transform", "time.convert",
+          "id.generate", "password.generate",
+        ],
         futureToolPolicy: { mode: "next" },
         contextMenu: { toolIds: ["json.format"], futureContextFlag: true },
         documentFormatter: {
@@ -202,6 +224,10 @@ context("Settings migrations", () => {
         },
       },
     });
+    assert.equal([
+      "json.format", "config.convert", "text.diff", "codec.transform", "time.convert",
+      "id.generate", "password.generate",
+    ], migrated.tools.pinnedIds);
     assert.equal({ mode: "next" }, migrated.tools.futureToolPolicy);
     assert.isTrue(migrated.tools.contextMenu.futureContextFlag);
     assert.isTrue(migrated.tools.documentFormatter.autoFormat.futureFormat);

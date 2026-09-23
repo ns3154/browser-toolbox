@@ -61,11 +61,11 @@
   },
   "browserSyncEnabled": {
     "description": "浏览器同步开关",
-    "message": "使用瀏覽器同步設定"
+    "message": "同步工具箱設定"
   },
   "browserSyncNote": {
     "description": "浏览器同步说明",
-    "message": "關閉後，設定只儲存在此瀏覽器的本機儲存中，不會同步。"
+    "message": "此開關僅控制工具箱設定。關閉後，工具箱設定儲存在本機；鍵盤快捷鍵、搜尋引擎等 Vimium 設定仍沿用瀏覽器同步。"
   },
   "keyboard": {
     "description": "键盘设置",
@@ -268,12 +268,12 @@
     "message": "目前站點"
   },
   "disableForSession": {
-    "description": "本次会话停用当前站点",
-    "message": "僅本次工作階段停用"
+    "description": "全局会话操作与状态",
+    "message": "暫停所有網站"
   },
   "sessionDisabled": {
-    "description": "当前站点本次会话停用状态",
-    "message": "本次工作階段已停用"
+    "description": "全局会话操作与状态",
+    "message": "本次工作階段已暫停所有網站的瀏覽增強。"
   },
   "disabling": {
     "description": "会话停用进行中",
@@ -1209,7 +1209,7 @@
   },
   "actionToolsHint": {
     "description": "动作弹窗工具选择提示",
-    "message": "選擇最多六個顯示在擴充功能動作彈窗中的工具。"
+    "message": "選擇要顯示在擴充功能動作彈窗中的工具。"
   },
   "contextMenuTools": {
     "description": "右键菜单工具选择",
@@ -1217,7 +1217,7 @@
   },
   "contextMenuToolsHint": {
     "description": "右键菜单工具选择提示",
-    "message": "選擇最多三個顯示在原生右鍵選單中的工具；有選取文字時會自動帶入。"
+    "message": "選擇顯示在原生右鍵選單中的工具；有選取文字時會自動帶入。"
   },
   "toolSelectionLimit": {
     "description": "工具选择上限",
@@ -3181,15 +3181,15 @@
   },
   "onboardingIntro": {
     "description": "入门说明",
-    "message": "面向 Chromium 瀏覽器的本機工作流工具箱，包含鍵盤導覽和獨立實現的滑鼠輸入模塊。"
+    "message": "用三個小操作熟悉瀏覽器工具箱。"
   },
   "onboardingGesture": {
     "description": "入门手势",
-    "message": "啟用右鍵選單接管時，第一次右鍵按住移動執行手勢，在同一位置快速右鍵兩次打開原生選單；關閉接管後第一次右鍵直接打開原生選單，但可能與手勢衝突。"
+    "message": "在一般網頁按住右鍵向下移動，再放開，即可向下翻頁。啟用右鍵選單接管時，在同一位置快速點擊兩次右鍵開啟原生選單。"
   },
   "onboardingDrag": {
     "description": "入门拖拽",
-    "message": "超級拖曳會避開檔案上傳、編輯器、密碼框和自訂 draggable 控件。"
+    "message": "按 ? 查看鍵盤說明。拖曳時按住 Alt，可暫時保留瀏覽器的原生拖曳。"
   },
   "onboardingInvocation": {
     "description": "入门调用协议",
@@ -3415,5 +3415,23 @@
   },
   "languageSpanish": {
     "message": "Español"
-  }
+  },
+  "syncQuotaItemExceeded": {"message": "工具箱設定超過單項同步容量（8 KiB）。請關閉「同步工具箱設定」後儲存至本機，也可以先匯出備份。", "description": "项目体验完善文案"},
+  "syncQuotaTotalExceeded": {"message": "瀏覽器同步空間不足。請關閉「同步工具箱設定」後儲存至本機，也可以先匯出備份。", "description": "项目体验完善文案"},
+  "toolTimeUnit": {"message": "時間戳記單位", "description": "项目体验完善文案"},
+  "toolTimeLocalOutput": {"message": "當地時間輸出", "description": "项目体验完善文案"},
+  "toolTimeUnixOutput": {"message": "Unix 時間戳記輸出", "description": "项目体验完善文案"},
+  "toolTimeFiletimeOutput": {"message": "FILETIME 輸出", "description": "项目体验完善文案"},
+  "onboardingTools": {"message": "從擴充功能彈出視窗開啟 JSON 格式化、文字比較或設定轉換。所有工具都在本機處理輸入。", "description": "项目体验完善文案"},
+  "onboardingPauseTitle": {"message": "遇到網頁操作衝突", "description": "项目体验完善文案"},
+  "onboardingPause": {"message": "在彈出視窗暫停所有網站的鍵鼠增強，處理完後點擊恢復；只想調整某個網站，可用「管理此網站」建立規則，檢查後儲存。", "description": "项目体验完善文案"},
+  "sessionAllSites": {"message": "所有網站 · 本次工作階段", "description": "会话与站点入口文案"},
+  "sessionScopeHint": {"message": "暫時開關適用於所有網站，還原後使用已儲存設定。", "description": "会话与站点入口文案"},
+  "restoreSession": {"message": "還原本次工作階段", "description": "会话与站点入口文案"},
+  "sessionUpdating": {"message": "正在更新……", "description": "会话与站点入口文案"},
+  "sessionUpdateFailed": {"message": "本次工作階段狀態更新失敗，請重試。", "description": "会话与站点入口文案"},
+  "manageCurrentSite": {"message": "管理此網站", "description": "会话与站点入口文案"},
+  "siteRuleShortcutInvalid": {"message": "網站參數無效，請從一般網頁的擴充功能彈出視窗重新開啟。", "description": "会话与站点入口文案"},
+  "siteRuleShortcutDraft": {"message": "已建立此網站的規則草稿，請調整後儲存。", "description": "会话与站点入口文案"},
+  "siteRuleShortcutExisting": {"message": "已定位此網站的現有規則，修改後請儲存。", "description": "会话与站点入口文案"}
 }

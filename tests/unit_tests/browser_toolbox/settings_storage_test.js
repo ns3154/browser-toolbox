@@ -7,6 +7,67 @@ import "../../../lib/browser_toolbox/value_utils.js";
 import "../../../background_scripts/browser_toolbox/settings_storage.js";
 
 context("Settings storage adapter", () => {
+  function createQuotaHarness(syncValues = {}, localValues = {}) {
+    const writes = [];
+    const measurements = [];
+    const itemBytes = (key, value) =>
+      new TextEncoder().encode(key).length + new TextEncoder().encode(JSON.stringify(value)).length;
+    const area = (name, initial) => {
+      const values = structuredClone(initial);
+      return {
+        get(key) {
+          return Promise.resolve(
+            structuredClone(key == null ? values : key in values ? { [key]: values[key] } : {}),
+          );
+        },
+        set(items) {
+          writes.push(`${name}.set`);
+          Object.assign(values, structuredClone(items));
+          return Promise.resolve();
+        },
+        remove(key) {
+          writes.push(`${name}.remove`);
+          delete values[key];
+          return Promise.resolve();
+        },
+        getBytesInUse(key) {
+          measurements.push(key);
+          return Promise.resolve(
+            Object.entries(values).reduce(
+              (total, [storedKey, value]) =>
+                total + (key == null || key === storedKey ? itemBytes(storedKey, value) : 0),
+              0,
+            ),
+          );
+        },
+      };
+    };
+    const sync = area("sync", syncValues);
+    sync.QUOTA_BYTES_PER_ITEM = 8192;
+    sync.QUOTA_BYTES = 102400;
+    const local = area("local", localValues);
+    return {
+      storage: new BrowserToolboxSettingsStorageAdapter({ sync, local }),
+      sync,
+      local,
+      writes,
+      measurements,
+    };
+  }
+
+  function filledSyncValues(settings, totalBytes) {
+    const values = { browserToolboxSettings: settings };
+    let remaining = totalBytes - 22 - new TextEncoder().encode(JSON.stringify(settings)).length;
+    // 使用多个合法大小的其他设置键占满共享 sync 区域，模拟已有 Vimium 设置占用。
+    for (let index = 0; remaining > 0; index++) {
+      const key = `other-${index}`;
+      const bytes = Math.min(8192, remaining);
+      values[key] = "x".repeat(bytes - key.length - 2);
+      remaining -= bytes;
+    }
+    return values;
+  }
+
   async function clearStorage() {
     await chrome.storage.sync.clear();
     await chrome.storage.local.clear();
@@ -227,17 +288,118 @@ context("Settings storage adapter", () => {
     assert.equal(undefined, values.browserToolboxSettings);
   });
 
-  should("enforce the sync safety budget before writing", async () => {
-    await clearStorage();
-    const storage = new BrowserToolboxSettingsStorageAdapter();
-    let failed = false;
+  should("include the key name at the exact 8192-byte sync item boundary", async () => {
+    const { storage, sync, writes } = createQuotaHarness();
+    // 键名 22 字节，JSON 包装 12 字节，值最多 8158 个 ASCII 字符。
+    const atLimit = { value: "x".repeat(8158) };
+    await storage.writeSettings(atLimit);
+    assert.equal(8192, await sync.getBytesInUse("browserToolboxSettings"));
+    writes.length = 0;
+    let error;
     try {
-      await storage.writeSettings({ value: "x".repeat(100 * 1024) });
-    } catch (error) {
-      failed = error.message === "Synchronized settings exceed the safe size limit.";
+      await storage.writeSettings({ value: "x".repeat(8159) });
+    } catch (caught) {
+      error = caught;
     }
-    assert.isTrue(failed);
+    assert.equal("browser-toolbox-sync-quota", error.code);
+    assert.equal("item", error.quota);
+    assert.equal(8193, error.requiredBytes);
+    assert.equal(8192, error.limitBytes);
+    assert.equal([], writes);
+    assert.equal(atLimit, (await sync.get("browserToolboxSettings")).browserToolboxSettings);
   });
+
+  should("enforce item limits using UTF-8 bytes rather than character counts", async () => {
+    const { storage, writes } = createQuotaHarness();
+    await storage.writeSettings({ value: "中".repeat(2719) + "a" });
+    writes.length = 0;
+    let error;
+    try {
+      await storage.writeSettings({ value: "中".repeat(2719) + "aa" });
+    } catch (caught) {
+      error = caught;
+    }
+    assert.equal("item", error.quota);
+    assert.equal(8193, error.requiredBytes);
+    assert.equal([], writes);
+    assert.equal(6, BrowserToolboxSettingsStorage.serializedItemSize("键", "a"));
+  });
+
+  should(
+    "subtract the replaced item and reject shared sync total overflow before writes",
+    async () => {
+      const original = { value: "old" };
+      const { storage, sync, writes, measurements } = createQuotaHarness(
+        filledSyncValues(original, 102400),
+      );
+      await storage.writeSettings({ value: "new" });
+      assert.equal(102400, await sync.getBytesInUse(null));
+      assert.isTrue(measurements.includes("browserToolboxSettings"));
+      writes.length = 0;
+      let error;
+      try {
+        await storage.writeSettings({ value: "grow" });
+      } catch (caught) {
+        error = caught;
+      }
+      assert.equal("browser-toolbox-sync-quota", error.code);
+      assert.equal("total", error.quota);
+      assert.equal(102401, error.requiredBytes);
+      assert.equal(102400, error.limitBytes);
+      assert.equal([], writes);
+      assert.equal(
+        { value: "new" },
+        (await sync.get("browserToolboxSettings")).browserToolboxSettings,
+      );
+    },
+  );
+
+  should("check shared total usage when the storage API has no byte meter", async () => {
+    const { storage, sync, writes } = createQuotaHarness(
+      filledSyncValues({ value: "old" }, 102400),
+    );
+    delete sync.getBytesInUse;
+    let error;
+    try {
+      await storage.writeSettings({ value: "grow" });
+    } catch (caught) {
+      error = caught;
+    }
+    assert.equal("total", error.quota);
+    assert.equal(102401, error.requiredBytes);
+    assert.equal([], writes);
+  });
+
+  should(
+    "preserve both areas after rejected sync enablement and allow saving locally",
+    async () => {
+      const originalSync = { value: "synced" };
+      const originalLocal = { general: { browserSyncEnabled: false }, value: "local" };
+      const { storage, sync, local, writes } = createQuotaHarness(
+        { browserToolboxSettings: originalSync },
+        { browserToolboxSettings: originalLocal },
+      );
+      const draft = { general: { browserSyncEnabled: true }, value: "x".repeat(9000) };
+      let error;
+      try {
+        await storage.writeSettings(draft);
+      } catch (caught) {
+        error = caught;
+      }
+      assert.equal("item", error.quota);
+      assert.equal([], writes);
+      assert.equal(originalSync, (await sync.get("browserToolboxSettings")).browserToolboxSettings);
+      assert.equal(
+        originalLocal,
+        (await local.get("browserToolboxSettings")).browserToolboxSettings,
+      );
+      assert.equal(9000, draft.value.length);
+      draft.general.browserSyncEnabled = false;
+      assert.equal("local", await storage.writeSettings(draft));
+      assert.equal(draft, (await local.get("browserToolboxSettings")).browserToolboxSettings);
+      assert.equal(undefined, (await sync.get("browserToolboxSettings")).browserToolboxSettings);
+    },
+  );
 
   should("keep local asset access inside the storage adapter", async () => {
     await clearStorage();

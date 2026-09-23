@@ -253,6 +253,7 @@
     const registry = globalThis.BrowserToolboxToolRegistry;
     const fallbackSources = new Map([
       ["json.format", { sources: ["action", "selection", "page", "command"], surfaces: ["popup", "contextMenu"] }],
+      ["config.convert", { sources: ["action", "selection", "command"], surfaces: ["popup", "contextMenu"] }],
       ["text.diff", { sources: ["action", "selection", "command"], surfaces: ["popup", "contextMenu"] }],
       ["codec.transform", { sources: ["action", "selection", "command"], surfaces: ["popup", "contextMenu"] }],
       ["time.convert", { sources: ["action", "selection", "command"], surfaces: ["popup", "contextMenu"] }],
@@ -297,7 +298,7 @@
     next.tools.pinnedIds = normalizeToolIds(
       Array.isArray(source.pinnedIds) ? source.pinnedIds : legacyPinned,
       defaults.pinnedIds,
-      6,
+      Infinity,
       "action",
       "popup",
     );
@@ -311,7 +312,7 @@
     next.tools.contextMenu.toolIds = normalizeToolIds(
       Array.isArray(contextSource.toolIds) ? contextSource.toolIds : legacyContext,
       defaults.contextMenu.toolIds,
-      3,
+      Infinity,
       "selection",
       "contextMenu",
     );

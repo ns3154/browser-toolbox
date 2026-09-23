@@ -15,6 +15,7 @@
   const navigationApi = globalThis.BrowserToolboxSettingsNavigation;
   const changeSummaryApi = globalThis.BrowserToolboxSettingsChangeSummary;
   const siteRulesApi = globalThis.BrowserToolboxSiteRulesEditor;
+  const siteShortcut = consumeSiteShortcut();
   const bindingEditorApi = globalThis.BrowserToolboxBindingEditor;
   const settingsService = new applicationServiceApi.SettingsApplicationService({
     repository,
@@ -92,17 +93,10 @@
   }
 
   function formatSettingsError(error) {
-    if (error?.code === "browser-toolbox-settings-conflict") {
-      const details = formatConflictDetails(error);
-      return [
-        message("settingsConflict"),
-        details.length > 0 ? `${message("settingsConflictFields")}: ${details.join("; ")}` : "",
-      ].filter(Boolean).join("\n");
-    }
-    if (error?.rollbackErrors?.length > 0) {
-      return `${error.message}\n${message("settingsRecoveryFailed")}`;
-    }
-    return error?.message || String(error);
+    return globalThis.BrowserToolboxSettingsErrorFormatter.format(error, {
+      message,
+      conflictDetails: formatConflictDetails(error),
+    });
   }
 
   function updateDraftStatus() {
@@ -364,6 +358,38 @@
     siteRulesEditor?.render();
   }
 
+  function consumeSiteShortcut() {
+    if (!globalThis.location?.href) return null;
+    const url = new URL(globalThis.location.href);
+    const values = url.searchParams.getAll("siteOrigin");
+    if (values.length === 0) return null;
+    const origin = values.length === 1 ? siteRulesApi.parseSiteOrigin(values[0]) : null;
+    // 参数只在本次加载中使用；立即清理地址，避免刷新重复创建草稿。
+    url.searchParams.delete("siteOrigin");
+    if (origin) url.hash = "siteRules";
+    globalThis.history?.replaceState(null, "", url.href);
+    return { origin };
+  }
+
+  function applySiteShortcut() {
+    if (!siteShortcut) return;
+    const result = siteRulesApi.prepareSiteRuleDraft(settings.siteRules, siteShortcut.origin);
+    if (!result) {
+      document.querySelector("#settings-error").textContent = message("siteRuleShortcutInvalid");
+      return;
+    }
+    renderSiteRules();
+    if (result.created) markDraftDirty();
+    document.querySelector("#site-rule-test-url").value = `${siteShortcut.origin}/`;
+    testSiteRules();
+    document.querySelector("#save-status").textContent = message(
+      result.created ? "siteRuleShortcutDraft" : "siteRuleShortcutExisting",
+    );
+    const row = [...document.querySelectorAll("#site-rules [data-rule-id]")]
+      .find((element) => element.dataset.ruleId === result.rule.id);
+    row?.querySelector("[data-field=pattern]")?.focus();
+  }
+
   function clearSiteRuleExplanation() {
     const explanation = document.querySelector("#site-rule-test-explanation");
     const matches = document.querySelector("#site-rule-test-matches");
@@ -519,6 +545,7 @@
       if (!result.ok) {
         await removeCursorAsset(createdCursorAssetId);
         error.textContent = formatValidationErrors(result.errors);
+        error.scrollIntoView({ block: "center" });
         document.querySelector("#save-status").textContent = "";
         return;
       }
@@ -538,7 +565,10 @@
       saveSucceeded = true;
     } catch (error) {
       if (!settingsCommitted) await removeCursorAsset(createdCursorAssetId);
-      document.querySelector("#settings-error").textContent = formatSettingsError(error);
+      const errorElement = document.querySelector("#settings-error");
+      errorElement.textContent = formatSettingsError(error);
+      // 长规则列表中保存栏固定在底部，将失败说明滚到视口中部，避免被保存栏遮住。
+      errorElement.scrollIntoView({ block: "center" });
       document.querySelector("#save-status").textContent = "";
     } finally {
       setOperationBusy(false);
@@ -1171,6 +1201,7 @@
     setupEvents();
     setPreviewPattern([]);
     writeForm();
+    applySiteShortcut();
     await loadCursorPreview();
     updateDraftStatus();
     // 只有完整加载设置、绑定事件和资源预览后，外部页面才可以安全进行下一步操作。

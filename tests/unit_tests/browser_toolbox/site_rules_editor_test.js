@@ -15,6 +15,52 @@ context("Site rules editor", () => {
   let editor;
   let rules;
 
+  should("validate shortcut origins without accepting paths, credentials, or wildcards", () => {
+    const parse = BrowserToolboxSiteRulesEditor.parseSiteOrigin;
+    assert.equal("https://example.com", parse("https://example.com"));
+    assert.equal("http://localhost:8080", parse("http://localhost:8080"));
+    assert.equal("http://[::1]:8080", parse("http://[::1]:8080"));
+    for (
+      const input of [
+        "https://example.com/private",
+        "https://example.com?secret=1",
+        "https://example.com#secret",
+        "https://user:pass@example.com",
+        "chrome://settings",
+        "file:///tmp/test",
+        "https://*.example.com",
+        "https://example.com/*",
+        "invalid",
+        null,
+      ]
+    ) assert.equal(null, parse(input));
+  });
+
+  should(
+    "prepare an origin rule without changing existing rules or duplicating an exact match",
+    () => {
+      const api = BrowserToolboxSiteRulesEditor;
+      const currentRules = [{
+        id: "wildcard",
+        pattern: "https://*.example.com/*",
+        modules: { mouse: false },
+      }];
+      const prepared = api.prepareSiteRuleDraft(currentRules, "https://www.example.com");
+      assert.isTrue(prepared.created);
+      assert.equal("https://www.example.com/*", prepared.rule.pattern);
+      assert.equal(2, currentRules.length);
+      assert.equal({ mouse: false }, currentRules[0].modules);
+      prepared.rule.modules.keyboard = false;
+      const existing = api.prepareSiteRuleDraft(currentRules, "https://www.example.com");
+      assert.isFalse(existing.created);
+      assert.equal(prepared.rule.id, existing.rule.id);
+      assert.equal({ keyboard: false }, existing.rule.modules);
+      assert.equal(2, currentRules.length);
+      assert.equal(null, api.prepareSiteRuleDraft(currentRules, "https://example.com/private"));
+      assert.equal(2, currentRules.length);
+    },
+  );
+
   setup(async () => {
     await testHelper.jsdomStub("pages/mouse_options.html");
     rules = [{
@@ -126,7 +172,9 @@ context("Site rules editor", () => {
       modules: {},
     }];
     editor.render();
-    const preset = document.querySelector("#site-rules [data-profile-section='meta'][data-profile-field='preset']");
+    const preset = document.querySelector(
+      "#site-rules [data-profile-section='meta'][data-profile-field='preset']",
+    );
     assert.isTrue(Boolean(preset));
     assert.equal(
       ["", "balanced", "editor", "reading", "custom"],
@@ -137,7 +185,10 @@ context("Site rules editor", () => {
     assert.equal("editor", rules[0].profile.preset);
     assert.isFalse(rules[0].profile.mouse.enabled);
     assert.isFalse(rules[0].profile.superDrag.enabled);
-    assert.equal("editor", document.querySelector("#site-rules [data-profile-field='preset']").value);
+    assert.equal(
+      "editor",
+      document.querySelector("#site-rules [data-profile-field='preset']").value,
+    );
 
     const triggerButton = document.querySelector(
       "#site-rules [data-profile-section='mouse'][data-profile-field='triggerButton']",

@@ -1,28 +1,35 @@
 ---
-name: Bug report
-about: File a bug
+name: 问题反馈
+about: 报告浏览器工具箱的问题
 title: ""
 labels: ""
 assignees: ""
 ---
 
-**Describe the bug**
+**问题描述**
 
-Include a clear bug description.
+请说明浏览器工具箱在哪个功能或页面出现问题。
 
-**To Reproduce**
+**复现步骤**
 
-Steps to reproduce the behavior:
+1. 打开哪个页面或工具？
+2. 执行了什么操作？
+3. 实际发生了什么？
 
-1. Go to URL '...'
-2. Click on '....'
+**预期结果**
 
-Include a screenshot if applicable.
+期望出现什么结果？
 
-**Browser and Vimium version**
+**环境信息**
 
-If you're using Chrome, include the Chrome and OS version found at chrome://version. Also include
-the Vimium version found at chrome://extensions.
+- 浏览器工具箱版本（在扩展管理页查看）：
+- 安装来源（商店 / GitHub 源码 / 构建包）：
+- 浏览器及完整版本：
+- 操作系统及版本：
+- 界面语言：
+- 是否修改过相关设置、站点规则或会话开关：
 
-If you're using Firefox, report the Firefox and OS version found at about:support. Also include the
-Vimium version found at about:addons.
+**补充信息**
+
+可以附上截图、错误日志或最小示例。请先移除密码、Cookie、Token、个人网址及其他私人内容；
+不要上传完整浏览器 profile 或未经检查的配置备份。

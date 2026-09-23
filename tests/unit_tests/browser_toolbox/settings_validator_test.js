@@ -26,6 +26,16 @@ context("BrowserToolbox settings validator", () => {
     );
     assert.isTrue(result.ok);
     assert.equal("4-way", BrowserToolboxSettingsSchema.DEFAULT_SETTINGS.mouse.directionMode);
+    const allActionToolIds = [
+      "json.format", "config.convert", "text.diff", "codec.transform", "time.convert",
+      "id.generate", "password.generate",
+    ];
+    const allActionTools = BrowserToolboxSettingsSchema.mergeSettings({
+      tools: { pinnedIds: allActionToolIds },
+    });
+    const allActionToolsResult = BrowserToolboxSettingsValidator.validate(allActionTools, registry);
+    assert.isTrue(allActionToolsResult.ok);
+    assert.equal(allActionToolIds, allActionToolsResult.value.tools.pinnedIds);
     assert.equal(
       [
         "L:goBack",
@@ -48,6 +58,24 @@ context("BrowserToolbox settings validator", () => {
         `${binding.pattern.join(">")}:${binding.commandName}${binding.options.hard ? ":hard" : ""}`
       ),
     );
+  });
+
+  should("accept more than three context tools while rejecting invalid selections", () => {
+    const toolIds = ["json.format", "text.diff", "codec.transform", "time.convert", "table.convert"];
+    for (const selected of [toolIds, []]) {
+      const settings = BrowserToolboxSettingsSchema.mergeSettings({
+        tools: { contextMenu: { toolIds: selected } },
+      });
+      const result = BrowserToolboxSettingsValidator.validate(settings, registry);
+      assert.isTrue(result.ok);
+      assert.equal(selected, result.value.tools.contextMenu.toolIds);
+    }
+    for (const selected of [[...toolIds, "json.format"], ["unknown.tool"], ["password.generate"]]) {
+      const settings = BrowserToolboxSettingsSchema.mergeSettings({
+        tools: { contextMenu: { toolIds: selected } },
+      });
+      assert.isFalse(BrowserToolboxSettingsValidator.validate(settings, registry).ok);
+    }
   });
 
   should("reject duplicate enabled patterns and mutable privacy flags", () => {

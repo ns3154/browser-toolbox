@@ -1,4 +1,4 @@
-#!/usr/bin/env -S deno run --allow-read --allow-env --allow-net --allow-run --allow-sys
+#!/usr/bin/env -S deno run --allow-read --allow-write --allow-env --allow-net --allow-run --allow-sys
 
 // 快捷工具和原始文档格式化器的独立浏览器 E2E；只使用本地 fixture、独立 profile 和本地扩展目录。
 import puppeteer from "npm:puppeteer";
@@ -7,8 +7,8 @@ const projectRoot = decodeURIComponent(new URL("../", import.meta.url).pathname)
 const extensionPath = Deno.env.get("BROWSER_TOOLBOX_E2E_EXTENSION_PATH") ||
   `${projectRoot}/dist/browser-toolbox`;
 const executablePath = Deno.env.get("PUPPETEER_EXECUTABLE_PATH") ||
-  "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
-const headless = Deno.env.get("BROWSER_TOOLBOX_E2E_HEADLESS") === "false" ? "--headless=false" : "--headless=new";
+  puppeteer.executablePath();
+const headless = Deno.env.get("BROWSER_TOOLBOX_E2E_HEADLESS") !== "false";
 
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
@@ -16,10 +16,40 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
+async function withTimeout(task, milliseconds, message) {
+  let timer;
+  try {
+    return await Promise.race([
+      task,
+      new Promise((_, reject) => {
+        timer = setTimeout(() => reject(new Error(message)), milliseconds);
+      }),
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function runStage(browser, name, task) {
+  const started = Date.now();
+  console.log(`快捷工具 E2E 阶段开始：${name}`);
+  try {
+    await withTimeout(task(), 90000, `快捷工具 E2E 阶段“${name}”超过 90000 毫秒。`);
+    console.log(`快捷工具 E2E 阶段通过：${name}（${Date.now() - started} 毫秒）`);
+  } catch (error) {
+    console.error(`快捷工具 E2E 阶段失败：${name}；浏览器目标：${
+      browser.targets().map((target) => `${target.type()} ${target.url()}`).join(" | ")
+    }`);
+    throw error;
+  }
+}
+
 async function waitFor(predicate, timeout = 10000, interval = 50) {
   const deadline = Date.now() + timeout;
   while (Date.now() < deadline) {
-    const result = await predicate();
+    const result = await withTimeout(
+      predicate(), Math.max(1, deadline - Date.now()), "快捷工具 E2E 等待条件超时。",
+    );
     if (result) return result;
     await sleep(interval);
   }
@@ -30,7 +60,7 @@ function response(body, contentType) {
   return new Response(body, { headers: { "content-type": contentType } });
 }
 
-async function startFixtureServer() {
+export async function startFixtureServer() {
   const server = Deno.serve({ hostname: "127.0.0.1", port: 0 }, (request) => {
     const path = new URL(request.url).pathname;
     switch (path) {
@@ -76,9 +106,12 @@ async function startBrowser(excludedPort) {
   const userDataDir = await Deno.makeTempDir({ prefix: "browser-toolbox-quick-tools-profile-" });
   const process = new Deno.Command(executablePath, {
     args: [
-      headless,
+      ...(headless ? ["--headless=new"] : []),
       "--no-sandbox",
       "--disable-gpu",
+      "--disable-background-timer-throttling",
+      "--disable-backgrounding-occluded-windows",
+      "--disable-renderer-backgrounding",
       "--remote-allow-origins=*",
       `--remote-debugging-port=${port}`,
       `--user-data-dir=${userDataDir}`,
@@ -134,6 +167,7 @@ async function extensionId(browser) {
 
 async function openTool(browser, id, toolId, source = "action") {
   const page = await browser.newPage();
+  await page.bringToFront();
   await page.goto(
     `chrome-extension://${id}/pages/tools/index.html?tool=${encodeURIComponent(toolId)}&source=${source}`,
     { waitUntil: "load" },
@@ -215,8 +249,10 @@ async function testActionPopup(browser, id, baseUrl) {
             element.classList.contains("browser-toolbox-action-footer"))
           .map((element) => element.id || [...element.classList].find((name) => name.startsWith("browser-toolbox-action-"))),
         cards: document.querySelectorAll("#browser-toolbox-tool-buttons [data-tool-id]").length,
+        expectedCards: BrowserToolboxToolRegistry.list({ source: "action", surface: "popup" }).length,
         icons: document.querySelectorAll("#browser-toolbox-tool-buttons .browser-toolbox-tool-icon").length,
-        footerEntries: document.querySelectorAll(".browser-toolbox-action-footer > *").length,
+        footerEntries: [...document.querySelectorAll(".browser-toolbox-action-footer > *")]
+          .map((element) => element.id),
         settingsLink: document.querySelector("#browser-toolbox-settings-link")?.getAttribute("href") || "",
         legacyDetails: Boolean(document.querySelector("#browser-toolbox-site-details")),
       };
@@ -238,12 +274,19 @@ async function testActionPopup(browser, id, baseUrl) {
       ].join(">"),
       `动作弹窗菜单顺序应为快捷工具在浏览增强上方：${JSON.stringify(state.layers)}`,
     );
-    assert(state.cards > 0 && state.cards <= 6, "动作弹窗工具卡片应遵守最多六项限制。 ");
+    assert(
+      state.cards === state.expectedCards,
+      `动作弹窗应显示所有已配置的可用快捷工具：${JSON.stringify(state)}`,
+    );
     assert(state.cards === state.icons, "动作弹窗工具卡片应使用本地图标。 ");
     assert(
-      state.footerEntries === 3 && !state.legacyDetails && state.settingsLink.includes("mouse_options.html"),
-      "动作弹窗底部入口或旧版站点详情残留。 ",
+      state.footerEntries.join(",") === [
+        "browser-toolbox-open-command-center", "browser-toolbox-all-tools",
+        "browser-toolbox-settings-footer-link", "browser-toolbox-open-help",
+      ].join(",") && !state.legacyDetails && state.settingsLink.includes("mouse_options.html"),
+      `动作弹窗应保留命令中心、全部工具、设置与帮助四个底部入口：${JSON.stringify(state)}`,
     );
+    await action.bringToFront();
     await action.screenshot({ path: "/tmp/browser-toolbox-quick-tools-popup.png", fullPage: true });
 
     await action.setViewport({ width: 350, height: 760, deviceScaleFactor: 1 });
@@ -282,6 +325,7 @@ async function testActionPopup(browser, id, baseUrl) {
       footer: getComputedStyle(document.querySelector(".browser-toolbox-action-footer")).display,
     }));
     assert(restrictedState.notice && restrictedState.controls === "none" && restrictedState.enhancements === "none", "受限页面应只隐藏站点控制，不得误显示增强开关。 ");
+    await restricted.bringToFront();
     await restricted.screenshot({ path: "/tmp/browser-toolbox-quick-tools-popup-restricted.png", fullPage: true });
   } finally {
     await restricted.close().catch(() => {});
@@ -474,12 +518,14 @@ async function testToolPages(browser, id) {
   }
 }
 
-async function testDocumentFormatter(browser, baseUrl) {
+export async function testDocumentFormatter(browser, baseUrl) {
   const json = await browser.newPage();
   try {
+    await json.bringToFront();
     await json.emulateMediaFeatures([{ name: "prefers-color-scheme", value: "light" }]);
     await json.goto(`${baseUrl}/json`, { waitUntil: "load" });
     await json.waitForSelector(".browser-toolbox-document-toolbar", { timeout: 10000 });
+    await json.bringToFront();
     assert(await json.$eval(".browser-toolbox-json-toggle", (element) => Boolean(element)), "JSON 应出现节点折叠控件。 ");
     assert(await json.$eval("body", (body) => !body.querySelector("img")), "JSON 文本不得被解释为 HTML。 ");
     assert(await json.$eval(".browser-toolbox-document-output", (element) => element.textContent.includes("<img")), "JSON 输出应以文本节点显示源码。 ");
@@ -501,25 +547,78 @@ async function testDocumentFormatter(browser, baseUrl) {
       const toolbar = document.querySelector(".browser-toolbox-document-toolbar");
       const brand = document.querySelector(".browser-toolbox-document-brand-group");
       const actions = document.querySelector(".browser-toolbox-document-actions");
+      const brandBox = brand.getBoundingClientRect();
+      const actionsBox = actions.getBoundingClientRect();
       return {
         display: getComputedStyle(toolbar).display,
-        brandTop: Math.round(brand.getBoundingClientRect().top),
-        actionsTop: Math.round(actions.getBoundingClientRect().top),
-        overflowX: getComputedStyle(actions).overflowX,
+        wrap: getComputedStyle(toolbar).flexWrap,
+        brandCenter: brandBox.top + brandBox.height / 2,
+        actionsCenter: actionsBox.top + actionsBox.height / 2,
+        overflowX: getComputedStyle(toolbar).overflowX,
+        scrollWidth: toolbar.scrollWidth,
+        clientWidth: toolbar.clientWidth,
+        pageWidth: document.documentElement.scrollWidth,
+        viewportWidth: document.documentElement.clientWidth,
       };
     });
-    assert(narrowDocumentToolbar.display === "grid" && narrowDocumentToolbar.actionsTop > narrowDocumentToolbar.brandTop && ["auto", "scroll"].includes(narrowDocumentToolbar.overflowX), "自动美化窄屏工具栏应拆为品牌行和操作行。 ");
+    assert(
+      narrowDocumentToolbar.display === "flex" && narrowDocumentToolbar.wrap === "nowrap" &&
+        Math.abs(narrowDocumentToolbar.brandCenter - narrowDocumentToolbar.actionsCenter) <= 1 &&
+        ["auto", "scroll"].includes(narrowDocumentToolbar.overflowX) &&
+        narrowDocumentToolbar.scrollWidth > narrowDocumentToolbar.clientWidth &&
+        narrowDocumentToolbar.pageWidth <= narrowDocumentToolbar.viewportWidth,
+      `自动美化窄屏工具栏应保持单行、独立横滚且整页不横向溢出：${JSON.stringify(narrowDocumentToolbar)}`,
+    );
+    // 逐个滚入视口并进行真实命中检查，避免仅凭 overflow 样式误判控件可用。
+    const narrowControls = await json.$$(".browser-toolbox-document-actions button, .browser-toolbox-document-actions select");
+    assert(narrowControls.length > 0, "自动美化工具栏应有可操作控件。 ");
+    for (const control of narrowControls) {
+      await control.scrollIntoView();
+      const reachable = await control.evaluate((element) => {
+        const rect = element.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const hit = document.elementFromPoint(centerX, centerY);
+        return {
+          label: element.getAttribute("aria-label") || element.textContent,
+          visible: rect.width > 0 && rect.height > 0 && rect.left >= 0 && rect.right <= innerWidth,
+          hit: hit === element || element.contains(hit),
+          pageWidth: document.documentElement.scrollWidth,
+          viewportWidth: document.documentElement.clientWidth,
+        };
+      });
+      assert(
+        reachable.visible && reachable.hit && reachable.pageWidth <= reachable.viewportWidth,
+        `窄屏横滚后每个工具栏控件都应可命中且不撑宽页面：${JSON.stringify(reachable)}`,
+      );
+    }
     await json.setViewport({ width: 1280, height: 820, deviceScaleFactor: 1 });
-    await json.evaluate(() => {
-      window.__browserToolboxDocumentDownload = "";
-      const originalClick = HTMLAnchorElement.prototype.click;
-      HTMLAnchorElement.prototype.click = function () {
-        window.__browserToolboxDocumentDownload = this.download;
-        originalClick.call(this);
-      };
+    // 内容脚本在隔离 world 中创建下载，使用浏览器事件和实际落盘内容验收。
+    const downloadDir = await Deno.makeTempDir({ prefix: "browser-toolbox-document-download-" });
+    const downloadClient = await browser.target().createCDPSession();
+    let download;
+    const completedDownloads = new Set();
+    downloadClient.on("Browser.downloadWillBegin", (event) => { download = event; });
+    downloadClient.on("Browser.downloadProgress", (event) => {
+      if (event.state === "completed") completedDownloads.add(event.guid);
     });
-    await clickDocumentButton(json, "download");
-    assert(await json.evaluate(() => /^browser-toolbox-\d+\.json$/.test(window.__browserToolboxDocumentDownload)), "自动美化 JSON 下载文件名应使用毫秒级时间戳前缀。 ");
+    try {
+      await downloadClient.send("Browser.setDownloadBehavior", {
+        behavior: "allow", downloadPath: downloadDir, eventsEnabled: true,
+      });
+      await clickDocumentButton(json, "download");
+      await waitFor(() => download && completedDownloads.has(download.guid));
+      assert(
+        /^browser-toolbox-\d+\.json$/.test(download.suggestedFilename),
+        `自动美化 JSON 下载文件名应使用毫秒级时间戳前缀：${download.suggestedFilename}`,
+      );
+      const downloadedText = await Deno.readTextFile(`${downloadDir}/${download.suggestedFilename}`);
+      assert(downloadedText.includes("9007199254740993") && downloadedText.includes("<img"), "实际 JSON 下载应保留大整数和原始文本。 ");
+    } finally {
+      await downloadClient.send("Browser.setDownloadBehavior", { behavior: "default" }).catch(() => {});
+      await downloadClient.detach().catch(() => {});
+      await Deno.remove(downloadDir, { recursive: true }).catch(() => {});
+    }
     await json.screenshot({ path: "/tmp/browser-toolbox-document-json.png", fullPage: true });
     await clickDocumentButton(json, "toggle-original");
     assert(await json.$eval(".browser-toolbox-document-output", (element) => element.textContent.includes("9007199254740993")), "查看原文应保留原始文本。 ");
@@ -530,9 +629,10 @@ async function testDocumentFormatter(browser, baseUrl) {
     await json.close();
   }
 
-  for (const [path, label] of [["xml", "xml"], ["css", "css"], ["javascript", "javascript"], ["java", "java"]]) {
+  for (const [path, label] of [["xml", "XML"], ["css", "CSS"], ["javascript", "JavaScript"], ["java", "Java"]]) {
     const page = await browser.newPage();
     try {
+      await page.bringToFront();
       await page.emulateMediaFeatures([{ name: "prefers-color-scheme", value: "light" }]);
       await page.goto(`${baseUrl}/${path}`, { waitUntil: "load" });
       try {
@@ -573,9 +673,10 @@ async function testDocumentFormatter(browser, baseUrl) {
   }
 }
 
-async function testSettings(browser, id) {
+export async function testSettings(browser, id) {
   const page = await browser.newPage();
   try {
+    await page.bringToFront();
     await page.setViewport({ width: 1180, height: 820, deviceScaleFactor: 1 });
     await page.goto(`chrome-extension://${id}/pages/mouse_options.html#toolsOverview`, { waitUntil: "load" });
     await page.waitForSelector('[data-settings-ready="true"]', { timeout: 10000 });
@@ -593,21 +694,57 @@ async function testSettings(browser, id) {
       panels: document.querySelectorAll("[data-panel]").length,
       directory: document.querySelectorAll("#browser-tool-directory .browser-toolbox-tool-directory-item").length,
       openLinks: document.querySelectorAll("#browser-tool-directory a").length,
+      expectedAction: BrowserToolboxToolRegistry.list({ source: "action", surface: "popup" }).length,
+      expectedContext: BrowserToolboxToolRegistry.list({ source: "selection", surface: "contextMenu" }).length,
+      expectedDirectory: BrowserToolboxToolRegistry.entries.length,
     }));
     console.log(`设置页工具数量：${JSON.stringify(counts)}`);
-    assert(counts.action === 6, "动作弹窗设置最多显示六个工具。 ");
-    assert(counts.context === 5, "右键菜单设置应列出全部五个可选工具。 ");
+    assert(counts.action === counts.expectedAction, "动作弹窗设置应列出全部支持弹窗的工具。 ");
+    assert(counts.context === counts.expectedContext, "右键菜单设置应列出全部支持右键菜单的工具。 ");
+    const actionInputs = await page.$$("#action-tool-list input");
+    for (const input of actionInputs) {
+      if (!await input.evaluate((element) => element.checked)) await input.click();
+    }
+    assert(
+      await page.$$eval("#action-tool-list input:checked", (inputs) => inputs.length) === counts.action,
+      "动作弹窗工具应能选择所有支持该入口的工具，不受数量限制。 ",
+    );
+    assert(await page.$eval("#action-tool-list-status", (element) => element.textContent) === "", "全选动作弹窗工具后不应显示数量上限错误。 ");
     const contextInputs = await page.$$("#context-menu-tool-list input");
     assert(contextInputs.length >= 4, "右键菜单工具设置应有可测试的第四个选项。 ");
-    await contextInputs[3].click();
-    assert(await contextInputs[3].evaluate((input) => !input.checked), "右键菜单工具选择不得超过三个。 ");
+    for (const input of contextInputs) {
+      if (!await input.evaluate((element) => element.checked)) await input.click();
+    }
+    assert(
+      await page.$$eval("#context-menu-tool-list input:checked", (inputs) => inputs.length) === counts.context,
+      "右键菜单工具应能全部勾选，不受三个工具的限制。 ",
+    );
+    assert(await page.$eval("#context-menu-tool-list-status", (element) => element.textContent) === "", "全选后不应显示数量上限错误。 ");
+    if (!await page.$eval("#save-settings", (element) => element.disabled)) {
+      await page.click("#save-settings");
+      await waitFor(() => page.evaluate(() =>
+        document.querySelector("#save-settings").disabled &&
+        document.querySelector("#save-status").textContent === BrowserToolboxI18n.message("saved") &&
+        document.querySelector("#dirty-status").textContent === ""
+      ));
+    }
+    await page.reload({ waitUntil: "load" });
+    await page.waitForSelector('[data-settings-ready="true"]', { timeout: 10000 });
+    assert(
+      await page.$$eval("#action-tool-list input:checked", (inputs) => inputs.length) === counts.action,
+      "保存并刷新后应保留全部动作弹窗工具。 ",
+    );
+    assert(
+      await page.$$eval("#context-menu-tool-list input:checked", (inputs) => inputs.length) === counts.context,
+      "保存并刷新后应保留全部右键菜单工具。 ",
+    );
     assert(counts.auto === 5, "设置页应有五种自动格式化开关。 ");
     assert(counts.groups === 3 && counts.panels === 15, "设置页应收敛为三大分组和十五个功能分区。 ");
-    assert(counts.directory === 7 && counts.openLinks === 7, "工具总览应由注册表生成完整工具目录。 ");
+    assert(counts.directory === counts.expectedDirectory && counts.openLinks === counts.expectedDirectory, "工具总览应由注册表生成完整工具目录。 ");
+    await page.screenshot({ path: "/tmp/browser-toolbox-settings-tools-overview.png", fullPage: true });
     await page.click("button[data-section='general']");
     await waitFor(() => page.$eval("#language", (element) => !element.closest("[hidden]")));
-    assert(await page.$eval("#language", (element) => element.options.length === 3), "统一语言设置应在常规分区可见。 ");
-    await page.screenshot({ path: "/tmp/browser-toolbox-settings-tools-overview.png", fullPage: true });
+    assert(await page.$eval("#language", (element) => element.options.length === 6), "统一语言设置应提供五种语言和跟随浏览器。 ");
     await page.click("button[data-section='jsonFormatter']");
     await waitFor(() => page.$eval("[data-panel='jsonFormatter']", (element) => !element.hidden));
     await page.screenshot({ path: "/tmp/browser-toolbox-settings-json.png", fullPage: true });
@@ -621,20 +758,32 @@ async function main() {
   let browser;
   let chromeProcess;
   let userDataDir;
+  let cleanupPromise;
+  const cleanup = () => cleanupPromise ||= (async () => {
+    await withTimeout(Promise.resolve(browser?.disconnect()), 2000, "断开浏览器超时").catch(() => {});
+    if (chromeProcess) {
+      try { chromeProcess.kill("SIGTERM"); } catch (_) { /* 浏览器可能已自行退出。 */ }
+      await withTimeout(chromeProcess.status, 2000, "浏览器退出超时").catch(async () => {
+        try { chromeProcess.kill("SIGKILL"); } catch (_) { /* 仅结束本次测试创建的进程。 */ }
+        await chromeProcess.status.catch(() => {});
+      });
+    }
+    await server.shutdown();
+    if (userDataDir) await Deno.remove(userDataDir, { recursive: true }).catch(() => {});
+  })();
+  const onTerminate = () => { cleanup().finally(() => Deno.exit(143)); };
+  if (Deno.build.os !== "windows") Deno.addSignalListener("SIGTERM", onTerminate);
   try {
     ({ browser, process: chromeProcess, userDataDir } = await startBrowser(server.addr.port));
     const id = await extensionId(browser);
-    await testActionPopup(browser, id, baseUrl);
-    await testToolPages(browser, id);
-    await testDocumentFormatter(browser, baseUrl);
-    await testSettings(browser, id);
-    console.log(`快捷工具 E2E 通过：扩展 ${id}，目录、工具页、令牌失败闭环、五种文档格式和设置容量。`);
+    await runStage(browser, "工具设置", () => testSettings(browser, id));
+    await runStage(browser, "动作弹窗", () => testActionPopup(browser, id, baseUrl));
+    await runStage(browser, "独立工具页", () => testToolPages(browser, id));
+    await runStage(browser, "文档格式化器", () => testDocumentFormatter(browser, baseUrl));
+    console.log(`快捷工具 E2E 通过：扩展 ${id}，目录、工具页、令牌失败闭环、五种文档格式和无限工具选择。`);
   } finally {
-    await browser?.disconnect().catch(() => {});
-    chromeProcess?.kill("SIGTERM");
-    await chromeProcess?.status.catch(() => {});
-    await server.shutdown();
-    if (userDataDir) await Deno.remove(userDataDir, { recursive: true }).catch(() => {});
+    if (Deno.build.os !== "windows") Deno.removeSignalListener("SIGTERM", onTerminate);
+    await cleanup();
   }
 }
 

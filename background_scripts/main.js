@@ -1196,6 +1196,11 @@ chrome.runtime.onInstalled.addListener(async (details) => {
   // also occur, so we need to initialize Vimium here.
   await initializeExtension();
 
+  // 仅首次安装展示可操作的入门指引，更新和浏览器重启不打断用户。
+  if (details.reason === "install") {
+    await chrome.tabs.create({ url: chrome.runtime.getURL("pages/onboarding.html") });
+  }
+
   const shouldInjectContentScripts =
     // NOTE(philc): 2023-06-16: we do not install the content scripts in all tabs on Firefox.
     // I believe this is because Firefox does this already. See https://stackoverflow.com/a/37132144

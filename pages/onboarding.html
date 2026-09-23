@@ -2,25 +2,37 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title data-i18n="browserToolbox">Browser Toolbox</title>
+    <link rel="stylesheet" href="gesture_editor.css">
+    <link rel="stylesheet" href="onboarding.css">
     <script src="../lib/i18n.js"></script>
     <script src="localized_page.js"></script>
   </head>
   <body>
-    <main>
+    <main class="browser-toolbox-onboarding">
       <h1 data-i18n="browserToolbox">Browser Toolbox</h1>
       <p
-        data-i18n="onboardingIntro">A local browser workflow toolbox for Chromium browsers, with keyboard navigation and independent mouse input modules.</p>
-      <ul>
-        <li
-          data-i18n="onboardingGesture">A light right click keeps the native context menu. When menu suppression is enabled, a right-button gesture blocks the menu after crossing the activation threshold; disabling it keeps the native menu but may conflict with gestures.</li>
-        <li
-          data-i18n="onboardingDrag">Super drag leaves file upload, editors, password fields, and custom draggable widgets alone.</li>
-        <li
-          data-i18n="onboardingInvocation">Every action is routed through a validated command invocation.</li>
-        <li data-i18n="noTelemetry">No telemetry, accounts, advertising, or paid features.</li>
-      </ul>
-      <p><a href="mouse_options.html" data-i18n="openSettings">Open settings</a></p>
+        data-i18n="onboardingIntro">用三个小操作熟悉浏览器工具箱。</p>
+      <ol class="browser-toolbox-onboarding-steps">
+        <li>
+          <h2 data-i18n="mouseGestures">鼠标手势</h2>
+          <p data-i18n="onboardingGesture">在普通网页按住右键向下移动，再松开，向下翻页。启用右键菜单接管时，在同一位置快速点击两次右键打开原生菜单。</p>
+          <p data-i18n="onboardingDrag">按 ? 查看键盘帮助。拖拽时按住 Alt，可临时保留浏览器的原生拖拽。</p>
+          <a href="mouse_options.html#mouse" data-i18n="openSettings">打开设置</a>
+        </li>
+        <li>
+          <h2 data-i18n="utilityTools">实用工具</h2>
+          <p data-i18n="onboardingTools">从扩展弹窗打开 JSON 格式化、文本对比或配置转换。所有工具都在本地处理输入。</p>
+          <a href="mouse_options.html#toolsOverview" data-i18n="allTools">全部工具</a>
+        </li>
+        <li>
+          <h2 data-i18n="onboardingPauseTitle">遇到网页操作冲突</h2>
+          <p data-i18n="onboardingPause">在弹窗暂停全部网站的键鼠增强，处理完后点击恢复；只想调整某个网站，可用“管理此网站”创建规则，检查后保存。</p>
+          <a href="mouse_options.html#siteRules" data-i18n="siteRules">站点规则</a>
+        </li>
+      </ol>
+      <p class="browser-toolbox-onboarding-note" data-i18n="noTelemetry">无遥测、账户、广告或付费功能。</p>
     </main>
   </body>
 </html>

@@ -8,7 +8,11 @@ if (!browserURL) {
 }
 const browser = await puppeteer.connect({ browserURL, protocolTimeout: 20000 });
 const errors = [];
-const evidence = new URL("../local-development/features/localization/evidence/", import.meta.url);
+const evidence = new URL(
+  Deno.env.get("BROWSER_TOOLBOX_E2E_EVIDENCE_URL") ||
+    "../local-development/features/localization/evidence/",
+  import.meta.url,
+);
 await Deno.mkdir(evidence, { recursive: true });
 const fixture = Deno.serve({ hostname: "127.0.0.1", port: 0 }, () =>
   new Response(
@@ -152,6 +156,47 @@ try {
     await checkWidth(tool, "json", 1280, locale);
     await checkWidth(tool, "json", 390, locale);
 
+    await tool.goto(`${extensionBase}/pages/tools/index.html?tool=time.convert`);
+    await assertLocale(tool, locale);
+    await tool.waitForSelector("#time-unix-unit[aria-label]");
+    for (const [selector, key] of [
+      ["#time-unix-unit", "toolTimeUnit"],
+      ["#time-local-unit", "toolTimeUnit"],
+      ["#time-unix-output", "toolTimeLocalOutput"],
+      ["#time-local-output", "toolTimeUnixOutput"],
+      ["#time-filetime-output", "toolTimeFiletimeOutput"],
+    ]) {
+      assert(
+        await tool.$eval(selector, (node) => node.getAttribute("aria-label")) ===
+          catalog[key].message,
+        `${locale} 时间工具的无障碍名称不一致：${selector}`,
+      );
+    }
+    const timestampLabels = await tool.$$eval(
+      "#time-current-seconds, #time-current-milliseconds",
+      (nodes) => nodes.map((node) => (node.getAttribute("aria-labelledby") || "")
+        .split(/\s+/).map((id) => document.getElementById(id)?.textContent || "").join(" ")),
+    );
+    assert(
+      timestampLabels[0].includes(catalog.toolTimeCurrentUnix.message) &&
+        timestampLabels[0].includes(catalog.toolTimeSecondsLabel.message) &&
+        timestampLabels[1].includes(catalog.toolTimeMillisecondsLabel.message) &&
+        timestampLabels[0] !== timestampLabels[1],
+      "当前时间戳的秒和毫秒应有不同且本地化的无障碍名称",
+    );
+    await checkWidth(tool, "time", 1280, locale);
+    await checkWidth(tool, "time", 390, locale);
+
+    await tool.goto(`${extensionBase}/pages/onboarding.html`);
+    await assertLocale(tool, locale);
+    assert(
+      await tool.$eval("[data-i18n='onboardingPause']", (node) => node.textContent) ===
+        catalog.onboardingPause.message,
+      "入门指引应使用已保存语言",
+    );
+    await checkWidth(tool, "onboarding", 1280, locale);
+    await checkWidth(tool, "onboarding", 390, locale);
+
     await action.bringToFront();
     await action.goto(`${extensionBase}/pages/action.html`);
     await assertLocale(action, locale);
@@ -192,6 +237,8 @@ try {
       narrow,
       persisted: true,
       json: true,
+      timeAccessibility: true,
+      onboarding: true,
       action: true,
       contentHelp: true,
     });

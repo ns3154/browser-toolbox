@@ -27,28 +27,30 @@ context("BrowserToolbox static tool registry", () => {
     assert.equal("password.generate", registry.DEFAULT_ACTION_TOOL_IDS[5]);
   });
 
-  should("limit configurable action and context menu tools", () => {
+  should("allow every eligible action and context menu tool", () => {
     const registry = BrowserToolboxToolRegistry;
-    assert.isTrue(registry.validateToolIds(registry.DEFAULT_ACTION_TOOL_IDS, {
-      max: 6,
+    const actionToolIds = registry.list({ source: "action", surface: "popup" })
+      .map((descriptor) => descriptor.id);
+    const contextToolIds = registry.list({ source: "selection", surface: "contextMenu" })
+      .map((descriptor) => descriptor.id);
+    assert.isTrue(actionToolIds.length > 6);
+    assert.isTrue(registry.validateToolIds(actionToolIds, {
       source: "action",
+      surface: "popup",
     }));
-    assert.isTrue(registry.validateToolIds(registry.DEFAULT_CONTEXT_MENU_TOOL_IDS, {
-      max: 3,
+    assert.isTrue(registry.validateToolIds(contextToolIds, {
       source: "selection",
+      surface: "contextMenu",
     }));
-    assert.isFalse(registry.validateToolIds(["id.generate", "id.generate"], { max: 6 }));
+    assert.isFalse(registry.validateToolIds(["id.generate", "id.generate"]));
     assert.isFalse(registry.validateToolIds(["password.generate", "json.format"], {
-      max: 3,
       source: "selection",
     }));
     assert.isFalse(registry.validateToolIds(["table.convert"], {
-      max: 6,
       source: "action",
       surface: "popup",
     }));
     assert.isTrue(registry.validateToolIds(["table.convert"], {
-      max: 3,
       source: "selection",
       surface: "contextMenu",
     }));
@@ -56,8 +58,8 @@ context("BrowserToolbox static tool registry", () => {
       [],
       BrowserToolboxToolRegistryValidator.validateSettingsToolIds({
         tools: {
-          pinnedIds: registry.DEFAULT_ACTION_TOOL_IDS,
-          contextMenu: { toolIds: registry.DEFAULT_CONTEXT_MENU_TOOL_IDS },
+          pinnedIds: actionToolIds,
+          contextMenu: { toolIds: contextToolIds },
         },
       }),
     );

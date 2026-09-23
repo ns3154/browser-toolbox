@@ -19,7 +19,7 @@ const projectRoot = decodeURIComponent(new URL("../", import.meta.url).pathname)
 const extensionPath = Deno.env.get("BROWSER_TOOLBOX_E2E_EXTENSION_PATH") ||
   `${projectRoot}/dist/browser-toolbox`;
 const executablePath = Deno.env.get("PUPPETEER_EXECUTABLE_PATH") ||
-  "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+  puppeteer.executablePath();
 const headless = Deno.env.get("BROWSER_TOOLBOX_E2E_HEADLESS") === "false" ? false : "new";
 const settingsKey = "browserToolboxSettings";
 const moduleRegistry = globalThis.BrowserToolboxModuleRegistry;
@@ -42,14 +42,56 @@ const designFixtureFiles = [
 
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
+async function withTimeout(task, milliseconds, message) {
+  let timer;
+  try {
+    return await Promise.race([
+      task,
+      new Promise((_, reject) => {
+        timer = setTimeout(() => reject(new Error(message)), milliseconds);
+      }),
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function runStage(browser, name, task, timeout = 120000) {
+  const started = Date.now();
+  console.log(`E2E 阶段开始：${name}`);
+  try {
+    await withTimeout(task(), timeout, `E2E 阶段“${name}”超过 ${timeout} 毫秒。`);
+    console.log(`E2E 阶段通过：${name}（${Date.now() - started} 毫秒）`);
+  } catch (error) {
+    console.error(`E2E 阶段失败：${name}（${Date.now() - started} 毫秒）`);
+    // 诊断本身也设上限，页面或协议无响应时仍能退出并清理独立浏览器。
+    const diagnostics = await withTimeout((async () => {
+      const pages = await browser.pages();
+      return await Promise.all(pages.map(async (page) => ({
+        url: page.url(),
+        state: await withTimeout(page.evaluate(() => ({
+          ready: document.readyState,
+          visibility: document.visibilityState,
+          focus: document.activeElement?.id || document.activeElement?.tagName,
+          selectedSection: document.querySelector("[role=tab][aria-selected=true]")?.dataset.section,
+          settingsReady: document.querySelector("[data-settings-ready]")?.dataset.settingsReady,
+        })), 2000, "页面诊断超时").catch((failure) => ({ error: failure.message })),
+      })));
+    })(), 3000, "浏览器诊断超时").catch((failure) => ({ error: failure.message }));
+    console.error(`E2E 阶段诊断：${JSON.stringify(diagnostics)}`);
+    throw error;
+  }
+}
+
 async function waitFor(predicate, timeout = 8000, interval = 50) {
   const end = Date.now() + timeout;
+  const failure = new Error(`等待 E2E 条件超时：${String(predicate).replace(/\s+/g, " ").slice(0, 240)}`);
   while (Date.now() < end) {
-    const value = await predicate();
+    const value = await withTimeout(predicate(), Math.max(1, end - Date.now()), failure.message);
     if (value) return value;
     await sleep(interval);
   }
-  throw new Error("等待 E2E 条件超时。");
+  throw failure;
 }
 
 function assert(condition, message) {
@@ -206,9 +248,12 @@ async function startChrome() {
   ];
   const process = new Deno.Command(executablePath, {
     args: [
-      headless ? "--headless=new" : "--headless=false",
+      ...(headless ? ["--headless=new"] : []),
       "--no-sandbox",
       "--disable-gpu",
+      "--disable-background-timer-throttling",
+      "--disable-backgrounding-occluded-windows",
+      "--disable-renderer-backgrounding",
       "--remote-allow-origins=*",
       `--remote-debugging-port=${port}`,
       `--user-data-dir=${userDataDir}`,
@@ -1262,8 +1307,8 @@ async function testActionControls(browser, id, fixture, errors) {
     assert(/Browser Toolbox|浏览器工具箱/.test(initial.title), "动作页标题应使用产品本地化文案");
     assert(["en", "zh-CN"].includes(initial.lang), `动作页应设置有效语言：${initial.lang}`);
     assert(
-      initial.footerEntries === 3 && !initial.legacyDetails,
-      "动作页不应显示旧版 Vimium 站点详情面板",
+      initial.footerEntries === 4 && !initial.legacyDetails,
+      "动作页应显示四个底部入口并移除旧版 Vimium 站点详情面板",
     );
     await action.evaluate(() => document.querySelector("#browser-toolbox-open-help").click()).catch(
       () => {},
@@ -1385,27 +1430,40 @@ async function testActionControls(browser, id, fixture, errors) {
         badgeDisabled: document.querySelector("#browser-toolbox-site-badge")?.classList.contains(
           "is-disabled",
         ),
-        button: document.querySelector("#browser-toolbox-disable-session"),
+        buttonText: document.querySelector("#browser-toolbox-disable-session")?.textContent,
+        buttonDisabled: document.querySelector("#browser-toolbox-disable-session")?.disabled,
         status: document.querySelector("#browser-toolbox-site-status")?.textContent.trim(),
+        sessionStatus: document.querySelector("#browser-toolbox-session-status")?.textContent.trim(),
         disabledStatusColors: [...document.querySelectorAll(
           ".browser-toolbox-module-status.is-disabled",
         )].map((element) => getComputedStyle(element).color),
         toggles: [...document.querySelectorAll("#browser-toolbox-enhancement-summary input")]
-          .map((element) => element.checked),
+          .map((element) => ({ checked: element.checked, disabled: element.disabled })),
       }));
-      return state.session?.enabled === false &&
+      return JSON.stringify(state.session) === JSON.stringify({ enabled: false }) &&
         /Inactive|已停用/.test(state.badge) &&
         state.badgeDisabled === true &&
-        /Disabled for this session|本次会话已停用/.test(state.button?.textContent || "") &&
-        state.button?.disabled === true && state.toggles.every((checked) => !checked) &&
+        /Restore this session|恢复本次会话/.test(state.buttonText || "") &&
+        state.buttonDisabled === false && state.toggles.every((toggle) => !toggle.checked && toggle.disabled) &&
         state.disabledStatusColors.length > 0 &&
         state.disabledStatusColors.every((color) =>
           color === "rgb(190, 18, 60)" || color === "rgb(251, 113, 133)"
         ) &&
-        /Disabled modules|当前页面停用的模块/.test(state.status || "");
+        /Disabled modules|当前页面停用的模块/.test(state.status || "") &&
+        /All sites paused for this session|本次会话已暂停全部网站的浏览增强/.test(state.sessionStatus || "");
     });
 
-    await action.evaluate(() => chrome.storage.session.remove("browserToolboxSessionOverrides"));
+    await action.$eval("#browser-toolbox-disable-session", (element) => element.click());
+    await waitFor(() => action.evaluate(async () => {
+      const stored = await chrome.storage.session.get("browserToolboxSessionOverrides");
+      const button = document.querySelector("#browser-toolbox-disable-session");
+      const toggles = [...document.querySelectorAll("#browser-toolbox-enhancement-summary input")];
+      return !Object.hasOwn(stored, "browserToolboxSessionOverrides") &&
+        Object.keys(BrowserToolboxSettingsRepositoryInstance.sessionOverrides).length === 0 &&
+        /Pause all sites|暂停所有网站/.test(button?.textContent || "") && !button?.disabled &&
+        toggles.every((toggle) => !toggle.disabled) &&
+        document.querySelector("#browser-toolbox-toggle-wheel").checked;
+    }));
     await action.evaluate(async (pattern) => {
       const key = "browserToolboxSettings";
       const values = await chrome.storage.sync.get(key);
@@ -1611,6 +1669,7 @@ function originRegexPattern(baseUrl) {
 
 async function testOptionsAccessibility(options) {
   console.log("E2E: 设置页键盘和无障碍语义");
+  await options.bringToFront();
   await waitFor(() =>
     options.$eval(".browser-toolbox-nav-item", (element) => element.getAttribute("role") === "tab")
   );
@@ -1828,7 +1887,12 @@ async function testOptionsAccessibility(options) {
       (element) => element.getAttribute("aria-selected") === "true",
     )
   );
+  console.log("E2E: 无障碍导航通过，检查折叠设置与键盘新增轨迹");
+  await options.$eval("#mouse-advanced-settings summary", (element) => {
+    element.scrollIntoView({ block: "center" });
+  });
   await options.click("#mouse-advanced-settings summary");
+  await options.waitForSelector("#gesture-pattern-input", { visible: true, timeout: 8000 });
 
   await options.focus("#gesture-pattern-input");
   await options.keyboard.type("L>R");
@@ -2270,9 +2334,10 @@ async function testOptionsAndBackup(
     }),
   );
   await importSettingsFile(options, legacyExportPath);
+  const currentSchemaVersion = await options.evaluate(() => BrowserToolboxSettingsSchema.CURRENT_SCHEMA_VERSION);
   await waitFor(async () => {
     const migrated = await readSettings(options);
-    return migrated?.schemaVersion === 5 &&
+    return migrated?.schemaVersion === currentSchemaVersion &&
       migrated.mouse?.bindings?.[0]?.pattern?.join(",") === "R";
   });
   const importedLegacy = await readSettings(options);
@@ -2314,7 +2379,7 @@ async function testOptionsAndBackup(
     options.evaluate(async () => {
       const settings = (await chrome.storage.sync.get("browserToolboxSettings"))
         .browserToolboxSettings;
-      return settings?.schemaVersion === 5 &&
+      return settings?.schemaVersion === BrowserToolboxSettingsSchema.CURRENT_SCHEMA_VERSION &&
         settings.mouse?.bindings?.[0]?.pattern?.join(",") === "L" &&
         settings.mouse?.bindings?.[0]?.commandName === "BrowserToolbox.newWindow";
     })
@@ -2529,7 +2594,9 @@ async function testOptionsAndBackup(
   await waitForOptionsReady(options);
   await waitFor(() =>
     options.evaluate(
-      (key) => chrome.storage.sync.get(key).then((items) => items[key]?.schemaVersion === 5),
+      (key) => chrome.storage.sync.get(key).then((items) =>
+        items[key]?.schemaVersion === BrowserToolboxSettingsSchema.CURRENT_SCHEMA_VERSION
+      ),
       settingsKey,
     )
   );
@@ -3397,7 +3464,7 @@ async function testNativeSafety(page, base127, options) {
     { contextMenuWhileHeld: true },
   );
   console.log(
-    "E2E: headed 默认右键 ACTIVE 事件顺序",
+    "E2E: 默认右键 ACTIVE 真实输入事件顺序",
     (await events(page))
       .filter((event) =>
         ["pointerdown", "mousedown", "contextmenu", "pointermove", "pointerup", "mouseup"].includes(
@@ -3528,7 +3595,7 @@ async function testNativeSafety(page, base127, options) {
   const nativeClickEvents = await events(page);
   const contextMenus = nativeClickEvents.filter((event) => event.type === "contextmenu");
   console.log(
-    "E2E: headed 普通右键事件顺序",
+    "E2E: 普通右键真实输入事件顺序",
     nativeClickEvents
       .filter((event) =>
         ["pointerdown", "mousedown", "contextmenu", "pointerup", "mouseup"].includes(event.type)
@@ -3781,6 +3848,22 @@ async function main() {
   let chromeUserDataDir;
   let options;
   let fixture;
+  let cleanupPromise;
+  const cleanup = () => cleanupPromise ||= (async () => {
+    await withTimeout(Promise.resolve(browser?.disconnect()), 2000, "断开浏览器超时").catch(() => {});
+    if (chromeProcess) {
+      try { chromeProcess.kill("SIGTERM"); } catch (_) { /* 浏览器可能已自行退出。 */ }
+      await withTimeout(chromeProcess.status, 2000, "浏览器退出超时").catch(async () => {
+        try { chromeProcess.kill("SIGKILL"); } catch (_) { /* 仅结束本次测试创建的进程。 */ }
+        await chromeProcess.status.catch(() => {});
+      });
+    }
+    await server.shutdown();
+    if (chromeUserDataDir) await Deno.remove(chromeUserDataDir, { recursive: true }).catch(() => {});
+    await Deno.remove(tempDir, { recursive: true }).catch(() => {});
+  })();
+  const onTerminate = () => { cleanup().finally(() => Deno.exit(143)); };
+  if (Deno.build.os !== "windows") Deno.addSignalListener("SIGTERM", onTerminate);
   try {
     ({ browser, process: chromeProcess, userDataDir: chromeUserDataDir } = await startChrome());
     await closeRemotePages(browser);
@@ -3796,14 +3879,17 @@ async function main() {
     }
     options = await openOptions(browser, id, errors);
     console.log("E2E: 扩展页面已加载");
-    await testActionRestrictedPage(browser, id, errors);
-    await resetSettings(options);
-    await testOptionsAccessibility(options);
-    await resetSettings(options);
-    await options.evaluate(() => navigator.clipboard?.writeText?.(""));
-    await patchSettings(options, { general: { language: "en" } });
-    await testInformationPages(browser, id, errors);
-    await testTabList(browser, id, base127, errors);
+    const stage = (name, task) => runStage(browser, name, task);
+    await stage("动作页受限页面", () => testActionRestrictedPage(browser, id, errors));
+    await stage("无障碍测试初始化", () => resetSettings(options));
+    await stage("设置页键盘和无障碍语义", () => testOptionsAccessibility(options));
+    await stage("设置与剪贴板初始化", async () => {
+      await resetSettings(options);
+      await options.evaluate(() => navigator.clipboard?.writeText?.(""));
+      await patchSettings(options, { general: { language: "en" } });
+    });
+    await stage("扩展信息页与 CSP", () => testInformationPages(browser, id, errors));
+    await stage("标签页列表", () => testTabList(browser, id, base127, errors));
     fixture = await createPage(browser, errors);
     let clipboardAvailable = true;
     try {
@@ -3817,44 +3903,38 @@ async function main() {
       console.warn(`E2E: 远程 CDP 无法代授剪贴板权限：${error.message}`);
     }
     if (!clipboardAvailable) console.warn("E2E: 远程 fixture 跳过剪贴板断言。");
-    await testVomnibar(fixture, base127, options);
-    await testMouseGestures(fixture, base127, browser, options);
-    await testActionControls(browser, id, fixture, errors);
-    await testSuperDrag(fixture, base127, browser, tempDir, options, {
+    await stage("B 键书签搜索浮层", () => testVomnibar(fixture, base127, options));
+    await stage("鼠标轨迹", () => testMouseGestures(fixture, base127, browser, options));
+    await stage("动作页会话开关", () => testActionControls(browser, id, fixture, errors));
+    await stage("超级拖拽", () => testSuperDrag(fixture, base127, browser, tempDir, options, {
       clipboardAvailable,
       remoteDownloadPath: Deno.env.get("BROWSER_TOOLBOX_E2E_REMOTE_DOWNLOAD_PATH") || "",
-    });
-    await testWheelRockerAndFrames(fixture, base127, options);
-    await testNativeSafety(fixture, base127, options);
-    await testSiteRule(fixture, options, base127);
-    await testGlobalDisable(fixture, options, base127);
+    }));
+    await stage("滚轮摇杆跨 frame", () => testWheelRockerAndFrames(fixture, base127, options));
+    await stage("右键菜单与原生输入保护", () => testNativeSafety(fixture, base127, options));
+    await stage("运行时站点规则", () => testSiteRule(fixture, options, base127));
+    await stage("全局模块开关", () => testGlobalDisable(fixture, options, base127));
     // 前面的场景通过另一个页面修改了设置；重载后再继续编辑，符合并发冲突保护的真实使用方式。
     await options.reload({ waitUntil: "load" });
     await waitForOptionsReady(options);
-    await testOptionsAndBackup(
+    await stage("设置与备份闭环", () => testOptionsAndBackup(
       options,
       base127,
       tempDir,
       fixture,
       browser,
       Deno.env.get("BROWSER_TOOLBOX_E2E_REMOTE_DOWNLOAD_PATH") || "",
-    );
+    ));
     console.log("E2E: 设置闭环完成");
-    await testServiceWorkerRestart(browser, id, fixture, options);
-    await testDesignFixtures(fixture, options, base127);
+    await stage("Service Worker 重启", () => testServiceWorkerRestart(browser, id, fixture, options));
+    await stage("设计文档 fixtures", () => testDesignFixtures(fixture, options, base127));
     assert(errors.length === 0, `E2E 页面错误：${errors.join("；")}`);
     console.log(
       "BrowserToolbox E2E 通过：Vomnibar、标签页列表、设置导入导出、站点规则、核心手势、超级拖拽、滚轮、摇杆、跨 frame、设计文档 fixtures 和 Service Worker 重启。",
     );
   } finally {
-    await browser?.disconnect();
-    chromeProcess?.kill("SIGTERM");
-    if (chromeProcess) await chromeProcess.status.catch(() => {});
-    await server.shutdown();
-    if (chromeUserDataDir) {
-      await Deno.remove(chromeUserDataDir, { recursive: true }).catch(() => {});
-    }
-    await Deno.remove(tempDir, { recursive: true }).catch(() => {});
+    if (Deno.build.os !== "windows") Deno.removeSignalListener("SIGTERM", onTerminate);
+    await cleanup();
   }
 }
 

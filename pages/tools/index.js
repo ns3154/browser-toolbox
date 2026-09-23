@@ -712,12 +712,12 @@
             </div>
           </div>
           <div class="browser-toolbox-time-row browser-toolbox-time-definition-row">
-            <span class="browser-toolbox-time-label" data-i18n="toolTimeCurrentUnix"></span>
+            <span id="time-current-unix-label" class="browser-toolbox-time-label" data-i18n="toolTimeCurrentUnix"></span>
             <div class="browser-toolbox-time-control-line browser-toolbox-time-unix-values">
-              <input id="time-current-seconds" class="browser-toolbox-time-field browser-toolbox-time-value-field" type="text" readonly>
-              <span class="browser-toolbox-time-unit-label" data-i18n="toolTimeSecondsLabel"></span>
-              <input id="time-current-milliseconds" class="browser-toolbox-time-field browser-toolbox-time-value-field" type="text" readonly>
-              <span class="browser-toolbox-time-unit-label" data-i18n="toolTimeMillisecondsLabel"></span>
+              <input id="time-current-seconds" class="browser-toolbox-time-field browser-toolbox-time-value-field" type="text" readonly aria-labelledby="time-current-unix-label time-current-seconds-unit">
+              <span id="time-current-seconds-unit" class="browser-toolbox-time-unit-label" data-i18n="toolTimeSecondsLabel"></span>
+              <input id="time-current-milliseconds" class="browser-toolbox-time-field browser-toolbox-time-value-field" type="text" readonly aria-labelledby="time-current-unix-label time-current-milliseconds-unit">
+              <span id="time-current-milliseconds-unit" class="browser-toolbox-time-unit-label" data-i18n="toolTimeMillisecondsLabel"></span>
             </div>
           </div>
         </section>
@@ -730,12 +730,12 @@
             <label class="browser-toolbox-time-label browser-toolbox-time-label-placeholder" for="time-unix-input" data-i18n="toolTimeTimestampPlaceholder"></label>
             <div class="browser-toolbox-time-control-line browser-toolbox-time-convert-line">
               <input id="time-unix-input" class="browser-toolbox-time-field browser-toolbox-time-input-field" type="text" data-i18n-placeholder="toolTimeTimestampPlaceholder">
-              <select id="time-unix-unit" class="browser-toolbox-time-select" aria-label="时间戳单位">
+              <select id="time-unix-unit" class="browser-toolbox-time-select" data-i18n-aria-label="toolTimeUnit">
                 <option value="seconds" data-i18n="toolTimeSecondsShort"></option>
                 <option value="milliseconds" data-i18n="toolTimeMillisecondsShort"></option>
               </select>
               <button id="time-unix-convert" class="browser-toolbox-time-button" type="button" data-i18n="toolConvert"></button>
-              <input id="time-unix-output" class="browser-toolbox-time-field browser-toolbox-time-output-field" type="text" readonly aria-label="当地时间输出">
+              <input id="time-unix-output" class="browser-toolbox-time-field browser-toolbox-time-output-field" type="text" readonly data-i18n-aria-label="toolTimeLocalOutput">
             </div>
           </div>
         </section>
@@ -749,8 +749,8 @@
             <div class="browser-toolbox-time-control-line browser-toolbox-time-convert-line">
               <input id="time-local-input" class="browser-toolbox-time-field browser-toolbox-time-input-field" type="text" data-i18n-placeholder="toolTimeDatePlaceholder">
               <button id="time-local-convert" class="browser-toolbox-time-button" type="button" data-i18n="toolConvert"></button>
-              <input id="time-local-output" class="browser-toolbox-time-field browser-toolbox-time-output-field" type="text" readonly aria-label="Unix 时间戳输出">
-              <select id="time-local-unit" class="browser-toolbox-time-select" aria-label="时间戳单位">
+              <input id="time-local-output" class="browser-toolbox-time-field browser-toolbox-time-output-field" type="text" readonly data-i18n-aria-label="toolTimeUnixOutput">
+              <select id="time-local-unit" class="browser-toolbox-time-select" data-i18n-aria-label="toolTimeUnit">
                 <option value="seconds" data-i18n="toolTimeSecondsShort"></option>
                 <option value="milliseconds" data-i18n="toolTimeMillisecondsShort"></option>
               </select>
@@ -768,7 +768,7 @@
               <input id="time-filetime-input" class="browser-toolbox-time-field browser-toolbox-time-input-field browser-toolbox-time-filetime-input" type="text" data-i18n-placeholder="toolTimeFiletimePlaceholder">
               <button id="time-filetime-date" class="browser-toolbox-time-button" type="button" data-i18n="toolTimeFiletimeToDate"></button>
               <button id="time-current-filetime" class="browser-toolbox-time-button browser-toolbox-time-secondary-button" type="button" data-i18n="toolTimeCurrentToFiletime"></button>
-              <input id="time-filetime-output" class="browser-toolbox-time-field browser-toolbox-time-output-field" type="text" readonly aria-label="FILETIME 输出">
+              <input id="time-filetime-output" class="browser-toolbox-time-field browser-toolbox-time-output-field" type="text" readonly data-i18n-aria-label="toolTimeFiletimeOutput">
             </div>
           </div>
         </section>

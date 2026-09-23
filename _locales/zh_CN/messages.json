@@ -17,9 +17,9 @@
   "disabled": { "message": "停用", "description": "禁用标签" },
   "general": { "message": "常规", "description": "常规设置" },
   "globalShowHud": { "message": "显示工具箱命令提示", "description": "工具箱全局 HUD" },
-  "browserSyncEnabled": { "message": "使用浏览器同步设置", "description": "浏览器同步开关" },
+  "browserSyncEnabled": { "message": "同步工具箱配置", "description": "浏览器同步开关" },
   "browserSyncNote": {
-    "message": "关闭后，设置只保存在此浏览器的本地存储中，不会同步。",
+    "message": "此开关仅控制工具箱配置。关闭后，工具箱配置保存在本机；键盘快捷键、搜索引擎等 Vimium 设置仍沿用浏览器同步。",
     "description": "浏览器同步说明"
   },
   "keyboard": { "message": "键盘导航", "description": "键盘设置" },
@@ -127,12 +127,12 @@
   "openHelp": { "message": "打开帮助", "description": "打开帮助按钮" },
   "currentSite": { "message": "当前站点", "description": "当前站点标题" },
   "disableForSession": {
-    "message": "仅本次会话停用",
-    "description": "本次会话停用当前站点"
+    "message": "暂停所有网站",
+    "description": "全局会话操作与状态"
   },
   "sessionDisabled": {
-    "message": "本次会话已停用",
-    "description": "当前站点本次会话停用状态"
+    "message": "本次会话已暂停全部网站的浏览增强。",
+    "description": "全局会话操作与状态"
   },
   "disabling": { "message": "正在停用……", "description": "会话停用进行中" },
   "sessionDisableFailed": {
@@ -496,12 +496,12 @@
   "documentFormatter": { "message": "文档格式化器", "description": "文档格式化器模块" },
   "actionTools": { "message": "动作弹窗工具", "description": "动作弹窗工具选择" },
   "actionToolsHint": {
-    "message": "选择最多六个显示在扩展动作弹窗中的工具。",
+    "message": "选择显示在扩展动作弹窗中的工具。",
     "description": "动作弹窗工具选择提示"
   },
   "contextMenuTools": { "message": "右键菜单工具", "description": "右键菜单工具选择" },
   "contextMenuToolsHint": {
-    "message": "选择最多三个显示在原生右键菜单中的工具；有选中文本时会自动带入。",
+    "message": "选择显示在原生右键菜单中的工具；有选中文本时会自动带入。",
     "description": "右键菜单工具选择提示"
   },
   "toolSelectionLimit": { "message": "选择上限", "description": "工具选择上限" },
@@ -1062,15 +1062,15 @@
     "description": "shoulda.js 第三方许可证声明"
   },
   "onboardingIntro": {
-    "message": "面向 Chromium 浏览器的本地工作流工具箱，包含键盘导航和独立实现的鼠标输入模块。",
+    "message": "用三个小操作熟悉浏览器工具箱。",
     "description": "入门说明"
   },
   "onboardingGesture": {
-    "message": "启用右键菜单接管时，第一次右键按住移动执行手势，在同一位置快速右键两次打开原生菜单；关闭接管后第一次右键直接打开原生菜单，但可能与手势冲突。",
+    "message": "在普通网页按住右键向下移动，再松开，向下翻页。启用右键菜单接管时，在同一位置快速点击两次右键打开原生菜单。",
     "description": "入门手势"
   },
   "onboardingDrag": {
-    "message": "超级拖拽会避开文件上传、编辑器、密码框和自定义 draggable 控件。",
+    "message": "按 ? 查看键盘帮助。拖拽时按住 Alt，可临时保留浏览器的原生拖拽。",
     "description": "入门拖拽"
   },
   "onboardingInvocation": {
@@ -1169,5 +1169,23 @@
   "documentFormatterKeyCount": { "message": "个键" },
   "languageChineseTraditional": { "message": "繁體中文" },
   "languageJapanese": { "message": "日本語" },
-  "languageSpanish": { "message": "Español" }
+  "languageSpanish": { "message": "Español" },
+  "syncQuotaItemExceeded": {"message": "工具箱配置超过单项同步容量（8 KiB）。请关闭“同步工具箱配置”后保存到本机，也可以先导出备份。", "description": "项目体验完善文案"},
+  "syncQuotaTotalExceeded": {"message": "浏览器同步空间不足。请关闭“同步工具箱配置”后保存到本机，也可以先导出备份。", "description": "项目体验完善文案"},
+  "toolTimeUnit": {"message": "时间戳单位", "description": "项目体验完善文案"},
+  "toolTimeLocalOutput": {"message": "当地时间输出", "description": "项目体验完善文案"},
+  "toolTimeUnixOutput": {"message": "Unix 时间戳输出", "description": "项目体验完善文案"},
+  "toolTimeFiletimeOutput": {"message": "FILETIME 输出", "description": "项目体验完善文案"},
+  "onboardingTools": {"message": "从扩展弹窗打开 JSON 格式化、文本对比或配置转换。所有工具都在本地处理输入。", "description": "项目体验完善文案"},
+  "onboardingPauseTitle": {"message": "遇到网页操作冲突", "description": "项目体验完善文案"},
+  "onboardingPause": {"message": "在弹窗暂停全部网站的键鼠增强，处理完后点击恢复；只想调整某个网站，可用“管理此网站”创建规则，检查后保存。", "description": "项目体验完善文案"},
+  "sessionAllSites": {"message": "全部网站 · 本次会话", "description": "会话与站点入口文案"},
+  "sessionScopeHint": {"message": "临时开关作用于全部网站，恢复后使用已保存设置。", "description": "会话与站点入口文案"},
+  "restoreSession": {"message": "恢复本次会话", "description": "会话与站点入口文案"},
+  "sessionUpdating": {"message": "正在更新……", "description": "会话与站点入口文案"},
+  "sessionUpdateFailed": {"message": "本次会话状态更新失败，请重试。", "description": "会话与站点入口文案"},
+  "manageCurrentSite": {"message": "管理此网站", "description": "会话与站点入口文案"},
+  "siteRuleShortcutInvalid": {"message": "网站参数无效，请从普通网页的扩展弹窗重新打开。", "description": "会话与站点入口文案"},
+  "siteRuleShortcutDraft": {"message": "已创建此网站的规则草稿，请调整后保存。", "description": "会话与站点入口文案"},
+  "siteRuleShortcutExisting": {"message": "已定位此网站的现有规则，修改后请保存。", "description": "会话与站点入口文案"}
 }

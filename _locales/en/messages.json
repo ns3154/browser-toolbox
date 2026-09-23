@@ -18,11 +18,11 @@
   "general": { "message": "General", "description": "General settings" },
   "globalShowHud": { "message": "Show toolbox command hints", "description": "Global toolbox HUD" },
   "browserSyncEnabled": {
-    "message": "Sync settings with the browser",
+    "message": "Sync toolbox settings",
     "description": "Browser sync toggle"
   },
   "browserSyncNote": {
-    "message": "When disabled, settings stay in this browser's local storage and are not synchronized.",
+    "message": "This switch only controls toolbox settings. When off, they stay on this device. Vimium settings, including keyboard shortcuts and search engines, still use browser sync.",
     "description": "Browser sync explanation"
   },
   "keyboard": { "message": "Keyboard", "description": "Keyboard settings" },
@@ -145,12 +145,12 @@
   "openHelp": { "message": "Open help", "description": "Open help button" },
   "currentSite": { "message": "Current site", "description": "Current site heading" },
   "disableForSession": {
-    "message": "Disable for this session",
-    "description": "Disable the current site for the browser session"
+    "message": "Pause all sites",
+    "description": "全局会话操作与状态"
   },
   "sessionDisabled": {
-    "message": "Disabled for this session",
-    "description": "Current site session-disabled state"
+    "message": "All sites paused for this session.",
+    "description": "全局会话操作与状态"
   },
   "disabling": { "message": "Disabling…", "description": "Session disable in progress" },
   "sessionDisableFailed": {
@@ -673,12 +673,12 @@
   "documentFormatter": { "message": "Document formatter", "description": "Document formatter module" },
   "actionTools": { "message": "Action popup tools", "description": "Action popup tool selection" },
   "actionToolsHint": {
-    "message": "Choose up to six tools to show in the action popup.",
+    "message": "Choose tools to show in the action popup.",
     "description": "Action popup tool selection hint"
   },
   "contextMenuTools": { "message": "Context-menu tools", "description": "Context menu tool selection" },
   "contextMenuToolsHint": {
-    "message": "Choose up to three tools for the native context menu. Selected text is passed in when available.",
+    "message": "Choose tools for the native context menu. Selected text is passed in when available.",
     "description": "Context menu tool selection hint"
   },
   "toolSelectionLimit": { "message": "Selection limit", "description": "Tool selection limit" },
@@ -1248,15 +1248,15 @@
     "description": "shoulda.js third-party license notice"
   },
   "onboardingIntro": {
-    "message": "A local browser workflow toolbox for Chromium browsers, with keyboard navigation and independent mouse input modules.",
+    "message": "Get started with Browser Toolbox in three small steps.",
     "description": "Onboarding introduction"
   },
   "onboardingGesture": {
-    "message": "With right-button menu capture enabled, hold the first press and move to gesture, or right-click twice quickly in the same spot for the native menu. Disabling capture restores the native menu on the first click but may conflict with gestures.",
+    "message": "On a regular webpage, hold the right mouse button, move down, then release to scroll down. With context menu takeover enabled, right-click twice quickly in the same place to open the native menu.",
     "description": "Onboarding gesture"
   },
   "onboardingDrag": {
-    "message": "Super drag leaves file upload, editors, password fields, and custom draggable widgets alone.",
+    "message": "Press ? for keyboard help. Hold Alt while dragging to temporarily keep the browser’s native drag behavior.",
     "description": "Onboarding drag"
   },
   "onboardingInvocation": {
@@ -1376,5 +1376,23 @@
   "documentFormatterKeyCount": { "message": "keys" },
   "languageChineseTraditional": { "message": "繁體中文" },
   "languageJapanese": { "message": "日本語" },
-  "languageSpanish": { "message": "Español" }
+  "languageSpanish": { "message": "Español" },
+  "syncQuotaItemExceeded": {"message": "Toolbox settings exceed the 8 KiB per-item sync limit. Turn off “Sync toolbox settings” to save on this device, or export a backup first.", "description": "项目体验完善文案"},
+  "syncQuotaTotalExceeded": {"message": "Browser sync storage is full. Turn off “Sync toolbox settings” to save on this device, or export a backup first.", "description": "项目体验完善文案"},
+  "toolTimeUnit": {"message": "Timestamp unit", "description": "项目体验完善文案"},
+  "toolTimeLocalOutput": {"message": "Local time output", "description": "项目体验完善文案"},
+  "toolTimeUnixOutput": {"message": "Unix timestamp output", "description": "项目体验完善文案"},
+  "toolTimeFiletimeOutput": {"message": "FILETIME output", "description": "项目体验完善文案"},
+  "onboardingTools": {"message": "Open JSON formatting, text comparison, or configuration conversion from the extension popup. Every tool processes input locally.", "description": "项目体验完善文案"},
+  "onboardingPauseTitle": {"message": "When webpage controls conflict", "description": "项目体验完善文案"},
+  "onboardingPause": {"message": "Pause keyboard and mouse enhancements on all websites from the popup, then resume when ready. To adjust one website, choose “Manage this website”, review the rule, and save it.", "description": "项目体验完善文案"},
+  "sessionAllSites": {"message": "All sites · This session", "description": "会话与站点入口文案"},
+  "sessionScopeHint": {"message": "Temporary switches affect all sites. Restore to use saved settings.", "description": "会话与站点入口文案"},
+  "restoreSession": {"message": "Restore this session", "description": "会话与站点入口文案"},
+  "sessionUpdating": {"message": "Updating…", "description": "会话与站点入口文案"},
+  "sessionUpdateFailed": {"message": "Could not update this session. Please try again.", "description": "会话与站点入口文案"},
+  "manageCurrentSite": {"message": "Manage this site", "description": "会话与站点入口文案"},
+  "siteRuleShortcutInvalid": {"message": "Invalid site parameter. Open this shortcut from the extension popup on a regular web page.", "description": "会话与站点入口文案"},
+  "siteRuleShortcutDraft": {"message": "A rule draft for this site is ready. Adjust it and save when ready.", "description": "会话与站点入口文案"},
+  "siteRuleShortcutExisting": {"message": "The existing rule for this site is selected. Save after making changes.", "description": "会话与站点入口文案"}
 }

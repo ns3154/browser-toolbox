@@ -1,125 +1,89 @@
-# Contributing to Vimium
+# 参与浏览器工具箱开发
 
-## Reporting a bug
+## 问题反馈
 
-File the issue [here](https://github.com/philc/vimium/issues).
+请在[本项目 Issues](https://github.com/ns3154/browser-toolbox/issues)提交问题或功能建议。
+复现步骤中写清扩展版本、浏览器与操作系统版本、实际结果和预期结果；截图或日志请先移除个人信息。
+安全漏洞请按 [SECURITY.md](SECURITY.md) 中的方式反馈。
 
-## Contributing code
+## 修改范围
 
-You'd like to fix a bug or implement a feature? Great! Before getting started, understand Vimium's
-design principles and the goals of the maintainers.
+浏览器工具箱基于 Vimium，保留其键盘导航和 MIT 版权链。修改时应：
 
-### Vimium design principles
+- 保留既有键盘行为和网页原生输入；为真实故障提供可重复的用例。
+- 使用现有命令、设置和工具注册表，避免同一功能出现多套入口逻辑。
+- 新增代码注释使用中文，单次修改保持范围清楚。
+- 不加入遥测、远程代码或未经评估的权限、依赖和网络行为。
+- 保留来源文件的版权和许可证；全新功能遵循本项目的 GPL-3.0-or-later 许可边界。
 
-When people first start using Vimium, it provides an incredibly powerful workflow improvement and it
-makes them feel awesome. Surprisingly, Vimium is applicable to a huge, broad population of people,
-not just users of Vim.
+开发过程中的设计、截图、日志和验收记录放在被 Git 忽略的 `local-development/`，不得提交或打包。
+公开文档只保留用户或贡献者需要的稳定说明。开始修改前请阅读 [AGENTS.md](AGENTS.md)。
 
-In addition to power, a secondary goal of Vimium is approachability: minimizing the barriers which
-prevent a new user from feeling awesome. Many of Vimium's users haven't used Vim before -- about 1
-in 5 Chrome Store reviews say this -- and most people have strong web browsing habits forged from
-years of browsing. Given that, it's a great experience when Vimium feels like a natural addition to
-Chrome which augments, but doesn't break, the user's current browsing habits.
+## 本地准备
 
-**Principles:**
+1. 安装 [Deno](https://deno.com/)。
+2. 准备完整的 Google Chrome for Testing；可用下列命令安装测试浏览器：
 
-1. **Easy to understand**. Even if you're not very familiar with Vim. The Vimium video shows you all
-   you need to know to start using Vimium and feel awesome.
-2. **Reliable**. The core feature set works on most sites on the web.
-3. **Immediately useful**. Vimium doesn't require any configuration or doc-reading before it's
-   useful. Just watch the video or hit `?`. You can transition into using Vimium piecemeal; you
-   don't need to jump in whole-hog from the start.
-4. **Feels native**. Vimium doesn't drastically change the way Chrome looks or behaves.
-5. **Simple**. The core feature set isn't overwhelming. This principle is particularly vulnerable as
-   we add to Vimium, so it requires our active effort to maintain this simplicity.
-6. **Code simplicity**. Developers find the Vimium codebase relatively simple and easy to jump into.
-   This allows more people to fix bugs and implement features.
+   ```sh
+   deno run -A npm:puppeteer browsers install chrome
+   ```
 
-### Which pull requests get merged?
+3. 如自动发现的浏览器不完整或版本不合适，设置 `PUPPETEER_EXECUTABLE_PATH` 指向 Chrome for Testing
+   的可执行文件。
+4. 在隔离的浏览器 profile 中加载扩展，避免改动日常浏览器配置和个人数据。
 
-**Goals of the maintainers**
+## 检查与测试
 
-The maintainers of Vimium have limited bandwidth, which influences which PRs we can review and
-merge.
+完整检查入口：
 
-Our goals are generally to keep Vimium small, maintainable, and really nail the broad appeal use
-cases. This is in contrast to adding and maintaining an increasing number of complex or niche
-features. We recommend those live in forked repos rather than the mainline Vimium repo.
+```sh
+./make.js verify
+```
 
-PRs we'll likely merge:
+它运行单元和 DOM 测试、适配测试、本地化校验、权限/网络/技术标识审计、性能检查、临时构建内容校验，
+以及浏览器核心功能和快捷工具两套 E2E。失败会返回非零退出码。
 
-- Reflect all of the Vimium design principles.
-- Are useful for lots of Vimium users.
-- Have simple implementations (straightforward code, few lines of code).
+需要保存机器可读的结果时：
 
-PRs we likely won't:
+```sh
+deno run -A scripts/verify.js --report local-development/tracking/verify-result.json
+```
 
-- Violate one or more of our design principles.
-- Are niche.
-- Have complex implementations -- more code than they're worth.
+开发中可以运行 `./make.js test` 检查单元和 DOM，或使用 `deno run -A scripts/verify.js --skip-e2e`
+执行不含 E2E 的检查。跳过的项目会标记为 `SKIP`，
+不能据此声称完整验收通过。格式检查仅针对本次修改的文件运行 `deno fmt --check <文件路径>`。
 
-Tips for preparing a PR:
+自动化通过后，还须将当前构建装入独立 profile 的 headed Google Chrome for Testing，
+实际检查修改的交互，并记录浏览器版本、加载目录、操作步骤、结果与未覆盖范围。
+自动化不能替代跨平台人工、屏幕阅读器或登录态站点验收。
 
-- If you want to check with us first before implementing something big, open an issue proposing the
-  idea. You'll get feedback from the maintainers as to whether it's something we'll likely merge.
-- Try to keep PRs around 50 LOC or less. Bigger PRs create inertia for review.
+## 构建
 
-Here's the rationale behind this policy:
+两条命令使用同一个构建实现：
 
-- Vimium is a volunteer effort. To make it possible to keep the project up-to-date as the web and
-  browsers evolve, the codebase has to remain small and maintainable.
-- If the maintainers don't use a feature, and most other users don't, then the feature will likely
-  get neglected.
-- Every feature, particularly neglected ones, increase the complexity of the codebase and makes it
-  more difficult and less pleasant to work on.
-- Adding a new feature is only part of the work. Once it's added, a feature must be maintained
-  forever.
-- Vimium is a project which suffers from the
-  [stadium model of open source](https://github.com/philc/book-notes/blob/master/engineering/working%20in%20public%20-%20nadia%20eghbal.md#the-structure-of-an-open-source-project-chap-2):
-  there are many users but unfortunately few maintainers. As a result, there is bandwidth to
-  maintain only a limited number of features in the main repo.
+```sh
+./make.js package
+```
 
-### Installing From Source
+```sh
+deno run -A scripts/build_release.js --package
+```
 
-Vimium is written in Javascript. To install Vimium from source:
+产物用途如下，其中 `<版本>` 来自 `manifest.json`：
 
-**On Chrome/Chromium:**
+| 产物                                                        | 用途                                 |
+| ----------------------------------------------------------- | ------------------------------------ |
+| `dist/browser-toolbox/`                                     | 在扩展管理页中“加载已解压的扩展程序” |
+| `dist/chrome-store/browser-toolbox-chrome-store-<版本>.zip` | Chrome 商店包                        |
+| `dist/chrome-canary/browser-toolbox-canary-<版本>.zip`      | Chrome Canary 开发包                 |
+| `dist/firefox/browser-toolbox-firefox-<版本>.zip`           | Firefox 包                           |
+| `dist/browser-toolbox-source-<版本>.zip`                    | 源码包                               |
+| `dist/artifacts.json`                                       | 产物校验报告                         |
 
-1. Navigate to `chrome://extensions`
-1. Toggle into Developer Mode
-1. Click on "Load Unpacked Extension..."
-1. Select the Vimium directory you've cloned from Github.
+`deno run -A scripts/build_release.js` 默认只执行静态发布检查。构建成功或生成 Firefox 包，
+均不代表浏览器兼容性、人工验收或商店审核已通过；提交发布前须查看完整检查结果和实际验收记录。
 
-**On Firefox:**
+## 提交说明
 
-Firefox needs a modified version of the manifest.json that's used for Chrome. To generate this, run
-
-`./make.js write-firefox-manifest`
-
-After that:
-
-1. Open Firefox
-1. Enter "about:debugging" in the URL bar
-1. Click "This Firefox" on the left side
-1. Click "Load Temporary Add-on"
-1. Open the Vimium directory you've cloned from Github, and select any file inside.
-
-### Running the tests
-
-Our tests use [shoulda.js](https://github.com/philc/shoulda.js) and
-[Puppeteer](https://github.com/puppeteer/puppeteer). To run the tests:
-
-1. Install [Deno](https://deno.land/) if you don't have it already.
-2. `deno run -A npm:puppeteer browsers install chrome` to install puppeteer
-3. `./make.js test` to build the code and run the tests.
-
-### Coding Style
-
-- Run `deno fmt` at the root of the Vimium project to format your code.
-- We generally follow the recommendations from the
-  [Airbnb Javascript style guide](https://github.com/airbnb/javascript).
-- We wrap lines at 100 characters.
-- When writing comments, uppercase the first letter of your sentence, and put a period at the end.
-- We're currently using JavaScript language features from ES2018 or earlier. If we desire to use
-  something introduced in a later version of JavaScript, we need to remember to update the minimum
-  Chrome and Firefox versions required.
+说明具体问题、修改后的行为、复现和验证方法，以及仍待验证的范围。面向本项目提交 PR，
+不要把浏览器工具箱特有问题转交给 Vimium 上游。不得提交凭证、个人 profile、测试缓存或本机过程资料。

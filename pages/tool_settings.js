@@ -3,13 +3,12 @@
   const registry = globalThis.BrowserToolboxToolRegistry;
   const message = (key) => globalThis.BrowserToolboxI18n?.message(key) || key;
   const groups = Object.freeze([
-    { id: "action-tool-list", path: ["pinnedIds"], source: "action", surface: "popup", max: 6 },
+    { id: "action-tool-list", path: ["pinnedIds"], source: "action", surface: "popup" },
     {
       id: "context-menu-tool-list",
       path: ["contextMenu", "toolIds"],
       source: "selection",
       surface: "contextMenu",
-      max: 3,
     },
   ]);
 
@@ -192,6 +191,7 @@
 
   function bindLimitFeedback(root = document) {
     for (const group of groups) {
+      if (!Number.isFinite(group.max)) continue;
       const container = root.querySelector(`#${group.id}`);
       const status = root.querySelector(`#${group.id}-status`);
       if (!container || !status) continue;

@@ -45,10 +45,10 @@
     "message": "Mostrar indicaciones de comandos"
   },
   "browserSyncEnabled": {
-    "message": "Sincronizar ajustes con el navegador"
+    "message": "Sincronizar ajustes de la caja de herramientas"
   },
   "browserSyncNote": {
-    "message": "Si se desactiva, los ajustes se guardan solo en este navegador y no se sincronizan."
+    "message": "Este interruptor solo controla los ajustes de la caja de herramientas. Al desactivarlo, se guardan en este dispositivo. Los ajustes de Vimium, como atajos y motores de búsqueda, siguen usando la sincronización del navegador."
   },
   "keyboard": {
     "message": "Teclado"
@@ -201,10 +201,10 @@
     "message": "Sitio actual"
   },
   "disableForSession": {
-    "message": "Desactivar durante esta sesión"
+    "message": "Pausar todos los sitios"
   },
   "sessionDisabled": {
-    "message": "Desactivado durante esta sesión"
+    "message": "Todos los sitios están pausados durante esta sesión."
   },
   "disabling": {
     "message": "Desactivando…"
@@ -906,13 +906,13 @@
     "message": "Herramientas del panel emergente"
   },
   "actionToolsHint": {
-    "message": "Elige hasta seis herramientas para el panel emergente."
+    "message": "Elige las herramientas que quieres mostrar en el panel emergente."
   },
   "contextMenuTools": {
     "message": "Herramientas del menú contextual"
   },
   "contextMenuToolsHint": {
-    "message": "Elige hasta tres herramientas para el menú contextual nativo. Se utilizará el texto seleccionado cuando lo haya."
+    "message": "Elige las herramientas para el menú contextual nativo. Se utilizará el texto seleccionado cuando lo haya."
   },
   "toolSelectionLimit": {
     "message": "Límite de selección"
@@ -2385,13 +2385,13 @@
     "message": "Framework de pruebas shoulda.js: licencia MIT"
   },
   "onboardingIntro": {
-    "message": "Una caja de herramientas local para navegadores Chromium, con navegación por teclado y módulos independientes de entrada con ratón."
+    "message": "Empieza a usar la caja de herramientas en tres pasos sencillos."
   },
   "onboardingGesture": {
-    "message": "Con el control del menú derecho activado, mantén pulsado y mueve para ejecutar el gesto; haz dos clics derechos rápidos en el mismo punto para abrir el menú nativo. Al desactivarlo, el primer clic abre el menú nativo, pero puede interferir con los gestos."
+    "message": "En una página web normal, mantén pulsado el botón derecho, mueve el ratón hacia abajo y suéltalo para desplazarte. Con el control del menú contextual activado, haz dos clics derechos rápidos en el mismo lugar para abrir el menú nativo."
   },
   "onboardingDrag": {
-    "message": "El superarrastre conserva el funcionamiento de cargas de archivos, editores, campos de contraseña y elementos arrastrables personalizados."
+    "message": "Pulsa ? para ver la ayuda del teclado. Mantén Alt al arrastrar para conservar temporalmente el comportamiento nativo del navegador."
   },
   "onboardingInvocation": {
     "message": "Cada acción se ejecuta mediante una invocación de comando validada."
@@ -2584,5 +2584,23 @@
   },
   "languageSpanish": {
     "message": "Español"
-  }
+  },
+  "syncQuotaItemExceeded": {"message": "Los ajustes superan el límite de sincronización de 8 KiB por elemento. Desactiva la sincronización de la caja de herramientas para guardarlos en este dispositivo, o exporta primero una copia de seguridad.", "description": "项目体验完善文案"},
+  "syncQuotaTotalExceeded": {"message": "El almacenamiento de sincronización del navegador está lleno. Desactiva la sincronización de la caja de herramientas para guardarlos en este dispositivo, o exporta primero una copia de seguridad.", "description": "项目体验完善文案"},
+  "toolTimeUnit": {"message": "Unidad de la marca de tiempo", "description": "项目体验完善文案"},
+  "toolTimeLocalOutput": {"message": "Resultado de hora local", "description": "项目体验完善文案"},
+  "toolTimeUnixOutput": {"message": "Resultado de marca de tiempo Unix", "description": "项目体验完善文案"},
+  "toolTimeFiletimeOutput": {"message": "Resultado FILETIME", "description": "项目体验完善文案"},
+  "onboardingTools": {"message": "Abre el formateador JSON, la comparación de texto o la conversión de configuración desde el panel de la extensión. Todas las herramientas procesan los datos localmente.", "description": "项目体验完善文案"},
+  "onboardingPauseTitle": {"message": "Si hay conflictos con una página", "description": "项目体验完善文案"},
+  "onboardingPause": {"message": "Pausa las funciones de teclado y ratón en todos los sitios desde el panel y reanúdalas cuando termines. Para ajustar un solo sitio, elige «Gestionar este sitio», revisa la regla y guárdala.", "description": "项目体验完善文案"},
+  "sessionAllSites": {"message": "Todos los sitios · Esta sesión", "description": "会话与站点入口文案"},
+  "sessionScopeHint": {"message": "Los cambios temporales afectan a todos los sitios. Restaura para usar los ajustes guardados.", "description": "会话与站点入口文案"},
+  "restoreSession": {"message": "Restaurar esta sesión", "description": "会话与站点入口文案"},
+  "sessionUpdating": {"message": "Actualizando…", "description": "会话与站点入口文案"},
+  "sessionUpdateFailed": {"message": "No se pudo actualizar esta sesión. Inténtalo de nuevo.", "description": "会话与站点入口文案"},
+  "manageCurrentSite": {"message": "Gestionar este sitio", "description": "会话与站点入口文案"},
+  "siteRuleShortcutInvalid": {"message": "El parámetro del sitio no es válido. Abre este acceso desde la ventana emergente de la extensión en una página web normal.", "description": "会话与站点入口文案"},
+  "siteRuleShortcutDraft": {"message": "Se ha creado un borrador de regla para este sitio. Ajústalo y guárdalo cuando esté listo.", "description": "会话与站点入口文案"},
+  "siteRuleShortcutExisting": {"message": "Se ha seleccionado la regla existente de este sitio. Guarda después de realizar cambios.", "description": "会话与站点入口文案"}
 }

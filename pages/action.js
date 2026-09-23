@@ -26,7 +26,7 @@ const vimiumSettings = globalThis.BrowserToolboxVimiumSettingsAdapterInstance;
 const moduleRegistry = globalThis.BrowserToolboxModuleRegistry;
 const toolRegistry = globalThis.BrowserToolboxToolRegistry;
 
-const ActionPage = {
+export const ActionPage = {
   async init() {
     await this.loadLocalePreference();
     BrowserToolboxI18n.apply(document);
@@ -36,11 +36,14 @@ const ActionPage = {
     const activeTab = tabs[0];
     this.tabUrl = activeTab?.url || "";
     this.setStaticPageLinks();
+    this.initUtilityControls(activeTab);
     await this.initToolControls(activeTab);
+    await this.initSessionControls();
 
     const hideUI = () => {
       document.querySelector("#browser-toolbox-controls").style.display = "none";
       document.querySelector("#browser-toolbox-enhancement-summary").style.display = "none";
+      document.querySelector("#browser-toolbox-open-help").disabled = true;
     };
 
     // In Firefox, prompt the user if they haven't enabled the "all hosts" permission. Vimium needs
@@ -107,17 +110,8 @@ const ActionPage = {
     }
   },
 
-  async initBrowserToolboxControls(activeTab) {
-    const container = document.querySelector("#browser-toolbox-controls");
-    if (!container || !activeTab) return;
-    const repository = globalThis.BrowserToolboxSettingsRepositoryInstance;
-    await repository.ensureLoaded();
-    const settings = repository.getEffectiveSettings(activeTab.url || "");
-    BrowserToolboxI18n.setLocale(settings.general.language);
-    BrowserToolboxI18n.apply(document);
-    container.style.display = "block";
-    document.querySelector("#browser-toolbox-enhancement-summary").style.display = "block";
-    this.setStaticPageLinks();
+  initUtilityControls(activeTab) {
+    // 工具和命令中心在浏览器受限页面也可打开，不依赖内容脚本是否已注入。
     document.querySelector("#browser-toolbox-open-command-center")?.addEventListener(
       "click",
       async () => {
@@ -125,7 +119,7 @@ const ActionPage = {
           "BrowserToolbox.openCommandCenter",
           {},
           { type: "ui" },
-          { tabId: activeTab.id, pageUrl: activeTab.url || "", topFrame: true },
+          { tabId: activeTab?.id, pageUrl: activeTab?.url || "", topFrame: true },
         );
         try {
           await chrome.runtime.sendMessage({ handler: "browserToolbox.invoke", invocation });
@@ -140,6 +134,90 @@ const ActionPage = {
       });
       globalThis.close();
     });
+  },
+
+  async initSessionControls() {
+    const repository = globalThis.BrowserToolboxSettingsRepositoryInstance;
+    await repository.ensureLoaded();
+    const panel = document.querySelector("#browser-toolbox-session-controls");
+    const button = document.querySelector("#browser-toolbox-disable-session");
+    const status = document.querySelector("#browser-toolbox-session-status");
+    if (!panel || !button || !status) return;
+    panel.style.display = "flex";
+    button.removeAttribute("data-i18n");
+    status.removeAttribute("data-i18n");
+    let statusError = "";
+    const render = () => {
+      const paused = repository.sessionOverrides?.enabled === false;
+      const overridden = Object.keys(repository.sessionOverrides || {}).length > 0;
+      const busy = button.dataset.busy === "true";
+      status.textContent = statusError || BrowserToolboxI18n.message(
+        paused ? "sessionDisabled" : "sessionScopeHint",
+      );
+      button.disabled = busy;
+      button.textContent = BrowserToolboxI18n.message(
+        busy ? "sessionUpdating" : overridden ? "restoreSession" : "disableForSession",
+      );
+      button.setAttribute("aria-busy", String(busy));
+    };
+    render();
+    repository.addEventListener(render);
+    button.addEventListener("click", async () => {
+      if (button.dataset.busy === "true") return;
+      statusError = "";
+      button.dataset.busy = "true";
+      render();
+      try {
+        if (Object.keys(repository.sessionOverrides || {}).length > 0) {
+          await repository.clearSessionOverrides();
+        } else {
+          await repository.setSessionOverrides({ enabled: false });
+        }
+      } catch (_) {
+        statusError = BrowserToolboxI18n.message("sessionUpdateFailed");
+      } finally {
+        delete button.dataset.busy;
+        render();
+      }
+    });
+  },
+
+  initSiteShortcut(activeTab) {
+    const button = document.querySelector("#browser-toolbox-manage-site");
+    if (!button) return;
+    let origin;
+    try {
+      const url = new URL(activeTab?.url || "");
+      if (
+        !["http:", "https:"].includes(url.protocol) || !url.hostname || url.hostname.includes("*")
+      ) return;
+      origin = url.origin;
+    } catch (_) {
+      return;
+    }
+    button.hidden = false;
+    button.addEventListener("click", async () => {
+      // 只传站点来源，不把路径、搜索词或凭证带到设置页地址中。
+      const url = new URL(chrome.runtime.getURL("pages/mouse_options.html"));
+      url.searchParams.set("siteOrigin", origin);
+      url.hash = "siteRules";
+      await chrome.tabs.create({ url: url.href });
+      globalThis.close();
+    });
+  },
+
+  async initBrowserToolboxControls(activeTab) {
+    const container = document.querySelector("#browser-toolbox-controls");
+    if (!container || !activeTab) return;
+    const repository = globalThis.BrowserToolboxSettingsRepositoryInstance;
+    await repository.ensureLoaded();
+    const settings = repository.getEffectiveSettings(activeTab.url || "");
+    BrowserToolboxI18n.setLocale(settings.general.language);
+    BrowserToolboxI18n.apply(document);
+    container.style.display = "block";
+    document.querySelector("#browser-toolbox-enhancement-summary").style.display = "block";
+    this.setStaticPageLinks();
+    this.initSiteShortcut(activeTab);
     document.querySelector("#browser-toolbox-open-help")?.addEventListener(
       "click",
       async () => {
@@ -161,8 +239,6 @@ const ActionPage = {
     );
     const status = document.querySelector("#browser-toolbox-site-status");
     const siteBadge = document.querySelector("#browser-toolbox-site-badge");
-    const disableSessionButton = document.querySelector("#browser-toolbox-disable-session");
-    let statusError = "";
     const controls = [
       ["#browser-toolbox-toggle-keyboard", "keyboard", "BrowserToolbox.toggleKeyboard"],
       ["#browser-toolbox-toggle-mouse", "mouse", "BrowserToolbox.toggleMouseGestures"],
@@ -175,27 +251,19 @@ const ActionPage = {
         .filter((module) => effectiveModules[module.id] === false)
         .map((module) => BrowserToolboxI18n.message(module.labelKey));
       const pageEnabled = effectiveModules.enabled !== false;
-      const sessionDisabled = repository.sessionOverrides?.enabled === false;
       if (status) {
-        status.textContent = statusError ||
-          (disabled.length > 0
-            ? `${BrowserToolboxI18n.message("siteRuleDisabledModules")}: ${disabled.join(", ")}`
-            : BrowserToolboxI18n.message("allModulesEnabled"));
+        status.textContent = disabled.length > 0
+          ? `${BrowserToolboxI18n.message("siteRuleDisabledModules")}: ${disabled.join(", ")}`
+          : BrowserToolboxI18n.message("allModulesEnabled");
       }
       if (siteBadge) {
         siteBadge.textContent = BrowserToolboxI18n.message(pageEnabled ? "active" : "inactive");
         siteBadge.classList.toggle("is-disabled", !pageEnabled);
       }
-      if (disableSessionButton && disableSessionButton.dataset.busy !== "true") {
-        disableSessionButton.disabled = sessionDisabled;
-        disableSessionButton.textContent = BrowserToolboxI18n.message(
-          sessionDisabled ? "sessionDisabled" : "disableForSession",
-        );
-        disableSessionButton.removeAttribute("aria-busy");
-      }
       for (const [selector, moduleName] of controls) {
         const input = document.querySelector(selector);
         if (!input) continue;
+        input.disabled = repository.sessionOverrides?.enabled === false;
         const enabled = moduleName === "wheel"
           ? effectiveModules.wheel !== false && effectiveModules.rocker !== false
           : effectiveModules[moduleName] !== false;
@@ -250,34 +318,6 @@ const ActionPage = {
         input.checked = actualEnabled;
       });
     }
-    disableSessionButton.addEventListener(
-      "click",
-      async () => {
-        if (disableSessionButton.dataset.busy === "true") return;
-        statusError = "";
-        disableSessionButton.dataset.busy = "true";
-        disableSessionButton.disabled = true;
-        disableSessionButton.setAttribute("aria-busy", "true");
-        disableSessionButton.textContent = BrowserToolboxI18n.message("disabling");
-        try {
-          await repository.setSessionOverrides({
-            enabled: false,
-            keyboard: false,
-            mouse: false,
-            superDrag: false,
-            wheel: false,
-            rocker: false,
-            cursor: false,
-          });
-        } catch (error) {
-          statusError = BrowserToolboxI18n.message("sessionDisableFailed");
-          console.error("BrowserToolbox: failed to disable the current session", error);
-        } finally {
-          delete disableSessionButton.dataset.busy;
-          renderStatus(repository.getEffectiveSettings(activeTab.url || ""));
-        }
-      },
-    );
   },
 
   async initToolControls(activeTab) {
@@ -295,7 +335,7 @@ const ActionPage = {
     if (settings.tools?.enabled === false) return;
     const configured = settings.tools?.pinnedIds || toolRegistry.DEFAULT_ACTION_TOOL_IDS;
     buttons.replaceChildren();
-    for (const toolId of configured.slice(0, 6)) {
+    for (const toolId of configured) {
       const descriptor = toolRegistry.get(toolId);
       if (
         !descriptor || !descriptor.allowedSources.includes("action") || !descriptor.surfaces.popup
@@ -356,7 +396,7 @@ const ActionPage = {
   },
 };
 
-document.addEventListener("DOMContentLoaded", async () => {
+globalThis.document?.addEventListener("DOMContentLoaded", async () => {
   await vimiumSettings.onLoaded();
   ActionPage.init();
 });
