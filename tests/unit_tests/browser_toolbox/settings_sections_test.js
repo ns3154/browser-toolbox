@@ -49,6 +49,7 @@ context("Settings section registry", () => {
         browserSyncEnabled: true,
         language: "zh_CN",
       },
+      browserStartup: { enabled: true, url: "https://example.com" },
       keyboard: { enabled: true, keyMappings: "j" },
       searchEngines: "g https://example.com/?q=%s",
       mouse: {
@@ -72,6 +73,7 @@ context("Settings section registry", () => {
     api.writeForm(settings, root);
     const copy = {
       general: {},
+      browserStartup: {},
       keyboard: {},
       mouse: {},
       superDrag: {},
@@ -81,6 +83,7 @@ context("Settings section registry", () => {
     };
     api.readForm(copy, root);
     assert.equal(settings.general, copy.general);
+    assert.equal(settings.browserStartup, copy.browserStartup);
     assert.equal(settings.keyboard, copy.keyboard);
     assert.equal(settings.mouse, copy.mouse);
     assert.equal(settings.superDrag, copy.superDrag);

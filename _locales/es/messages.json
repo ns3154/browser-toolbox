@@ -50,6 +50,30 @@
   "browserSyncNote": {
     "message": "Este interruptor solo controla los ajustes de la caja de herramientas. Al desactivarlo, se guardan en este dispositivo. Los ajustes de Vimium, como atajos y motores de búsqueda, siguen usando la sincronización del navegador."
   },
+  "browserStartup": {
+    "message": "Inicio del navegador"
+  },
+  "browserStartupEnabled": {
+    "message": "Abrir un sitio web al iniciar Chrome"
+  },
+  "browserStartupUrl": {
+    "message": "URL del sitio web de inicio"
+  },
+  "browserStartupUrlPlaceholder": {
+    "message": "https://example.com"
+  },
+  "browserStartupNote": {
+    "message": "Abre un sitio web cuando se inicia este perfil de Chrome. Conserva las pestañas restauradas y no cambia la página de inicio ni la página de nueva pestaña."
+  },
+  "browserStartupUrlRequired": {
+    "message": "Introduce una URL de sitio web antes de activar esta opción."
+  },
+  "browserStartupUrlInvalid": {
+    "message": "Introduce una URL de sitio web HTTP(S) válida."
+  },
+  "browserStartupUrlTooLong": {
+    "message": "La URL del sitio web de inicio es demasiado larga."
+  },
   "keyboard": {
     "message": "Teclado"
   },

@@ -67,6 +67,38 @@
     "description": "浏览器同步说明",
     "message": "此開關僅控制工具箱設定。關閉後，工具箱設定儲存在本機；鍵盤快捷鍵、搜尋引擎等 Vimium 設定仍沿用瀏覽器同步。"
   },
+  "browserStartup": {
+    "description": "瀏覽器啟動設定",
+    "message": "瀏覽器啟動"
+  },
+  "browserStartupEnabled": {
+    "description": "瀏覽器啟動開關",
+    "message": "Chrome 啟動時開啟網站"
+  },
+  "browserStartupUrl": {
+    "description": "瀏覽器啟動網址",
+    "message": "啟動網站 URL"
+  },
+  "browserStartupUrlPlaceholder": {
+    "description": "瀏覽器啟動網址佔位符",
+    "message": "https://example.com"
+  },
+  "browserStartupNote": {
+    "description": "瀏覽器啟動說明",
+    "message": "在此 Chrome 設定檔啟動時開啟一個網站。會保留瀏覽器恢復的既有分頁；不會修改首頁或新分頁。"
+  },
+  "browserStartupUrlRequired": {
+    "description": "缺少瀏覽器啟動網址",
+    "message": "啟用此選項前請輸入啟動網站 URL。"
+  },
+  "browserStartupUrlInvalid": {
+    "description": "無效的瀏覽器啟動網址",
+    "message": "請輸入有效的 HTTP(S) 網站 URL。"
+  },
+  "browserStartupUrlTooLong": {
+    "description": "瀏覽器啟動網址長度錯誤",
+    "message": "啟動網站 URL 過長。"
+  },
   "keyboard": {
     "description": "键盘设置",
     "message": "鍵盤導覽"

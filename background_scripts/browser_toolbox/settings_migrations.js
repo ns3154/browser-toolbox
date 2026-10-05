@@ -24,6 +24,7 @@
     "settingsVersion",
     "schemaVersion",
     "general",
+    "browserStartup",
     "keyboard",
     "mouse",
     "superDrag",
@@ -71,6 +72,7 @@
       "contextMenuToolIds",
     ]),
   });
+  const BROWSER_STARTUP_KEYS = new Set(["enabled", "url"]);
   const TOOL_CONTEXT_MENU_KEYS = new Set(["enabled", "toolIds"]);
   const TOOL_DOCUMENT_FORMATTER_KEYS = new Set([
     "enabled",
@@ -249,6 +251,13 @@
     return next;
   }
 
+  function migrate7To8(input) {
+    const next = schema.mergeSettings(input);
+    next.schemaVersion = 8;
+    next.browserStartup ||= schema.clone(schema.DEFAULT_SETTINGS.browserStartup);
+    return next;
+  }
+
   function normalizeToolIds(ids, defaults, max, source, surface) {
     const registry = globalThis.BrowserToolboxToolRegistry;
     const fallbackSources = new Map([
@@ -413,6 +422,12 @@
         collectBindingUnknownFields(section?.bindings, `${sectionName}.bindings`, output);
       }
     }
+    collectObjectUnknownFields(
+      settings.browserStartup,
+      BROWSER_STARTUP_KEYS,
+      "browserStartup",
+      output,
+    );
     const contextMenu = settings.tools?.contextMenu;
     collectObjectUnknownFields(contextMenu, TOOL_CONTEXT_MENU_KEYS, "tools.contextMenu", output);
     const documentFormatter = settings.tools?.documentFormatter;
@@ -563,6 +578,7 @@
       else if (version === 4) current = migrate4To5(current);
       else if (version === 5) current = migrate5To6(current);
       else if (version === 6) current = migrate6To7(current);
+      else if (version === 7) current = migrate7To8(current);
       else throw new Error(`Unsupported settings schema: ${version}`);
       version = current.schemaVersion;
     }
@@ -595,6 +611,7 @@
     migrate4To5,
     migrate5To6,
     migrate6To7,
+    migrate7To8,
     normalizeToolSettings,
     migrateCommandName,
     migrateCommandNamespaces,

@@ -3,6 +3,7 @@ import "../../../lib/browser_toolbox/value_utils.js";
 import "../../../lib/browser_toolbox/settings_schema.js";
 import "../../../lib/browser_toolbox/regex_safety.js";
 import "../../../lib/browser_toolbox/module_registry.js";
+import "../../../lib/browser_toolbox/browser_startup.js";
 import "../../../lib/browser_toolbox/settings_validator.js";
 
 context("BrowserToolbox settings validator", () => {
@@ -17,6 +18,31 @@ context("BrowserToolbox settings validator", () => {
     }
     const invalid = BrowserToolboxSettingsSchema.mergeSettings({ general: { language: "ja-JP" } });
     assert.isFalse(BrowserToolboxSettingsValidator.validate(invalid, registry).ok);
+  });
+
+  should("validate browser startup settings and reject unsafe URLs", () => {
+    const valid = BrowserToolboxSettingsSchema.mergeSettings({
+      browserStartup: { enabled: true, url: "https://example.com/start" },
+    });
+    assert.isTrue(BrowserToolboxSettingsValidator.validate(valid, registry).ok);
+
+    const missing = BrowserToolboxSettingsSchema.mergeSettings({
+      browserStartup: { enabled: true, url: "" },
+    });
+    assert.isTrue(
+      BrowserToolboxSettingsValidator.validate(missing, registry).errors.some((error) =>
+        error.includes("browserStartup.url is required")
+      ),
+    );
+
+    const unsafe = BrowserToolboxSettingsSchema.mergeSettings({
+      browserStartup: { enabled: true, url: "javascript:alert(1)" },
+    });
+    assert.isTrue(
+      BrowserToolboxSettingsValidator.validate(unsafe, registry).errors.some((error) =>
+        error.includes("browserStartup.url")
+      ),
+    );
   });
 
   should("accept the complete default configuration", () => {

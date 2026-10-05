@@ -57,6 +57,7 @@
   function settingsSectionLabels() {
     return {
       general: message("general"),
+      browserStartup: message("browserStartup"),
       keyboard: message("keyboard"),
       mouse: message("mouseGestures"),
       superDrag: message("superDrag"),

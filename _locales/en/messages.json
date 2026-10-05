@@ -25,6 +25,29 @@
     "message": "This switch only controls toolbox settings. When off, they stay on this device. Vimium settings, including keyboard shortcuts and search engines, still use browser sync.",
     "description": "Browser sync explanation"
   },
+  "browserStartup": { "message": "Browser startup", "description": "Browser startup settings" },
+  "browserStartupEnabled": {
+    "message": "Open a website when Chrome starts",
+    "description": "Browser startup toggle"
+  },
+  "browserStartupUrl": { "message": "Startup website URL", "description": "Browser startup URL" },
+  "browserStartupUrlPlaceholder": { "message": "https://example.com", "description": "Browser startup URL placeholder" },
+  "browserStartupNote": {
+    "message": "Opens one website when this Chrome profile starts. Existing restored tabs are kept; it does not change the home page or new tab page.",
+    "description": "Browser startup explanation"
+  },
+  "browserStartupUrlRequired": {
+    "message": "Enter a startup website URL before enabling this option.",
+    "description": "Missing browser startup URL"
+  },
+  "browserStartupUrlInvalid": {
+    "message": "Enter a valid HTTP(S) website URL.",
+    "description": "Invalid browser startup URL"
+  },
+  "browserStartupUrlTooLong": {
+    "message": "The startup website URL is too long.",
+    "description": "Browser startup URL length error"
+  },
   "keyboard": { "message": "Keyboard", "description": "Keyboard settings" },
   "mouseGestures": { "message": "Mouse Gestures", "description": "Mouse gesture settings" },
   "superDrag": { "message": "Super Drag", "description": "Super drag settings" },

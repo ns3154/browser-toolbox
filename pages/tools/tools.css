@@ -4881,3 +4881,36 @@ body.browser-toolbox-tools-document {
     max-width: 150px;
   }
 }
+
+/* 矮窗口下恢复纵向滚动，避免固定视口裁切工具页底部内容。 */
+@media (max-height: 720px) and (min-width: 721px) {
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-json {
+    height: auto;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tools-page {
+    height: max(100vh, 418px);
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-workspace {
+    min-height: 360px;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-diff {
+    height: auto;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-diff .browser-toolbox-tools-page {
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
+}

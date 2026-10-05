@@ -60,6 +60,7 @@
         "lib/browser_toolbox/settings_schema.js",
         "lib/browser_toolbox/regex_safety.js",
         "lib/browser_toolbox/module_registry.js",
+        "lib/browser_toolbox/browser_startup.js",
         "lib/browser_toolbox/settings_validator.js",
         "lib/browser_toolbox/site_rule_matcher.js",
         "lib/browser_toolbox/settings_policy.js",

@@ -50,6 +50,30 @@
   "browserSyncNote": {
     "message": "このスイッチはツールボックス設定のみを対象とします。オフにするとこの端末に保存されます。ショートカットや検索エンジンなどの Vimium 設定は、引き続きブラウザーで同期されます。"
   },
+  "browserStartup": {
+    "message": "ブラウザー起動"
+  },
+  "browserStartupEnabled": {
+    "message": "Chrome 起動時にウェブサイトを開く"
+  },
+  "browserStartupUrl": {
+    "message": "起動時のウェブサイト URL"
+  },
+  "browserStartupUrlPlaceholder": {
+    "message": "https://example.com"
+  },
+  "browserStartupNote": {
+    "message": "この Chrome プロファイルの起動時に 1 つのウェブサイトを開きます。復元された既存のタブは保持され、ホームページや新しいタブページは変更しません。"
+  },
+  "browserStartupUrlRequired": {
+    "message": "このオプションを有効にする前に、起動時のウェブサイト URL を入力してください。"
+  },
+  "browserStartupUrlInvalid": {
+    "message": "有効な HTTP(S) ウェブサイト URL を入力してください。"
+  },
+  "browserStartupUrlTooLong": {
+    "message": "起動時のウェブサイト URL が長すぎます。"
+  },
   "keyboard": {
     "message": "キーボード"
   },

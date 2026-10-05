@@ -1969,6 +1969,59 @@ body.browser-toolbox-settings-page {
   margin-top: 16px;
 }
 
+.browser-toolbox-settings-page .browser-toolbox-startup-card {
+  max-width: 760px;
+  margin-top: 20px;
+  padding: 18px 20px 20px;
+  border: 1px solid var(--toolbox-border);
+  border-radius: 16px;
+  background: var(--toolbox-surface);
+}
+
+.browser-toolbox-settings-page .browser-toolbox-startup-card-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 22px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-startup-card h3 {
+  margin: 0;
+  color: var(--toolbox-text);
+  font-size: 17px;
+  font-weight: 760;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-startup-card .browser-toolbox-note {
+  max-width: 520px;
+  margin: 8px 0 0;
+  font-size: 13px;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-startup-card .browser-toolbox-check {
+  flex: 0 0 auto;
+  min-height: 46px;
+  padding: 10px 12px;
+  border: 1px solid var(--toolbox-border);
+  border-radius: 12px;
+  background: var(--toolbox-bg);
+  color: var(--toolbox-text);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.browser-toolbox-settings-page .browser-toolbox-startup-card .browser-toolbox-check input {
+  width: 17px;
+  height: 17px;
+  margin: 0;
+  accent-color: var(--toolbox-accent);
+}
+
+.browser-toolbox-settings-page .browser-toolbox-startup-card .browser-toolbox-field {
+  width: min(100%, 560px);
+  margin-top: 16px;
+}
+
 .browser-toolbox-settings-page .browser-toolbox-panel[data-panel="general"] > .browser-toolbox-note {
   max-width: 760px;
   margin: 14px 0 0;
@@ -2083,6 +2136,14 @@ body.browser-toolbox-settings-page {
 }
 
 @media (max-width: 560px) {
+  .browser-toolbox-settings-page .browser-toolbox-startup-card-heading {
+    flex-direction: column;
+  }
+
+  .browser-toolbox-settings-page .browser-toolbox-startup-card .browser-toolbox-check {
+    width: 100%;
+  }
+
   .browser-toolbox-settings-page .browser-toolbox-panel[data-panel="general"] .browser-toolbox-grid,
   .browser-toolbox-settings-page .browser-toolbox-panel[data-panel="jsonFormatter"] .browser-toolbox-format-grid {
     grid-template-columns: 1fr;

@@ -11,6 +11,7 @@ import "../lib/browser_toolbox/message_protocol.js";
 import "../lib/browser_toolbox/settings_schema.js";
 import "../lib/browser_toolbox/regex_safety.js";
 import "../lib/browser_toolbox/module_registry.js";
+import "../lib/browser_toolbox/browser_startup.js";
 import "../lib/browser_toolbox/settings_validator.js";
 import "../lib/browser_toolbox/site_rule_matcher.js";
 import "../background_scripts/tab_recency.js";
@@ -454,6 +455,8 @@ const BackgroundCommands = {
 const browserToolboxSettingsRepository = globalThis.BrowserToolboxSettingsRepositoryInstance;
 const browserToolboxFrameCoordinator = globalThis.BrowserToolboxGestureFrameCoordinatorInstance;
 const browserToolboxToolInputTokenStore = globalThis.BrowserToolboxToolInputTokenStoreInstance;
+const browserToolboxStartupNavigator = new globalThis.BrowserToolboxBrowserStartup
+  .BrowserStartupNavigator({ logger: (message) => Utils.debugLog(message) });
 const browserToolboxToolContextMenuManager = new globalThis.BrowserToolboxToolContextMenuManager
   .ToolContextMenuManager({
   settingsRepository: browserToolboxSettingsRepository,
@@ -1214,6 +1217,14 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 chrome.runtime.onStartup.addListener(async () => {
   Utils.debugLog("chrome.runtime.onStartup");
   await initializeExtension();
+  try {
+    await browserToolboxStartupNavigator.openConfiguredPage(
+      browserToolboxSettingsRepository.getSettings(),
+    );
+  } catch (error) {
+    // 启动导航失败时不影响 Vimium 和工具箱的其他后台能力。
+    Utils.debugLog(`浏览器启动导航失败：${error?.message || error}`);
+  }
 });
 
 Object.assign(globalThis, {
@@ -1226,6 +1237,7 @@ Object.assign(globalThis, {
   browserToolboxDispatcher,
   browserToolboxSettingsRepository,
   browserToolboxFrameCoordinator,
+  browserToolboxStartupNavigator,
 });
 
 // The chrome.runtime.onStartup and onInstalled events are not fired when disabling and then
