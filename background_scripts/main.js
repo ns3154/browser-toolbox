@@ -1189,6 +1189,62 @@ function initializeExtension() {
   return promise;
 }
 
+/**
+ * 处理新标签页事件：先确认目标是浏览器原生新标签页，再加载配置并导航，避免误改普通网页。
+ * @param {Object} tab 新建或更新后的标签页快照。
+ * @returns {Promise<void>} 处理完成。
+ */
+async function redirectBrowserToolboxNewTab(tab) {
+  let currentTab = tab;
+  if (tab?.incognito === true) return;
+  if (!globalThis.BrowserToolboxBrowserStartup.isNewTabTab(currentTab)) {
+    if (
+      tab?.url ||
+      tab?.pendingUrl ||
+      !Number.isInteger(tab?.id) ||
+      typeof chrome.tabs.get !== "function"
+    ) return;
+    try {
+      currentTab = await chrome.tabs.get(tab.id);
+    } catch (_) {
+      return;
+    }
+  }
+  if (!globalThis.BrowserToolboxBrowserStartup.isNewTabTab(currentTab)) return;
+
+  await initializeExtension();
+  const settings = browserToolboxSettingsRepository.getSettings();
+  if (!settings.browserStartup?.newTabEnabled) return;
+
+  const result = await browserToolboxStartupNavigator.redirectNewTab(currentTab, settings);
+  if (result.redirected) {
+    Utils.debugLog(`新标签页已跳转：${result.url}`);
+  }
+}
+
+if (chrome.tabs.onCreated?.addListener) {
+  chrome.tabs.onCreated.addListener((tab) => {
+    redirectBrowserToolboxNewTab(tab).catch((error) => {
+      Utils.debugLog(`新标签页导航失败：${error?.message || error}`);
+    });
+  });
+}
+
+if (chrome.tabs.onUpdated?.addListener) {
+  chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (!globalThis.BrowserToolboxBrowserStartup.isNewTabUrl(changeInfo?.url)) return;
+    redirectBrowserToolboxNewTab({ ...tab, id: tabId, url: changeInfo.url }).catch((error) => {
+      Utils.debugLog(`新标签页更新导航失败：${error?.message || error}`);
+    });
+  });
+}
+
+if (chrome.tabs.onRemoved?.addListener) {
+  chrome.tabs.onRemoved.addListener((tabId) => {
+    browserToolboxStartupNavigator.forgetNewTab(tabId);
+  });
+}
+
 // The browser may have tabs already open. We inject the content scripts and Vimium's CSS
 // immediately so that the extension is running on the pages immediately after install, rather than
 // having to reload those pages.

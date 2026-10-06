@@ -27,14 +27,22 @@
     "message": "Chrome 启动时打开网站",
     "description": "浏览器启动开关"
   },
+  "browserStartupNewTabEnabled": {
+    "message": "新标签页也打开此网站",
+    "description": "新标签页跳转开关"
+  },
   "browserStartupUrl": { "message": "启动网站 URL", "description": "浏览器启动网址" },
   "browserStartupUrlPlaceholder": { "message": "https://example.com", "description": "浏览器启动网址占位符" },
   "browserStartupNote": {
-    "message": "在此 Chrome 配置文件启动时打开一个网站。会保留浏览器恢复的已有标签页；不会修改主页或新标签页。",
+    "message": "在此 Chrome 配置文件启动时打开一个网站。可以单独启用普通新标签页跳转；会保留浏览器恢复的已有标签页。",
     "description": "浏览器启动说明"
   },
+  "browserStartupNewTabNote": {
+    "message": "启用后，普通窗口中新建的标签页会打开此网站；无痕窗口仍使用 Chrome 原生新标签页。",
+    "description": "新标签页跳转说明"
+  },
   "browserStartupUrlRequired": {
-    "message": "启用此选项前请输入启动网站 URL。",
+    "message": "启用浏览器启动或新标签页选项前请输入网站 URL。",
     "description": "缺少浏览器启动网址"
   },
   "browserStartupUrlInvalid": {

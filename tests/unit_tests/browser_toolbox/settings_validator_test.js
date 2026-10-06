@@ -43,6 +43,20 @@ context("BrowserToolbox settings validator", () => {
         error.includes("browserStartup.url")
       ),
     );
+
+    const newTabOnly = BrowserToolboxSettingsSchema.mergeSettings({
+      browserStartup: { newTabEnabled: true, url: "https://example.com/new-tab" },
+    });
+    assert.isTrue(BrowserToolboxSettingsValidator.validate(newTabOnly, registry).ok);
+
+    const newTabMissing = BrowserToolboxSettingsSchema.mergeSettings({
+      browserStartup: { newTabEnabled: true, url: "" },
+    });
+    assert.isTrue(
+      BrowserToolboxSettingsValidator.validate(newTabMissing, registry).errors.some((error) =>
+        error.includes("browserStartup.url is required")
+      ),
+    );
   });
 
   should("accept the complete default configuration", () => {

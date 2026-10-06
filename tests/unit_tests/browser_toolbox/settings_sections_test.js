@@ -49,7 +49,11 @@ context("Settings section registry", () => {
         browserSyncEnabled: true,
         language: "zh_CN",
       },
-      browserStartup: { enabled: true, url: "https://example.com" },
+      browserStartup: {
+        enabled: true,
+        newTabEnabled: true,
+        url: "https://example.com",
+      },
       keyboard: { enabled: true, keyMappings: "j" },
       searchEngines: "g https://example.com/?q=%s",
       mouse: {

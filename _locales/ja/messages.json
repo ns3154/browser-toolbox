@@ -56,6 +56,9 @@
   "browserStartupEnabled": {
     "message": "Chrome 起動時にウェブサイトを開く"
   },
+  "browserStartupNewTabEnabled": {
+    "message": "新しいタブでもこのウェブサイトを開く"
+  },
   "browserStartupUrl": {
     "message": "起動時のウェブサイト URL"
   },
@@ -63,10 +66,13 @@
     "message": "https://example.com"
   },
   "browserStartupNote": {
-    "message": "この Chrome プロファイルの起動時に 1 つのウェブサイトを開きます。復元された既存のタブは保持され、ホームページや新しいタブページは変更しません。"
+    "message": "この Chrome プロファイルの起動時に 1 つのウェブサイトを開きます。通常の新しいタブでも開くかどうかは別に設定でき、復元された既存のタブは保持されます。"
+  },
+  "browserStartupNewTabNote": {
+    "message": "有効にすると、通常のウィンドウで新しいタブを開いたときにこのウェブサイトを開きます。シークレット ウィンドウでは Chrome の標準の新しいタブページが維持されます。"
   },
   "browserStartupUrlRequired": {
-    "message": "このオプションを有効にする前に、起動時のウェブサイト URL を入力してください。"
+    "message": "起動オプションを有効にする前に、ウェブサイト URL を入力してください。"
   },
   "browserStartupUrlInvalid": {
     "message": "有効な HTTP(S) ウェブサイト URL を入力してください。"

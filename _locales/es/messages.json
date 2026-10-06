@@ -56,6 +56,9 @@
   "browserStartupEnabled": {
     "message": "Abrir un sitio web al iniciar Chrome"
   },
+  "browserStartupNewTabEnabled": {
+    "message": "Abrir también este sitio web en pestañas nuevas"
+  },
   "browserStartupUrl": {
     "message": "URL del sitio web de inicio"
   },
@@ -63,10 +66,13 @@
     "message": "https://example.com"
   },
   "browserStartupNote": {
-    "message": "Abre un sitio web cuando se inicia este perfil de Chrome. Conserva las pestañas restauradas y no cambia la página de inicio ni la página de nueva pestaña."
+    "message": "Abre un sitio web cuando se inicia este perfil de Chrome. Puedes activarlo por separado para las pestañas nuevas normales; conserva las pestañas restauradas."
+  },
+  "browserStartupNewTabNote": {
+    "message": "Cuando está activado, las pestañas nuevas de las ventanas normales abren este sitio web. Las ventanas de incógnito conservan la página de nueva pestaña de Chrome."
   },
   "browserStartupUrlRequired": {
-    "message": "Introduce una URL de sitio web antes de activar esta opción."
+    "message": "Introduce una URL de sitio web antes de activar cualquiera de las opciones de inicio."
   },
   "browserStartupUrlInvalid": {
     "message": "Introduce una URL de sitio web HTTP(S) válida."

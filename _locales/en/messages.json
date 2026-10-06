@@ -30,14 +30,22 @@
     "message": "Open a website when Chrome starts",
     "description": "Browser startup toggle"
   },
+  "browserStartupNewTabEnabled": {
+    "message": "Also open this website in new tabs",
+    "description": "New tab redirect toggle"
+  },
   "browserStartupUrl": { "message": "Startup website URL", "description": "Browser startup URL" },
   "browserStartupUrlPlaceholder": { "message": "https://example.com", "description": "Browser startup URL placeholder" },
   "browserStartupNote": {
-    "message": "Opens one website when this Chrome profile starts. Existing restored tabs are kept; it does not change the home page or new tab page.",
+    "message": "Opens one website when this Chrome profile starts. You can separately enable it for normal new tabs; existing restored tabs are kept.",
     "description": "Browser startup explanation"
   },
+  "browserStartupNewTabNote": {
+    "message": "When enabled, new tabs in normal windows open this website. Incognito windows keep Chrome's native new tab page.",
+    "description": "New tab redirect explanation"
+  },
   "browserStartupUrlRequired": {
-    "message": "Enter a startup website URL before enabling this option.",
+    "message": "Enter a startup website URL before enabling either browser-startup option.",
     "description": "Missing browser startup URL"
   },
   "browserStartupUrlInvalid": {

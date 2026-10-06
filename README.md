@@ -3,8 +3,8 @@
 **English** | [简体中文](README.zh-CN.md)
 
 Browser Toolbox builds on Vimium v2.4.2 keyboard navigation and adds mouse gestures, super drag,
-wheel and rocker gestures, site rules, browser-startup actions, and a set of fully local utility
-tools.
+wheel and rocker gestures, site rules, browser-startup and new-tab actions, and a set of fully local
+utility tools.
 
 The current `manifest.json` version is `0.1.2`. This is the source version; it does not imply a
 Chrome Web Store review or release status.
@@ -15,7 +15,7 @@ Chrome Web Store review or release status.
 | ------ | ---------------- |
 | Keyboard navigation | Scrolling, link hints, search/bookmark/history/tab completion, find, marks, tab and window management, zoom, reload, and Vimium-compatible mappings |
 | Mouse input | Four-direction gestures, multi-segment paths, super drag, wheel switching, rocker back/forward, and configurable commands |
-| Browser workflow | Command center, action popup, current-site management, all-sites session pause/restore, and toolbar shortcuts |
+| Browser workflow | Command center, action popup, current-site management, all-sites session pause/restore, browser-startup/new-tab actions, and toolbar shortcuts |
 | Local tools | JSON, Properties ↔ YAML, text diff, codec, time, ID, password, and CSV/TSV tools |
 | Site controls | Glob/regex rules, match precedence, site profiles, per-module disablement, and rule explanations/tests |
 | Configuration | Five languages, import preview, export backups, Vimium-compatible settings, migrations, and explicit sync boundaries |
@@ -182,21 +182,28 @@ JavaScript, and Java documents. Each format can be toggled independently. Config
 automatic input size, JSON key sorting, and default collapse depth. Matching document content is read
 locally and is not uploaded.
 
-## Browser-startup website
+## Browser-startup and new-tab website
 
-Under **General → Browser startup**, enable **Open a website when Chrome starts** and enter an
-`http://` or `https://` URL.
+Under **General → Browser startup**, enter an `http://` or `https://` URL. The two switches are
+independent:
 
-- It opens at most once each time the Chrome profile starts.
-- It creates an active tab in the focused normal window, then the first normal window, or creates a
-  normal window if none exists.
-- Existing tabs restored by Chrome are kept; Chrome's home page and new-tab page are not changed.
-- `file:`, `javascript:`, `data:`, `chrome:`, and other non-HTTP(S) schemes are rejected, and no
-  behavior is promised for an incognito-profile startup event.
+- **Open a website when Chrome starts** opens the configured website when the Chrome profile starts.
+- **Also open this website in new tabs** redirects new tabs in ordinary windows to the same website.
 
-This is a browser-startup action, not a new-tab redirect. The
+- The startup action opens at most once each time the Chrome profile starts.
+- Startup opens an active tab in the focused normal window, then the first normal window, or creates
+  a normal window if none exists. Existing tabs restored by Chrome are kept.
+- New-tab redirection applies only to ordinary windows; incognito windows keep the browser's native
+  new-tab page.
+- Turning off the new-tab switch restores the browser's native new-tab behavior without changing the
+  configured URL.
+- `file:`, `javascript:`, `data:`, `chrome:`, and other non-HTTP(S) schemes are rejected. The
+  redirect only runs for a browser-native new-tab event and never rewrites an ordinary page.
+
+The new-tab behavior is implemented as a runtime redirect so that disabling it leaves the native
+new-tab page available. The
 [newtab-redirect](https://github.com/jimschubert/newtab-redirect) project is a reference for the
-different `chrome_url_overrides` behavior.
+browser new-tab behavior.
 
 ## Settings and configuration
 
@@ -204,7 +211,7 @@ The Settings page is organized into these panels:
 
 | Panel | Contents |
 | ----- | -------- |
-| General | Global switch, command feedback, toolbox sync, language, and browser-startup website |
+| General | Global switch, command feedback, toolbox sync, language, and browser-startup/new-tab website |
 | Keyboard | Keyboard module and Vimium-compatible mappings |
 | Tool overview | Tool switch, action popup, context menu, tool directory, and search |
 | JSON formatter | Document auto-formatting and JSON defaults |

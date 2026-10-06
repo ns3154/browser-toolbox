@@ -75,6 +75,10 @@
     "description": "瀏覽器啟動開關",
     "message": "Chrome 啟動時開啟網站"
   },
+  "browserStartupNewTabEnabled": {
+    "description": "新分頁跳轉開關",
+    "message": "新分頁也開啟此網站"
+  },
   "browserStartupUrl": {
     "description": "瀏覽器啟動網址",
     "message": "啟動網站 URL"
@@ -85,11 +89,15 @@
   },
   "browserStartupNote": {
     "description": "瀏覽器啟動說明",
-    "message": "在此 Chrome 設定檔啟動時開啟一個網站。會保留瀏覽器恢復的既有分頁；不會修改首頁或新分頁。"
+    "message": "在此 Chrome 設定檔啟動時開啟一個網站。可以另外啟用一般新分頁跳轉；會保留瀏覽器恢復的既有分頁。"
+  },
+  "browserStartupNewTabNote": {
+    "description": "新分頁跳轉說明",
+    "message": "啟用後，一般視窗中新建的分頁會開啟此網站；無痕視窗仍使用 Chrome 原生新分頁。"
   },
   "browserStartupUrlRequired": {
     "description": "缺少瀏覽器啟動網址",
-    "message": "啟用此選項前請輸入啟動網站 URL。"
+    "message": "啟用瀏覽器啟動或新分頁選項前請輸入網站 URL。"
   },
   "browserStartupUrlInvalid": {
     "description": "無效的瀏覽器啟動網址",

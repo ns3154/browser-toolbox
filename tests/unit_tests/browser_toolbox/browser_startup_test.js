@@ -14,6 +14,17 @@ context("Browser startup navigation", () => {
     assert.isFalse(api().validateUrl("https://example.com".repeat(200)).ok);
   });
 
+  should("recognize ordinary browser new-tab URLs", () => {
+    assert.isTrue(api().isNewTabUrl("chrome://newtab/"));
+    assert.isTrue(api().isNewTabUrl("chrome://newtab"));
+    assert.isTrue(api().isNewTabUrl("chrome://new-tab-page/"));
+    assert.isTrue(api().isNewTabUrl("about:newtab"));
+    assert.isFalse(api().isNewTabUrl("https://example.com"));
+    assert.isTrue(api().isNewTabTab({ id: 7, url: "chrome://newtab/", incognito: false }));
+    assert.isTrue(api().isNewTabTab({ id: 7, url: "chrome://new-tab-page/", incognito: false }));
+    assert.isFalse(api().isNewTabTab({ id: 7, url: "chrome://newtab/", incognito: true }));
+  });
+
   should("open one active tab in the focused normal window", async () => {
     const tabCalls = [];
     const windowCalls = [];
@@ -89,5 +100,70 @@ context("Browser startup navigation", () => {
       type: "normal",
       focused: true,
     }], created);
+  });
+
+  should("redirect an enabled normal new tab only once", async () => {
+    const updates = [];
+    const navigator = new (api().BrowserStartupNavigator)({
+      tabsApi: {
+        async update(tabId, properties) {
+          updates.push({ tabId, properties });
+        },
+      },
+    });
+    const settings = {
+      browserStartup: {
+        enabled: false,
+        newTabEnabled: true,
+        url: "https://example.com/new-tab",
+      },
+    };
+
+    const result = await navigator.redirectNewTab(
+      { id: 7, url: "chrome://newtab/", incognito: false },
+      settings,
+    );
+    const repeated = await navigator.redirectNewTab(
+      { id: 7, url: "chrome://newtab/", incognito: false },
+      settings,
+    );
+
+    assert.equal({ redirected: true, tabId: 7, url: "https://example.com/new-tab" }, result);
+    assert.equal([{ tabId: 7, properties: { url: "https://example.com/new-tab" } }], updates);
+    assert.equal({ redirected: false, reason: "already-redirected", tabId: 7 }, repeated);
+  });
+
+  should("keep disabled and incognito new tabs unchanged", async () => {
+    const updates = [];
+    const navigator = new (api().BrowserStartupNavigator)({
+      tabsApi: {
+        async update(tabId, properties) {
+          updates.push({ tabId, properties });
+        },
+      },
+    });
+    const settings = {
+      browserStartup: {
+        enabled: false,
+        newTabEnabled: false,
+        url: "https://example.com/new-tab",
+      },
+    };
+
+    assert.equal(
+      { redirected: false, reason: "disabled", tabId: 8 },
+      await navigator.redirectNewTab(
+        { id: 8, url: "chrome://newtab/", incognito: false },
+        settings,
+      ),
+    );
+    assert.equal(
+      { redirected: false, reason: "not-new-tab", tabId: 9 },
+      await navigator.redirectNewTab(
+        { id: 9, url: "chrome://newtab/", incognito: true },
+        { browserStartup: { newTabEnabled: true, url: "https://example.com/new-tab" } },
+      ),
+    );
+    assert.equal([], updates);
   });
 });

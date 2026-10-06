@@ -72,7 +72,7 @@
       "contextMenuToolIds",
     ]),
   });
-  const BROWSER_STARTUP_KEYS = new Set(["enabled", "url"]);
+  const BROWSER_STARTUP_KEYS = new Set(["enabled", "url", "newTabEnabled"]);
   const TOOL_CONTEXT_MENU_KEYS = new Set(["enabled", "toolIds"]);
   const TOOL_DOCUMENT_FORMATTER_KEYS = new Set([
     "enabled",
@@ -254,6 +254,13 @@
   function migrate7To8(input) {
     const next = schema.mergeSettings(input);
     next.schemaVersion = 8;
+    next.browserStartup ||= schema.clone(schema.DEFAULT_SETTINGS.browserStartup);
+    return next;
+  }
+
+  function migrate8To9(input) {
+    const next = schema.mergeSettings(input);
+    next.schemaVersion = 9;
     next.browserStartup ||= schema.clone(schema.DEFAULT_SETTINGS.browserStartup);
     return next;
   }
@@ -579,6 +586,7 @@
       else if (version === 5) current = migrate5To6(current);
       else if (version === 6) current = migrate6To7(current);
       else if (version === 7) current = migrate7To8(current);
+      else if (version === 8) current = migrate8To9(current);
       else throw new Error(`Unsupported settings schema: ${version}`);
       version = current.schemaVersion;
     }
@@ -612,6 +620,7 @@
     migrate5To6,
     migrate6To7,
     migrate7To8,
+    migrate8To9,
     normalizeToolSettings,
     migrateCommandName,
     migrateCommandNamespaces,

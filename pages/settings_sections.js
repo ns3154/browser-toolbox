@@ -91,8 +91,10 @@
         "language",
         "browserStartup",
         "browserStartupEnabled",
+        "browserStartupNewTabEnabled",
         "browserStartupUrl",
         "browserStartupNote",
+        "browserStartupNewTabNote",
       ],
     },
     {
@@ -213,6 +215,7 @@
     { id: "global-show-hud", path: "general.showHud", type: "checkbox" },
     { id: "browser-sync-enabled", path: "general.browserSyncEnabled", type: "checkbox" },
     { id: "browser-startup-enabled", path: "browserStartup.enabled", type: "checkbox" },
+    { id: "browser-startup-new-tab-enabled", path: "browserStartup.newTabEnabled", type: "checkbox" },
     { id: "browser-startup-url", path: "browserStartup.url", type: "value" },
     { id: "keyboard-enabled", path: "keyboard.enabled", type: "checkbox" },
     { id: "language", path: "general.language", type: "value" },

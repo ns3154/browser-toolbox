@@ -83,16 +83,26 @@
                   Open one configured website when this Chrome profile starts. Existing restored tabs are kept.
                 </p>
               </div>
-              <label class="browser-toolbox-check">
-                <input id="browser-startup-enabled" type="checkbox">
-                <span data-i18n="browserStartupEnabled">Open a website when Chrome starts</span>
-              </label>
+              <div class="browser-toolbox-startup-options">
+                <label class="browser-toolbox-check">
+                  <input id="browser-startup-enabled" type="checkbox">
+                  <span data-i18n="browserStartupEnabled">Open a website when Chrome starts</span>
+                </label>
+                <label class="browser-toolbox-check">
+                  <input id="browser-startup-new-tab-enabled" type="checkbox">
+                  <span data-i18n="browserStartupNewTabEnabled">Also open this website in new tabs</span>
+                </label>
+              </div>
             </div>
             <label class="browser-toolbox-field">
               <span data-i18n="browserStartupUrl">Startup website URL</span>
               <input id="browser-startup-url" type="url" autocomplete="off" spellcheck="false"
                 data-i18n-placeholder="browserStartupUrlPlaceholder">
             </label>
+            <p class="browser-toolbox-note browser-toolbox-startup-new-tab-note"
+              data-i18n="browserStartupNewTabNote">
+              When enabled, new tabs in normal windows open this website. Incognito windows keep Chrome's native new tab page.
+            </p>
           </div>
           <p class="browser-toolbox-note"
             data-i18n="browserSyncNote">This switch only controls toolbox settings. When off, they stay on this device. Vimium settings, including keyboard shortcuts and search engines, still use browser sync.</p>
