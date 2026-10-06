@@ -6,7 +6,7 @@ Browser Toolbox builds on Vimium v2.4.2 keyboard navigation and adds mouse gestu
 wheel and rocker gestures, site rules, browser-startup and new-tab actions, and a set of fully local
 utility tools.
 
-The current `manifest.json` version is `0.1.2`. This is the source version; it does not imply a
+The current `manifest.json` version is `0.1.3`. This is the source version; it does not imply a
 Chrome Web Store review or release status.
 
 ## Feature overview

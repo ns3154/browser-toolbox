@@ -55,7 +55,7 @@ Deno.test("四种发布归档规范化 manifest、保留源码并能重复生成
   try {
     const files = {
       "manifest.json":
-        '{\n// 源码允许注释，商店包必须是标准 JSON\n"manifest_version":3,"version":"0.1.2","name":"__MSG_extensionName__","permissions":["storage","favicon"],"background":{"service_worker":"background_scripts/main.js","type":"module"},"action":{"default_icon":"icons/icon.svg"}}',
+        '{\n// 源码允许注释，商店包必须是标准 JSON\n"manifest_version":3,"version":"0.1.3","name":"__MSG_extensionName__","permissions":["storage","favicon"],"background":{"service_worker":"background_scripts/main.js","type":"module"},"action":{"default_icon":"icons/icon.svg"}}',
       "LICENSE": "GPL-3.0-or-later",
       "LICENSES/MIT-Vimium.txt": "MIT",
       "LICENSES/MIT-shoulda.txt": "MIT",
@@ -111,7 +111,7 @@ Deno.test("四种发布归档规范化 manifest、保留源码并能重复生成
         );
       } else {
         const manifest = JSON.parse(manifestText);
-        assert(manifest.version === "0.1.2", "运行时版本不一致");
+        assert(manifest.version === "0.1.3", "运行时版本不一致");
         assert(
           !entries.some((file) => file.includes("reload.") || file.startsWith("build_scripts/")),
           "开发脚本误入运行时产物",
