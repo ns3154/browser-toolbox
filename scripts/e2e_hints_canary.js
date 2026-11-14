@@ -85,6 +85,47 @@ async function withoutActivation(frame, callback, input) {
   if (result.exceptionDetails) throw new Error("合成隔离探测失败：" + result.exceptionDetails.text);
   return result.result.value;
 }
+const frameOrdersByValues = new WeakMap();
+// 当 Chrome 跨重载跨越两位数/三位数 frameId 边界导致字符串字典序重排时，
+// 按各自实际的 String(frameId) 位次对照子页提示码分配，同时按路径严格核对元素与状态。
+function normalizeByFrameOrder(snapshotFrames, frameOrder) {
+  if (!Array.isArray(snapshotFrames) || !Array.isArray(frameOrder) || !frameOrder.length) {
+    return snapshotFrames;
+  }
+  const byPath = new Map(snapshotFrames.map((state) => [state.path, state]));
+  const byRank = frameOrder.map((framePath) => {
+    const state = byPath.get(framePath);
+    return state
+      ? {
+        codes: state.markers.map(({ code, caption, spans }) => ({ code, caption, spans })),
+        domOrder: state.domOrder,
+      }
+      : null;
+  });
+  return {
+    byPath: snapshotFrames.map(({ path, local, query, activeHint, openMode, markers }) => ({
+      path,
+      local,
+      query,
+      activeHint,
+      openMode,
+      markers: markers.map(({ code: _c, caption: _cap, spans: _s, ...rest }) => rest),
+    })),
+    byRank,
+  };
+}
+function snapshotEqual(key, compat, canary) {
+  const left = compat[key];
+  const right = canary[key];
+  if (JSON.stringify(left) === JSON.stringify(right)) return true;
+  const leftOrder = frameOrdersByValues.get(compat)?.[key];
+  const rightOrder = frameOrdersByValues.get(canary)?.[key];
+  if (!leftOrder || !rightOrder || JSON.stringify(leftOrder) === JSON.stringify(rightOrder)) {
+    return false;
+  }
+  return JSON.stringify(normalizeByFrameOrder(left, leftOrder)) ===
+    JSON.stringify(normalizeByFrameOrder(right, rightOrder));
+}
 async function run(name, extensionPath, plan) {
   // 输入副本失效时先失败，避免启动浏览器后还没有进入清理作用域。
   const legacyHints = await Deno.readTextFile(
@@ -117,7 +158,10 @@ async function run(name, extensionPath, plan) {
   };
   report.browsers.push(metadata);
   const values = {};
+  const frameOrders = {};
+  frameOrdersByValues.set(values, frameOrders);
   metadata.values = values;
+  metadata.frameOrders = frameOrders;
   const protectorSource = legacyHints.slice(
     legacyHints.indexOf("class TypingProtector"),
     legacyHints.indexOf("class WaitForEnter"),
@@ -473,6 +517,24 @@ async function run(name, extensionPath, plan) {
         frames.every((state) => state.active === "active" && !state.failure),
         "提示不能使运行时失效",
       );
+      const orderedFrames = await options.evaluate(async (targetUrl) => {
+        const tab = (await chrome.tabs.query({})).find((item) =>
+          item.url?.split(/[?#]/)[0] === targetUrl
+        );
+        if (!tab) return null;
+        return (await chrome.webNavigation.getAllFrames({ tabId: tab.id }))
+          .map((item) => {
+            try {
+              return { key: String(item.frameId), path: new URL(item.url).pathname };
+            } catch (_) {
+              return null;
+            }
+          })
+          .filter((item) => item && ["/fixture", "/child", "/cross"].includes(item.path))
+          .sort((a, b) => a.key < b.key ? -1 : a.key > b.key ? 1 : 0)
+          .map((item) => item.path);
+      }, url);
+      if (orderedFrames?.length === 3) frameOrders[label] = orderedFrames;
       values[label] = frames.sort((a, b) => a.path.localeCompare(b.path)).map((state) => ({
         path: state.path,
         markers: state.markers,
@@ -1386,9 +1448,7 @@ try {
   }
   assert(!failures.length, failures.join("；"));
   const { compat, canary } = report.comparisons;
-  const mismatches = Object.keys(compat).filter((key) =>
-    JSON.stringify(compat[key]) !== JSON.stringify(canary[key])
-  );
+  const mismatches = Object.keys(compat).filter((key) => !snapshotEqual(key, compat, canary));
   report.comparisons.mismatches = mismatches;
   assert(!mismatches.length, `旧新提示结果不同：${mismatches.join(", ")}`);
   report.comparisons.equal = true;

@@ -257,7 +257,12 @@ export class CompletionSession {
       !Array.isArray(terms) || terms.some((term) => typeof term !== "string" || !term.length)
     ) throw new Error("INVALID_COMPLETIONS_REQUEST");
     if (!terms.length && name !== "tabs") return [];
-    this.engines = parseConfig(this.settings.get("searchEngines")).keywordToEngine;
+    const enginesConfig = this.settings.get("searchEngines");
+    if (this.enginesSource !== enginesConfig) {
+      // 仅在搜索引擎配置变化时重新解析，避免高频补全查询重复分配正则和映射对象。
+      this.engines = parseConfig(enginesConfig).keywordToEngine;
+      this.enginesSource = enginesConfig;
+    }
     const generation = this.generation;
     const prepared = model.prepareQuery(terms);
     const engine = name === "omni" ? this.engine(query) : null;

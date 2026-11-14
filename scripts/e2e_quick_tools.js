@@ -683,7 +683,7 @@ export async function testSettings(browser, id) {
     await waitFor(() =>
       page.$$eval(
         ".browser-toolbox-nav-item:not([hidden])",
-        (items) => items.length === 15,
+        (items) => items.length === 12,
       )
     );
     const counts = await page.evaluate(() => ({
@@ -739,7 +739,7 @@ export async function testSettings(browser, id) {
       "保存并刷新后应保留全部右键菜单工具。 ",
     );
     assert(counts.auto === 5, "设置页应有五种自动格式化开关。 ");
-    assert(counts.groups === 3 && counts.panels === 15, "设置页应收敛为三大分组和十五个功能分区。 ");
+    assert(counts.groups === 4 && counts.panels === 12, "设置页应收敛为四大分组和十二个功能分区。 ");
     assert(counts.directory === counts.expectedDirectory && counts.openLinks === counts.expectedDirectory, "工具总览应由注册表生成完整工具目录。 ");
     await page.screenshot({ path: "/tmp/browser-toolbox-settings-tools-overview.png", fullPage: true });
     await page.click("button[data-section='general']");

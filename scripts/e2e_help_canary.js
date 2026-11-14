@@ -254,12 +254,37 @@ async function run(directory, independent, forcedPlan = null) {
       await wait(async () => !(await isolated("state")).showing, "Esc未关闭帮助");
       await wait(async () => (await isolated("state")).focus, "Esc关闭后原生焦点尚未恢复");
     };
-    async function waitForPointerSurface(frame) {
-      // 旧帮助重开时 DOM 已可命中，CFT 的合成命中区域仍可能停留在父框架。
+    async function waitForPointerSurface(frame, point = { x: 12, y: 12 }) {
+      // 旧帮助重开或滚动后 DOM 已可命中，等待宿主与子帧两轮绘制并确认真实鼠标移动已路由进帮助子帧。
       await frame.evaluate(() =>
         new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))
       );
+      await page.evaluate(() =>
+        new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+      );
       await page.screenshot();
+      const frameElement = await frame.frameElement();
+      const box = await frameElement?.boundingBox();
+      if (!box) return;
+      const targetX = box.x + point.x;
+      const targetY = box.y + point.y;
+      await wait(async () => {
+        const armed = frame.evaluate(() => new Promise((resolve) => {
+          let done = false;
+          const finish = (value) => {
+            if (done) return;
+            done = true;
+            document.removeEventListener("mousemove", onMove, true);
+            resolve(value);
+          };
+          const onMove = () => finish(true);
+          document.addEventListener("mousemove", onMove, true);
+          setTimeout(() => finish(false), 60);
+        }));
+        await page.mouse.move(targetX - 1, targetY);
+        await page.mouse.move(targetX, targetY);
+        return await armed;
+      }, "帮助页合成命中区域尚未切换到帮助子帧");
     }
     let frame;
     await check(
@@ -367,17 +392,16 @@ async function run(directory, independent, forcedPlan = null) {
         "关闭链接未恢复主frame焦点",
       );
       frame = await open();
-      // 按实际 iframe 边界点击空白；旧 offset 相对于 html 的边框，
-      // 其外边距折叠后可能与 viewport 原点不同。
+      // 容器顶部外边距为 24px；取外边距中点避开 1px 边框，并确认帮助子帧命中区域就绪后再点击空白。
       const hit = await frame.evaluate(() => {
-        const x = Math.floor(innerWidth / 2), y = 24;
+        const x = Math.floor(innerWidth / 2), y = 12;
         const target = document.elementFromPoint(x, y);
         return { x, y, target: target?.tagName, outside: Boolean(target && !document.querySelector("#dialog").contains(target)) };
       });
+      await waitForPointerSurface(frame, hit);
       const frameElement = await frame.frameElement();
       const box = await frameElement?.boundingBox();
       assert(box && hit.outside, "没有可点击的帮助页空白区域");
-      await waitForPointerSurface(frame);
       await page.mouse.click(box.x + hit.x, box.y + hit.y);
       await wait(async () => !(await isolated("state")).showing, "空白点击未关闭帮助");
       return hit;
@@ -421,13 +445,22 @@ async function run(directory, independent, forcedPlan = null) {
           for (const action of ["left", "middle", "keyboard"]) {
             frame = await open();
             await frame.$eval(selector, (link) => link.scrollIntoView({ block: "center" }));
-            await waitForPointerSurface(frame);
+            const point = await frame.evaluate((sel) => {
+              const link = document.querySelector(sel);
+              const rect = link.getBoundingClientRect();
+              const x = rect.x + rect.width / 2, y = rect.y + rect.height / 2;
+              return { x, y, valid: link.contains(document.elementFromPoint(x, y)) };
+            }, selector);
+            await waitForPointerSurface(frame, point);
             const before = new Set(await browser.pages());
             if (action === "keyboard") {
               await frame.focus(selector);
               await page.keyboard.press("Enter");
             } else {
-              await frame.click(selector, { button: action });
+              const linkFrame = await frame.frameElement();
+              const linkBox = await linkFrame?.boundingBox();
+              assert(linkBox && point.valid, `帮助底部${destination}不在原生点击位置`);
+              await page.mouse.click(linkBox.x + point.x, linkBox.y + point.y, { button: action });
             }
             await wait(async () =>
               frame.url() !== `chrome-extension://${id}/pages/help_dialog_page.html` ||

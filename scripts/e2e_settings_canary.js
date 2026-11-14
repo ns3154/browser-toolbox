@@ -142,7 +142,13 @@ async function open(name, prepare) {
   const page = await session.newPage();
   page.on("pageerror", (error) => pageErrors.push({ page: name, message: error.message }));
   page.on("dialog", (dialog) => {
-    if (dialog.type() === "beforeunload" || dialog.type() === "alert") void dialog.accept();
+    if (typeof page.__onDialog === "function") {
+      const handler = page.__onDialog;
+      page.__onDialog = null;
+      handler(dialog);
+      return;
+    }
+    if (["beforeunload", "alert", "confirm"].includes(dialog.type())) void dialog.accept();
   });
   if (prepare) await prepare(page);
   await page.goto(`chrome-extension://${id}/pages/${name}.html`);
@@ -499,10 +505,10 @@ try {
       );
     }
     let unknownWarning;
-    options.once("dialog", (dialog) => {
+    options.__onDialog = (dialog) => {
       unknownWarning = dialog.type() === "confirm" ? dialog.message() : "";
       void dialog.accept();
-    });
+    };
     await upload(options, {
       settingsVersion: "2.3",
       newTabUrl: "about:newtab",
@@ -519,10 +525,17 @@ try {
     );
     await options.waitForFunction(
       (selector) =>
-        document.querySelector(selector).textContent === BrowserToolboxI18n.message("saved"),
+        document.querySelector(selector).textContent ===
+          BrowserToolboxI18n.message("importSavedWithDraft"),
       { polling: 50 },
       status,
     );
+    assert(
+      await value(options, scroll) === "89" && !(await options.$eval("#save", (el) => el.disabled)),
+      "有草稿时导入未保留表单草稿或错误禁用保存",
+    );
+    await options.reload();
+    await ready(options, currentPlan, true);
     const raw = JSON.parse(await download(options, "#download-backup", "vimium-options.json"));
     assert(
       raw.newTabDestination === "browserNewTabPage" && equal(raw.exclusionRules, []) &&

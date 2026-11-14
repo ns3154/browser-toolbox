@@ -883,6 +883,14 @@ body.browser-toolbox-action-page {
   }
 }
 
+@media (max-width: 360px) {
+  /* 窄屏下模块与工具网格退化为单列，避免文案列被挤压或逐字折行。 */
+  .browser-toolbox-action-page .browser-toolbox-enhancement-grid,
+  .browser-toolbox-action-page .browser-toolbox-tool-buttons {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 340px) {
   .browser-toolbox-action-page .browser-toolbox-action-brand,
   .browser-toolbox-action-page #browser-toolbox-enhancement-summary,

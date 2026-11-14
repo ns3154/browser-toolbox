@@ -39,6 +39,11 @@ jobs:
           CHROME_PATH="${CFT_DIR}/chrome-linux64/chrome"
           test -x "$CHROME_PATH"
           "$CHROME_PATH" --version
+          # Ubuntu 24.04+/26.04 runner 默认启用 AppArmor 非特权 userns 限制，会导致隔离 Chrome 沙箱启动失败。
+          if sysctl -n kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+          "$CHROME_PATH" --headless --dump-dom about:blank >/dev/null
           echo "PUPPETEER_EXECUTABLE_PATH=$CHROME_PATH" >> "$GITHUB_ENV"
       - name: 完整自动化门禁
         run: deno run -A scripts/verify.js --report local-development/tracking/ci-verification.json

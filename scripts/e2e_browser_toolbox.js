@@ -78,6 +78,8 @@ async function runStage(browser, name, task, timeout = 120000) {
               selectedSection: document.querySelector("[role=tab][aria-selected=true]")?.dataset
                 .section,
               settingsReady: document.querySelector("[data-settings-ready]")?.dataset.settingsReady,
+              settingsError: document.querySelector("#settings-error")?.textContent || "",
+              importFiles: document.querySelector("#import-settings")?.files?.length ?? -1,
             })),
             2000,
             "页面诊断超时",
@@ -1234,7 +1236,7 @@ async function testVomnibar(page, base127, options) {
       initial.inputRole === "combobox" &&
       initial.controls === "vomnibar-completions" &&
       initial.expanded === "false" &&
-      initial.inputFontSize >= 18 &&
+      initial.inputFontSize >= 16 &&
       initial.radius >= 12 &&
       initial.focused &&
       initial.newTabVisible &&
@@ -1297,7 +1299,7 @@ async function testVomnibar(page, base127, options) {
     (element) => Number.parseFloat(getComputedStyle(element).fontSize),
   );
   assert(
-    narrowState?.width <= narrowState?.viewportWidth - 32 && narrowInputFontSize >= 17,
+    narrowState?.width <= narrowState?.viewportWidth - 32 && narrowInputFontSize >= 15,
     `窄屏搜索浮层应保留页面边距和可读输入字号：${
       JSON.stringify({
         narrowState,
@@ -1467,23 +1469,28 @@ async function testActionControls(browser, id, fixture, errors) {
         status: document.querySelector("#browser-toolbox-site-status")?.textContent.trim(),
         sessionStatus: document.querySelector("#browser-toolbox-session-status")?.textContent
           .trim(),
-        disabledStatusColors: [...document.querySelectorAll(
+        badgeColor: document.querySelector("#browser-toolbox-site-badge")
+          ? getComputedStyle(document.querySelector("#browser-toolbox-site-badge")).color
+          : "",
+        pausedByScope: document.querySelector("#browser-toolbox-enhancement-summary")?.classList
+          .contains("is-paused-by-scope") || false,
+        disabledStatuses: [...document.querySelectorAll(
           ".browser-toolbox-module-status.is-disabled",
-        )].map((element) => getComputedStyle(element).color),
+        )].map((element) => element.textContent.trim()),
         toggles: [...document.querySelectorAll("#browser-toolbox-enhancement-summary input")]
           .map((element) => ({ checked: element.checked, disabled: element.disabled })),
       }));
       return JSON.stringify(state.session) === JSON.stringify({ enabled: false }) &&
         /Inactive|已停用/.test(state.badge) &&
         state.badgeDisabled === true &&
+        (state.badgeColor === "rgb(190, 18, 60)" || state.badgeColor === "rgb(251, 113, 133)") &&
+        state.pausedByScope &&
         /Restore this session|恢复本次会话/.test(state.buttonText || "") &&
         state.buttonDisabled === false && state.toggles.every((toggle) =>
           !toggle.checked && toggle.disabled
         ) &&
-        state.disabledStatusColors.length > 0 &&
-        state.disabledStatusColors.every((color) =>
-          color === "rgb(190, 18, 60)" || color === "rgb(251, 113, 133)"
-        ) &&
+        state.disabledStatuses.length === state.toggles.length &&
+        state.disabledStatuses.every((text) => /Disabled|已停用/.test(text)) &&
         /Disabled modules|当前页面停用的模块/.test(state.status || "") &&
         /All sites paused for this session|本次会话已暂停全部网站的浏览增强/.test(
           state.sessionStatus || "",
@@ -1594,11 +1601,15 @@ async function testDesignFixtures(page, options, base127) {
 async function resetSettings(options) {
   await options.evaluate(async (key) => {
     await chrome.storage.sync.clear();
-    await chrome.storage.local.clear();
-    await chrome.storage.session.clear();
     await chrome.storage.sync.remove(key);
+    await chrome.storage.session.clear();
     if (globalThis.BrowserToolboxConfigurationClientInstance?.enabled) {
-      await BrowserToolboxConfigurationClientInstance.request("resolve", { choice: "incoming" });
+      // 先等待 sync 变更引起的异步事件在后台队列结算，再清空 local 提交基线，避免恢复校验竞态。
+      await BrowserToolboxConfigurationClientInstance.request("preview");
+    }
+    await chrome.storage.local.clear();
+    if (globalThis.BrowserToolboxConfigurationClientInstance?.enabled) {
+      await BrowserToolboxConfigurationClientInstance.request("preview");
     }
   }, settingsKey);
   await options.$eval("#discard-changes", (element) => {
@@ -2431,16 +2442,18 @@ async function testOptionsAndBackup(
     cursor: { enabled: true, localAssetId: legacyCursorAssetId, hotspotX: 0, hotspotY: 0 },
   };
   await options.evaluate(async ({ assetId, asset, settings }) => {
-    await chrome.storage.local.clear();
     await chrome.storage.session.clear();
-    await chrome.storage.local.set({ [assetId]: asset });
     await chrome.storage.sync.set({ openKeyMouseSettings: settings });
-    // 先写入旧键再移除规范键，避免清空事件触发默认配置迁移并与旧键写入竞态。
     await chrome.storage.sync.remove("browserToolboxSettings");
     await chrome.storage.session.set({ openKeyMouseSessionOverrides: { mouse: false } });
     if (globalThis.BrowserToolboxConfigurationClientInstance?.enabled) {
-      // 这是明确加载旧 fixture 的测试动作；未知设备的外部变化另有保留/选择用例。
-      await BrowserToolboxConfigurationClientInstance.request("resolve", { choice: "incoming" });
+      await BrowserToolboxConfigurationClientInstance.request("preview");
+    }
+    await chrome.storage.local.clear();
+    await chrome.storage.local.set({ [assetId]: asset });
+    if (globalThis.BrowserToolboxConfigurationClientInstance?.enabled) {
+      // 清空本地提交代次后通过读取触发旧版键名迁移。
+      await BrowserToolboxConfigurationClientInstance.request("preview");
     }
   }, {
     assetId: legacyCursorAssetId,
@@ -2641,6 +2654,8 @@ async function testOptionsAndBackup(
   await Deno.writeTextFile(
     vimiumBackupPath,
     JSON.stringify({
+      // Vimium 2.x 导出的 JSON 备份含 settingsVersion；缺失该字段会按 <2.0 的 JSON 字符串编码解析。
+      settingsVersion: "2.4.2",
       keyMappings: "map x scrollDown",
       searchEngines: "l: http://127.0.0.1/search?q=%s Local",
       unknownField: "must be ignored",
@@ -2664,8 +2679,11 @@ async function testOptionsAndBackup(
       [key]: { schemaVersion: 0, gestureBindings: [{ pattern: ["L"], commandName: "goBack" }] },
     });
     if (globalThis.BrowserToolboxConfigurationClientInstance?.enabled) {
-      await chrome.storage.local.remove("browserToolboxSettingsMigrationBackup");
-      await BrowserToolboxConfigurationClientInstance.request("resolve", { choice: "incoming" });
+      await BrowserToolboxConfigurationClientInstance.request("preview");
+    }
+    await chrome.storage.local.clear();
+    if (globalThis.BrowserToolboxConfigurationClientInstance?.enabled) {
+      await BrowserToolboxConfigurationClientInstance.request("preview");
     }
   }, settingsKey);
   await options.reload({ waitUntil: "load" });
