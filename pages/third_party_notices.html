@@ -2,9 +2,68 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="light dark">
     <title data-i18n="thirdPartyNotices">Third-party notices</title>
+    <link rel="stylesheet" href="theme_tokens.css">
+    <style>
+      :root {
+        color-scheme: light dark;
+      }
+      body {
+        margin: 0;
+        padding: 32px 20px 48px;
+        font: 14px/1.65 -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+        color: var(--bt-text, CanvasText);
+        background: var(--bt-bg, Canvas);
+      }
+      a {
+        color: var(--bt-accent, LinkText);
+      }
+      main {
+        max-width: 740px;
+        margin: 0 auto;
+      }
+      h1 {
+        margin: 0 0 12px;
+        font-size: 22px;
+        font-weight: 600;
+        line-height: 1.3;
+      }
+      h2 {
+        margin: 32px 0 16px;
+        padding-top: 20px;
+        border-top: 1px solid var(--bt-border-subtle, color-mix(in srgb, CanvasText 14%, transparent));
+        font-size: 16px;
+        font-weight: 600;
+      }
+      p {
+        margin: 0 0 12px;
+      }
+      ul.notices-links {
+        margin: 16px 0 0;
+        padding-left: 20px;
+      }
+      ul.notices-links li {
+        margin: 6px 0;
+      }
+      dl.notices-breakdown {
+        margin: 0;
+      }
+      dl.notices-breakdown dt {
+        margin-top: 16px;
+        font-weight: 600;
+      }
+      dl.notices-breakdown dt:first-child {
+        margin-top: 0;
+      }
+      dl.notices-breakdown dd {
+        margin: 4px 0 0;
+        opacity: 0.86;
+      }
+    </style>
     <script src="../lib/i18n.js"></script>
+    <script src="../lib/browser_toolbox/theme.js"></script>
     <script src="localized_page.js"></script>
   </head>
   <body>
@@ -12,12 +71,29 @@
       <h1 data-i18n="thirdPartyNotices">Third-party notices</h1>
       <p
         data-i18n="cleanRoomText">Vimium and shoulda.js notices are preserved in the repository. Mouse features are an independent clean-room implementation based only on public behavior descriptions.</p>
-      <ul>
+      <ul class="notices-links">
         <li><a href="../LICENSES/MIT-Vimium.txt" target="_blank" data-i18n="vimiumLicenseNotice">Vimium v2.4.2 code and assets: MIT license</a></li>
         <li><a href="../LICENSES/MIT-shoulda.txt" target="_blank" data-i18n="shouldaLicenseNotice">shoulda.js test framework: MIT license</a></li>
         <li><a href="../LICENSES/ISC-yaml.txt" target="_blank" data-i18n="yamlLicenseNotice">yaml 2.9.1 解析器：ISC 许可证</a></li>
         <li><a href="../LICENSE" target="_blank" data-i18n="licenseGpl">GPL-3.0-or-later</a></li>
       </ul>
+
+      <section aria-labelledby="feature-breakdown-title">
+        <h2 id="feature-breakdown-title" data-i18n="thirdPartyFeatureBreakdownTitle">Components and feature scope</h2>
+        <dl class="notices-breakdown">
+          <dt data-i18n="thirdPartyVimiumHeading">Vimium v2.4.2 (MIT)</dt>
+          <dd data-i18n="thirdPartyVimiumFeatures">Powers keyboard navigation and input modes (normal, insert, visual), Link Hints, keyboard scrolling, in-page find (/), Marks, Vomnibar search with bookmark/history/tab completion, the keyboard HUD, URL exclusion rules, and the legacy options, help dialog, and command listing pages.</dd>
+
+          <dt data-i18n="thirdPartyYamlHeading">yaml 2.9.1 (ISC)</dt>
+          <dd data-i18n="thirdPartyYamlFeatures">Powers local YAML parsing and serialization in the Properties / YAML converter tool.</dd>
+
+          <dt data-i18n="thirdPartyShouldaHeading">shoulda.js (MIT, test only)</dt>
+          <dd data-i18n="thirdPartyShouldaFeatures">Provides the unit-test framework during development and build verification; it is not part of the extension's runtime features.</dd>
+
+          <dt data-i18n="thirdPartySelfHeading">Browser Toolbox modules (GPL-3.0-or-later)</dt>
+          <dd data-i18n="thirdPartySelfFeatures">Independently implemented features: mouse gestures (trail HUD, cancel target, right-click guard, cross-frame bridge), super drag, wheel gestures, rocker gestures, custom pointer cursor, unified command dispatcher and command center, tab list popup, automatic JSON page formatter, 8 offline developer/text/generator/table tools, per-site module rules, configuration schema migration and import recovery, localization, and the unified settings UI.</dd>
+        </dl>
+      </section>
     </main>
   </body>
 </html>

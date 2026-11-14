@@ -67,4 +67,23 @@ context("Gesture session", () => {
     assert.equal(0, result.pattern.length);
     assert.equal(0, result.points.length);
   });
+
+  should("track max distance, duration, and coalesced move batches", () => {
+    const session = new BrowserToolboxGestureSession({
+      activationDistancePx: 10,
+      minimumSegmentDistancePx: 12,
+      sampleDistancePx: 4,
+    });
+    session.start({ x: 0, y: 0 }, 1000);
+    const batch = session.moveBatch([
+      { x: 8, y: 0, t: 1004 },
+      { x: 18, y: 0, t: 1008 },
+      { x: 18, y: 20, t: 1012 },
+    ]);
+    assert.isTrue(batch.activated);
+    assert.equal("ACTIVE", batch.state);
+    assert.equal(["R", "D"], batch.pattern);
+    assert.isTrue(batch.maxDistancePx >= 20);
+    assert.equal(12, batch.durationMs);
+  });
 });

@@ -31,12 +31,25 @@ context("BrowserToolbox DOM integration", () => {
     assert.isTrue(Boolean(popup.querySelector("#browser-toolbox-open-command-center")));
   });
 
-  should("expose exactly three settings groups and fifteen navigable panels", async () => {
+  should("expose exactly four settings groups and twelve navigable panels", async () => {
     const settings = await loadMarkup("../../pages/mouse_options.html");
     const panels = [...settings.querySelectorAll("[data-panel]")].map((panel) => panel.dataset.panel);
-    assert.equal(15, panels.length);
+    assert.equal(12, panels.length);
     assert.equal(
-      ["general", "keyboard", "toolsOverview", "jsonFormatter", "textDiff", "codecTransform", "timeAndId", "search", "appearance", "mouse", "superDrag", "wheel", "siteRules", "privacy", "backupAbout"],
+      [
+        "general",
+        "search",
+        "mouse",
+        "superDrag",
+        "wheel",
+        "keyboard",
+        "appearance",
+        "toolsOverview",
+        "jsonFormatter",
+        "siteRules",
+        "privacy",
+        "backupAbout",
+      ],
       panels,
     );
     assert.equal(6, settings.querySelectorAll("[data-panel=jsonFormatter] input[type=checkbox]").length);
@@ -132,6 +145,11 @@ context("BrowserToolbox DOM integration", () => {
     overlay.setCancelHover(true);
     assert.equal("true", overlay.cancelTarget.dataset.hovered);
     assert.isTrue(overlay.cancel.classList.contains("is-hovered"));
+    assert.isTrue(overlay.stage.classList.contains("is-cancel-hovered"));
+    overlay.setHud("滚动提示", true);
+    assert.isFalse(overlay.stage.classList.contains("is-cancel-hovered"));
+    overlay.setTheme("paper-ink");
+    assert.equal("paper-ink", overlay.root.dataset.btTheme);
     overlay.destroy();
   });
 

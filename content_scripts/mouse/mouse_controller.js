@@ -5,8 +5,10 @@
   const repository = globalThis.BrowserToolboxSettingsRepositoryInstance;
   const runtimeSettings = globalThis.BrowserToolboxSettingsRuntimeClientInstance;
   const recognizer = globalThis.BrowserToolboxGestureRecognizer;
-  const NATIVE_MENU_RETRY_MS = 600;
-  const NATIVE_MENU_RETRY_DISTANCE_PX = 12;
+  const NATIVE_MENU_RETRY_MS = 400;
+  const NATIVE_MENU_RETRY_DISTANCE_PX = 10;
+  const NATIVE_MENU_CLICK_MAX_MS = 320;
+  const NATIVE_MENU_CLICK_MAX_MOVE_PX = 6;
 
   function trusted(event) {
     return globalThis.isUnitTests || event.isTrusted === true;
@@ -33,72 +35,6 @@
     }, extra);
   }
 
-  async function copyText(text) {
-    if (typeof text !== "string" || text.length === 0) {
-      return invocationApi.createResult(false, invocationApi.ERROR_CODES.NO_MATCHING_ELEMENT);
-    }
-    try {
-      await navigator.clipboard.writeText(text);
-      return invocationApi.createResult(true);
-    } catch (_) {
-      const textarea = document.createElement("textarea");
-      textarea.value = text;
-      textarea.style.position = "fixed";
-      textarea.style.opacity = "0";
-      document.documentElement.appendChild(textarea);
-      textarea.select();
-      const ok = document.execCommand?.("copy") === true;
-      textarea.remove();
-      return ok
-        ? invocationApi.createResult(true)
-        : invocationApi.createResult(false, invocationApi.ERROR_CODES.CLIPBOARD_DENIED);
-    }
-  }
-
-  async function executePageInvocation(invocation) {
-    const entry = Object.assign({
-      command: invocation.commandName,
-      options: invocation.options || {},
-    }, globalThis.BrowserToolboxCommandRegistry?.getCommand?.(invocation.commandName) || {});
-    const count = invocation.count || 1;
-    const command = globalThis.NormalModeCommands?.[invocation.commandName];
-    if (typeof command === "function") {
-      await command(count, { registryEntry: entry });
-      return invocationApi.createResult(true);
-    }
-    const context = invocation.context || {};
-    switch (invocation.commandName) {
-      case "BrowserToolbox.copySelection":
-        return copyText(globalThis.getSelection?.()?.toString() || context.selectedText || "");
-      case "BrowserToolbox.copyLinkText":
-        return copyText(context.linkText || "");
-      case "BrowserToolbox.copyLinkUrl":
-      case "BrowserToolbox.copyImageUrl":
-        return copyText(context.linkUrl || context.imageUrl || "");
-      case "BrowserToolbox.downloadImage": {
-        const url = context.imageUrl;
-        if (!invocationApi.isAllowedUrl(url)) {
-          return invocationApi.createResult(
-            false,
-            invocationApi.ERROR_CODES.BLOCKED_URL_SCHEME,
-            url,
-          );
-        }
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "";
-        link.rel = "noreferrer";
-        link.style.display = "none";
-        document.documentElement.appendChild(link);
-        link.click();
-        link.remove();
-        return invocationApi.createResult(true);
-      }
-      default:
-        return invocationApi.createResult(false, invocationApi.ERROR_CODES.UNKNOWN_COMMAND);
-    }
-  }
-
   class MouseController {
     constructor(doc = globalThis.document) {
       this.document = doc;
@@ -117,6 +53,10 @@
       this.nativeDragAttribute = null;
       this.gestureTimeoutId = null;
       this.lastGestureMatch = null;
+      this.captureElement = null;
+      this.capturePointerId = null;
+      this.renderFrameId = null;
+      this.pendingRender = null;
       this.pageshowListener = () => {
         if (!this.initialized || this.listeners.length === 0) this.init();
       };
@@ -150,6 +90,7 @@
           return;
         }
         this.overlay = new globalThis.BrowserToolboxGestureOverlay(this.document);
+        this.overlay.setTheme?.(this.settings?.general?.theme);
         this.guard = new globalThis.BrowserToolboxContextMenuGuard();
         this.wheel = new globalThis.BrowserToolboxWheelGestureController();
         this.rocker = new globalThis.BrowserToolboxRockerGestureController();
@@ -157,6 +98,7 @@
         this.installListeners();
         this.settingsListener = (settings) => {
           this.settings = settings;
+          this.overlay?.setTheme?.(this.settings?.general?.theme);
           this.drag?.updateSettings(this.settings.superDrag);
           if (!this.effective("mouse") && this.gesture) this.cancelAll("settings-disabled");
           this.applyCursor().catch(() => {});
@@ -198,11 +140,13 @@
         this.settings = repository.getEffectiveSettings(url);
       }
       this.drag?.updateSettings(this.settings?.superDrag);
+      this.overlay?.setTheme?.(this.settings?.general?.theme);
       return this.settings;
     }
 
     effective(moduleName) {
-      return this.settings?.effectiveModules?.[moduleName] !== false &&
+      return globalThis.BrowserToolboxRuntimeHostInstance?.maintenancePaused !== true &&
+        this.settings?.effectiveModules?.[moduleName] !== false &&
         this.settings?.general?.enabled !== false;
     }
 
@@ -218,7 +162,11 @@
         this.settings?.mouse?.showCommandHud !== false;
     }
 
-    updateGestureFeedback(result, point) {
+    updateGestureFeedback(
+      result,
+      point,
+      cancelHovered = this.overlay?.isCancelPoint(point) === true,
+    ) {
       const match = recognizer.find(result.pattern, this.settings.mouse.bindings);
       if (match.exact) {
         this.lastGestureMatch = {
@@ -226,7 +174,6 @@
           binding: match.exact,
         };
       }
-      const cancelHovered = this.overlay?.isCancelPoint(point) === true;
       this.overlay?.setCancelHover(cancelHovered);
       if (this.showCommandHud() && match.pattern.length > 0) {
         const displayMatch = cancelHovered && this.lastGestureMatch
@@ -244,8 +191,87 @@
       return { cancelHovered, match };
     }
 
+    captureGesturePointer(event) {
+      if (this.captureElement || !Number.isInteger(event?.pointerId)) return;
+      const target = typeof event.target?.setPointerCapture === "function"
+        ? event.target
+        : this.document?.documentElement;
+      if (typeof target?.setPointerCapture !== "function") return;
+      try {
+        target.setPointerCapture(event.pointerId);
+        this.captureElement = target;
+        this.capturePointerId = event.pointerId;
+      } catch (_) {
+        // 合成事件或已脱离文档的节点不支持指针捕获时降级为普通文档监听。
+        this.captureElement = null;
+        this.capturePointerId = null;
+      }
+    }
+
+    releaseGesturePointer() {
+      const element = this.captureElement;
+      const pointerId = this.capturePointerId;
+      this.captureElement = null;
+      this.capturePointerId = null;
+      if (element == null || pointerId == null) return;
+      try {
+        if (element.hasPointerCapture?.(pointerId)) {
+          element.releasePointerCapture(pointerId);
+        }
+      } catch (_) {
+        // 节点已卸载或指针已释放时静默忽略。
+      }
+    }
+
+    activateGestureFeedback(event, result) {
+      this.captureGesturePointer(event);
+      if (this.settings.mouse.suppressContextMenuAfterActivation !== false) {
+        this.guard.activate();
+      }
+      // 进入 ACTIVE 后才展示取消圆圈与轨迹层，避免普通右键点击或双击菜单闪现取消按钮。
+      this.overlay.showCancel({ label: localizedMessage("cancel", "Cancel") });
+      if (this.settings.mouse.showTrail) {
+        this.overlay.show();
+        if (result.points?.length) this.overlay.draw(result.points);
+      }
+    }
+
+    scheduleGestureRender(result, point) {
+      this.pendingRender = { result, point };
+      if (typeof globalThis.requestAnimationFrame !== "function") {
+        this.flushGestureRender();
+        return;
+      }
+      if (this.renderFrameId != null) return;
+      this.renderFrameId = globalThis.requestAnimationFrame(() => {
+        this.renderFrameId = null;
+        this.flushGestureRender();
+      });
+    }
+
+    cancelPendingGestureRender() {
+      if (this.renderFrameId != null) {
+        globalThis.cancelAnimationFrame?.(this.renderFrameId);
+        this.renderFrameId = null;
+      }
+      this.pendingRender = null;
+    }
+
+    flushGestureRender() {
+      const pending = this.pendingRender;
+      this.pendingRender = null;
+      if (!pending || !this.gesture?.isActive()) return;
+      const { result, point } = pending;
+      // 先读取取消按钮命中状态再更新 HUD，避免同帧读写交错引发强制同步回流。
+      const cancelHovered = this.overlay?.isCancelPoint(point) === true;
+      if (this.settings?.mouse?.showTrail) this.overlay.draw(result.points);
+      this.updateGestureFeedback(result, point, cancelHovered);
+    }
+
     cancelFromTarget(event) {
       this.clearGestureTimeout();
+      this.cancelPendingGestureRender();
+      this.releaseGesturePointer();
       event.preventDefault();
       event.stopPropagation();
       this.gesture?.cancel("cancel-target");
@@ -286,11 +312,27 @@
       this.listen("contextmenu", (event) => this.onContextMenu(event), capture);
       this.listen("wheel", (event) => this.onWheel(event), { capture: true, passive: false });
       this.listen("keydown", (event) => this.onKeyDown(event), capture);
-      this.listen("blur", () => {
-        // Chrome 在超级拖拽起始阶段可能短暂触发页面失焦，保留已分类的拖拽会话。
-        if (this.drag) return;
-        this.cancelAll("blur");
-      }, { capture: true, passive: true });
+      const blurTarget = this.document.defaultView;
+      if (blurTarget?.addEventListener) {
+        const onWindowBlur = () => {
+          // Chrome 在超级拖拽起始阶段可能短暂触发页面失焦，保留已分类的拖拽会话。
+          if (this.drag) return;
+          this.cancelAll("blur");
+        };
+        blurTarget.addEventListener("blur", onWindowBlur, false);
+        this.listeners.push(() => blurTarget.removeEventListener("blur", onWindowBlur, false));
+      } else {
+        this.listen("blur", (event) => {
+          if (this.drag) return;
+          if (
+            event?.target &&
+            event.target !== this.document &&
+            event.target !== this.document.defaultView &&
+            event.target !== globalThis
+          ) return;
+          this.cancelAll("blur");
+        }, { capture: true, passive: true });
+      }
       this.listen("visibilitychange", () => {
         if (this.document.visibilityState !== "visible") this.cancelAll("hidden");
       }, { capture: true, passive: true });
@@ -333,12 +375,12 @@
       }
       if (event.button === gestureButton && this.effective("mouse")) {
         this.clearGestureTimeout();
+        this.cancelPendingGestureRender();
+        this.releaseGesturePointer();
         this.gesture = new globalThis.BrowserToolboxGestureSession(this.settings.mouse);
         this.gesture.start({ x: event.clientX, y: event.clientY }, event.timeStamp || Date.now());
         this.lastGestureMatch = null;
-        // 取消目标是独立的手势控制，不属于方向 HUD；第一次按下即显示。
-        // 快速第二次右键已在上方提前放行，不会创建会话，也不会闪现取消目标。
-        this.overlay.showCancel({ label: localizedMessage("cancel", "Cancel") });
+        // 候选阶段只建立菜单保护和桥接，不闪现取消目标，避免轻点/双击右键弹出菜单时出现视觉闪烁。
         if (capturesEarlyContextMenu) this.guard?.startPendingGesture();
         this.bridge = new globalThis.BrowserToolboxFrameGestureBridge();
         const invocation = invocationApi.createInvocation(
@@ -401,25 +443,42 @@
     onPointerMove(event) {
       if (!trusted(event)) return;
       if (this.gesture) {
-        const result = this.gesture.move(
-          { x: event.clientX, y: event.clientY },
-          event.timeStamp || Date.now(),
-        );
-        if (result.activated) {
-          if (this.settings.mouse.suppressContextMenuAfterActivation !== false) {
-            this.guard.activate();
+        const rawEvents = typeof event.getCoalescedEvents === "function"
+          ? event.getCoalescedEvents()
+          : null;
+        const samples = rawEvents && rawEvents.length > 0 ? rawEvents : [event];
+        let result;
+        if (typeof this.gesture.moveBatch === "function") {
+          result = this.gesture.moveBatch(
+            samples.map((sample) => ({
+              x: sample.clientX,
+              y: sample.clientY,
+              t: sample.timeStamp || event.timeStamp || Date.now(),
+            })),
+            event.timeStamp || Date.now(),
+          );
+        } else {
+          let activatedInBatch = false;
+          for (const sample of samples) {
+            result = this.gesture.move(
+              { x: sample.clientX, y: sample.clientY },
+              sample.timeStamp || event.timeStamp || Date.now(),
+            );
+            if (result.activated) activatedInBatch = true;
           }
-          if (this.settings.mouse.showTrail) this.overlay.show();
+          if (activatedInBatch && result) result.activated = true;
+        }
+        if (result.activated) {
+          this.activateGestureFeedback(event, result);
           event.preventDefault();
           event.stopPropagation();
         }
         if (this.gesture.isActive()) {
           event.preventDefault();
           event.stopPropagation();
-          if (this.settings.mouse.showTrail) this.overlay.draw(result.points);
-          // 激活距离和方向分段阈值不同；只有真正量化出方向后才展开 HUD。
-          this.updateGestureFeedback(result, { x: event.clientX, y: event.clientY });
           this.bridge?.update(result.pattern.at(-1));
+          // 高频指针事件合帧渲染，避免同帧重复绘制与强制回流。
+          this.scheduleGestureRender(result, { x: event.clientX, y: event.clientY });
         }
       }
       if (this.drag) {
@@ -440,6 +499,8 @@
       if (!trusted(event)) return;
       this.wheel?.release(event.button);
       if (this.gesture && event.button === this.gestureButton()) {
+        this.cancelPendingGestureRender();
+        this.releaseGesturePointer();
         if (
           this.gesture.isActive() &&
           this.overlay?.isCancelPoint({ x: event.clientX, y: event.clientY })
@@ -449,9 +510,13 @@
         }
         this.clearGestureTimeout();
         const result = this.gesture.end(event.timeStamp || Date.now());
+        // 仅当本次确实在按下阶段拦下了早到的系统菜单，且是短轻点未发生明显位移时，才允许快速双击弹出原生菜单。
         const shouldArmNativeMenuRetry = result.state === "NATIVE_CONTEXT_MENU" &&
           event.button === 2 &&
-          this.settings.mouse.suppressContextMenuAfterActivation !== false;
+          this.settings.mouse.suppressContextMenuAfterActivation !== false &&
+          this.guard?.earlyContextMenuSuppressed === true &&
+          (result.durationMs ?? 0) <= NATIVE_MENU_CLICK_MAX_MS &&
+          (result.maxDistancePx ?? 0) <= NATIVE_MENU_CLICK_MAX_MOVE_PX;
         if (
           result.state === "COMPLETED" &&
           this.settings.mouse.suppressContextMenuAfterActivation !== false
@@ -535,6 +600,7 @@
     }
 
     onContextMenu(event) {
+      if (this.gestureButton() === 2 && event.button === 0) return;
       if (this.guard?.shouldSuppress()) {
         if (
           this.guard.provisional &&
@@ -547,11 +613,7 @@
             event.timeStamp || Date.now(),
           );
           if (result.activated) {
-            this.guard.activate();
-            if (this.settings.mouse.showTrail) {
-              this.overlay.show();
-              this.overlay.draw(result.points);
-            }
+            this.activateGestureFeedback(event, result);
             this.updateGestureFeedback(result, { x: event.clientX, y: event.clientY });
             this.bridge?.update(result.pattern.at(-1));
           }
@@ -576,15 +638,11 @@
         if (result.state === "ACTIVE") {
           // 浏览器可能先送达已位移坐标的 contextmenu；此时轨迹已经越过阈值，按 ACTIVE 处理。
           if (this.settings.mouse.suppressContextMenuAfterActivation !== false) {
-            this.guard.activate();
             event.preventDefault();
             event.stopPropagation();
             this.guard.consume();
           }
-          if (this.settings.mouse.showTrail) {
-            this.overlay.show();
-            this.overlay.draw(result.points);
-          }
+          this.activateGestureFeedback(event, result);
           this.updateGestureFeedback(result, { x: event.clientX, y: event.clientY });
           this.bridge?.update(result.pattern.at(-1));
           return;
@@ -659,6 +717,8 @@
 
     cancelAll(reason, { preserveRocker = false } = {}) {
       this.clearGestureTimeout();
+      this.cancelPendingGestureRender();
+      this.releaseGesturePointer();
       this.gesture?.cancel(reason);
       this.drag?.cancel();
       this.restoreNativeDrag();
@@ -752,26 +812,7 @@
     }
   }
 
-  globalThis.BrowserToolboxPageExecutor = executePageInvocation;
   globalThis.BrowserToolboxMouseController = MouseController;
-
-  if (chrome.runtime?.onMessage?.addListener) {
-    chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-      if (message?.type !== "browserToolbox.executePageCommand" || !protocol.validate(message)) {
-        return false;
-      }
-      executePageInvocation(message.invocation).then(sendResponse).catch((error) => {
-        sendResponse(
-          invocationApi.createResult(
-            false,
-            invocationApi.ERROR_CODES.COMMAND_FAILED,
-            error.message,
-          ),
-        );
-      });
-      return true;
-    });
-  }
 
   if (
     !globalThis.vimiumDomTestsAreRunning && !globalThis.location?.search?.includes("dom_tests=true")

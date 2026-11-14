@@ -41,8 +41,11 @@
       this.host = null;
       this.root = null;
       this.backdrop = null;
-      this.svg = null;
-      this.path = null;
+      this.canvas = null;
+      this.ctx = null;
+      this.canvasWidth = 0;
+      this.canvasHeight = 0;
+      this.canvasDpr = 0;
       this.stage = null;
       this.hud = null;
       this.gestureBody = null;
@@ -54,6 +57,21 @@
       this.cancelTarget = null;
       this.cancelLabel = null;
       this.lastGesturePattern = "";
+      this.lastCommandLabel = "";
+      this.lastCancelLabel = "";
+      this.lastTrackTier = "";
+      this.gestureHudShown = false;
+      this.cancelHovered = false;
+      this.cancelRect = null;
+      this.resizeListener = null;
+      this.theme = globalThis.BrowserToolboxTheme?.resolveTheme?.(
+        doc?.documentElement?.dataset?.btTheme,
+      ) || "sage-mist";
+    }
+
+    setTheme(theme) {
+      this.theme = globalThis.BrowserToolboxTheme?.resolveTheme?.(theme) || "sage-mist";
+      if (this.root?.dataset) this.root.dataset.btTheme = this.theme;
     }
 
     ensure() {
@@ -67,239 +85,296 @@
         :host { all: initial; }
         [hidden] { display: none !important; }
         .browser-toolbox-root {
+          --bt-ov-bg: #f3f7f4;
+          --bt-ov-border: #c8d8ce;
+          --bt-ov-sep: #d4e2d9;
+          --bt-ov-text: #1b2e24;
+          --bt-ov-muted: #5a7063;
+          --bt-ov-track: #88a093;
+          --bt-ov-accent: #15803d;
+          --bt-ov-shadow: 0 8px 24px rgba(20, 40, 30, .10), 0 1px 3px rgba(20, 40, 30, .06);
+          --bt-ov-cancel-bg: #fff7ed;
+          --bt-ov-cancel-border: #fdba74;
+          --bt-ov-cancel-text: #9a3412;
+          --bt-ov-cancel-track: rgba(154, 52, 18, .55);
+          --bt-ov-cancel-pill-bg: #9a3412;
+          --bt-ov-cancel-pill-text: #fff7ed;
           position: fixed;
           inset: 0;
           z-index: 2147483646;
           pointer-events: none;
-          color-scheme: dark;
+          color-scheme: light dark;
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
           -webkit-font-smoothing: antialiased;
           text-rendering: geometricPrecision;
         }
+        .browser-toolbox-root[data-bt-theme="cobalt"] {
+          --bt-ov-bg: #ffffff;
+          --bt-ov-border: #d4def0;
+          --bt-ov-sep: #e6ebf5;
+          --bt-ov-text: #182032;
+          --bt-ov-muted: #535d73;
+          --bt-ov-track: #94a3b8;
+          --bt-ov-accent: #2d58f5;
+          --bt-ov-shadow: 0 8px 24px rgba(15, 23, 42, .12), 0 1px 3px rgba(15, 23, 42, .06);
+        }
+        .browser-toolbox-root[data-bt-theme="paper-ink"] {
+          --bt-ov-bg: #faf8f5;
+          --bt-ov-border: #dfd6c8;
+          --bt-ov-sep: #eae3d8;
+          --bt-ov-text: #1f1b16;
+          --bt-ov-muted: #6f665a;
+          --bt-ov-track: #a39887;
+          --bt-ov-accent: #b45309;
+          --bt-ov-shadow: 0 8px 24px rgba(41, 31, 20, .12), 0 1px 3px rgba(41, 31, 20, .06);
+          --bt-ov-cancel-bg: #fef2f2;
+          --bt-ov-cancel-border: #fca5a5;
+          --bt-ov-cancel-text: #991b1b;
+          --bt-ov-cancel-track: rgba(153, 27, 27, .55);
+          --bt-ov-cancel-pill-bg: #991b1b;
+          --bt-ov-cancel-pill-text: #fef2f2;
+        }
+        .browser-toolbox-root[data-bt-theme="slate"] {
+          --bt-ov-bg: #ffffff;
+          --bt-ov-border: #d4d4d8;
+          --bt-ov-sep: #e4e4e7;
+          --bt-ov-text: #18181b;
+          --bt-ov-muted: #63636e;
+          --bt-ov-track: #9f9fa9;
+          --bt-ov-accent: #18181b;
+          --bt-ov-shadow: 0 8px 24px rgba(15, 23, 42, .12), 0 1px 3px rgba(15, 23, 42, .06);
+        }
+        @media (prefers-color-scheme: dark) {
+          .browser-toolbox-root {
+            --bt-ov-bg: #141e19;
+            --bt-ov-border: #2b3f34;
+            --bt-ov-sep: #24362c;
+            --bt-ov-text: #e2ece6;
+            --bt-ov-muted: #8ca496;
+            --bt-ov-track: #6f8a7b;
+            --bt-ov-accent: #4ade80;
+            --bt-ov-shadow: 0 10px 28px rgba(0, 0, 0, .42), 0 1px 4px rgba(0, 0, 0, .28);
+            --bt-ov-cancel-bg: #2e160d;
+            --bt-ov-cancel-border: #9a3412;
+            --bt-ov-cancel-text: #fed7aa;
+            --bt-ov-cancel-track: rgba(254, 215, 170, .55);
+            --bt-ov-cancel-pill-bg: #c2410c;
+            --bt-ov-cancel-pill-text: #fff7ed;
+          }
+          .browser-toolbox-root[data-bt-theme="cobalt"] {
+            --bt-ov-bg: #141b2b;
+            --bt-ov-border: #2a3956;
+            --bt-ov-sep: #232e44;
+            --bt-ov-text: #ebf0f9;
+            --bt-ov-muted: #98a6bf;
+            --bt-ov-track: #64748b;
+            --bt-ov-accent: #5b82ff;
+          }
+          .browser-toolbox-root[data-bt-theme="paper-ink"] {
+            --bt-ov-bg: #191714;
+            --bt-ov-border: #352f27;
+            --bt-ov-sep: #2b2620;
+            --bt-ov-text: #f3efe8;
+            --bt-ov-muted: #a69d8f;
+            --bt-ov-track: #857b6d;
+            --bt-ov-accent: #f5b963;
+            --bt-ov-cancel-bg: #311214;
+            --bt-ov-cancel-border: #991b1b;
+            --bt-ov-cancel-text: #fecaca;
+            --bt-ov-cancel-track: rgba(254, 202, 202, .55);
+            --bt-ov-cancel-pill-bg: #b91c1c;
+            --bt-ov-cancel-pill-text: #fef2f2;
+          }
+          .browser-toolbox-root[data-bt-theme="slate"] {
+            --bt-ov-bg: #18181c;
+            --bt-ov-border: #313138;
+            --bt-ov-sep: #27272e;
+            --bt-ov-text: #f4f4f6;
+            --bt-ov-muted: #9f9fa9;
+            --bt-ov-track: #71717a;
+            --bt-ov-accent: #f4f4f6;
+          }
+        }
         .browser-toolbox-backdrop {
           position: absolute;
           inset: 0;
-          background: rgba(11, 15, 24, .24);
+          background: transparent;
         }
-        .browser-toolbox-svg {
+        .browser-toolbox-canvas {
           position: absolute;
           inset: 0;
           width: 100%;
           height: 100%;
-          overflow: visible;
-        }
-        .browser-toolbox-path {
-          fill: none;
-          stroke: #5ca0ff;
-          stroke-width: 4;
-          stroke-linecap: round;
-          stroke-linejoin: round;
-          filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .42));
+          contain: strict;
+          pointer-events: none;
         }
         .browser-toolbox-stage {
           position: fixed;
-          top: 50%;
+          top: 24px;
           left: 50%;
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 28px;
-          width: min(452px, calc(100vw - 24px));
-          transform: translate(-50%, -46%);
+          gap: 10px;
+          max-width: calc(100vw - 24px);
+          transform: translateX(-50%);
+          will-change: transform;
         }
         .browser-toolbox-hud {
           box-sizing: border-box;
-          width: min(420px, calc(100vw - 32px));
-          min-height: 166px;
-          padding: 22px 28px 16px;
+          display: inline-flex;
+          align-items: center;
+          width: auto;
+          max-width: calc(100vw - 32px);
+          min-height: 38px;
+          padding: 7px 16px;
           overflow: hidden;
-          border: 1px solid rgba(226, 232, 240, .36);
-          border-radius: 20px;
-          background: rgba(25, 29, 37, .94);
-          color: #f8fafc;
-          box-shadow:
-            0 22px 48px rgba(2, 6, 23, .34),
-            0 4px 12px rgba(2, 6, 23, .24),
-            inset 0 1px 0 rgba(255, 255, 255, .08);
-          backdrop-filter: blur(18px) saturate(125%);
-          -webkit-backdrop-filter: blur(18px) saturate(125%);
+          border: 1px solid var(--bt-ov-border);
+          border-radius: 999px;
+          background: var(--bt-ov-bg);
+          color: var(--bt-ov-text);
+          box-shadow: var(--bt-ov-shadow);
+          contain: layout style;
+          transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
         }
         .browser-toolbox-hud[data-mode="text"] {
-          width: auto;
-          min-width: 84px;
-          min-height: 0;
-          padding: 9px 14px;
-          border-radius: 10px;
+          min-width: 72px;
+          padding: 7px 15px;
+        }
+        .browser-toolbox-stage.is-cancel-hovered .browser-toolbox-hud {
+          border-color: var(--bt-ov-cancel-border);
+          background: var(--bt-ov-cancel-bg);
+          color: var(--bt-ov-cancel-text);
         }
         .browser-toolbox-gesture-body {
           display: flex;
-          flex-direction: column;
-          align-items: stretch;
+          flex-direction: row;
+          align-items: center;
+          gap: 11px;
+          min-width: 0;
         }
         .browser-toolbox-track {
-          --browser-toolbox-tile-size: 56px;
-          --browser-toolbox-tile-gap: 28px;
+          --browser-toolbox-icon-size: 16px;
+          --browser-toolbox-tile-gap: 4px;
           position: relative;
-          display: flex;
+          display: inline-flex;
+          flex-shrink: 0;
           align-items: center;
-          align-self: center;
           justify-content: center;
           gap: var(--browser-toolbox-tile-gap);
           width: max-content;
-          min-height: var(--browser-toolbox-tile-size);
+          min-height: 22px;
         }
         .browser-toolbox-track.is-dense {
-          --browser-toolbox-tile-size: 44px;
-          --browser-toolbox-tile-gap: 14px;
+          --browser-toolbox-icon-size: 14px;
+          --browser-toolbox-tile-gap: 3px;
         }
         .browser-toolbox-track.is-compact {
-          --browser-toolbox-tile-size: 36px;
-          --browser-toolbox-tile-gap: 7px;
-        }
-        .browser-toolbox-track-line {
-          position: absolute;
-          top: calc(var(--browser-toolbox-tile-size) / 2 - 1.5px);
-          right: calc(var(--browser-toolbox-tile-size) / 2);
-          left: calc(var(--browser-toolbox-tile-size) / 2);
-          height: 3px;
-          border-radius: 999px;
-          background: linear-gradient(90deg, #438cf5, #66aaff);
-          box-shadow: 0 0 9px rgba(82, 150, 255, .58);
+          --browser-toolbox-icon-size: 12px;
+          --browser-toolbox-tile-gap: 2px;
         }
         .browser-toolbox-direction {
-          position: relative;
-          z-index: 1;
           box-sizing: border-box;
-          display: grid;
+          display: inline-grid;
           place-items: center;
-          width: var(--browser-toolbox-tile-size);
-          height: var(--browser-toolbox-tile-size);
-          border: 1px solid rgba(226, 232, 240, .34);
-          border-radius: 15px;
-          background: rgba(255, 255, 255, .055);
-          color: #f8fafc;
-          box-shadow:
-            0 4px 12px rgba(0, 0, 0, .18),
-            inset 0 1px 0 rgba(255, 255, 255, .06);
-        }
-        .browser-toolbox-track.is-dense .browser-toolbox-direction {
-          border-radius: 12px;
-        }
-        .browser-toolbox-track.is-compact .browser-toolbox-direction {
-          border-radius: 10px;
+          width: calc(var(--browser-toolbox-icon-size) + 2px);
+          height: 22px;
+          color: var(--bt-ov-track);
         }
         .browser-toolbox-direction.is-current {
-          border-color: #5da2ff;
-          background: rgba(69, 139, 241, .16);
-          box-shadow:
-            0 0 0 1px rgba(83, 157, 255, .28),
-            0 0 20px rgba(67, 140, 245, .28),
-            inset 0 1px 0 rgba(255, 255, 255, .08);
+          color: var(--bt-ov-accent);
+        }
+        .browser-toolbox-stage.is-cancel-hovered .browser-toolbox-direction {
+          color: var(--bt-ov-cancel-track);
+        }
+        .browser-toolbox-stage.is-cancel-hovered .browser-toolbox-direction.is-current {
+          color: var(--bt-ov-cancel-text);
         }
         .browser-toolbox-direction-icon {
-          width: 30px;
-          height: 30px;
-        }
-        .browser-toolbox-track.is-dense .browser-toolbox-direction-icon {
-          width: 24px;
-          height: 24px;
-        }
-        .browser-toolbox-track.is-compact .browser-toolbox-direction-icon {
-          width: 20px;
-          height: 20px;
+          width: var(--browser-toolbox-icon-size);
+          height: var(--browser-toolbox-icon-size);
         }
         .browser-toolbox-status {
           box-sizing: border-box;
-          display: flex;
+          display: none;
           align-items: center;
-          justify-content: center;
-          gap: 11px;
-          height: 44px;
-          margin-top: 16px;
-          padding-top: 15px;
-          visibility: hidden;
-          border-top: 1px solid rgba(226, 232, 240, .18);
-          color: #f8fafc;
-          font-size: 17px;
-          font-weight: 600;
-          line-height: 1;
+          min-width: 0;
+          max-width: min(360px, 54vw);
+          padding-left: 11px;
+          border-left: 1px solid var(--bt-ov-sep);
+          color: inherit;
+          font-size: 13.5px;
+          font-weight: 500;
+          line-height: 1.25;
           letter-spacing: .01em;
+          white-space: nowrap;
         }
-        .browser-toolbox-status.is-visible { visibility: visible; }
-        .browser-toolbox-status-icon {
-          box-sizing: border-box;
-          display: grid;
-          place-items: center;
-          width: 25px;
-          height: 25px;
-          border-radius: 50%;
-          background: #4f96f5;
-          color: #fff;
-          box-shadow: 0 4px 12px rgba(67, 140, 245, .3);
+        .browser-toolbox-status > span {
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
-        .browser-toolbox-status-icon svg {
-          width: 15px;
-          height: 15px;
+        .browser-toolbox-status.is-visible { display: inline-flex; }
+        .browser-toolbox-stage.is-cancel-hovered .browser-toolbox-status {
+          border-left-color: var(--bt-ov-cancel-border);
         }
         .browser-toolbox-text-body {
-          color: #f8fafc;
+          color: inherit;
           font-size: 13px;
-          font-weight: 600;
+          font-weight: 500;
           line-height: 1.25;
           white-space: pre;
         }
         .browser-toolbox-cancel {
           display: none;
-          flex-direction: column;
           align-items: center;
-          gap: 8px;
+          justify-content: center;
         }
         .browser-toolbox-cancel.is-visible { display: flex; }
         .browser-toolbox-cancel-target {
           box-sizing: border-box;
-          display: grid;
-          place-items: center;
-          width: 64px;
-          height: 64px;
-          border: 1px solid rgba(255, 255, 255, .5);
-          border-radius: 50%;
-          background: #df6468;
-          color: #fff;
-          box-shadow:
-            0 8px 24px rgba(122, 31, 39, .28),
-            inset 0 1px 0 rgba(255, 255, 255, .25);
-          transition: transform 140ms ease, background 140ms ease, box-shadow 140ms ease;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 5px;
+          height: 28px;
+          padding: 0 12px;
+          border: 1px solid var(--bt-ov-border);
+          border-radius: 999px;
+          background: var(--bt-ov-bg);
+          color: var(--bt-ov-muted);
+          box-shadow: var(--bt-ov-shadow);
+          transition: transform 120ms ease, background 120ms ease, border-color 120ms ease, color 120ms ease, box-shadow 120ms ease;
         }
         .browser-toolbox-cancel.is-hovered .browser-toolbox-cancel-target {
-          transform: scale(1.06);
-          background: #ed5d63;
-          box-shadow:
-            0 0 0 12px rgba(238, 93, 99, .17),
-            0 10px 28px rgba(145, 31, 42, .36),
-            inset 0 1px 0 rgba(255, 255, 255, .3);
+          transform: scale(1.04);
+          border-color: var(--bt-ov-cancel-pill-bg);
+          background: var(--bt-ov-cancel-pill-bg);
+          color: var(--bt-ov-cancel-pill-text);
+          box-shadow: 0 6px 16px rgba(154, 52, 18, .22);
         }
         .browser-toolbox-cancel-icon {
-          width: 30px;
-          height: 30px;
+          width: 12px;
+          height: 12px;
+          flex-shrink: 0;
         }
         .browser-toolbox-cancel-label {
-          color: rgba(255, 255, 255, .94);
-          font-size: 14px;
-          font-weight: 600;
+          font-size: 12px;
+          font-weight: 500;
           line-height: 1;
-          letter-spacing: .03em;
-          text-shadow: 0 1px 4px rgba(0, 0, 0, .55);
+          letter-spacing: .01em;
+          white-space: nowrap;
         }
         @media (max-width: 420px) {
-          .browser-toolbox-stage { transform: translate(-50%, -46%) scale(.9); }
+          .browser-toolbox-stage { top: 16px; }
+          .browser-toolbox-hud { padding: 7px 14px; }
         }
         @media (prefers-reduced-motion: reduce) {
+          .browser-toolbox-hud,
           .browser-toolbox-cancel-target { transition: none; }
         }
         @media (forced-colors: active) {
           .browser-toolbox-backdrop { background: transparent; }
           .browser-toolbox-hud,
-          .browser-toolbox-direction,
           .browser-toolbox-cancel-target {
             border: 2px solid CanvasText;
             background: Canvas;
@@ -307,22 +382,21 @@
             box-shadow: none;
             forced-color-adjust: none;
           }
-          .browser-toolbox-track-line,
-          .browser-toolbox-status-icon { background: Highlight; }
+          .browser-toolbox-direction.is-current { color: Highlight; }
+          .browser-toolbox-cancel.is-hovered .browser-toolbox-cancel-target { border-color: Highlight; }
         }
       `;
 
       this.root = this.document.createElement("div");
       this.root.className = "browser-toolbox-root";
+      if (this.root.dataset) this.root.dataset.btTheme = this.theme;
       this.backdrop = this.document.createElement("div");
       this.backdrop.className = "browser-toolbox-backdrop";
       this.backdrop.hidden = true;
 
-      this.svg = this.document.createElementNS(SVG_NS, "svg");
-      this.svg.classList.add("browser-toolbox-svg");
-      this.path = this.document.createElementNS(SVG_NS, "path");
-      this.path.classList.add("browser-toolbox-path");
-      this.svg.appendChild(this.path);
+      this.canvas = this.document.createElement("canvas");
+      this.canvas.className = "browser-toolbox-canvas";
+      this.ctx = this.canvas.getContext?.("2d") || null;
 
       this.stage = this.document.createElement("div");
       this.stage.className = "browser-toolbox-stage";
@@ -340,13 +414,8 @@
       this.statusRow = this.document.createElement("div");
       this.statusRow.className = "browser-toolbox-status";
       this.statusRow.setAttribute("aria-hidden", "true");
-      const statusIcon = this.document.createElement("span");
-      statusIcon.className = "browser-toolbox-status-icon";
-      statusIcon.appendChild(
-        svgIcon(this.document, "M6.5 12.5 10.25 16 17.75 8.5", "browser-toolbox-check-icon"),
-      );
       this.statusLabel = this.document.createElement("span");
-      this.statusRow.append(statusIcon, this.statusLabel);
+      this.statusRow.append(this.statusLabel);
       this.gestureBody.append(this.directionTrack, this.statusRow);
 
       this.textBody = this.document.createElement("div");
@@ -358,31 +427,97 @@
       this.cancel.className = "browser-toolbox-cancel";
       this.cancelTarget = this.document.createElement("div");
       this.cancelTarget.className = "browser-toolbox-cancel-target";
-      this.cancelTarget.appendChild(
-        svgIcon(this.document, "M7 7 17 17 M17 7 7 17", "browser-toolbox-cancel-icon"),
-      );
       this.cancelLabel = this.document.createElement("span");
       this.cancelLabel.className = "browser-toolbox-cancel-label";
-      this.cancel.append(this.cancelTarget, this.cancelLabel);
+      this.cancelTarget.append(
+        svgIcon(this.document, "M7 7 17 17 M17 7 7 17", "browser-toolbox-cancel-icon"),
+        this.cancelLabel,
+      );
+      this.cancel.append(this.cancelTarget);
 
       this.stage.append(this.hud, this.cancel);
-      this.root.append(this.backdrop, this.svg, this.stage);
+      this.root.append(this.backdrop, this.canvas, this.stage);
       shadow.append(style, this.root);
       this.document.documentElement.appendChild(this.host);
+      if (!this.resizeListener) {
+        this.resizeListener = () => {
+          this.cancelRect = null;
+          this.canvasWidth = 0;
+          this.canvasHeight = 0;
+        };
+        globalThis.addEventListener?.("resize", this.resizeListener, { passive: true });
+      }
+    }
+
+    ensureCanvasSize() {
+      if (!this.canvas) return;
+      const width = this.document.documentElement?.clientWidth || globalThis.innerWidth || 0;
+      const height = this.document.documentElement?.clientHeight || globalThis.innerHeight || 0;
+      const dpr = Math.min(globalThis.devicePixelRatio || 1, 3);
+      if (width <= 0 || height <= 0) return;
+      if (width === this.canvasWidth && height === this.canvasHeight && dpr === this.canvasDpr) {
+        return;
+      }
+      this.canvasWidth = width;
+      this.canvasHeight = height;
+      this.canvasDpr = dpr;
+      this.canvas.width = Math.round(width * dpr);
+      this.canvas.height = Math.round(height * dpr);
+      if (!this.ctx) this.ctx = this.canvas.getContext?.("2d") || null;
+    }
+
+    clearCanvas() {
+      if (!this.ctx || !this.canvas) return;
+      this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
     show() {
       this.ensure();
-      if (this.host) this.host.style.display = "block";
+      this.ensureCanvasSize();
+      if (this.host && this.host.style.display !== "block") this.host.style.display = "block";
     }
 
     draw(points) {
       this.ensure();
-      if (!this.path || points.length === 0) return;
-      this.path.setAttribute(
-        "d",
-        points.map((point, index) => `${index ? "L" : "M"}${point.x} ${point.y}`).join(" "),
-      );
+      this.ensureCanvasSize();
+      if (!this.ctx || !Array.isArray(points) || points.length === 0) return;
+      const dpr = this.canvasDpr || 1;
+      const ctx = this.ctx;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+      if (points.length === 1) {
+        ctx.lineTo(points[0].x + 0.01, points[0].y);
+      } else if (points.length === 2) {
+        ctx.lineTo(points[1].x, points[1].y);
+      } else {
+        // 使用二次贝塞尔中点插值平滑折线拐角，减少高速移动时的锯齿感。
+        for (let index = 1; index < points.length - 1; index += 1) {
+          const current = points[index];
+          const next = points[index + 1];
+          ctx.quadraticCurveTo(
+            current.x,
+            current.y,
+            (current.x + next.x) / 2,
+            (current.y + next.y) / 2,
+          );
+        }
+        const last = points[points.length - 1];
+        ctx.lineTo(last.x, last.y);
+      }
+
+      const palette = globalThis.BrowserToolboxTheme?.getPalette?.(this.theme);
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.strokeStyle = palette?.trailHalo || "rgba(255, 255, 255, .78)";
+      ctx.lineWidth = 4.5;
+      ctx.stroke();
+      ctx.strokeStyle = palette?.trail || "#1f7a5c";
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
     }
 
     renderDirections(pattern) {
@@ -392,19 +527,15 @@
       const key = directions.join(">");
       if (key === this.lastGesturePattern) return;
       this.lastGesturePattern = key;
-      this.directionTrack.replaceChildren();
-      this.directionTrack.classList.toggle(
-        "is-dense",
-        directions.length >= 5 && directions.length < 7,
-      );
-      this.directionTrack.classList.toggle("is-compact", directions.length >= 7);
-
-      if (directions.length > 1) {
-        const line = this.document.createElement("span");
-        line.className = "browser-toolbox-track-line";
-        line.setAttribute("aria-hidden", "true");
-        this.directionTrack.appendChild(line);
+      const tier = directions.length >= 7 ? "compact" : directions.length >= 5 ? "dense" : "normal";
+      if (tier !== this.lastTrackTier) {
+        this.lastTrackTier = tier;
+        this.cancelRect = null;
       }
+      this.directionTrack.replaceChildren();
+      this.directionTrack.classList.toggle("is-dense", tier === "dense");
+      this.directionTrack.classList.toggle("is-compact", tier === "compact");
+
       directions.forEach((direction, index) => {
         const tile = this.document.createElement("span");
         tile.className = "browser-toolbox-direction";
@@ -426,17 +557,26 @@
     showCancel({ label = "", hovered = false, reserveHud = true } = {}) {
       this.ensure();
       if (!this.cancel) return;
-      if (reserveHud) {
-        // 取消目标在 PENDING 和 ACTIVE 阶段保持同一坐标；HUD 只预留布局，不提前露出。
+      const wasVisible = this.cancel.classList.contains("is-visible");
+      if (reserveHud && !wasVisible) {
+        // 取消目标在激活阶段保持同一坐标；HUD 只预留布局，尚未形成方向前不提前露出。
         this.hud.dataset.mode = "gesture";
         this.hud.hidden = false;
         this.hud.style.visibility = "hidden";
         this.hud.setAttribute("aria-hidden", "true");
         this.backdrop.hidden = true;
+        this.cancelRect = null;
       }
-      this.cancelLabel.textContent = label || message("cancel", "Cancel");
-      this.cancel.classList.add("is-visible");
-      this.cancel.setAttribute("aria-label", this.cancelLabel.textContent);
+      const nextLabel = label || message("cancel", "Cancel");
+      if (nextLabel !== this.lastCancelLabel) {
+        this.lastCancelLabel = nextLabel;
+        this.cancelLabel.textContent = nextLabel;
+        this.cancel.setAttribute("aria-label", nextLabel);
+      }
+      if (!wasVisible) {
+        this.cancel.classList.add("is-visible");
+        this.cancelRect = null;
+      }
       this.setCancelHover(hovered);
       this.show();
     }
@@ -444,23 +584,33 @@
     setGesture(pattern, commandLabel = "", { cancelLabel = "", cancelHovered = false } = {}) {
       this.ensure();
       if (!this.hud || !Array.isArray(pattern) || pattern.length === 0) return;
-      this.hud.dataset.mode = "gesture";
-      this.hud.hidden = false;
-      this.hud.style.visibility = "visible";
-      this.hud.setAttribute("aria-hidden", "false");
-      this.gestureBody.hidden = false;
-      this.textBody.hidden = true;
-      this.backdrop.hidden = false;
+      if (!this.gestureHudShown) {
+        this.gestureHudShown = true;
+        this.hud.dataset.mode = "gesture";
+        this.hud.hidden = false;
+        this.hud.style.visibility = "visible";
+        this.hud.setAttribute("aria-hidden", "false");
+        this.gestureBody.hidden = false;
+        this.textBody.hidden = true;
+        this.backdrop.hidden = false;
+        this.cancelRect = null;
+      }
       this.renderDirections(pattern);
-      this.statusLabel.textContent = commandLabel;
-      this.statusRow.classList.toggle("is-visible", Boolean(commandLabel));
-      this.statusRow.setAttribute("aria-hidden", commandLabel ? "false" : "true");
+      if (commandLabel !== this.lastCommandLabel) {
+        this.lastCommandLabel = commandLabel;
+        this.statusLabel.textContent = commandLabel;
+        this.statusRow.classList.toggle("is-visible", Boolean(commandLabel));
+        this.statusRow.setAttribute("aria-hidden", commandLabel ? "false" : "true");
+      }
       this.showCancel({ label: cancelLabel, hovered: cancelHovered, reserveHud: false });
     }
 
     setHud(text, visible = true) {
       this.ensure();
       if (!this.hud) return;
+      this.gestureHudShown = false;
+      this.lastCommandLabel = "";
+      this.cancelRect = null;
       this.hud.dataset.mode = "text";
       this.hud.hidden = !visible;
       this.hud.style.visibility = "visible";
@@ -470,30 +620,43 @@
       this.textBody.textContent = text;
       this.backdrop.hidden = true;
       this.cancel.classList.remove("is-visible", "is-hovered");
+      this.stage?.classList.remove("is-cancel-hovered");
+      this.cancelHovered = false;
       if (visible) this.show();
     }
 
     setCancelHover(hovered) {
-      this.cancel?.classList.toggle("is-hovered", Boolean(hovered));
-      if (this.cancelTarget) this.cancelTarget.dataset.hovered = hovered ? "true" : "false";
+      const next = Boolean(hovered);
+      if (next === this.cancelHovered && this.cancelTarget?.dataset.hovered === String(next)) {
+        return;
+      }
+      this.cancelHovered = next;
+      this.stage?.classList.toggle("is-cancel-hovered", next);
+      this.cancel?.classList.toggle("is-hovered", next);
+      if (this.cancelTarget) this.cancelTarget.dataset.hovered = next ? "true" : "false";
     }
 
     isCancelPoint(point, padding = 14) {
       if (!point || !this.cancelTarget || !this.cancel?.classList.contains("is-visible")) {
         return false;
       }
-      const rect = this.cancelTarget.getBoundingClientRect();
-      if (rect.width <= 0 || rect.height <= 0) return false;
+      // 缓存可见期内的取消按钮包围盒，避免每次 pointermove 都触发强制同步回流。
+      let rect = this.cancelRect;
+      if (!rect) {
+        rect = this.cancelTarget.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) this.cancelRect = rect;
+      }
+      if (!rect || rect.width <= 0 || rect.height <= 0) return false;
       return point.x >= rect.left - padding && point.x <= rect.right + padding &&
         point.y >= rect.top - padding && point.y <= rect.bottom + padding;
     }
 
     hide() {
       if (this.host) this.host.style.display = "none";
-      if (this.path) this.path.setAttribute("d", "");
+      this.clearCanvas();
       if (this.backdrop) this.backdrop.hidden = true;
-      if (this.hud) this.hud.hidden = true;
       if (this.hud) {
+        this.hud.hidden = true;
         this.hud.style.visibility = "visible";
         this.hud.setAttribute("aria-hidden", "true");
       }
@@ -504,17 +667,28 @@
         this.statusRow.setAttribute("aria-hidden", "true");
       }
       this.cancel?.classList.remove("is-visible", "is-hovered");
+      this.stage?.classList.remove("is-cancel-hovered");
       this.lastGesturePattern = "";
+      this.lastCommandLabel = "";
+      this.lastCancelLabel = "";
+      this.lastTrackTier = "";
+      this.gestureHudShown = false;
+      this.cancelHovered = false;
+      this.cancelRect = null;
       this.directionTrack?.replaceChildren();
     }
 
     destroy() {
+      if (this.resizeListener) {
+        globalThis.removeEventListener?.("resize", this.resizeListener);
+        this.resizeListener = null;
+      }
       this.host?.remove();
       this.host =
         this.root =
         this.backdrop =
-        this.svg =
-        this.path =
+        this.canvas =
+        this.ctx =
         this.stage =
         this.hud =
         this.gestureBody =
@@ -526,7 +700,16 @@
         this.cancelTarget =
         this.cancelLabel =
           null;
+      this.canvasWidth = 0;
+      this.canvasHeight = 0;
+      this.canvasDpr = 0;
       this.lastGesturePattern = "";
+      this.lastCommandLabel = "";
+      this.lastCancelLabel = "";
+      this.lastTrackTier = "";
+      this.gestureHudShown = false;
+      this.cancelHovered = false;
+      this.cancelRect = null;
     }
   }
 

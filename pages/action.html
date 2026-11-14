@@ -3,9 +3,10 @@
   <head>
     <meta charset="UTF-8">
     <title data-i18n="actionPageTitle">Browser Toolbox</title>
+    <link rel="stylesheet" type="text/css" href="../content_scripts/vimium.css">
+    <link rel="stylesheet" type="text/css" href="theme_tokens.css">
     <link rel="stylesheet" type="text/css" href="options.css">
     <link rel="stylesheet" type="text/css" href="action.css">
-    <link rel="stylesheet" type="text/css" href="../content_scripts/vimium.css">
     <script src="../lib/i18n.js"></script>
     <script src="action.js" type="module"></script>
   </head>
@@ -28,19 +29,23 @@
 
       <section id="browser-toolbox-controls" class="browser-toolbox-action-section browser-toolbox-site-card"
         style="display: none" aria-labelledby="browser-toolbox-current-site-title">
-        <div class="browser-toolbox-section-heading">
-          <div>
-            <span class="browser-toolbox-section-kicker" data-i18n="currentSite">Current site</span>
-            <h2 id="browser-toolbox-current-site-title" data-i18n="currentSite">Current site</h2>
+        <div class="browser-toolbox-site-main">
+          <div class="browser-toolbox-site-copy">
+            <div class="browser-toolbox-section-heading">
+              <div class="browser-toolbox-site-heading-row">
+                <span class="browser-toolbox-section-kicker" data-i18n="currentSite">Current site</span>
+                <h2 id="browser-toolbox-current-site-title" data-i18n="currentSite">Current site</h2>
+                <span id="browser-toolbox-site-badge" class="browser-toolbox-site-badge" aria-live="polite"
+                  data-i18n="active">Active</span>
+              </div>
+            </div>
+            <p id="browser-toolbox-site-status" class="browser-toolbox-site-status"
+              aria-live="polite"></p>
           </div>
-          <span id="browser-toolbox-site-badge" class="browser-toolbox-site-badge" aria-live="polite"
-            data-i18n="active">Active</span>
+          <button id="browser-toolbox-manage-site" class="browser-toolbox-secondary-button"
+            type="button"
+            data-i18n="manageCurrentSite" hidden>Manage this site</button>
         </div>
-        <p id="browser-toolbox-site-status" class="browser-toolbox-site-status"
-          aria-live="polite"></p>
-        <button id="browser-toolbox-manage-site" class="browser-toolbox-secondary-button"
-          type="button"
-          data-i18n="manageCurrentSite" hidden>Manage this site</button>
       </section>
 
       <section id="browser-toolbox-tools" class="browser-toolbox-action-section browser-toolbox-tools-panel"

@@ -28,6 +28,8 @@ const Marks = {
   },
 
   setPreviousPosition() {
+    const controller = globalThis.BrowserToolboxMarksControllerInstance;
+    if (controller?.valid()) return controller.remember();
     const markString = this.getMarkString();
     for (const reg of this.previousPositionRegisters) {
       this.localRegisters[reg] = markString;

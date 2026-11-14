@@ -44,8 +44,10 @@ context("Context menu guard", () => {
     guard.startPendingGesture();
 
     assert.isTrue(guard.provisional);
+    assert.isFalse(guard.earlyContextMenuSuppressed);
     assert.isTrue(guard.shouldSuppress());
     guard.consume();
+    assert.isTrue(guard.earlyContextMenuSuppressed);
     assert.isFalse(guard.contextMenuSeen);
     assert.isTrue(guard.shouldSuppress());
 

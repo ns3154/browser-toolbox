@@ -6,6 +6,21 @@ import { allCommands } from "../../background_scripts/all_commands.js";
 import { HelpDialogPage } from "../../pages/help_dialog_page.js";
 
 context("help dialog", () => {
+  should("引擎销毁取消归焦计时器时也结束等待，不再执行过期焦点", async () => {
+    const scope = new BrowserToolboxRuntime.ResourceScope();
+    let focused = 0;
+    stub(globalThis, "BrowserToolboxUIControllerInstance", null);
+    stub(globalThis, "BrowserToolboxRuntimeHostInstance", {
+      state: "active", runtimeEpoch: 1, engineResources: scope,
+    });
+    stub(globalThis, "focus", () => focused++);
+    const pending = focusThisFrame({ forceFocusThisFrame: true }).then(() => true);
+    scope.dispose();
+    const completed = await Promise.race([pending, new Promise((resolve) => setTimeout(() => resolve(false), 25))]);
+    assert.isTrue(completed);
+    assert.equal(0, focused);
+    assert.equal(0, scope.entries.size);
+  });
   setup(async () => {
     await testHelper.jsdomStub("pages/help_dialog_page.html");
     HelpDialogPage.dialogElement = null;

@@ -1,4 +1,7 @@
 // The table-editor used for exclusion rules.
+const preservedExclusionRules = new WeakMap();
+let preservedExclusionWarningId = 0;
+
 const ExclusionRulesEditor = {
   // When the Add rule button is clicked, use this as the pattern for the new rule. This is used by
   // the action.html toolbar popup.
@@ -20,14 +23,13 @@ const ExclusionRulesEditor = {
       el.remove();
     }
 
-    const rowTemplate = document.querySelector("#exclusion-rule-template").content;
     for (const rule of exclusionRules) {
-      this.addRow(rule.pattern, rule.passKeys);
+      this.addRow(rule.pattern, rule.passKeys, rule);
     }
   },
 
   // `pattern` and `passKeys` are optional.
-  addRow(pattern, passKeys) {
+  addRow(pattern, passKeys, originalRule = null) {
     const rulesTable = document.querySelector("#exclusion-rules");
     const rowTemplate = document.querySelector("#exclusion-rule-template").content;
     const rowEl = rowTemplate.cloneNode(true);
@@ -49,13 +51,32 @@ const ExclusionRulesEditor = {
     }
     keysEl.addEventListener("input", () => this.dispatchEvent("input"));
 
+    const removeButton = rowEl.querySelector(".remove");
     if (i18n) {
-      rowEl.querySelector(".remove")?.setAttribute(
+      removeButton?.setAttribute(
         "aria-label",
         i18n.message("removeRule"),
       );
     }
-    rowEl.querySelector(".remove").addEventListener("click", (e) => {
+    if (
+      originalRule &&
+      Object.keys(originalRule).some((key) => key !== "pattern" && key !== "passKeys")
+    ) {
+      // 未知附加字段无法安全编辑；行快照随行保留，防止保存或导出时丢失。
+      const row = rowEl.querySelector("tr.rule");
+      preservedExclusionRules.set(row, structuredClone(originalRule));
+      patternEl.readOnly = keysEl.readOnly = true;
+      removeButton.disabled = true;
+      const warning = document.createElement("div");
+      warning.className = "exclusion-preserved-warning";
+      warning.id = `browser-toolbox-exclusion-preserved-${++preservedExclusionWarningId}`;
+      warning.textContent = i18n?.message("exclusionRulePreserved") ||
+        "This rule contains unsupported fields and is preserved as read-only. Restore its backup with a version that supports those fields.";
+      patternEl.setAttribute("aria-describedby", warning.id);
+      keysEl.setAttribute("aria-describedby", warning.id);
+      patternEl.parentElement.append(warning);
+    }
+    removeButton.addEventListener("click", (e) => {
       e.target.closest("tr").remove();
       this.dispatchEvent("input");
     });
@@ -65,17 +86,16 @@ const ExclusionRulesEditor = {
   // Returns an array of rules, which can be stored in Settings.
   getRules() {
     const rows = Array.from(document.querySelectorAll("#exclusion-rules tr.rule"));
-    const rules = rows
-      .map((el) => {
-        return {
-          // The ordering of these keys should match the order in defaultOptions in Settings.js.
-          passKeys: el.querySelector("[name=passKeys]").value.trim(),
-          pattern: el.querySelector("[name=pattern]").value.trim(),
-        };
-      })
-      // Exclude blank patterns.
-      .filter((rule) => rule.pattern);
-    return rules;
+    return rows.flatMap((el) => {
+      const preserved = preservedExclusionRules.get(el);
+      if (preserved) return [structuredClone(preserved)];
+      const rule = {
+        // The ordering of these keys should match the order in defaultOptions in Settings.js.
+        passKeys: el.querySelector("[name=passKeys]").value.trim(),
+        pattern: el.querySelector("[name=pattern]").value.trim(),
+      };
+      return rule.pattern ? [rule] : [];
+    });
   },
 };
 

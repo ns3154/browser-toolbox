@@ -6,6 +6,25 @@ import "../test_helper.js";
 import "../../../content_scripts/mouse/frame_gesture_bridge.js";
 
 context("Frame gesture bridge", () => {
+  should("旧通道已排队的消息和断开不能批准或清除新的手势", async () => {
+    const ports = [createPort(), createPort()];
+    const bridge = new BrowserToolboxFrameGestureBridge({
+      runtimeApi: { connect: () => ports.shift() },
+    });
+    bridge.start("synthetic-first");
+    const lateMessage = bridge.messageListener;
+    const lateDisconnect = bridge.disconnectListener;
+    bridge.start("synthetic-second");
+    const currentPort = bridge.port;
+    lateMessage({ accepted: true });
+    lateDisconnect();
+    assert.equal(currentPort, bridge.port);
+    assert.equal("synthetic-second", bridge.requestId);
+    assert.isTrue(bridge.resolveReady != null);
+    currentPort.emitMessage({ accepted: true });
+    assert.isTrue(await bridge.waitUntilReady());
+    bridge.close();
+  });
   function createPort() {
     const messageListeners = [];
     const disconnectListeners = [];

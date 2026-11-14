@@ -223,7 +223,13 @@ import * as userSearchEngines from "../user_search_engines.js";
       return this.openUrl(searchUrl, disposition !== "background", tab);
     }
 
-    async executeExisting(commandName, invocation, sender, backgroundCommands) {
+    async executeExisting(
+      commandName,
+      invocation,
+      sender,
+      backgroundCommands,
+      executionGuard = null,
+    ) {
       const tab = await this.getTab(invocation, sender);
       if (!tab) return invocationApi.createResult(false, invocationApi.ERROR_CODES.NO_ACTIVE_TAB);
       const command = backgroundCommands?.[commandName];
@@ -243,13 +249,16 @@ import * as userSearchEngines from "../user_search_engines.js";
           tabId: tab.id,
           registryEntry,
           url: invocation.context?.linkUrl,
+          executionGuard,
         }, sender || {});
         return invocationApi.createResult(true);
       } catch (error) {
         return invocationApi.createResult(
           false,
-          invocationApi.ERROR_CODES.COMMAND_FAILED,
-          error.message,
+          invocation.protocolVersion === 2
+            ? "RESULT_UNKNOWN"
+            : invocationApi.ERROR_CODES.COMMAND_FAILED,
+          invocation.protocolVersion === 2 ? undefined : error.message,
         );
       }
     }

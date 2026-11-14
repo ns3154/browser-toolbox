@@ -369,7 +369,7 @@
     "message": "Restaurar valores predeterminados"
   },
   "restoreDefaultsConfirm": {
-    "message": "¿Restaurar los ajustes predeterminados de Browser Toolbox?"
+    "message": "¿Restaurar los ajustes predeterminados de Browser Toolbox? Las imágenes anteriores del puntero permanecen en este dispositivo."
   },
   "importSettings": {
     "message": "Importar ajustes"
@@ -518,8 +518,65 @@
   "noCursorAsset": {
     "message": "No se ha elegido ningún puntero local."
   },
+  "localCursorTitle": {
+    "message": "Imágenes locales del puntero"
+  },
+  "localCursorNote": {
+    "message": "Usa la imagen revisada en el borrador o expórtala. Ambas opciones usan el contenido recién revisado; para aplicarla hay que guardar. La lista no indica si una imagen está en uso."
+  },
+  "localCursorSelect": {
+    "message": "Elegir una imagen local"
+  },
+  "localCursorRefresh": {
+    "message": "Actualizar imágenes"
+  },
+  "localCursorMore": {
+    "message": "Cargar más"
+  },
+  "localCursorView": {
+    "message": "Revisar imagen seleccionada"
+  },
+  "localCursorUse": {
+    "message": "Usar imagen revisada"
+  },
+  "localCursorDraftPreview": {
+    "message": "Imagen local seleccionada (sin guardar)"
+  },
+  "localCursorDraft": {
+    "message": "La imagen se añadió al borrador. Guarda los ajustes para aplicarla; la imagen original permanece en el dispositivo."
+  },
+  "localCursorExport": {
+    "message": "Exportar imagen revisada"
+  },
+  "localCursorItem": {
+    "message": "Imagen local $1"
+  },
+  "localCursorListed": {
+    "message": "Se cargaron $1 registros de imágenes locales."
+  },
+  "localCursorEmpty": {
+    "message": "No se encontraron imágenes locales del puntero."
+  },
+  "localCursorUnavailable": {
+    "message": "La lista de imágenes locales no está disponible. Los datos existentes no cambiaron."
+  },
+  "localCursorUnreadable": {
+    "message": "Este registro no se puede leer como imagen compatible. Los datos originales permanecen en el dispositivo."
+  },
+  "localCursorPreviewed": {
+    "message": "El navegador puede mostrar esta imagen. Se exportará el contenido recién revisado."
+  },
+  "localCursorOriginalOnly": {
+    "message": "No se puede mostrar esta imagen. Puedes exportar sus bytes originales como archivo .bin."
+  },
+  "localCursorExported": {
+    "message": "Se exportó el contenido revisado. Los datos locales no cambiaron."
+  },
+  "cursorRetentionNote": {
+    "message": "Al reemplazar o desactivar el puntero, restaurar valores o importar ajustes, las imágenes anteriores permanecen en este dispositivo. Ocupan almacenamiento local de la extensión; aún no hay una limpieza segura."
+  },
   "resetCursor": {
-    "message": "Eliminar puntero local"
+    "message": "Desactivar puntero actual"
   },
   "wheelThreshold": {
     "message": "Umbral de la rueda"
@@ -2462,6 +2519,24 @@
   "vomnibarHintClose": {
     "message": "Cerrar"
   },
+  "vomnibarHintOpenNewTab": {
+    "message": "Abrir en nueva pestaña"
+  },
+  "generalTheme": {
+    "message": "Tema"
+  },
+  "themeSageMist": {
+    "message": "Niebla de salvia (predeterminado)"
+  },
+  "themeCobalt": {
+    "message": "Azul cobalto"
+  },
+  "themePaperInk": {
+    "message": "Papel cálido y tinta"
+  },
+  "themeSlate": {
+    "message": "Pizarra minimalista"
+  },
   "appearance": {
     "message": "Apariencia"
   },
@@ -2615,22 +2690,874 @@
   "languageSpanish": {
     "message": "Español"
   },
-  "syncQuotaItemExceeded": {"message": "Los ajustes superan el límite de sincronización de 8 KiB por elemento. Desactiva la sincronización de la caja de herramientas para guardarlos en este dispositivo, o exporta primero una copia de seguridad.", "description": "项目体验完善文案"},
-  "syncQuotaTotalExceeded": {"message": "El almacenamiento de sincronización del navegador está lleno. Desactiva la sincronización de la caja de herramientas para guardarlos en este dispositivo, o exporta primero una copia de seguridad.", "description": "项目体验完善文案"},
-  "toolTimeUnit": {"message": "Unidad de la marca de tiempo", "description": "项目体验完善文案"},
-  "toolTimeLocalOutput": {"message": "Resultado de hora local", "description": "项目体验完善文案"},
-  "toolTimeUnixOutput": {"message": "Resultado de marca de tiempo Unix", "description": "项目体验完善文案"},
-  "toolTimeFiletimeOutput": {"message": "Resultado FILETIME", "description": "项目体验完善文案"},
-  "onboardingTools": {"message": "Abre el formateador JSON, la comparación de texto o la conversión de configuración desde el panel de la extensión. Todas las herramientas procesan los datos localmente.", "description": "项目体验完善文案"},
-  "onboardingPauseTitle": {"message": "Si hay conflictos con una página", "description": "项目体验完善文案"},
-  "onboardingPause": {"message": "Pausa las funciones de teclado y ratón en todos los sitios desde el panel y reanúdalas cuando termines. Para ajustar un solo sitio, elige «Gestionar este sitio», revisa la regla y guárdala.", "description": "项目体验完善文案"},
-  "sessionAllSites": {"message": "Todos los sitios · Esta sesión", "description": "会话与站点入口文案"},
-  "sessionScopeHint": {"message": "Los cambios temporales afectan a todos los sitios. Restaura para usar los ajustes guardados.", "description": "会话与站点入口文案"},
-  "restoreSession": {"message": "Restaurar esta sesión", "description": "会话与站点入口文案"},
-  "sessionUpdating": {"message": "Actualizando…", "description": "会话与站点入口文案"},
-  "sessionUpdateFailed": {"message": "No se pudo actualizar esta sesión. Inténtalo de nuevo.", "description": "会话与站点入口文案"},
-  "manageCurrentSite": {"message": "Gestionar este sitio", "description": "会话与站点入口文案"},
-  "siteRuleShortcutInvalid": {"message": "El parámetro del sitio no es válido. Abre este acceso desde la ventana emergente de la extensión en una página web normal.", "description": "会话与站点入口文案"},
-  "siteRuleShortcutDraft": {"message": "Se ha creado un borrador de regla para este sitio. Ajústalo y guárdalo cuando esté listo.", "description": "会话与站点入口文案"},
-  "siteRuleShortcutExisting": {"message": "Se ha seleccionado la regla existente de este sitio. Guarda después de realizar cambios.", "description": "会话与站点入口文案"}
+  "syncQuotaItemExceeded": {
+    "message": "Los ajustes superan el límite de sincronización de 8 KiB por elemento. Desactiva la sincronización de la caja de herramientas para guardarlos en este dispositivo, o exporta primero una copia de seguridad.",
+    "description": "项目体验完善文案"
+  },
+  "syncQuotaTotalExceeded": {
+    "message": "El almacenamiento de sincronización del navegador está lleno. Desactiva la sincronización de la caja de herramientas para guardarlos en este dispositivo, o exporta primero una copia de seguridad.",
+    "description": "项目体验完善文案"
+  },
+  "toolTimeUnit": {
+    "message": "Unidad de la marca de tiempo",
+    "description": "项目体验完善文案"
+  },
+  "toolTimeLocalOutput": {
+    "message": "Resultado de hora local",
+    "description": "项目体验完善文案"
+  },
+  "toolTimeUnixOutput": {
+    "message": "Resultado de marca de tiempo Unix",
+    "description": "项目体验完善文案"
+  },
+  "toolTimeFiletimeOutput": {
+    "message": "Resultado FILETIME",
+    "description": "项目体验完善文案"
+  },
+  "onboardingTools": {
+    "message": "Abre el formateador JSON, la comparación de texto o la conversión de configuración desde el panel de la extensión. Todas las herramientas procesan los datos localmente.",
+    "description": "项目体验完善文案"
+  },
+  "onboardingPauseTitle": {
+    "message": "Si hay conflictos con una página",
+    "description": "项目体验完善文案"
+  },
+  "onboardingPause": {
+    "message": "Pausa las funciones de teclado y ratón en todos los sitios desde el panel y reanúdalas cuando termines. Para ajustar un solo sitio, elige «Gestionar este sitio», revisa la regla y guárdala.",
+    "description": "项目体验完善文案"
+  },
+  "sessionAllSites": {
+    "message": "Todos los sitios · Esta sesión",
+    "description": "会话与站点入口文案"
+  },
+  "sessionScopeHint": {
+    "message": "Los cambios temporales afectan a todos los sitios. Restaura para usar los ajustes guardados.",
+    "description": "会话与站点入口文案"
+  },
+  "restoreSession": {
+    "message": "Restaurar esta sesión",
+    "description": "会话与站点入口文案"
+  },
+  "sessionUpdating": {
+    "message": "Actualizando…",
+    "description": "会话与站点入口文案"
+  },
+  "sessionUpdateFailed": {
+    "message": "No se pudo actualizar esta sesión. Inténtalo de nuevo.",
+    "description": "会话与站点入口文案"
+  },
+  "manageCurrentSite": {
+    "message": "Gestionar este sitio",
+    "description": "会话与站点入口文案"
+  },
+  "siteRuleShortcutInvalid": {
+    "message": "El parámetro del sitio no es válido. Abre este acceso desde la ventana emergente de la extensión en una página web normal.",
+    "description": "会话与站点入口文案"
+  },
+  "siteRuleShortcutDraft": {
+    "message": "Se ha creado un borrador de regla para este sitio. Ajústalo y guárdalo cuando esté listo.",
+    "description": "会话与站点入口文案"
+  },
+  "siteRuleShortcutExisting": {
+    "message": "Se ha seleccionado la regla existente de este sitio. Guarda después de realizar cambios.",
+    "description": "会话与站点入口文案"
+  },
+  "runtimeMaintenance": {
+    "message": "Mantenimiento del entorno",
+    "description": "兼容运行时维护入口"
+  },
+  "runtimeMaintenanceNote": {
+    "message": "Si la navegación por teclado deja de funcionar, restaura el motor compatible. Guarda lo escrito antes de recargar manualmente las páginas antiguas.",
+    "description": "兼容运行时维护入口"
+  },
+  "runtimeInspect": {
+    "message": "Comprobar el estado",
+    "description": "兼容运行时维护入口"
+  },
+  "runtimeRestore": {
+    "message": "Restaurar el motor compatible",
+    "description": "兼容运行时维护入口"
+  },
+  "runtimeStatus": {
+    "message": "Motor compatible · plan $1 · marcos activos $2 · marcos fallidos $3 · marcos que requieren recarga $4",
+    "description": "兼容运行时维护入口"
+  },
+  "runtimePending": {
+    "message": "La recuperación de $1 marcos sigue pendiente. Compruébalo más tarde y vuelve a intentarlo si es necesario.",
+    "description": "运行时维护仍在处理的提示"
+  },
+  "runtimeUnavailable": {
+    "message": "El servicio en segundo plano no está disponible. Guarda lo escrito, recarga la extensión y después las páginas afectadas.",
+    "description": "兼容运行时维护入口"
+  },
+  "configurationInspect": {
+    "message": "Comprobar configuración"
+  },
+  "configurationRollback": {
+    "message": "Preparar reversión compatible"
+  },
+  "configurationIncoming": {
+    "message": "Usar cambios externos"
+  },
+  "configurationCommitted": {
+    "message": "Conservar configuración guardada"
+  },
+  "configurationSaveFirst": {
+    "message": "Guarda o descarta los cambios de la página antes de resolver la configuración."
+  },
+  "configurationConflict": {
+    "message": "Se detectaron cambios externos. Se mantiene la última configuración válida. Las opciones de resolución están temporalmente desactivadas para proteger los datos."
+  },
+  "configurationExportConflict": {
+    "message": "Exportar observación del conflicto"
+  },
+  "configurationConflictExportNote": {
+    "message": "El archivo contiene la configuración, pero no los recursos locales de puntero separados ni las claves superiores desconocidas. No se puede importar como copia de seguridad."
+  },
+  "configurationConflictExported": {
+    "message": "Observación exportada. Los datos y el registro del conflicto se conservan."
+  },
+  "conflictObservationList": {
+    "message": "Observaciones locales de conflictos"
+  },
+  "conflictObservationNote": {
+    "message": "Las observaciones guardadas contienen ajustes compatibles, sin recursos de puntero separados ni borradores sin guardar. No se pueden importar directamente. La hora local es orientativa; los campos desconocidos solo se marcan y los datos pueden cambiar al sincronizar."
+  },
+  "conflictObservationRefresh": {
+    "message": "Actualizar observaciones"
+  },
+  "conflictObservationCapture": {
+    "message": "Guardar observación actual"
+  },
+  "conflictObservationExport": {
+    "message": "Exportar observación seleccionada"
+  },
+  "conflictObservationSaved": {
+    "message": "Observación de ajustes guardada"
+  },
+  "conflictObservationUnsupported": {
+    "message": "Solo marcador; contenido no guardado"
+  },
+  "conflictObservationQuotaMarker": {
+    "message": "Solo marcador: espacio insuficiente para el contenido"
+  },
+  "conflictObservationInvalid": {
+    "message": "El registro no es válido o está dañado. Sigue bloqueando la escritura; conserva el registro original."
+  },
+  "conflictObservationListed": {
+    "message": "Se muestran $1 observaciones locales."
+  },
+  "conflictObservationEmpty": {
+    "message": "No hay observaciones locales de conflictos."
+  },
+  "conflictObservationCaptured": {
+    "message": "Observación local guardada. No demuestra su origen ni un instante atómico; el conflicto sigue sin resolverse."
+  },
+  "conflictObservationOnlyMarker": {
+    "message": "Hay campos no verificables y solo se guardó un marcador. Los datos pueden cambiar al sincronizar; exporta ahora la observación actual si es necesario."
+  },
+  "conflictObservationQuota": {
+    "message": "No hay espacio local o se alcanzó el límite de conservación. No se guardó el contenido y puede quedar solo un marcador de bloqueo. Exporta ahora la observación porque podría dejar de estar disponible."
+  },
+  "conflictObservationFailed": {
+    "message": "No se pudo verificar el guardado local. Exporta ahora la observación porque podría dejar de estar disponible."
+  },
+  "conflictObservationNotCaptured": {
+    "message": "Aún no hay una observación local guardada. Puedes guardar o exportar la actual."
+  },
+  "conflictObservationExported": {
+    "message": "Observación seleccionada exportada. Se conserva el registro original."
+  },
+  "conflictReviewOpen": {
+    "message": "Revisar observación"
+  },
+  "conflictReviewTitle": {
+    "message": "Revisar observación guardada"
+  },
+  "conflictReviewNote": {
+    "message": "Son observaciones guardadas en este dispositivo y pueden omitir cambios de sincronización recientes, campos desconocidos o borradores. No hay una base común fiable: elige cada diferencia; las listas se eligen completas. La copia candidata no incluye recursos locales del puntero y lo desactiva al importar. Exportarla no modifica los ajustes ni libera la protección del conflicto."
+  },
+  "conflictReviewExport": {
+    "message": "Exportar copia candidata"
+  },
+  "conflictReviewCommitted": {
+    "message": "Valor confirmado guardado"
+  },
+  "conflictReviewObserved": {
+    "message": "Valor observado guardado"
+  },
+  "conflictReviewMissing": {
+    "message": "No presente"
+  },
+  "conflictReviewChoose": {
+    "message": "Elige un valor para cada diferencia antes de exportar."
+  },
+  "conflictReviewNoChanges": {
+    "message": "Las observaciones guardadas no tienen diferencias que elegir."
+  },
+  "conflictReviewTooLarge": {
+    "message": "La observación es demasiado grande para revisarla aquí. Expórtala; los datos originales siguen protegidos."
+  },
+  "conflictReviewChanged": {
+    "message": "La observación guardada cambió o no se puede verificar. Actualiza la lista y revísala de nuevo."
+  },
+  "conflictReviewInvalid": {
+    "message": "Las elecciones no forman una configuración candidata válida. Revísalas; los datos originales no cambiaron."
+  },
+  "conflictReviewExported": {
+    "message": "Copia candidata exportada. Se conservan las observaciones y la protección del conflicto."
+  },
+  "configurationUnavailable": {
+    "message": "No se puede guardar la configuración ahora. Conserva los datos existentes, exporta una copia y vuelve a intentarlo."
+  },
+  "configurationStatus": {
+    "message": "Configuración guardada (revisión $1). Los ajustes actuales permiten una reversión compatible."
+  },
+  "configurationExport": {
+    "message": "Exportar configuración de recuperación"
+  },
+  "configurationBaselineExported": {
+    "message": "Solo se exportó la configuración anterior a la migración. No incluye cambios posteriores."
+  },
+  "runtimeStatusCanary": {
+    "message": "Canary de entrada · plan $1 · marcos activos $2 · marcos fallidos $3 · marcos que requieren recarga $4",
+    "description": "输入试用运行时的脱敏状态"
+  },
+  "markUnavailable": {
+    "message": "No se puede acceder a la marca.",
+    "description": "标记存储失败或运行时不可用时的提示"
+  },
+  "recoveryPageLink": {
+    "message": "Estado de recuperación y diagnóstico",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryPageTitle": {
+    "message": "Estado de recuperación",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryPageIntro": {
+    "message": "Consulta los registros locales de recuperación incluso si el proceso en segundo plano no está disponible.",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryPagePrivacy": {
+    "message": "El resumen del estado de recuperación no verifica la integridad. El diagnóstico descargado solo incluye la versión de la extensión y los estados de los registros, nunca ajustes ni contenido de páginas.",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryRecordCompatibilityConflicts": {
+    "message": "Observaciones locales de conflictos"
+  },
+  "recoveryCompatibilityConflictCount": {
+    "message": "Se encontraron $1 registros; no se ha comprobado su integridad."
+  },
+  "recoveryRecordConfiguration": {
+    "message": "Guardado de configuración",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryRecordRollback": {
+    "message": "Reversión de compatibilidad",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryRecordSync": {
+    "message": "Preparación de sincronización del teclado",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryNotChecked": {
+    "message": "Sin comprobar",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryStateAbsent": {
+    "message": "Sin registro",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryStatePending": {
+    "message": "En curso o pendiente de recuperación",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryStateCommitted": {
+    "message": "El registro indica que terminó",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryStateAborted": {
+    "message": "El registro indica que se detuvo",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryStateInvalid": {
+    "message": "Formato de registro no reconocido",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryStateUnsupported": {
+    "message": "Versión de registro no compatible",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryConflictLabel": {
+    "message": "Conflicto indicado",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryBlocked": {
+    "message": "Hay un registro de migración que puede impedir guardar ajustes. Conserva los registros y las copias de seguridad.",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryNoBlock": {
+    "message": "No se encontró ningún registro independiente de publicación o reversión. Esto no verifica la integridad de la configuración.",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryReadUnavailable": {
+    "message": "No se pudieron leer los registros locales de recuperación. Esta página no ha modificado datos.",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryInspect": {
+    "message": "Comprobar de nuevo",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryExport": {
+    "message": "Exportar diagnóstico sin datos privados",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryExported": {
+    "message": "El diagnóstico está listo para descargar.",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryExportFailed": {
+    "message": "No se pudo descargar el diagnóstico.",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryBack": {
+    "message": "Volver a ajustes",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "legacyBackupUnknownFields": {
+    "message": "La copia contiene campos no reconocidos que no se importarán. El archivo original no se modificará. ¿Importar los ajustes reconocidos?",
+    "description": "旧键盘备份的未知字段提示"
+  },
+  "legacyBackupUnsupportedRules": {
+    "message": "Algunos campos de las reglas de exclusión no se pueden conservar de forma segura. No se importó ningún ajuste; conserva la copia original.",
+    "description": "旧键盘备份的排除规则字段提示"
+  },
+  "legacyBackupPreview": {
+    "message": "Revisa los campos antes de importar. El archivo original no se modificará. ¿Continuar?",
+    "description": "旧键盘备份导入预览"
+  },
+  "legacyBackupRecognizedFields": {
+    "message": "Campos para importar",
+    "description": "旧键盘备份识别字段"
+  },
+  "legacyBackupConvertedFields": {
+    "message": "Campos convertidos",
+    "description": "旧键盘备份转换字段"
+  },
+  "legacyBackupErrorFields": {
+    "message": "Campos no válidos",
+    "description": "旧键盘备份错误字段"
+  },
+  "legacyBackupInvalidFields": {
+    "message": "Algunos campos de la copia no son válidos. No se importó ningún ajuste; conserva la copia original.",
+    "description": "旧键盘备份无效字段提示"
+  },
+  "beforeImportBackups": {
+    "message": "Copias locales anteriores a la importación",
+    "description": "导入前本机备份"
+  },
+  "beforeImportBackupsNote": {
+    "message": "Antes de importar se guardan en este dispositivo los ajustes y la imagen local del puntero si está disponible. Puedes añadir la imagen de una copia al borrador o exportarla por separado. Los archivos de ajustes no incluyen imágenes. Las imágenes anteriores ocupan almacenamiento local; aún no hay una limpieza segura.",
+    "description": "导入前本机备份"
+  },
+  "refreshBackupList": {
+    "message": "Actualizar copias",
+    "description": "导入前本机备份"
+  },
+  "exportSelectedBackup": {
+    "message": "Exportar copia seleccionada",
+    "description": "导入前本机备份"
+  },
+  "importBackupInvalid": {
+    "message": "La copia está dañada o usa un formato no compatible",
+    "description": "导入前本机备份"
+  },
+  "importBackupExported": {
+    "message": "Copia exportada. No incluye la imagen local del puntero.",
+    "description": "导入前本机备份"
+  },
+  "importBackupAssetMissing": {
+    "message": "Falta la imagen local original del puntero",
+    "description": "导入前本机备份"
+  },
+  "configurationBackupQuota": {
+    "message": "No hay espacio reservado suficiente para las copias de configuración, por lo que se detuvo la operación. Exporta las copias que necesites conservar; esta versión aún no puede eliminarlas.",
+    "description": "导入前本机备份"
+  },
+  "configurationLocalQuota": {
+    "message": "No hay espacio suficiente en el almacenamiento local de la extensión, por lo que se detuvo la operación. No se eliminaron los ajustes ni las copias existentes.",
+    "description": "导入前本机备份"
+  },
+  "importBackupUnsupported": {
+    "message": "Esta copia contiene campos que esta versión no puede importar; conserva el archivo exportado",
+    "description": "导入前备份兼容限制"
+  },
+  "beforeImportBackupSelect": {
+    "message": "Elige una copia",
+    "description": "导入前备份选择"
+  },
+  "importBackupAssetInvalid": {
+    "message": "La imagen local original del puntero no es válida o no se puede comprobar",
+    "description": "导入前备份指针资源提示"
+  },
+  "previewImportBackup": {
+    "message": "Revisar diferencias de restauración",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "useBackupCursor": {
+    "message": "Usar imagen del puntero de la copia"
+  },
+  "importBackupCursorLoading": {
+    "message": "Leyendo la imagen de la copia…"
+  },
+  "importBackupCursorUseInvalid": {
+    "message": "No se puede previsualizar la imagen de la copia ni añadirla al borrador. La copia original no cambió."
+  },
+  "importBackupCursorUseFailed": {
+    "message": "No se pudo leer la imagen de la copia. La copia original no cambió."
+  },
+  "exportBackupCursor": {
+    "message": "Exportar imagen del puntero",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupPreviewIntro": {
+    "message": "Esta vista previa no restaura los ajustes ni demuestra su origen entre dispositivos.",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupPreviewKeyboard": {
+    "message": "Campos de teclado diferentes",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupToolboxChanged": {
+    "message": "Los ajustes de la caja de herramientas son diferentes.",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupToolboxSame": {
+    "message": "Los ajustes de la caja de herramientas coinciden.",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupPreviewCursor": {
+    "message": "Puntero de la copia",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorNone": {
+    "message": "No hay una imagen local de puntero referenciada.",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorMissing": {
+    "message": "Falta la imagen local original.",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorInvalid": {
+    "message": "La firma o las dimensiones PNG no superaron la comprobación.",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorUnchecked": {
+    "message": "No se pudo comprobar la imagen del puntero.",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorHeaderValid": {
+    "message": "La firma y las dimensiones PNG son válidas; no se ha comprobado la decodificación completa.",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorChanged": {
+    "message": "La configuración o imagen actual del puntero es diferente.",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorDecodeFailed": {
+    "message": "Los datos de la imagen no son Base64 válidos. No se descargó nada y la copia original se conserva.",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorExported": {
+    "message": "Imagen del puntero exportada. Si se abre correctamente, selecciónala de nuevo en Apariencia y guarda.",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorExportedInvalid": {
+    "message": "Datos originales exportados. No superaron la comprobación de firma o dimensiones PNG y podrían no servir como puntero.",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "recoveryConflictDetails": {
+    "message": "Detalles del conflicto de solo lectura",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictDetailsIntro": {
+    "message": "Requiere el servicio en segundo plano. Los estados corresponden a esta lectura; no se aplican elecciones, no se desbloquea la escritura ni se demuestra el origen entre dispositivos.",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryInspectRollbackConflict": {
+    "message": "Inspeccionar campos de reversión",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryInspectSyncConflict": {
+    "message": "Inspeccionar campos sincronizados",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictSelect": {
+    "message": "Aquí se puede inspeccionar una transacción terminada o detenida.",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictLoading": {
+    "message": "Comprobando los detalles de la transacción…",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictUnavailable": {
+    "message": "No se pudo inspeccionar. El servicio puede no estar disponible, o los registros, las copias o los datos actuales pueden ser inválidos o haber cambiado. Esta comprobación no modifica nada.",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictUnchanged": {
+    "message": "Número de campos iguales antes y después",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictBefore": {
+    "message": "Coincide con el valor anterior",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictAfter": {
+    "message": "Coincide con el valor posterior",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictOther": {
+    "message": "Difiere de ambos valores",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictAbsent": {
+    "message": "Ausente",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictMatching": {
+    "message": "Coincide con el registro",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictDifferent": {
+    "message": "Difiere del registro",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictIndex": {
+    "message": "Índice de sincronización",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictChunks": {
+    "message": "Fragmentos coincidentes / ausentes / distintos",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryOtherSyncChanged": {
+    "message": "Otros datos sincronizados difieren del registro.",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryOtherSyncSame": {
+    "message": "En esta lectura, otros datos sincronizados coinciden con el registro.",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryLocalChanged": {
+    "message": "Los datos locales de la caja de herramientas difieren del registro.",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryLocalSame": {
+    "message": "En esta lectura, los datos locales de la caja de herramientas coinciden con el registro.",
+    "description": "事务冲突只读分类"
+  },
+  "exclusionRulePreserved": {
+    "message": "Esta regla contiene campos que esta versión no puede editar. Se conserva como solo lectura. Restaura una copia con estos campos usando una versión compatible.",
+    "description": "排除规则附加字段的保留提示"
+  },
+  "configurationExistingRulesProtected": {
+    "message": "Importación detenida: las reglas actuales contienen campos que esta versión no puede sustituir de forma segura. Se conservan los ajustes y la copia; usa una versión compatible.",
+    "description": "导入保护现有排除规则附加字段"
+  },
+  "importSavedWithDraft": {
+    "message": "La importación terminó. Se conservan los cambios no guardados del formulario; al guardarlos se comprobarán los conflictos con los ajustes importados.",
+    "description": "导入成功后保留未保存表单草稿"
+  },
+  "thirdPartyFeatureBreakdownTitle": {
+    "message": "Componentes y alcance funcional",
+    "description": "第三方声明页面功能对照标题"
+  },
+  "thirdPartyVimiumHeading": {
+    "message": "Vimium v2.4.2 (licencia MIT)",
+    "description": "Vimium 第三方声明条目标题"
+  },
+  "thirdPartyVimiumFeatures": {
+    "message": "Gestiona la navegación por teclado y sus modos (normal, inserción y visual), Link Hints, desplazamiento con teclado, búsqueda en página (/), marcas, Vomnibar con autocompletado de marcadores/historial/pestañas, barra HUD de teclado, reglas de exclusión y las páginas clásicas de opciones, ayuda y comandos.",
+    "description": "Vimium 所承载的功能清单"
+  },
+  "thirdPartyYamlHeading": {
+    "message": "yaml 2.9.1 (licencia ISC)",
+    "description": "yaml 解析器第三方声明条目标题"
+  },
+  "thirdPartyYamlFeatures": {
+    "message": "Proporciona el análisis y la generación local de YAML en la herramienta de conversión entre Properties y YAML.",
+    "description": "yaml 解析器所承载的功能"
+  },
+  "thirdPartyShouldaHeading": {
+    "message": "shoulda.js (licencia MIT, solo pruebas)",
+    "description": "shoulda.js 第三方声明条目标题"
+  },
+  "thirdPartyShouldaFeatures": {
+    "message": "Se utiliza únicamente como marco de pruebas unitarias durante el desarrollo y la compilación; no forma parte del tiempo de ejecución de la extensión.",
+    "description": "shoulda.js 的使用范围"
+  },
+  "thirdPartySelfHeading": {
+    "message": "Módulos propios de Browser Toolbox (GPL-3.0-or-later)",
+    "description": "本项目自研模块标题"
+  },
+  "thirdPartySelfFeatures": {
+    "message": "Funciones desarrolladas de forma independiente: gestos del ratón (trazo, HUD, zona de cancelación, compatibilidad con doble clic derecho y puente entre iframes), súper arrastre, gestos con rueda, gestos rocker, puntero personalizado, despachador unificado y centro de comandos, lista de pestañas, formateador automático de documentos JSON, 8 utilidades locales sin conexión (JSON, Properties/YAML, diff de texto, códecs/resúmenes, conversión de fechas, generador de IDs, contraseñas y tablas), reglas por sitio, migración y recuperación de configuración, localización y nueva interfaz de ajustes.",
+    "description": "浏览器工具箱自研功能清单"
+  },
+  "command_scrollDown": {
+    "message": "Desplazar hacia abajo"
+  },
+  "command_scrollUp": {
+    "message": "Desplazar hacia arriba"
+  },
+  "command_scrollPageDown": {
+    "message": "Desplazar media página hacia abajo"
+  },
+  "command_scrollPageUp": {
+    "message": "Desplazar media página hacia arriba"
+  },
+  "command_scrollLeft": {
+    "message": "Desplazar a la izquierda"
+  },
+  "command_scrollRight": {
+    "message": "Desplazar a la derecha"
+  },
+  "command_scrollToLeft": {
+    "message": "Desplazar hasta el extremo izquierdo"
+  },
+  "command_scrollToRight": {
+    "message": "Desplazar hasta el extremo derecho"
+  },
+  "command_copyCurrentUrl": {
+    "message": "Copiar la URL actual al portapapeles"
+  },
+  "command_openCopiedUrlInCurrentTab": {
+    "message": "Abrir la URL del portapapeles en la pestaña actual"
+  },
+  "command_openCopiedUrlInNewTab": {
+    "message": "Abrir la URL del portapapeles en una pestaña nueva"
+  },
+  "command_goUp": {
+    "message": "Subir un nivel en la jerarquía de URL"
+  },
+  "command_goToRoot": {
+    "message": "Ir a la raíz de la jerarquía de URL actual"
+  },
+  "command_enterInsertMode": {
+    "message": "Entrar en modo de inserción"
+  },
+  "command_enterVisualMode": {
+    "message": "Entrar en modo visual"
+  },
+  "command_enterVisualLineMode": {
+    "message": "Entrar en modo de línea visual"
+  },
+  "command_passNextKey": {
+    "message": "Pasar la siguiente tecla a la página"
+  },
+  "command_focusInput": {
+    "message": "Enfocar el primer campo de texto de la página"
+  },
+  "command_LinkHints_activateMode": {
+    "message": "Abrir un enlace en la pestaña actual"
+  },
+  "command_LinkHints_activateModeToOpenInNewTab": {
+    "message": "Abrir un enlace en una pestaña nueva"
+  },
+  "command_LinkHints_activateModeToOpenInNewForegroundTab": {
+    "message": "Abrir un enlace en una pestaña nueva y cambiar a ella"
+  },
+  "command_LinkHints_activateModeWithQueue": {
+    "message": "Abrir varios enlaces en pestañas nuevas"
+  },
+  "command_LinkHints_activateModeToDownloadLink": {
+    "message": "Descargar la URL del enlace"
+  },
+  "command_LinkHints_activateModeToOpenIncognito": {
+    "message": "Abrir un enlace en una ventana de incógnito"
+  },
+  "command_LinkHints_activateModeToCopyLinkUrl": {
+    "message": "Copiar la URL de un enlace al portapapeles"
+  },
+  "command_goPrevious": {
+    "message": "Seguir el enlace etiquetado como anterior o <"
+  },
+  "command_goNext": {
+    "message": "Seguir el enlace etiquetado como siguiente o >"
+  },
+  "command_nextFrame": {
+    "message": "Seleccionar el siguiente marco de la página"
+  },
+  "command_mainFrame": {
+    "message": "Seleccionar el marco principal de la página"
+  },
+  "command_Marks_activateCreateMode": {
+    "message": "Crear una nueva marca"
+  },
+  "command_Marks_activateGotoMode": {
+    "message": "Ir a una marca"
+  },
+  "command_Vomnibar_activate": {
+    "message": "Abrir URL, marcador o entrada del historial"
+  },
+  "command_Vomnibar_activateInNewTab": {
+    "message": "Abrir URL, marcador o entrada del historial en una pestaña nueva"
+  },
+  "command_Vomnibar_activateBookmarks": {
+    "message": "Abrir un marcador"
+  },
+  "command_Vomnibar_activateBookmarksInNewTab": {
+    "message": "Abrir un marcador en una pestaña nueva"
+  },
+  "command_Vomnibar_activateTabSelection": {
+    "message": "Buscar entre las pestañas abiertas"
+  },
+  "command_Vomnibar_activateEditUrl": {
+    "message": "Editar la URL actual"
+  },
+  "command_Vomnibar_activateEditUrlInNewTab": {
+    "message": "Editar la URL actual y abrir en una pestaña nueva"
+  },
+  "command_enterFindMode": {
+    "message": "Entrar en modo de búsqueda"
+  },
+  "command_performFind": {
+    "message": "Ir a la siguiente coincidencia"
+  },
+  "command_performBackwardsFind": {
+    "message": "Ir a la coincidencia anterior"
+  },
+  "command_findSelected": {
+    "message": "Buscar el texto seleccionado"
+  },
+  "command_findSelectedBackwards": {
+    "message": "Buscar hacia atrás el texto seleccionado"
+  },
+  "command_createTab": {
+    "message": "Crear una pestaña nueva"
+  },
+  "command_visitPreviousTab": {
+    "message": "Ir a la pestaña visitada anteriormente"
+  },
+  "command_firstTab": {
+    "message": "Ir a la primera pestaña"
+  },
+  "command_lastTab": {
+    "message": "Ir a la última pestaña"
+  },
+  "command_duplicateTab": {
+    "message": "Duplicar la pestaña actual"
+  },
+  "command_togglePinTab": {
+    "message": "Fijar o desfijar la pestaña actual"
+  },
+  "command_toggleMuteTab": {
+    "message": "Silenciar o activar sonido de la pestaña actual"
+  },
+  "command_moveTabToNewWindow": {
+    "message": "Mover pestaña a una ventana nueva"
+  },
+  "command_closeTabsOnLeft": {
+    "message": "Cerrar las pestañas de la izquierda"
+  },
+  "command_closeTabsOnRight": {
+    "message": "Cerrar las pestañas de la derecha"
+  },
+  "command_closeOtherTabs": {
+    "message": "Cerrar todas las demás pestañas"
+  },
+  "command_moveTabLeft": {
+    "message": "Mover pestaña a la izquierda"
+  },
+  "command_moveTabRight": {
+    "message": "Mover pestaña a la derecha"
+  },
+  "command_setZoom": {
+    "message": "Establecer nivel de zoom"
+  },
+  "command_zoomIn": {
+    "message": "Acercar"
+  },
+  "command_zoomOut": {
+    "message": "Alejar"
+  },
+  "command_zoomReset": {
+    "message": "Restablecer zoom"
+  },
+  "command_toggleViewSource": {
+    "message": "Ver código fuente de la página"
+  },
+  "command_showHelp": {
+    "message": "Mostrar ayuda"
+  },
+  "navBasicPreferences": {
+    "message": "Preferencias básicas"
+  },
+  "navInteractionEnhancement": {
+    "message": "Interacciones"
+  },
+  "navToolsAndRendering": {
+    "message": "Herramientas y formato"
+  },
+  "navRulesAndData": {
+    "message": "Reglas y datos"
+  },
+  "generalAndTheme": {
+    "message": "General y tema"
+  },
+  "shortcutToolsConfig": {
+    "message": "Herramientas rápidas"
+  },
+  "pageAutoFormatter": {
+    "message": "Formato automático"
+  },
+  "privacyStatement": {
+    "message": "Aviso de privacidad"
+  },
+  "searchEnginesDescription": {
+    "message": "Asigna palabras clave cortas a tus buscadores para consultarlos directamente desde el lanzador rápido (Vomnibar)."
+  },
+  "searchStep1Kicker": {
+    "message": "Paso 1 · Configura y guarda"
+  },
+  "searchStep1Title": {
+    "message": "Edita las reglas abajo"
+  },
+  "searchStep1Desc": {
+    "message": "Una regla por línea con el formato \"clave: url [nombre]\" (ej. bd: https://www.baidu.com/s?wd=%s Baidu) y haz clic en Guardar."
+  },
+  "searchStep2Kicker": {
+    "message": "Paso 2 · Abre en cualquier página"
+  },
+  "searchStep2Title": {
+    "message": "Pulsa o (pestaña actual) u O (nueva pestaña)"
+  },
+  "searchStep2Desc": {
+    "message": "Abre el lanzador rápido (requiere activar la navegación por teclado o abrirlo mediante gesto/centro de comandos)."
+  },
+  "searchStep3Kicker": {
+    "message": "Paso 3 · Busca con la clave"
+  },
+  "searchStep3Title": {
+    "message": "Escribe bd consulta y pulsa Intro"
+  },
+  "searchStep3Desc": {
+    "message": "Escribe la palabra clave seguida de un espacio para elegir Baidu, añade tu búsqueda y pulsa Intro."
+  },
+  "searchRulesLabel": {
+    "message": "Reglas de búsqueda personalizadas"
+  },
+  "searchSyntaxFormatLabel": {
+    "message": "Sintaxis de línea"
+  },
+  "searchSyntaxFormatDesc": {
+    "message": "Formato: clave: URL [nombre] (ej. bd: https://www.baidu.com/s?wd=%s Baidu). %s codifica la consulta, %S la conserva sin codificar y, si falta, se añade al final."
+  },
+  "searchSyntaxCommentLabel": {
+    "message": "Comentarios y guardado"
+  },
+  "searchSyntaxCommentDesc": {
+    "message": "Las líneas que empiezan por # o \" se ignoran como comentarios; haz clic en Guardar para aplicar los cambios."
+  }
 }

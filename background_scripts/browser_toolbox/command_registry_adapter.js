@@ -1,5 +1,5 @@
 // 命令注册表是设置页、帮助页、输入适配器和 Dispatcher 共用的唯一命令元数据来源。
-import { allCommands } from "../all_commands.js";
+import "../../lib/browser_toolbox/command_definitions.js";
 
 /**
  * 统一命令注册项的公共元数据。
@@ -14,11 +14,14 @@ import { allCommands } from "../all_commands.js";
  * @property {boolean} dangerous 是否危险命令。
  */
 (function () {
+  const definitions = globalThis.BrowserToolboxCommandDefinitions;
   const supportedDefaults = ["keyboard", "mouseGesture", "superDrag", "wheel", "rocker", "ui"];
   const i18nKey = (name) => `command_${name.replaceAll(".", "_")}`;
   const browserToolboxPrefix = "BrowserToolbox.";
 
   function commandFromUpstream(command) {
+    const explicit = definitions.getCommand(command.name);
+    if (explicit) return Object.assign({}, explicit);
     return Object.assign({}, command, {
       title: command.desc,
       i18nKey: i18nKey(command.name),
@@ -48,8 +51,8 @@ import { allCommands } from "../all_commands.js";
   function withBrowserToolboxCommands(commands) {
     const list = commands.slice();
     const existing = new Set(list.map((command) => command?.name));
-    // 自定义测试注册表也必须包含产品命令，但命令定义只保留在 all_commands.js 一处。
-    for (const command of allCommands) {
+    // 自定义测试注册表仍包含产品命令，执行契约只从独立声明读取。
+    for (const command of definitions.listCommands()) {
       if (command.name.startsWith(browserToolboxPrefix) && !existing.has(command.name)) {
         list.push(command);
       }
@@ -62,7 +65,7 @@ import { allCommands } from "../all_commands.js";
    * @param {Array<Object>} [commands] 上游命令清单。
    * @returns {Array<BrowserToolboxCommandMetadata>} 规范化注册项。
    */
-  function createRegistry(commands = allCommands) {
+  function createRegistry(commands = definitions.listCommands()) {
     return assertUniqueCommands(withBrowserToolboxCommands(commands)).map(commandFromUpstream);
   }
 

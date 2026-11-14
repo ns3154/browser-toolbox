@@ -53,6 +53,22 @@ context("Settings runtime client", () => {
 
   teardown(() => BrowserToolboxI18n.setLocale("auto"));
 
+  should("首读默认快照逐次隔离，子框架副本始终安全关闭", () => {
+    const original = JSON.stringify(BrowserToolboxSettingsSchema.DEFAULT_SETTINGS);
+    for (const top of [true, false]) {
+      const { client } = createHarness(() => null, null, () => top);
+      try {
+        const first = client.getSettings();
+        first.general.enabled = !top;
+        first.exclusionRules.push({ pattern: "*", passKeys: "" });
+        const second = client.getSettings();
+        assert.equal(top, second.general.enabled);
+        assert.equal(original, JSON.stringify(BrowserToolboxSettingsSchema.DEFAULT_SETTINGS));
+        if (!top) assert.isTrue(Object.values(second.effectiveModules).every((enabled) => enabled === false));
+      } finally { client.destroy(); }
+    }
+  });
+
   should("apply new languages to content scripts after settings notifications", async () => {
     let language = "zh_TW";
     const { client, listeners } = createHarness(() => settingsWithHud(true, language));

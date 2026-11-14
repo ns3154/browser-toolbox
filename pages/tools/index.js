@@ -1505,6 +1505,8 @@
 
   async function init() {
     await globalThis.BrowserToolboxI18n?.applyStoredLocale?.(document);
+    await globalThis.BrowserToolboxTheme?.applyStoredTheme?.(document);
+    globalThis.BrowserToolboxTheme?.watchTheme?.(document);
     const params = new URLSearchParams(location.search);
     const toolId = params.get("tool") || registry.TOOL_IDS[0];
     descriptor = registry.get(toolId) || registry.get(registry.TOOL_IDS[0]);

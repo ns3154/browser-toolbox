@@ -1,4 +1,5 @@
 import "../lib/utils.js";
+import "../lib/browser_toolbox/configuration_client.js";
 import "../lib/settings.js";
 import "../lib/url_utils.js";
 import "../lib/i18n.js";
@@ -8,6 +9,7 @@ import "../lib/browser_toolbox/tools/tool_registry.js";
 import "../lib/browser_toolbox/tools/tool_registry_validator.js";
 import "../lib/browser_toolbox/command_invocation.js";
 import "../lib/browser_toolbox/message_protocol.js";
+import "../lib/browser_toolbox/runtime_plan.js";
 import "../lib/browser_toolbox/settings_schema.js";
 import "../lib/browser_toolbox/regex_safety.js";
 import "../lib/browser_toolbox/module_registry.js";
@@ -27,8 +29,14 @@ import "./browser_toolbox/tool_launcher.js";
 import "./browser_toolbox/tool_context_menu_manager.js";
 import "./browser_toolbox/command_registry_adapter.js";
 import "./browser_toolbox/browser_command_adapter.js";
+import "./browser_toolbox/request_ledger.js";
+import "./browser_toolbox/document_authority.js";
 import "./browser_toolbox/command_dispatcher.js";
 import "./browser_toolbox/gesture_frame_coordinator.js";
+import "./browser_toolbox/runtime_maintenance.js";
+import "../content_scripts/mouse/cursor_controller.js";
+import "./browser_toolbox/configuration_writer.js";
+import { TransitionArchive as ReadOnlyTransitionArchive } from "./browser_toolbox/transition_archive.js";
 import { Commands } from "../background_scripts/commands.js";
 import * as exclusions from "../background_scripts/exclusions.js";
 import "../background_scripts/completion/search_engines.js";
@@ -197,10 +205,12 @@ function getTabIndex(tab, tabs) {
 //
 async function selectSpecificTab(request) {
   const tab = await chrome.tabs.get(request.id);
+  if (request.executionGuard) await request.executionGuard();
   // Focus the tab's window. TODO(philc): Why are we null-checking chrome.windows here?
   if (chrome.windows != null) {
     await chrome.windows.update(tab.windowId, { focused: true });
   }
+  if (request.executionGuard) await request.executionGuard();
   await chrome.tabs.update(request.id, { active: true });
 }
 
@@ -226,6 +236,7 @@ function createRepeatCommand(command) {
     const r = Object.assign({}, request);
     delete r.count;
     while (i >= 0) {
+      if (request.executionGuard) await request.executionGuard();
       i--;
       await command(r);
     }
@@ -389,7 +400,20 @@ const BackgroundCommands = {
     chrome.tabs.setZoom(tabId, 0); // setZoom of 0 sets to the tab default.
   },
 
-  async nextFrame({ count, tabId }) {
+  async nextFrame(request, sender) {
+    const { count: requestedCount, tabId } = request;
+    let count = requestedCount;
+    if (globalThis.BrowserToolboxRuntimePlans?.COMPILED_UI_CANARY) {
+      const source = await browserToolboxDocumentAuthority.compatible(sender);
+      const allowsPlan = (version) => BrowserToolboxRuntimePlans.allowed.some((plan) =>
+        plan.planVersion === version && plan.moduleImplementations.frameFocus === "browser-toolbox");
+      if (allowsPlan(source.planVersion)) {
+        browserToolboxFrameFocusService ||= new BrowserToolboxFrameFocusService({
+          api: chrome, authority: browserToolboxDocumentAuthority, allowsPlan,
+        });
+        return browserToolboxFrameFocusService.next(request, sender);
+      }
+    }
     // We're assuming that these frames are returned in the order that they appear on the page. This
     // seems to be the case empirically. If it's ever needed, we could also sort by frameId.
     let frameIds = await getFrameIdsForTab(tabId);
@@ -453,6 +477,25 @@ const BackgroundCommands = {
 };
 
 const browserToolboxSettingsRepository = globalThis.BrowserToolboxSettingsRepositoryInstance;
+if (!globalThis.isUnitTests) {
+  globalThis.BrowserToolboxConfigurationWriterInstance = new BrowserToolboxConfigurationStore
+    .ConfigurationWriter({
+    storage: chrome.storage,
+    defaults: () => Settings.defaultOptions,
+    migrateLegacy: (value) => Settings.migrateSettingsIfNecessary(value),
+    migrateToolbox: (value) => BrowserToolboxSettingsMigrations.migrate(value),
+    validateToolbox: (value) =>
+      BrowserToolboxSettingsValidator.assertValid(value, BrowserToolboxCommandRegistry),
+    onCommit: (snapshot) => {
+      Settings._settings = snapshot.keyboard;
+      Settings.configurationRevision = snapshot.revision;
+      browserToolboxSettingsRepository.settings = snapshot.toolboxSource.value;
+      browserToolboxSettingsRepository.storageArea = snapshot.toolboxSource.area;
+      Settings.dispatchEvent("change");
+      browserToolboxSettingsRepository.emit();
+    },
+  });
+}
 const browserToolboxFrameCoordinator = globalThis.BrowserToolboxGestureFrameCoordinatorInstance;
 const browserToolboxToolInputTokenStore = globalThis.BrowserToolboxToolInputTokenStoreInstance;
 const browserToolboxStartupNavigator = new globalThis.BrowserToolboxBrowserStartup
@@ -500,7 +543,123 @@ const browserToolboxDispatcher = new globalThis.BrowserToolboxCommandDispatcher(
   registry: globalThis.BrowserToolboxCommandRegistry,
   browserAdapter: browserToolboxBrowserAdapter,
   backgroundCommands: BackgroundCommands,
+  selectBackgroundCommands: (invocation, authority) => {
+    if (invocation.commandName !== "createTab" || invocation.source.type !== "keyboard") return null;
+    const plan = BrowserToolboxRuntimePlans.allowed.find((item) =>
+      item.planVersion === authority?.planVersion
+    );
+    return plan?.moduleImplementations.newTab === "browser-toolbox"
+      ? BrowserToolboxNewTabCommands
+      : null;
+  },
   gestureCoordinator: browserToolboxFrameCoordinator,
+  requestLedger: new BrowserToolboxRequestLedger(chrome.storage.session),
+  targetIdentity: (tabId, frameId) => browserToolboxDocumentAuthority.target(tabId, frameId),
+});
+const browserToolboxDocumentAuthority = new BrowserToolboxDocumentAuthority(chrome);
+let browserToolboxCompletionHub = null;
+const sameCompletionOwner = (a, b) => ["documentId", "componentId", "ownerDocumentId", "ownerEpoch", "tabId", "frameId", "planVersion", "incognito"].every((key) => a[key] === b[key]);
+async function browserToolboxCompletionSession(sender) {
+  if (!BrowserToolboxRuntimePlans.COMPILED_VOMNIBAR_CANARY || browserToolboxDocumentAuthority.role(sender) !== "component") return null;
+  const record = await browserToolboxDocumentAuthority.component(sender);
+  const plan = BrowserToolboxRuntimePlans.allowed.find((item) => item.planVersion === record.planVersion);
+  if (record.component !== "vomnibar" || plan?.moduleImplementations.completers !== "browser-toolbox") return null;
+  if (!browserToolboxCompletionHub) {
+    const Hub = globalThis.BrowserToolboxCompletions?.CompletionHub;
+    if (!Hub) throw new Error("COMPLETIONS_NOT_INSTALLED");
+    browserToolboxCompletionHub = new Hub(chrome, { settings: Settings, tabRecency: bgUtils.tabRecency, firefox: bgUtils.isFirefox() });
+  }
+  // Native核验后到租用会话之间没有异步操作；查询完成后仍重新核验，拒绝导航或撤销期间的回包。
+  return { record, session: browserToolboxCompletionHub.get(record) };
+}
+const browserToolboxPausedRuntimeTabs = new Set();
+let browserToolboxMarksService = null;
+let browserToolboxFrameFocusService = null;
+async function browserToolboxMarkAction(request, sender) {
+  if (!BrowserToolboxRuntimePlans.COMPILED_MARKS_CANARY ||
+    browserToolboxDocumentAuthority.role(sender) !== "content") {
+    return { ok: false, code: "PERMISSION_DENIED" };
+  }
+  if (!browserToolboxMarksService) {
+    browserToolboxMarksService = new BrowserToolboxMarksService({
+      api: chrome,
+      authority: browserToolboxDocumentAuthority,
+      ledger: browserToolboxDispatcher.requestLedger,
+      allowsPlan: (version) => BrowserToolboxRuntimePlans.allowed.some((plan) =>
+        plan.planVersion === version && plan.moduleImplementations.marks === "browser-toolbox"),
+      paused: (tabId) => browserToolboxPausedRuntimeTabs.has(tabId),
+      relay: (tabId, frameId, message, plan) =>
+        sendLifecycleMessage(tabId, frameId, "relay", message, plan),
+      open: (request) => TabOperations.openUrlInNewTab(request),
+      ready: (tabId) => new Promise((resolve, reject) => {
+        let timer;
+        const finish = (error) => {
+          clearTimeout(timer);
+          if (tabLoadedHandlers[tabId] === loaded) delete tabLoadedHandlers[tabId];
+          chrome.tabs.onRemoved.removeListener(removed);
+          error ? reject(error) : resolve();
+        };
+        const loaded = () => finish();
+        const removed = (id) => {
+          if (id === tabId) finish(Object.assign(new Error("MARK_TARGET_CLOSED"), { code: "MARK_TARGET_CLOSED" }));
+        };
+        tabLoadedHandlers[tabId] = loaded;
+        chrome.tabs.onRemoved.addListener(removed);
+        timer = setTimeout(() => finish(Object.assign(new Error("MARK_TARGET_TIMEOUT"), { code: "RESULT_UNKNOWN" })), 10000);
+        // 新页可能已经完成注册；即时核对一次，后续由实际 domReady 唤醒，不轮询。
+        browserToolboxDocumentAuthority.target(tabId, 0).then(() => finish()).catch(() => {});
+      }),
+    });
+  }
+  return browserToolboxMarksService.handle(request, sender);
+}
+async function browserToolboxSubmitVomnibar(request, sender) {
+  if (!BrowserToolboxRuntimePlans.COMPILED_VOMNIBAR_CANARY ||
+    browserToolboxDocumentAuthority.role(sender) !== "content") {
+    return { ok: false, code: "PERMISSION_DENIED" };
+  }
+  const submission = request.payload.submission;
+  if (!BrowserToolboxMessageProtocol.validateVomnibarSubmission(submission)) {
+    return { ok: false, code: "INVALID_VOMNIBAR_SUBMISSION" };
+  }
+  const executionGuard = async () => {
+    const authority = await browserToolboxDocumentAuthority.verify(request.identity, sender);
+    if (browserToolboxPausedRuntimeTabs.has(sender.tab.id)) throw Object.assign(new Error("STALE_RUNTIME"), { code: "STALE_RUNTIME" });
+    if (authority.component || !BrowserToolboxRuntimePlans.allowed.some((plan) =>
+      plan.planVersion === authority.planVersion && plan.moduleImplementations.vomnibar === "browser-toolbox"
+    )) throw Object.assign(new Error("PERMISSION_DENIED"), { code: "PERMISSION_DENIED" });
+  };
+  await executionGuard();
+  await sendRequestHandlers[submission.handler]({
+    ...submission, count: 1, tab: sender.tab, tabId: sender.tab.id, executionGuard,
+  }, sender);
+  return { ok: true };
+}
+const browserToolboxOwnHintsPlan = (version) => BrowserToolboxRuntimePlans.allowed.some((plan) =>
+  plan.planVersion === version && plan.moduleImplementations.hints === "browser-toolbox"
+);
+const browserToolboxHintsCoordinator = BrowserToolboxRuntimePlans.COMPILED_HINTS_CANARY
+  ? new BrowserToolboxHintsCoordinator.Coordinator({
+    frames: (tabId) => getFrameIdsForTab(tabId),
+    target: (tabId, frameId) => browserToolboxDocumentAuthority.target(tabId, frameId),
+    paused: (tabId) => browserToolboxPausedRuntimeTabs.has(tabId),
+    allowsPlan: browserToolboxOwnHintsPlan,
+    send: (tabId, _frameId, message, identity) => chrome.tabs.sendMessage(tabId,
+      BrowserToolboxMessageProtocol.envelope("lifecycle", "hints", { message }, identity),
+      { documentId: identity.documentId }),
+  })
+  : null;
+const browserToolboxRuntimeMaintenance = new BrowserToolboxRuntimeMaintenance(chrome, {
+  plans: BrowserToolboxRuntimePlans,
+  frames: (tabId) => browserToolboxDocumentAuthority.frames(tabId, { probe: true }),
+  clearTab: async (tabId) => {
+    browserToolboxPausedRuntimeTabs.add(tabId);
+    await browserToolboxHintsCoordinator?.cancelTab(tabId);
+    browserToolboxCompletionHub?.clearTab(tabId);
+    browserToolboxFrameCoordinator.clearTab(tabId);
+    await browserToolboxDocumentAuthority.clearTab(tabId);
+  },
+  onFinished: () => browserToolboxPausedRuntimeTabs.clear(),
 });
 
 async function forCountTabs(count, currentTab, callback) {
@@ -612,7 +771,9 @@ async function injectRawDocumentFormatterIntoXml(tabId, frameId) {
     await chrome.scripting.executeScript({
       target: { tabId, frameIds: [0] },
       func: async () => {
-        if (!document.body || document.querySelector(".browser-toolbox-document-toolbar")) return {};
+        if (!document.body || document.querySelector(".browser-toolbox-document-toolbar")) {
+          return {};
+        }
         await globalThis.BrowserToolboxDocumentFormatterController?.init?.();
       },
     });
@@ -647,24 +808,129 @@ chrome.webNavigation.onCompleted?.addListener?.(({ tabId, frameId }) => {
 async function getFrameIdsForTab(tabId) {
   // getAllFrames unfortunately excludes frames and iframes from chrome-extension:// URLs.
   // In Firefox, by contrast, pages with moz-extension:// URLs are included.
-  const frames = await chrome.webNavigation.getAllFrames({ tabId: tabId });
-  return frames.map((f) => f.frameId);
+  return browserToolboxDocumentAuthority.frameIds(tabId);
+}
+
+const lifecycleRelays = new Set([
+  "userIsInteractingWithThePage",
+  "focusFrame",
+  "getFocusStatus",
+  "getScrollPosition",
+  "setScrollPosition",
+  "checkEnabledAfterURLChange",
+  "showMessage",
+]);
+const lifecycleHints = new Set([
+  "getHintDescriptors",
+  "activateMode",
+  "updateKeyState",
+  "rotateHints",
+  "setOpenLinkMode",
+  "activateActiveHintMarker",
+  "exit",
+  "mouseOutOfLastClickedElement",
+]);
+async function sendLifecycleMessage(
+  tabId,
+  frameId,
+  action,
+  message,
+  expectedPlanVersion = null,
+  resolvedIdentity = null,
+) {
+  if (bgUtils.isFirefox()) {
+    return chrome.tabs.sendMessage(tabId, {
+      ...message,
+      handler: action === "hints" ? "linkHintsMessage" : message.handler,
+    }, { frameId });
+  }
+  const identity = resolvedIdentity || await browserToolboxDocumentAuthority.target(tabId, frameId);
+  if (expectedPlanVersion != null && identity.planVersion !== expectedPlanVersion) {
+    throw Object.assign(new Error("RUNTIME_PLAN_MISMATCH"), { code: "RUNTIME_PLAN_MISMATCH" });
+  }
+  return chrome.tabs.sendMessage(
+    tabId,
+    BrowserToolboxMessageProtocol.envelope(
+      "lifecycle",
+      action,
+      { message },
+      identity,
+    ),
+    { documentId: identity.documentId },
+  );
+}
+async function invokeCompatibleCommand(entry, count, sender) {
+  const descriptor = BrowserToolboxCommandDefinitions.getCommand(entry?.command);
+  if (!descriptor) return { ok: false, code: "UNKNOWN_COMMAND" };
+  const authority = await browserToolboxDocumentAuthority.compatible(sender);
+  if (authority.component && authority.component !== "help") {
+    return { ok: false, code: "PERMISSION_DENIED" };
+  }
+  const identity = {
+    documentId: authority.documentId,
+    runtimeEpoch: authority.runtimeEpoch,
+    incognito: authority.incognito,
+  };
+  const invocation = BrowserToolboxCommandInvocation.createV2(
+    entry.command,
+    entry.options || {},
+    { type: "keyboard" },
+    {
+      sourceFrameId: authority.component ? 0 : sender.frameId,
+    },
+    count,
+    {
+      countProvided: count != null,
+      identity,
+      confirmationGranted: descriptor.countPolicy.confirmationThreshold != null &&
+        count > descriptor.countPolicy.confirmationThreshold,
+    },
+  );
+  return browserToolboxDispatcher.dispatch(
+    invocation,
+    sender,
+    authority,
+    () => browserToolboxDocumentAuthority.verify(identity, sender),
+  );
+}
+async function relayLifecycle(request, sender) {
+  if (
+    !lifecycleRelays.has(request.message?.handler) ||
+    request.frameId != null && (!Number.isInteger(request.frameId) || request.frameId < 0)
+  ) return { ok: false, code: "INVALID_MESSAGE_ACTION" };
+  const frames = request.frameId == null
+    ? await getFrameIdsForTab(sender.tab.id)
+    : [request.frameId];
+  await Promise.all(
+    frames.map((frame) =>
+      sendLifecycleMessage(sender.tab.id, frame, "relay", request.message).catch(() => {})
+    ),
+  );
+  return { ok: true };
 }
 
 const HintCoordinator = {
   // Forward the message in "request" to all frames the in sender's tab.
-  broadcastLinkHintsMessage(request, sender) {
-    chrome.tabs.sendMessage(
-      sender.tab.id,
-      Object.assign(request, { handler: "linkHintsMessage" }),
+  async broadcastLinkHintsMessage(request, sender) {
+    if (
+      !lifecycleHints.has(request.messageType) ||
+      ["getHintDescriptors", "activateMode"].includes(request.messageType)
+    ) return { ok: false, code: "INVALID_HINT_ACTION" };
+    const frames = await getFrameIdsForTab(sender.tab.id);
+    if (!frames.includes(sender.frameId)) frames.push(sender.frameId);
+    await Promise.all(
+      frames.map((frame) =>
+        sendLifecycleMessage(sender.tab.id, frame, "hints", request).catch(() => {})
+      ),
     );
+    return { ok: true };
   },
 
   // This is sent by the content script once the user issues the link hints command.
   async prepareToActivateLinkHintsMode(
     tabId,
     originatingFrameId,
-    { modeIndex, requestedByHelpDialog, isExtensionPage },
+    { modeIndex, requestedByHelpDialog, isExtensionPage, interactionId, planVersion },
   ) {
     const frameIds = await getFrameIdsForTab(tabId);
     // If link hints was triggered on a Vimium extension page (like the vimium help dialog or
@@ -674,17 +940,32 @@ const HintCoordinator = {
     if (isExtensionPage && !frameIds.includes(originatingFrameId)) {
       frameIds.push(originatingFrameId);
     }
+    const verifiedIdentities = new Map();
+    if (BrowserToolboxRuntimePlans.COMPILED_CANARY) {
+      const identities = await Promise.all(frameIds.map((frameId) =>
+        browserToolboxDocumentAuthority.target(tabId, frameId)));
+      if (identities.some((identity) => identity.planVersion !== planVersion)) {
+        throw Object.assign(new Error("RUNTIME_PLAN_MISMATCH"), { code: "RUNTIME_PLAN_MISMATCH" });
+      }
+      // 收集阶段复用刚核验通过的同代次身份，减少重复枚举 frame IPC；激活阶段仍重新校验以捕获收集中途导航。
+      frameIds.forEach((frameId, index) => verifiedIdentities.set(frameId, identities[index]));
+    }
     const timeout = 3000;
     let promises = frameIds.map(async (frameId) => {
-      let promise = chrome.tabs.sendMessage(
+      let promise = sendLifecycleMessage(
         tabId,
+        frameId,
+        "hints",
         {
           handler: "linkHintsMessage",
           messageType: "getHintDescriptors",
           modeIndex,
           requestedByHelpDialog,
+          interactionId,
+          originatingFrameId,
         },
-        { frameId },
+        BrowserToolboxRuntimePlans.COMPILED_CANARY ? planVersion : null,
+        verifiedIdentities.get(frameId) || null,
       );
 
       promise = Utils.promiseWithTimeout(promise, timeout)
@@ -712,8 +993,10 @@ const HintCoordinator = {
       // busy sites like Reddit.
       const outgoingFrameIdToHintDescriptors = Object.assign({}, frameIdToDescriptors);
       delete outgoingFrameIdToHintDescriptors[frameId];
-      return chrome.tabs.sendMessage(
+      return sendLifecycleMessage(
         tabId,
+        frameId,
+        "hints",
         {
           handler: "linkHintsMessage",
           messageType: "activateMode",
@@ -721,8 +1004,9 @@ const HintCoordinator = {
           originatingFrameId: originatingFrameId,
           frameIdToHintDescriptors: outgoingFrameIdToHintDescriptors,
           modeIndex: modeIndex,
+          interactionId,
         },
-        { frameId },
+        BrowserToolboxRuntimePlans.COMPILED_CANARY ? planVersion : null,
       ).catch((error) => {
         Utils.debugLog(
           "Swallowed linkHints activateMode error:",
@@ -757,9 +1041,295 @@ const GESTURE_PORT_HANDLERS = new Set([
 ]);
 
 const sendRequestHandlers = {
+  async "browserToolbox.message"(request, sender) {
+    if (!BrowserToolboxMessageProtocol.validateEnvelope(request)) {
+      return { ok: false, code: "INVALID_MESSAGE" };
+    }
+    try {
+      if (request.kind === "lifecycle" && request.action === "initialize") {
+        if (browserToolboxDocumentAuthority.role(sender) === "untrusted") {
+          return { ok: false, code: "PERMISSION_DENIED" };
+        }
+        if (browserToolboxDocumentAuthority.role(sender) === "component") {
+          await browserToolboxDocumentAuthority.component(sender);
+        }
+        const plan = await BrowserToolboxRuntimePlans.select(chrome);
+        const session = request.payload.runtimeEpoch == null
+          ? null
+          : await browserToolboxDocumentAuthority.register(sender, request.payload.runtimeEpoch, plan.planVersion);
+        if (!session) await browserToolboxDocumentAuthority.active(sender);
+        if (request.payload.compatibleHints === true) {
+          if (!BrowserToolboxRuntimePlans.COMPILED_HINTS_CANARY ||
+            plan.moduleImplementations.hints !== "vimium-compat" ||
+            browserToolboxDocumentAuthority.role(sender) !== "content") {
+            return { ok: false, code: "PERMISSION_DENIED" };
+          }
+          await chrome.scripting.executeScript({
+            target: { tabId: sender.tab.id, documentIds: [sender.documentId] },
+            files: ["content_scripts/browser_toolbox/compat_link_hints.js"],
+            world: "ISOLATED",
+          });
+          await browserToolboxDocumentAuthority.active(sender);
+        }
+        await Settings.onLoaded();
+        return {
+          ...await sendRequestHandlers.initializeFrame(request.payload, sender),
+          ...session,
+          planVersion: plan.planVersion,
+        };
+      }
+      if (request.kind === "lifecycle" && request.action === "register") {
+        return {
+          ok: true,
+          session: await browserToolboxDocumentAuthority.register(
+            sender,
+            request.payload.runtimeEpoch,
+            (await BrowserToolboxRuntimePlans.select(chrome)).planVersion,
+          ),
+        };
+      }
+      if (request.kind === "lifecycle" && request.action === "unregister") {
+        await browserToolboxHintsCoordinator?.releaseDocument(request.identity, sender);
+        await browserToolboxDocumentAuthority.unregister(request.identity, sender);
+        return { ok: true };
+      }
+      if (request.kind === "ui" && request.action === "claim") {
+        return {
+          ok: true,
+          proof: await browserToolboxDocumentAuthority.claim(request.payload, sender),
+        };
+      }
+      if (request.kind === "ui" && request.action === "finalize") {
+        return {
+          ok: true,
+          session: await browserToolboxDocumentAuthority.finalize(request.payload, sender),
+        };
+      }
+      if (request.kind === "ui" && request.action === "attest") {
+        await browserToolboxDocumentAuthority.attest(request.payload, request.identity, sender);
+        return { ok: true };
+      }
+      if (request.kind === "ui" && request.action === "authorize") {
+        return {
+          ok: true,
+          grant: await browserToolboxDocumentAuthority.authorize(
+            request.payload.component,
+            request.payload.componentId,
+            request.identity,
+            sender,
+          ),
+        };
+      }
+      if (request.kind === "ui" && request.action === "submitVomnibar") {
+        return await browserToolboxSubmitVomnibar(request, sender);
+      }
+      if (request.kind === "ui" && ["captureFocus", "restoreFocus"].includes(request.action)) {
+        if (!BrowserToolboxRuntimePlans.COMPILED_UI_CANARY ||
+          browserToolboxPausedRuntimeTabs.has(sender.tab?.id)) {
+          return { ok: false, code: "STALE_RUNTIME" };
+        }
+        browserToolboxFrameFocusService ||= new BrowserToolboxFrameFocusService({
+          api: chrome, authority: browserToolboxDocumentAuthority,
+          allowsPlan: (version) => BrowserToolboxRuntimePlans.allowed.some((plan) =>
+            plan.planVersion === version && plan.moduleImplementations.frameFocus === "browser-toolbox"),
+        });
+        if (request.action === "captureFocus") {
+          return { ok: true, target: await browserToolboxFrameFocusService.captureFocus(
+            request.payload.frameId, request.identity, sender,
+          ) };
+        }
+        await browserToolboxFrameFocusService.restoreFocus(request.payload.target, request.identity, sender);
+        return { ok: true };
+      }
+      if (request.kind === "lifecycle" && request.action === "marks") {
+        return await browserToolboxMarkAction(request, sender);
+      }
+      const authority = await browserToolboxDocumentAuthority.verify(request.identity, sender);
+      if (request.kind === "ui" && request.action === "release") {
+        await browserToolboxDocumentAuthority.release(
+          request.payload.componentId,
+          request.identity,
+          sender,
+        );
+        return { ok: true };
+      }
+      if (request.kind === "command" && request.action === "invoke") {
+        if (browserToolboxPausedRuntimeTabs.has(sender.tab?.id)) {
+          return { ok: false, code: "STALE_RUNTIME" };
+        }
+        const invocation = request.payload.invocation;
+        if (
+          authority.component && authority.component !== "help" ||
+          invocation?.protocolVersion !== 2 || invocation.requestId !== request.requestId ||
+          JSON.stringify(invocation.identity) !== JSON.stringify(request.identity)
+        ) return { ok: false, code: "PERMISSION_DENIED" };
+        const result = await browserToolboxDispatcher.dispatch(
+          invocation,
+          sender,
+          authority,
+          () => {
+            if (browserToolboxPausedRuntimeTabs.has(sender.tab?.id)) {
+              throw Object.assign(new Error("STALE_RUNTIME"), { code: "STALE_RUNTIME" });
+            }
+            return browserToolboxDocumentAuthority.verify(request.identity, sender);
+          },
+        );
+        return {
+          ...result,
+          requestId: request.requestId,
+          documentId: request.identity.documentId,
+          runtimeEpoch: request.identity.runtimeEpoch,
+        };
+      }
+      if (request.kind === "lifecycle" && request.action === "ready") {
+        return sendRequestHandlers.domReady(request.payload, sender);
+      }
+      if (request.kind === "lifecycle" && request.action === "relay") {
+        if (authority.component && authority.component !== "help") {
+          return { ok: false, code: "PERMISSION_DENIED" };
+        }
+        return relayLifecycle(request.payload, sender);
+      }
+      if (request.kind === "lifecycle" && request.action === "hints") {
+        if (browserToolboxPausedRuntimeTabs.has(sender.tab?.id)) {
+          return { ok: false, code: "STALE_RUNTIME" };
+        }
+        if (authority.component && authority.component !== "help") {
+          return { ok: false, code: "PERMISSION_DENIED" };
+        }
+        const input = request.payload;
+        if (
+          input.operation === "prepare" && Number.isInteger(input.modeIndex) &&
+          input.modeIndex >= 0 && input.modeIndex <= 9 &&
+          /^[a-f0-9-]{36}$/.test(input.interactionId || "")
+        ) {
+          if (browserToolboxOwnHintsPlan(authority.planVersion) && browserToolboxHintsCoordinator) {
+            return browserToolboxHintsCoordinator.prepare(input, sender, authority);
+          }
+          await HintCoordinator.prepareToActivateLinkHintsMode(
+            sender.tab.id,
+            sender.frameId,
+            { ...input, planVersion: authority.planVersion || 1 },
+          );
+          return { ok: true, code: "INTERACTION_OPENED" };
+        }
+        if (input.operation === "broadcast" && /^[a-f0-9-]{36}$/.test(input.interactionId || "")) {
+          if (browserToolboxOwnHintsPlan(authority.planVersion) && browserToolboxHintsCoordinator) {
+            return browserToolboxHintsCoordinator.broadcast(input, sender, authority);
+          }
+          return HintCoordinator.broadcastLinkHintsMessage(input, sender);
+        }
+        return { ok: false, code: "INVALID_HINT_ACTION" };
+      }
+      return { ok: false, code: "INVALID_MESSAGE_ACTION" };
+    } catch (failure) {
+      return { ok: false, code: failure.code || "MESSAGE_UNAVAILABLE" };
+    }
+  },
+  async "browserToolbox.configuration"(request, sender) {
+    const writer = globalThis.BrowserToolboxConfigurationWriterInstance;
+    if (!writer) return { ok: false, code: "CONFIGURATION_UNAVAILABLE" };
+    const action = request.action;
+    const input = request.input || {};
+    const senderUrl = sender.url?.split(/[?#]/)[0];
+    const editor = ["pages/mouse_options.html", "pages/options.html", "pages/action.html"]
+      .some((page) => senderUrl === chrome.runtime.getURL(page)) &&
+      (sender.frameId == null || sender.frameId === 0);
+    const helpPreference = action === "commit" &&
+      senderUrl === chrome.runtime.getURL("pages/help_dialog_page.html") &&
+      input.toolbox === undefined && Object.keys(input.legacyPatch || {}).length === 1 &&
+      Object.hasOwn(input.legacyPatch || {}, "helpDialog_showAdvancedCommands");
+    const recoveryInspector = action === "inspect-transition-conflict" &&
+      senderUrl === chrome.runtime.getURL("pages/configuration_recovery.html") &&
+      (sender.frameId == null || sender.frameId === 0);
+    if (action !== "read" && !editor && !helpPreference && !recoveryInspector) {
+      return { ok: false, code: "PERMISSION_DENIED" };
+    }
+    if (action === "inspect-transition-conflict" && !recoveryInspector) {
+      return { ok: false, code: "PERMISSION_DENIED" };
+    }
+    if (
+      ["import", "list-import-backups", "export-import-backup", "preview-import-restore"]
+        .includes(action) &&
+      !["pages/mouse_options.html", "pages/options.html"]
+        .some((page) => senderUrl === chrome.runtime.getURL(page))
+    ) return { ok: false, code: "PERMISSION_DENIED" };
+    if (
+      ["export-import-cursor", "list-local-cursors", "read-local-cursor"].includes(action) &&
+      senderUrl !== chrome.runtime.getURL("pages/mouse_options.html")
+    ) return { ok: false, code: "PERMISSION_DENIED" };
+    if (
+      [
+        "export-conflict",
+        "list-conflict-observations",
+        "export-conflict-observation",
+        "capture-conflict-observation",
+        "review-conflict-observation",
+        "prepare-conflict-candidate",
+      ].includes(action) &&
+      senderUrl !== chrome.runtime.getURL("pages/mouse_options.html")
+    ) return { ok: false, code: "PERMISSION_DENIED" };
+    try {
+      let value;
+      if (action === "read") value = await writer.read(input.minimumRevision || 0);
+      else if (action === "preview") value = await writer.preview();
+      else if (action === "export-conflict") value = await writer.exportCompatibilityConflict();
+      else if (action === "list-conflict-observations") {
+        value = await writer.listCompatibilityConflictObservations();
+      } else if (action === "export-conflict-observation") {
+        value = await writer.exportCompatibilityConflictObservation(input.key);
+      } else if (action === "capture-conflict-observation") {
+        value = await writer.captureCurrentCompatibilityConflict();
+      } else if (action === "review-conflict-observation") {
+        value = await writer.reviewCompatibilityConflictObservation(input.key);
+      } else if (action === "prepare-conflict-candidate") {
+        value = await writer.prepareCompatibilityConflictCandidate(
+          input.key,
+          input.recordDigest,
+          input.choices,
+        );
+      } else if (action === "commit") value = await writer.commit(input);
+      else if (action === "import") value = await writer.importConfiguration(input);
+      else if (action === "list-import-backups") value = await writer.listImportBackups();
+      else if (action === "export-import-backup") {
+        value = await writer.exportImportBackup(input.key);
+      } else if (action === "export-import-cursor") {
+        value = await writer.exportImportBackupCursor(input.key);
+      } else if (action === "list-local-cursors") {
+        value = await writer.listLocalCursorAssets(input.after ?? null);
+      } else if (action === "read-local-cursor") {
+        value = await writer.readLocalCursorAsset(input.key);
+      } else if (action === "preview-import-restore") {
+        value = await writer.previewImportBackupRestore(input.key);
+      } else if (action === "inspect-transition-conflict") {
+        const inspector = new ReadOnlyTransitionArchive({ writer, authorize: () => false });
+        value = {
+          ...await inspector.inspectConflict(input.kind),
+          writeAllowed: false,
+          releaseAllowed: false,
+          lineageVerified: false,
+        };
+      } else if (action === "resolve") value = await writer.resolve(input.choice);
+      else if (action === "rollback") value = await writer.rollback();
+      else if (action === "export") value = await writer.exportConfiguration();
+      else return { ok: false, code: "INVALID_CONFIGURATION_ACTION" };
+      return { ok: true, value };
+    } catch (failure) {
+      const result = { ok: false, code: failure.code || "INVALID_CONFIGURATION" };
+      for (const key of ["conflicts", "quota", "requiredBytes", "limitBytes"]) {
+        if (failure[key] != null) result[key] = failure[key];
+      }
+      return result;
+    }
+  },
+  "browserToolbox.runtimeMaintenance"(request, sender) {
+    return browserToolboxRuntimeMaintenance.run(request.action, sender);
+  },
   async "browserToolbox.gestureStart"(request, sender) {
+    if (browserToolboxPausedRuntimeTabs.has(sender.tab?.id)) return { accepted: false };
     if (!isValidGestureRequest(request)) return { accepted: false };
     await browserToolboxSettingsRepository.ensureLoaded(globalThis.BrowserToolboxCommandRegistry);
+    if (browserToolboxPausedRuntimeTabs.has(sender.tab?.id)) return { accepted: false };
     const settings = sender.tab?.url
       ? browserToolboxSettingsRepository.getEffectiveSettings(sender.tab.url)
       : null;
@@ -809,6 +1379,9 @@ const sendRequestHandlers = {
     return browserToolboxSettingsRepository.getEffectiveSettings(sender.tab.url);
   },
   async "browserToolbox.invoke"(request, sender) {
+    if (browserToolboxPausedRuntimeTabs.has(sender.tab?.id)) {
+      return globalThis.BrowserToolboxCommandInvocation.createResult(false, "STALE_RUNTIME");
+    }
     if (!globalThis.BrowserToolboxMessageProtocol.isTrustedSender(sender, chrome.runtime.id)) {
       return globalThis.BrowserToolboxCommandInvocation.createResult(
         false,
@@ -827,7 +1400,11 @@ const sendRequestHandlers = {
         globalThis.BrowserToolboxCommandInvocation.ERROR_CODES.INVALID_OPTIONS,
       );
     }
-    return browserToolboxDispatcher.dispatch(request.invocation, sender);
+    return browserToolboxDispatcher.dispatch(request.invocation, sender, null, () => {
+      if (browserToolboxPausedRuntimeTabs.has(sender.tab?.id)) {
+        throw Object.assign(new Error("STALE_RUNTIME"), { code: "STALE_RUNTIME" });
+      }
+    });
   },
   async "browserToolbox.consumeToolInput"(request) {
     if (
@@ -842,8 +1419,11 @@ const sendRequestHandlers = {
       request.source ?? null,
     );
   },
-  runBackgroundCommand(request, sender) {
-    return BackgroundCommands[request.registryEntry.command](request, sender);
+  async runBackgroundCommand(request, sender) {
+    if (bgUtils.isFirefox()) {
+      return BackgroundCommands[request.registryEntry.command](request, sender);
+    }
+    return invokeCompatibleCommand(request.registryEntry, request.count, sender);
   },
   // getCurrentTabUrl is used by the content scripts to get their full URL, because window.location
   // cannot help with Chrome-specific URLs like "view-source:http:..".
@@ -870,9 +1450,10 @@ const sendRequestHandlers = {
     });
   },
 
-  launchSearchQuery({ query, openInNewTab }) {
+  async launchSearchQuery({ query, openInNewTab, executionGuard }) {
     const disposition = openInNewTab ? "NEW_TAB" : "CURRENT_TAB";
-    chrome.search.query({ disposition, text: query });
+    if (executionGuard) await executionGuard();
+    await chrome.search.query({ disposition, text: query });
   },
 
   domReady(_, sender) {
@@ -890,16 +1471,27 @@ const sendRequestHandlers = {
   gotoMark: marks.goto,
   // Send a message to all frames in the current tab. If request.frameId is provided, then send
   // messages to only the frame with that ID.
-  sendMessageToFrames(request, sender) {
-    const newRequest = Object.assign({}, request.message);
-    const options = request.frameId != null ? { frameId: request.frameId } : {};
-    chrome.tabs.sendMessage(sender.tab.id, newRequest, options);
+  async sendMessageToFrames(request, sender) {
+    if (bgUtils.isFirefox()) {
+      return chrome.tabs.sendMessage(
+        sender.tab.id,
+        request.message,
+        request.frameId == null ? {} : { frameId: request.frameId },
+      );
+    }
+    if (request.message?.handler === "runInTopFrame") {
+      return invokeCompatibleCommand(request.message.registryEntry, 1, sender);
+    }
+    await browserToolboxDocumentAuthority.compatible(sender);
+    return relayLifecycle(request, sender);
   },
-  broadcastLinkHintsMessage(request, sender) {
-    HintCoordinator.broadcastLinkHintsMessage(request, sender);
+  async broadcastLinkHintsMessage(request, sender) {
+    if (!bgUtils.isFirefox()) await browserToolboxDocumentAuthority.compatible(sender);
+    return HintCoordinator.broadcastLinkHintsMessage(request, sender);
   },
-  prepareToActivateLinkHintsMode(request, sender) {
-    HintCoordinator.prepareToActivateLinkHintsMode(sender.tab.id, sender.frameId, request);
+  async prepareToActivateLinkHintsMode(request, sender) {
+    if (!bgUtils.isFirefox()) await browserToolboxDocumentAuthority.compatible(sender);
+    return HintCoordinator.prepareToActivateLinkHintsMode(sender.tab.id, sender.frameId, request);
   },
 
   async initializeFrame(request, sender) {
@@ -949,6 +1541,11 @@ const sendRequestHandlers = {
       isFirefox: bgUtils.isFirefox(),
       firefoxVersion: await bgUtils.getFirefoxVersion(),
       frameId: sender.frameId,
+      // 身份只由浏览器 sender 提供；旧入口仍保留原有字段与语义。
+      documentId: sender.documentId ?? null,
+      tabId: sender.tab.id,
+      documentLifecycle: sender.documentLifecycle ?? "active",
+      incognito: sender.tab.incognito === true,
     }, enabledState);
 
     return response;
@@ -961,7 +1558,17 @@ const sendRequestHandlers = {
     };
   },
 
-  async filterCompletions(request) {
+  async filterCompletions(request, sender) {
+    const own = await browserToolboxCompletionSession(sender).catch(() => ({ denied: true }));
+    if (own?.denied) return { ok: false, code: "UI_NOT_AUTHORIZED" };
+    if (own) {
+      try {
+        const response = await own.session.filter(request);
+        const current = await browserToolboxDocumentAuthority.component(sender);
+        if (!sameCompletionOwner(own.record, current)) return { ok: false, code: "STALE_COMPLETIONS_OWNER" };
+        return response;
+      } catch (_) { return { ok: false, code: "COMPLETIONS_UNAVAILABLE" }; }
+    }
     const completer = completers[request.completerName];
     let response = await completer.filter(request);
 
@@ -974,12 +1581,21 @@ const sendRequestHandlers = {
     return response;
   },
 
-  refreshCompletions(request) {
+  async refreshCompletions(request, sender) {
+    const own = await browserToolboxCompletionSession(sender).catch(() => ({ denied: true }));
+    if (own?.denied) return { ok: false, code: "UI_NOT_AUTHORIZED" };
+    if (own) {
+      try { await own.session.refresh(request.completerName); return { ok: true }; }
+      catch (_) { return { ok: false, code: "COMPLETIONS_UNAVAILABLE" }; }
+    }
     const completer = completers[request.completerName];
     completer.refresh();
   },
 
-  cancelCompletions(request) {
+  async cancelCompletions(request, sender) {
+    const own = await browserToolboxCompletionSession(sender).catch(() => ({ denied: true }));
+    if (own?.denied) return { ok: false, code: "UI_NOT_AUTHORIZED" };
+    if (own) return own.session.cancel();
     const completer = completers[request.completerName];
     completer.cancel();
   },
@@ -1008,6 +1624,16 @@ chrome.runtime.onConnect.addListener((port) => {
 
   const handleGesturePortMessage = async (request) => {
     if (!GESTURE_PORT_HANDLERS.has(request?.handler)) return;
+    if (!bgUtils.isFirefox() && browserToolboxDocumentAuthority.role(sender) === "component") {
+      try {
+        if ((await browserToolboxDocumentAuthority.component(sender)).component !== "help") {
+          throw new Error("PERMISSION_DENIED");
+        }
+      } catch (_) {
+        postResult({ accepted: false, code: "UI_NOT_AUTHORIZED" });
+        return;
+      }
+    }
     if (request.handler === "browserToolbox.gestureStart") {
       if (requestId || !isValidGestureRequest(request)) {
         postResult({ accepted: false });
@@ -1059,6 +1685,48 @@ Utils.addChromeRuntimeOnMessageListener(
     if (!globalThis.BrowserToolboxMessageProtocol.isTrustedSender(sender, chrome.runtime.id)) {
       return;
     }
+    if (
+      !bgUtils.isFirefox() && browserToolboxDocumentAuthority.role(sender) === "component" &&
+      request.handler !== "browserToolbox.message" && request.handler !== "getBrowserInfo"
+    ) {
+      try {
+        const component = await browserToolboxDocumentAuthority.component(sender);
+        const actions = {
+          hud: ["browserToolbox.configuration"],
+          vomnibar: [
+            "browserToolbox.configuration",
+            "filterCompletions",
+            "cancelCompletions",
+            "refreshCompletions",
+            "selectSpecificTab",
+            "openUrlInNewTab",
+            "openUrlInCurrentTab",
+            "launchSearchQuery",
+          ],
+          help: [
+            "browserToolbox.configuration",
+            "browserToolbox.commandRegistry",
+            "browserToolbox.effectiveSettings",
+            "browserToolbox.invoke",
+            "initializeFrame",
+            "domReady",
+            "getCurrentTabUrl",
+            "runBackgroundCommand",
+            "sendMessageToFrames",
+            "openOptionsPageInNewTab",
+            "prepareToActivateLinkHintsMode",
+            "linkHintsMessage",
+            "openUrlInNewTab",
+            "openUrlInCurrentTab",
+            "openUrlInIncognito",
+            "selectSpecificTab",
+          ],
+        }[component.component];
+        if (!actions?.includes(request.handler)) return { ok: false, code: "PERMISSION_DENIED" };
+      } catch (_) {
+        return { ok: false, code: "UI_NOT_AUTHORIZED" };
+      }
+    }
     Utils.debugLog(
       "main.js: onMessage:%ourl:%otab:%oframe:%o",
       request.handler,
@@ -1073,9 +1741,38 @@ Utils.addChromeRuntimeOnMessageListener(
     // corresponds to. Since we expect a valid sender.tab, ignore those messages.
     if (
       sender.tab == null &&
-      !["browserToolbox.invoke", "browserToolbox.commandRegistry"].includes(request.handler)
+      ![
+        "browserToolbox.invoke",
+        "browserToolbox.commandRegistry",
+        "browserToolbox.runtimeMaintenance",
+        "browserToolbox.configuration",
+        "browserToolbox.message",
+      ].includes(request.handler)
     ) return;
+    if (
+      [
+        "browserToolbox.configuration",
+        "browserToolbox.runtimeMaintenance",
+        "browserToolbox.message",
+      ].includes(
+        request.handler,
+      )
+    ) {
+      return sendRequestHandlers[request.handler](request, sender);
+    }
     await Settings.onLoaded();
+    if (BrowserToolboxRuntimePlans.COMPILED_MARKS_CANARY &&
+      ["createMark", "gotoMark"].includes(request.handler)) {
+      try {
+        const authority = await browserToolboxDocumentAuthority.compatible(sender);
+        if (BrowserToolboxRuntimePlans.allowed.some((plan) =>
+          plan.planVersion === authority.planVersion && plan.moduleImplementations.marks === "browser-toolbox")) {
+          return { ok: false, code: "PERMISSION_DENIED" };
+        }
+      } catch (error) {
+        return { ok: false, code: error.code || "STALE_RUNTIME" };
+      }
+    }
     request = Object.assign({ count: 1 }, request, {
       tab: sender.tab,
       tabId: sender.tab?.id,
@@ -1090,6 +1787,9 @@ Utils.addChromeRuntimeOnMessageListener(
 // incognito-mode windows. Since the common case is that there are none to begin with, we first
 // check whether the key is set at all.
 chrome.tabs.onRemoved.addListener(function (tabId) {
+  browserToolboxCompletionHub?.clearTab(tabId);
+  browserToolboxHintsCoordinator?.cancelTab(tabId).catch(() => {});
+  browserToolboxDocumentAuthority.clearTab(tabId).catch(() => {});
   browserToolboxFrameCoordinator.clearTab(tabId);
   if (tabLoadedHandlers[tabId]) {
     delete tabLoadedHandlers[tabId];
@@ -1294,6 +1994,7 @@ Object.assign(globalThis, {
   browserToolboxSettingsRepository,
   browserToolboxFrameCoordinator,
   browserToolboxStartupNavigator,
+  browserToolboxSubmitVomnibar,
 });
 
 // The chrome.runtime.onStartup and onInstalled events are not fired when disabling and then

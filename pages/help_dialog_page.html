@@ -5,6 +5,7 @@
     <meta name="color-scheme" content="light dark">
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="../content_scripts/vimium.css" />
+    <link rel="stylesheet" type="text/css" href="./theme_tokens.css" />
     <link rel="stylesheet" type="text/css" href="./key_mappings.css" />
     <link rel="stylesheet" type="text/css" href="./help_dialog_page.css" />
 
@@ -172,10 +173,12 @@
           </div>
 
           <p class="browser-toolbox-help-links">
-            <a href="mouse_options.html" data-i18n="openBrowserToolboxSettingsPage">
+            <a href="mouse_options.html" target="_blank" rel="noopener noreferrer"
+              data-i18n="openBrowserToolboxSettingsPage">
               Open Browser Toolbox settings
             </a>
-            · <a href="privacy.html" data-i18n="openPrivacyPolicy">Privacy policy</a>
+            · <a href="privacy.html" target="_blank" rel="noopener noreferrer"
+              data-i18n="openPrivacyPolicy">Privacy policy</a>
             · <a href="../LICENSE" data-i18n="openLicense">License</a>
           </p>
           <p class="browser-toolbox-help-limit" data-i18n="browserToolboxBrowserLimit">

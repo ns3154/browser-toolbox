@@ -11,22 +11,19 @@ context("Settings section registry", () => {
   should("keep every section attached to a unique registered group", () => {
     const api = sections();
     assert.isTrue(api.validateRegistry(api.GROUPS, api.SECTIONS));
-    assert.equal(15, api.SECTIONS.length);
-    assert.equal(3, api.GROUPS.length);
+    assert.equal(12, api.SECTIONS.length);
+    assert.equal(4, api.GROUPS.length);
     assert.equal(
       [
+        "general",
+        "search",
         "mouse",
         "superDrag",
         "wheel",
         "keyboard",
-        "search",
-        "general",
+        "appearance",
         "toolsOverview",
         "jsonFormatter",
-        "textDiff",
-        "codecTransform",
-        "timeAndId",
-        "appearance",
         "siteRules",
         "privacy",
         "backupAbout",
@@ -48,6 +45,7 @@ context("Settings section registry", () => {
         showHud: true,
         browserSyncEnabled: true,
         language: "zh_CN",
+        theme: "cobalt",
       },
       browserStartup: {
         enabled: true,

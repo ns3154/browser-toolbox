@@ -15,6 +15,7 @@ context("Settings migrations", () => {
     assert.equal(["R"], migrated.mouse.bindings[0].pattern);
     assert.equal("BrowserToolbox.newWindow", migrated.mouse.bindings[0].commandName);
     assert.isFalse(migrated.privacy.telemetry);
+    assert.equal("sage-mist", migrated.general.theme);
     assert.equal(
       BrowserToolboxSettingsSchema.DEFAULT_SITE_RULES,
       migrated.siteRules,
@@ -166,6 +167,42 @@ context("Settings migrations", () => {
     );
   });
 
+  should("逻辑键盘配置与旧包装往返，分片和未知会话字段不导出", () => {
+    const migrations = globalThis.BrowserToolboxSettingsMigrations;
+    const keyboard = {
+      keyMappings: "",
+      searchEngines: "",
+      exclusionRules: [],
+      smoothScroll: false,
+      userDefinedLinkHintCss: "中文 CSS",
+      helpDialog_showAdvancedCommands: true,
+      vimiumSecret: "合成秘密",
+    };
+    const exported = migrations.createExportPayload({ schemaVersion: 9 }, {
+      keyboardSettings: keyboard,
+    });
+    assert.isFalse(JSON.stringify(exported).includes("合成秘密"));
+    const parsed = migrations.migrateExportPayload(exported);
+    assert.isTrue(parsed.ok);
+    assert.equal("", parsed.keyboardSettings.keyMappings);
+    assert.equal([], parsed.keyboardSettings.exclusionRules);
+    assert.equal(false, parsed.keyboardSettings.smoothScroll);
+    assert.equal(true, parsed.keyboardSettings.helpDialog_showAdvancedCommands);
+    exported.keyboardSettings.values.futurePreference = true;
+    assert.isTrue(
+      migrations.parseExportPayload(exported).ignored.includes(
+        "keyboardSettings.values.futurePreference",
+      ),
+    );
+    exported.keyboardSettings.formatVersion = 2;
+    assert.isFalse(migrations.parseExportPayload(exported).ok);
+    assert.equal(
+      undefined,
+      migrations.parseExportPayload({ format: migrations.EXPORT_FORMAT, settings: {} })
+        .keyboardSettings,
+    );
+  });
+
   should("report unknown export fields before the schema drops them", () => {
     const migrations = globalThis.BrowserToolboxSettingsMigrations;
     const parsed = migrations.parseExportPayload({
@@ -219,12 +256,24 @@ context("Settings migrations", () => {
 
   should("preserve every eligible context tool across reloads and export imports", () => {
     const migrations = BrowserToolboxSettingsMigrations;
-    const toolIds = ["json.format", "text.diff", "codec.transform", "time.convert", "table.convert"];
-    for (const tools of [
-      { contextMenu: { toolIds: [...toolIds, "json.format", "password.generate", "unknown.tool"] } },
-      { contextMenuToolIds: toolIds },
-      { contextMenu: { toolIds: [] } },
-    ]) {
+    const toolIds = [
+      "json.format",
+      "text.diff",
+      "codec.transform",
+      "time.convert",
+      "table.convert",
+    ];
+    for (
+      const tools of [
+        {
+          contextMenu: {
+            toolIds: [...toolIds, "json.format", "password.generate", "unknown.tool"],
+          },
+        },
+        { contextMenuToolIds: toolIds },
+        { contextMenu: { toolIds: [] } },
+      ]
+    ) {
       const expected = tools.contextMenu?.toolIds.length === 0 ? [] : toolIds;
       const migrated = migrations.migrate({ schemaVersion: 4, tools });
       assert.equal(expected, migrated.tools.contextMenu.toolIds);
@@ -240,8 +289,13 @@ context("Settings migrations", () => {
       schemaVersion: 4,
       tools: {
         pinnedIds: [
-          "json.format", "config.convert", "text.diff", "codec.transform", "time.convert",
-          "id.generate", "password.generate",
+          "json.format",
+          "config.convert",
+          "text.diff",
+          "codec.transform",
+          "time.convert",
+          "id.generate",
+          "password.generate",
         ],
         futureToolPolicy: { mode: "next" },
         contextMenu: { toolIds: ["json.format"], futureContextFlag: true },
@@ -253,8 +307,13 @@ context("Settings migrations", () => {
       },
     });
     assert.equal([
-      "json.format", "config.convert", "text.diff", "codec.transform", "time.convert",
-      "id.generate", "password.generate",
+      "json.format",
+      "config.convert",
+      "text.diff",
+      "codec.transform",
+      "time.convert",
+      "id.generate",
+      "password.generate",
     ], migrated.tools.pinnedIds);
     assert.equal({ mode: "next" }, migrated.tools.futureToolPolicy);
     assert.isTrue(migrated.tools.contextMenu.futureContextFlag);

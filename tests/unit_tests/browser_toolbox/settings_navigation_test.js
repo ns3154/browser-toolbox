@@ -49,7 +49,7 @@ context("BrowserToolbox settings navigation", () => {
   should("restore all groups and the active focus stop when the filter is cleared", () => {
     navigation.filter("pointer");
     navigation.filter("");
-    assert.equal(15, navigation.buttons.filter((button) => !button.hidden).length);
+    assert.equal(12, navigation.buttons.filter((button) => !button.hidden).length);
     assert.isTrue(navigation.groups.every((group) => !group.hidden));
     assert.isTrue(navigation.categories.every((category) =>
       category.getAttribute("aria-expanded") === "true"
@@ -57,12 +57,12 @@ context("BrowserToolbox settings navigation", () => {
     assert.equal(1, navigation.buttons.filter((button) => button.tabIndex === 0).length);
   });
 
-  should("keep keyboard navigation across the three visible groups", () => {
+  should("keep keyboard navigation across the four visible groups", () => {
     navigation.filter("");
     const activeGroup = navigation.activeButton.closest(".browser-toolbox-nav-group");
     const focusable = navigation.focusableButtons();
     assert.isTrue(focusable.length > 0);
-    assert.equal(15, focusable.length);
+    assert.equal(12, focusable.length);
 
     const currentGroupButtons = navigation.visibleButtons().filter((button) =>
       button.closest(".browser-toolbox-nav-group") === activeGroup

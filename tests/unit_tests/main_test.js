@@ -3,6 +3,126 @@ import "../../lib/settings.js";
 import "../../background_scripts/main.js";
 import { RegistryEntry } from "../../background_scripts/commands.js";
 
+context("独立查找栏父文档提交授权", () => {
+  let sender, request, authority, effects, verifications;
+  setup(() => {
+    sender = { tab: { id: 23, index: 0, windowId: 7 }, documentId: "synthetic-owner" };
+    request = {
+      identity: { documentId: sender.documentId, runtimeEpoch: 2, incognito: false },
+      payload: {
+        submission: { handler: "openUrlInCurrentTab", url: "https://synthetic.invalid/" },
+      },
+    };
+    authority = { planVersion: 6 };
+    effects = [];
+    verifications = 0;
+    stub(globalThis, "BrowserToolboxRuntimePlans", {
+      COMPILED_VOMNIBAR_CANARY: true,
+      allowed: [{ planVersion: 6, moduleImplementations: { vomnibar: "browser-toolbox" } }],
+    });
+    stub(BrowserToolboxDocumentAuthority.prototype, "role", () => "content");
+    stub(BrowserToolboxDocumentAuthority.prototype, "verify", async (identity, actor) => {
+      verifications++;
+      assert.equal(request.identity, identity);
+      assert.equal(sender, actor);
+      return authority;
+    });
+    stub(UrlUtils, "convertToUrl", async (value) => value);
+    stub(chrome.tabs, "update", async (id, options) => effects.push({ id, options }));
+    stub(chrome.tabs, "create", async (options) => effects.push({ options }));
+    stub(chrome.search, "query", async (options) => effects.push({ options }));
+  });
+  should("先核验登记方案，再在异步URL转换后重核并只导航一次", async () => {
+    assert.equal({ ok: true }, await browserToolboxSubmitVomnibar(request, sender));
+    assert.equal(2, verifications);
+    assert.equal([{ id: 23, options: { url: "https://synthetic.invalid/" } }], effects);
+  });
+  should("组件和公共页面不能使用父文档提交入口，兼容方案和额外参数被拒绝", async () => {
+    for (const role of ["component", "public", "untrusted"]) {
+      stub(BrowserToolboxDocumentAuthority.prototype, "role", () => role);
+      assert.equal("PERMISSION_DENIED", (await browserToolboxSubmitVomnibar(request, sender)).code);
+    }
+    stub(BrowserToolboxDocumentAuthority.prototype, "role", () => "content");
+    authority = { planVersion: 5 };
+    let failure;
+    try {
+      await browserToolboxSubmitVomnibar(request, sender);
+    } catch (error) {
+      failure = error;
+    }
+    assert.equal("PERMISSION_DENIED", failure?.code);
+    request.payload.submission.tabId = 999;
+    assert.equal(
+      "INVALID_VOMNIBAR_SUBMISSION",
+      (await browserToolboxSubmitVomnibar(request, sender)).code,
+    );
+    assert.equal([], effects);
+  });
+  should("URL转换期间文档失效不能触发后续Native副作用", async () => {
+    stub(UrlUtils, "convertToUrl", async (value) => {
+      stub(BrowserToolboxDocumentAuthority.prototype, "verify", async () => {
+        throw Object.assign(new Error("STALE_RUNTIME"), { code: "STALE_RUNTIME" });
+      });
+      return value;
+    });
+    let failure;
+    try {
+      await browserToolboxSubmitVomnibar(request, sender);
+    } catch (error) {
+      failure = error;
+    }
+    assert.equal("STALE_RUNTIME", failure?.code);
+    assert.equal([], effects);
+  });
+  should("选择标签读取后文档失效不能激活窗口或标签", async () => {
+    request.payload.submission = { handler: "selectSpecificTab", id: 24 };
+    stub(chrome.windows, "update", async (id, options) => effects.push({ id, options }));
+    stub(chrome.tabs, "get", async () => {
+      stub(BrowserToolboxDocumentAuthority.prototype, "verify", async () => {
+        throw Object.assign(new Error("STALE_RUNTIME"), { code: "STALE_RUNTIME" });
+      });
+      return { id: 24, windowId: 8 };
+    });
+    let failure;
+    try {
+      await browserToolboxSubmitVomnibar(request, sender);
+    } catch (error) {
+      failure = error;
+    }
+    assert.equal("STALE_RUNTIME", failure?.code);
+    assert.equal([], effects);
+  });
+  should("未编译独立方案时拒绝入口，Native失效不进入动作", async () => {
+    BrowserToolboxRuntimePlans.COMPILED_VOMNIBAR_CANARY = false;
+    assert.equal("PERMISSION_DENIED", (await browserToolboxSubmitVomnibar(request, sender)).code);
+    BrowserToolboxRuntimePlans.COMPILED_VOMNIBAR_CANARY = true;
+    stub(BrowserToolboxDocumentAuthority.prototype, "verify", async () => {
+      throw Object.assign(new Error("STALE_DOCUMENT"), { code: "STALE_DOCUMENT" });
+    });
+    let failure;
+    try {
+      await browserToolboxSubmitVomnibar(request, sender);
+    } catch (error) {
+      failure = error;
+    }
+    assert.equal("STALE_DOCUMENT", failure?.code);
+    assert.equal([], effects);
+  });
+  should("新标签和系统搜索保持Native动作且不扩展提交选项", async () => {
+    request.payload.submission.handler = "openUrlInNewTab";
+    await browserToolboxSubmitVomnibar(request, sender);
+    assert.equal(23, effects[0].options.openerTabId);
+    assert.equal(1, effects[0].options.index);
+    request.payload.submission = {
+      handler: "launchSearchQuery",
+      query: "中文目标",
+      openInNewTab: true,
+    };
+    await browserToolboxSubmitVomnibar(request, sender);
+    assert.equal({ options: { disposition: "NEW_TAB", text: "中文目标" } }, effects[1]);
+  });
+});
+
 context("HintCoordinator", () => {
   should("prepareToActivateLinkHintsMode", async () => {
     let receivedMessages = [];
@@ -12,12 +132,26 @@ context("HintCoordinator", () => {
     };
 
     stub(chrome.webNavigation, "getAllFrames", () => [{ frameId: 0 }, { frameId: 1 }]);
+    stub(
+      BrowserToolboxDocumentAuthority.prototype,
+      "target",
+      async (_tabId, frameId) => ({
+        documentId: `synthetic-document-${frameId}`,
+        runtimeEpoch: 1,
+        incognito: false,
+      }),
+    );
 
     stub(chrome.tabs, "sendMessage", async (_tabId, message, options) => {
-      if (message.messageType == "getHintDescriptors") {
-        return frameIdToHintDescriptors[options.frameId];
-      } else if (message.messageType == "activateMode") {
-        receivedMessages.push(message);
+      assert.equal(2, message.protocolVersion);
+      assert.equal("lifecycle", message.kind);
+      assert.equal("hints", message.action);
+      assert.equal(message.identity.documentId, options.documentId);
+      const request = message.payload.message;
+      if (request.messageType == "getHintDescriptors") {
+        return frameIdToHintDescriptors[Number(options.documentId.at(-1))];
+      } else if (request.messageType == "activateMode") {
+        receivedMessages.push(request);
       }
     });
 

@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="color-scheme" content="light dark">
     <title data-i18n="browserToolbox">Browser Toolbox</title>
+    <link rel="stylesheet" href="theme_tokens.css">
     <link rel="stylesheet" href="gesture_editor.css">
     <link rel="stylesheet" href="tool_settings.css">
     <script src="../lib/i18n.js"></script>
     <script src="../lib/utils.js"></script>
+    <script src="../lib/browser_toolbox/configuration_client.js"></script>
     <script src="../lib/settings.js"></script>
     <script src="../lib/browser_toolbox/value_utils.js"></script>
     <script src="../lib/browser_toolbox/tools/tool_contract.js"></script>
@@ -17,10 +19,12 @@
     <script src="../lib/browser_toolbox/command_invocation.js"></script>
     <script src="../lib/browser_toolbox/message_protocol.js"></script>
     <script src="../lib/browser_toolbox/settings_schema.js"></script>
+    <script src="../lib/browser_toolbox/theme.js"></script>
     <script src="../lib/browser_toolbox/regex_safety.js"></script>
     <script src="../lib/browser_toolbox/module_registry.js"></script>
     <script src="../lib/browser_toolbox/browser_startup.js"></script>
     <script src="../lib/browser_toolbox/settings_validator.js"></script>
+    <script src="../background_scripts/browser_toolbox/configuration_writer.js"></script>
     <script src="../lib/browser_toolbox/site_rule_matcher.js"></script>
     <script src="../lib/browser_toolbox/settings_policy.js"></script>
     <script src="../background_scripts/browser_toolbox/settings_migrations.js"></script>
@@ -46,36 +50,82 @@
   <body class="browser-toolbox-settings-page">
     <div class="browser-toolbox-layout">
       <aside class="browser-toolbox-sidebar">
-        <div class="browser-toolbox-brand">
-          <img src="../icons/icon48.png" alt="" aria-hidden="true">
-          <h1 id="browser-toolbox-title" data-i18n="browserToolbox">Browser Toolbox</h1>
-        </div>
-        <label class="browser-toolbox-settings-search" for="settings-section-search">
-          <span data-i18n="settingsSearch">Search settings</span>
-          <input id="settings-section-search" type="search" autocomplete="off"
-            data-i18n-placeholder="settingsSearchHint"
+        <div class="browser-toolbox-sidebar-header">
+          <div class="browser-toolbox-brand">
+            <img src="../icons/icon48.png" alt="" aria-hidden="true">
+            <h1 id="browser-toolbox-title" data-i18n="browserToolbox">Browser Toolbox</h1>
+          </div>
+          <button
+            id="browser-toolbox-sidebar-toggle"
+            class="browser-toolbox-sidebar-toggle"
+            type="button"
+            aria-expanded="false"
             aria-controls="browser-toolbox-settings-nav"
-            aria-describedby="settings-search-status">
-        </label>
-        <p id="settings-search-status" class="browser-toolbox-search-status" role="status"
-          aria-live="polite"></p>
+            data-i18n-aria-label="toolExpand"
+          >
+            <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true" focusable="false">
+              <rect x="2.5" y="3.5" width="15" height="13" rx="2.5"></rect>
+              <path d="M7.5 3.5v13"></path>
+              <path class="browser-toolbox-sidebar-toggle-arrow" d="M11 8l2 2-2 2"></path>
+            </svg>
+            <span class="browser-toolbox-sidebar-toggle-label" data-i18n="toolExpand">Expand</span>
+          </button>
+        </div>
         <nav id="browser-toolbox-settings-nav" class="browser-toolbox-nav" role="navigation"
           aria-label="Settings sections" data-i18n-aria-label="settingsSections"></nav>
       </aside>
       <main class="browser-toolbox-main" aria-labelledby="browser-toolbox-title">
-        <section class="browser-toolbox-panel" data-panel="general">
-          <h2 data-i18n="general">General</h2>
-          <div class="browser-toolbox-grid">
-            <label
-              class="browser-toolbox-check"><input id="general-enabled" type="checkbox"> <span data-i18n="enabled">Enabled</span></label>
-            <label
-              class="browser-toolbox-check"><input id="global-show-hud" type="checkbox"> <span data-i18n="globalShowHud">Show toolbox command hints</span></label>
-            <label
-              class="browser-toolbox-check"><input id="browser-sync-enabled" type="checkbox"> <span data-i18n="browserSyncEnabled">Sync toolbox settings</span></label>
-            <label
-              class="browser-toolbox-field"><span data-i18n="language">Language</span><select id="language"><option value="auto" data-i18n="languageAuto">Follow browser</option><option value="en" data-i18n="languageEnglish">English</option><option value="zh_CN" data-i18n="languageChinese">简体中文</option><option value="zh_TW" data-i18n="languageChineseTraditional">繁體中文</option><option value="ja" data-i18n="languageJapanese">日本語</option><option value="es" data-i18n="languageSpanish">Español</option></select></label>
+        <header class="browser-toolbox-workspace-bar">
+          <div class="browser-toolbox-workspace-search">
+            <label class="browser-toolbox-settings-search" for="settings-section-search">
+              <span data-i18n="settingsSearch">Search settings</span>
+              <input id="settings-section-search" type="search" autocomplete="off"
+                data-i18n-placeholder="settingsSearchHint"
+                aria-controls="browser-toolbox-settings-nav"
+                aria-describedby="settings-search-status">
+            </label>
+            <p id="settings-search-status" class="browser-toolbox-search-status" role="status"
+              aria-live="polite"></p>
           </div>
-          <div class="browser-toolbox-startup-card">
+          <div class="browser-toolbox-save-bar">
+            <span class="browser-toolbox-save-hint">
+              <span aria-hidden="true">ⓘ</span>
+              <span data-i18n="saveOnlyOnSave">Changes take effect after saving.</span>
+            </span>
+            <span id="dirty-status" role="status" aria-live="polite"></span>
+            <div class="browser-toolbox-actions">
+              <button id="discard-changes" type="button" data-i18n="discardChanges"
+                disabled>Discard changes</button>
+              <button id="save-settings" class="primary" data-i18n="saveSettings"
+                disabled>Save settings</button>
+              <span id="save-status" data-i18n="saved" aria-live="polite">Saved</span>
+            </div>
+          </div>
+        </header>
+        <div id="settings-error" class="browser-toolbox-error" role="alert"></div>
+        <section class="browser-toolbox-panel" data-panel="general">
+          <h2 data-i18n="generalAndTheme">General &amp; theme</h2>
+          <div class="browser-toolbox-settings-subcard browser-toolbox-general-core-card">
+            <div class="browser-toolbox-grid">
+              <label
+                class="browser-toolbox-check"><input id="general-enabled" type="checkbox"> <span data-i18n="enabled">Enabled</span></label>
+              <label
+                class="browser-toolbox-check"><input id="global-show-hud" type="checkbox"> <span data-i18n="globalShowHud">Show toolbox command hints</span></label>
+              <label
+                class="browser-toolbox-check"><input id="browser-sync-enabled" type="checkbox"> <span data-i18n="browserSyncEnabled">Sync toolbox settings</span></label>
+              <label
+                class="browser-toolbox-field"><span data-i18n="language">Language</span><select id="language"><option value="auto" data-i18n="languageAuto">Follow browser</option><option value="en" data-i18n="languageEnglish">English</option><option value="zh_CN" data-i18n="languageChinese">简体中文</option><option value="zh_TW" data-i18n="languageChineseTraditional">繁體中文</option><option value="ja" data-i18n="languageJapanese">日本語</option><option value="es" data-i18n="languageSpanish">Español</option></select></label>
+              <label
+                class="browser-toolbox-field"><span data-i18n="generalTheme">Theme</span><select id="general-theme"><option value="sage-mist" data-i18n="themeSageMist">Sage Mist (Default)</option><option value="cobalt" data-i18n="themeCobalt">Cobalt Blue</option><option value="paper-ink" data-i18n="themePaperInk">Warm Paper Ink</option><option value="slate" data-i18n="themeSlate">Minimalist Slate</option></select></label>
+            </div>
+            <div class="browser-toolbox-card-footer-notes">
+              <p class="browser-toolbox-note"
+                data-i18n="browserSyncNote">This switch only controls toolbox settings. When off, they stay on this device. Vimium settings, including keyboard shortcuts and search engines, still use browser sync.</p>
+              <p class="browser-toolbox-note"
+                data-i18n="noTelemetry">No telemetry, accounts, advertising, or paid features.</p>
+            </div>
+          </div>
+          <div class="browser-toolbox-settings-subcard browser-toolbox-startup-card">
             <div class="browser-toolbox-startup-card-heading">
               <div>
                 <h3 data-i18n="browserStartup">Browser startup</h3>
@@ -90,7 +140,8 @@
                 </label>
                 <label class="browser-toolbox-check">
                   <input id="browser-startup-new-tab-enabled" type="checkbox">
-                  <span data-i18n="browserStartupNewTabEnabled">Also open this website in new tabs</span>
+                  <span
+                    data-i18n="browserStartupNewTabEnabled">Also open this website in new tabs</span>
                 </label>
               </div>
             </div>
@@ -104,27 +155,418 @@
               When enabled, new tabs in normal windows open this website. Incognito windows keep Chrome's native new tab page.
             </p>
           </div>
-          <p class="browser-toolbox-note"
-            data-i18n="browserSyncNote">This switch only controls toolbox settings. When off, they stay on this device. Vimium settings, including keyboard shortcuts and search engines, still use browser sync.</p>
-          <p class="browser-toolbox-note"
-            data-i18n="noTelemetry">No telemetry, accounts, advertising, or paid features.</p>
+          <details class="browser-toolbox-settings-subcard browser-toolbox-startup-card browser-toolbox-maintenance-card" id="runtime-maintenance">
+            <summary class="browser-toolbox-maintenance-summary">
+              <span class="browser-toolbox-maintenance-summary-title" data-i18n="runtimeMaintenance">运行时维护</span>
+              <span class="browser-toolbox-maintenance-caret" aria-hidden="true"></span>
+            </summary>
+            <div class="browser-toolbox-maintenance-body">
+              <div class="browser-toolbox-maintenance-section">
+                <p class="browser-toolbox-note"
+                  data-i18n="runtimeMaintenanceNote">键盘无法使用时可恢复兼容引擎。旧页面需要手动刷新，请先保存输入。</p>
+                <p id="runtime-maintenance-status" class="browser-toolbox-note browser-toolbox-status-line" role="status"
+                  aria-live="polite"></p>
+                <div class="browser-toolbox-actions">
+                  <button type="button" id="runtime-inspect"
+                    data-i18n="runtimeInspect">检查运行状态</button>
+                  <button type="button" id="runtime-restore"
+                    data-i18n="runtimeRestore">恢复兼容引擎</button>
+                </div>
+              </div>
+              <div class="browser-toolbox-maintenance-section">
+                <p id="configuration-status" class="browser-toolbox-note browser-toolbox-status-line" role="status"
+                  aria-live="polite"></p>
+                <div class="browser-toolbox-actions">
+                  <button type="button" id="configuration-inspect"
+                    data-i18n="configurationInspect">检查配置</button>
+                  <button type="button" id="configuration-export"
+                    data-i18n="configurationExport">导出恢复配置</button>
+                  <button type="button" id="configuration-rollback"
+                    data-i18n="configurationRollback">准备兼容回退</button>
+                  <button type="button" id="configuration-export-conflict" hidden
+                    data-i18n="configurationExportConflict">导出冲突观察记录</button>
+                </div>
+                <p id="configuration-conflict-export-note" class="browser-toolbox-note" hidden
+                  data-i18n="configurationConflictExportNote">文件包含配置正文，不包含独立的本机指针资源或未知顶层键；它不能直接作为设置备份导入。</p>
+              </div>
+              <div class="browser-toolbox-maintenance-section">
+                <label class="browser-toolbox-field" for="conflict-observation-select">
+                  <span data-i18n="conflictObservationList">本机冲突观察</span>
+                  <select id="conflict-observation-select" disabled></select>
+                </label>
+                <p class="browser-toolbox-note"
+                  data-i18n="conflictObservationNote">已保存观察包含受支持的配置正文，不含独立指针资源或未保存草稿，不能直接导入。本机时间仅供参考；未知字段仅保留标记，原数据可能随同步变化。</p>
+                <div class="browser-toolbox-actions">
+                  <button type="button" id="conflict-observation-refresh"
+                    data-i18n="conflictObservationRefresh">刷新观察列表</button>
+                  <button type="button" id="conflict-observation-capture" hidden
+                    data-i18n="conflictObservationCapture">保存当前观察</button>
+                  <button type="button" id="conflict-observation-export" disabled
+                    data-i18n="conflictObservationExport">导出所选观察</button>
+                  <button type="button" id="conflict-observation-review" disabled
+                    data-i18n="conflictReviewOpen">逐项复核观察</button>
+                </div>
+                <p id="conflict-observation-status" class="browser-toolbox-note browser-toolbox-status-line" role="status"
+                  aria-live="polite"></p>
+                <section id="conflict-review" hidden aria-labelledby="conflict-review-title">
+                  <h4 id="conflict-review-title" data-i18n="conflictReviewTitle">复核已保存观察</h4>
+                  <p class="browser-toolbox-note"
+                    data-i18n="conflictReviewNote">这两份内容是本机保存的观察，可能不含最新同步变化、未知字段或未保存草稿。没有可信共同基线，请逐项选择；数组按整体选择。导出的候选备份不包含本机指针资源，导入后指针将被禁用。生成备份不会写入配置或解除冲突保护。</p>
+                  <div id="conflict-review-fields"></div>
+                  <div class="browser-toolbox-actions">
+                    <button type="button" id="conflict-review-export" disabled
+                      data-i18n="conflictReviewExport">导出候选备份</button>
+                  </div>
+                </section>
+              </div>
+              <div class="browser-toolbox-maintenance-footer">
+                <a class="browser-toolbox-pill-link" href="configuration_recovery.html" data-i18n="recoveryPageLink">恢复状态与诊断</a>
+              </div>
+            </div>
+          </details>
+        </section>
+
+        <section class="browser-toolbox-panel" data-panel="search" hidden>
+          <div class="browser-toolbox-page-header">
+            <div class="browser-toolbox-page-heading">
+              <h2 data-i18n="searchEngines">Search engines</h2>
+              <p class="browser-toolbox-note"
+                data-i18n="searchEnginesDescription">Bind search engines to short keywords and trigger them directly from the quick launcher (Vomnibar).</p>
+            </div>
+          </div>
+          <ol class="browser-toolbox-search-steps">
+            <li class="browser-toolbox-search-step">
+              <span class="browser-toolbox-search-step-kicker" data-i18n="searchStep1Kicker">Step 1 · Configure &amp; save</span>
+              <strong data-i18n="searchStep1Title">Edit keyword rules below</strong>
+              <p data-i18n="searchStep1Desc">One entry per line as "keyword: search_url [name]" (e.g. bd: https://www.baidu.com/s?wd=%s Baidu), then click Save settings.</p>
+            </li>
+            <li class="browser-toolbox-search-step">
+              <span class="browser-toolbox-search-step-kicker" data-i18n="searchStep2Kicker">Step 2 · Open on any page</span>
+              <strong data-i18n="searchStep2Title">Press o (current tab) or O (new tab)</strong>
+              <p data-i18n="searchStep2Desc">Opens the quick launcher (requires Keyboard navigation enabled, or open via gesture/command center).</p>
+            </li>
+            <li class="browser-toolbox-search-step">
+              <span class="browser-toolbox-search-step-kicker" data-i18n="searchStep3Kicker">Step 3 · Search with keyword</span>
+              <strong data-i18n="searchStep3Title">Type bd query and press Enter</strong>
+              <p data-i18n="searchStep3Desc">Type the keyword plus a space to select Baidu, then enter your terms and hit Enter to open results.</p>
+            </li>
+          </ol>
+          <div class="browser-toolbox-settings-subcard">
+            <label class="browser-toolbox-field" for="search-engines">
+              <span data-i18n="searchRulesLabel">Custom search rules</span>
+              <textarea id="search-engines" rows="8" spellcheck="false"
+                placeholder="bd: https://www.baidu.com/s?wd=%s 百度"></textarea>
+            </label>
+            <dl class="browser-toolbox-search-syntax">
+              <dt data-i18n="searchSyntaxFormatLabel">Line syntax</dt>
+              <dd data-i18n="searchSyntaxFormatDesc">Format: keyword: URL [display name] (e.g. bd: https://www.baidu.com/s?wd=%s Baidu). %s is replaced with the URL-encoded query, %S keeps the raw query, or it is appended if omitted.</dd>
+              <dt data-i18n="searchSyntaxCommentLabel">Comments &amp; saving</dt>
+              <dd data-i18n="searchSyntaxCommentDesc">Lines starting with # or " are treated as comments and ignored; click Save settings to apply changes.</dd>
+            </dl>
+            <p class="browser-toolbox-note"
+              data-i18n="searchEngineNote">Searches are sent only when you explicitly invoke a search command.</p>
+          </div>
+        </section>
+
+        <section class="browser-toolbox-panel browser-toolbox-mouse-panel" data-panel="mouse"
+          hidden>
+          <div class="browser-toolbox-mouse-workbench">
+            <div class="browser-toolbox-mouse-main">
+              <header class="browser-toolbox-settings-hero">
+                <div class="browser-toolbox-settings-hero-title">
+                  <span class="browser-toolbox-settings-hero-icon" aria-hidden="true">
+                    <svg viewBox="0 0 32 32" focusable="false">
+                      <path
+                        d="M16 3.5c-5.1 0-9.2 4-9.2 9v7.1c0 5.1 4.1 8.9 9.2 8.9s9.2-3.8 9.2-8.9v-7.1c0-5-4.1-9-9.2-9Z"></path>
+                      <path d="M16 4v9m-9.1 0h18.2"></path>
+                      <path d="M16 8.5v3"></path>
+                    </svg>
+                  </span>
+                  <div>
+                    <span class="browser-toolbox-page-kicker"
+                      data-i18n="browsingEnhancement">Browsing enhancements</span>
+                    <h2 data-i18n="mouseGestures">Mouse Gestures</h2>
+                    <p
+                      data-i18n="mouseSettingsSubtitle">Hold the right button and drag to run an action.</p>
+                  </div>
+                </div>
+                <label class="browser-toolbox-settings-status">
+                  <span class="browser-toolbox-settings-status-label"
+                    data-i18n="mouseEnabledStatus">Enabled</span>
+                  <span class="browser-toolbox-switch browser-toolbox-switch-large">
+                    <input id="mouse-enabled" type="checkbox" data-i18n-aria-label="mouseGestures">
+                    <i aria-hidden="true"></i>
+                  </span>
+                </label>
+              </header>
+
+              <section class="browser-toolbox-param-ribbon" aria-labelledby="mouse-recognition-title">
+                <h3 id="mouse-recognition-title" class="browser-toolbox-visually-hidden"
+                  data-i18n="mouseRecognitionSettings">Recognition settings</h3>
+                <label class="browser-toolbox-param-cell">
+                  <span data-i18n="triggerButton">Gesture trigger button</span>
+                  <select id="trigger-button">
+                    <option value="0" data-i18n="leftButton">Left button</option>
+                    <option value="1" data-i18n="middleButton">Middle button</option>
+                    <option value="2" data-i18n="rightButton">Right button</option>
+                  </select>
+                </label>
+                <label class="browser-toolbox-param-cell">
+                  <span data-i18n="mouseTriggerDistance">Trigger distance</span>
+                  <span class="browser-toolbox-inline-number"><input id="activation-distance" type="number" min="1" max="200"><b>px</b></span>
+                </label>
+                <label class="browser-toolbox-param-cell browser-toolbox-param-cell-switch">
+                  <span data-i18n="mouseTrailHint">Trail hint</span>
+                  <span class="browser-toolbox-switch"><input id="show-trail" type="checkbox"><i aria-hidden="true"></i></span>
+                </label>
+                <label class="browser-toolbox-param-cell browser-toolbox-param-cell-switch">
+                  <span data-i18n="mouseNormalClickMenu">Keep the browser menu for normal clicks</span>
+                  <span class="browser-toolbox-switch"><input id="suppress-context-menu" type="checkbox"><i aria-hidden="true"></i></span>
+                </label>
+              </section>
+
+              <section class="browser-toolbox-mouse-how-card browser-toolbox-mouse-how-compact"
+                aria-labelledby="mouse-how-title">
+                <div class="browser-toolbox-mouse-how-inline">
+                  <span id="mouse-how-title" class="browser-toolbox-mouse-how-pill" data-i18n="mouseRightClick">Right-click</span>
+                  <small data-i18n="mouseOpenBrowserMenu">Open the browser menu</small>
+                  <span aria-hidden="true">·</span>
+                  <span class="browser-toolbox-mouse-how-pill is-accent" data-i18n="mouseHoldAndDrag">Hold and drag</span>
+                  <small data-i18n="mouseRunGesture">Run a mouse gesture</small>
+                  <a class="browser-toolbox-settings-card-link" href="#toolsOverview"
+                    data-i18n="manageToolMenu">Manage tool menu</a>
+                </div>
+              </section>
+
+              <section class="browser-toolbox-mouse-gesture-section"
+                aria-labelledby="mouse-gesture-overview-title">
+                <div class="browser-toolbox-section-heading">
+                  <div>
+                    <span class="browser-toolbox-page-kicker"
+                      data-i18n="browsingEnhancement">Browsing enhancements</span>
+                    <h3 id="mouse-gesture-overview-title"
+                      data-i18n="mouseGestureActions">Gestures and actions</h3>
+                  </div>
+                  <span class="browser-toolbox-section-count" id="mouse-gesture-count">4</span>
+                </div>
+                <div id="mouse-gesture-cards" class="browser-toolbox-mouse-gesture-cards"></div>
+              </section>
+
+              <details id="mouse-advanced-settings" class="browser-toolbox-mouse-advanced">
+                <summary data-i18n="mouseAdvancedSettings">Advanced recognition and bindings</summary>
+                <div class="browser-toolbox-mouse-advanced-body">
+                  <div class="browser-toolbox-grid">
+                    <label
+                      class="browser-toolbox-field"><span data-i18n="sampleDistance">Sample distance (px)</span><input id="sample-distance" type="number" min="1" max="100"></label>
+                    <label
+                      class="browser-toolbox-field"><span data-i18n="minimumSegmentDistance">Minimum segment (px)</span><input id="minimum-segment-distance" type="number" min="2" max="500"></label>
+                    <label
+                      class="browser-toolbox-field"><span data-i18n="turnHysteresis">Turn hysteresis (degrees)</span><input id="turn-hysteresis" type="number" min="0" max="45"></label>
+                    <label
+                      class="browser-toolbox-field"><span data-i18n="maxSegments">Maximum segments</span><input id="max-segments" type="number" min="1" max="8"></label>
+                    <label
+                      class="browser-toolbox-field"><span data-i18n="maxDuration">Maximum duration (ms)</span><input id="max-duration" type="number" min="100" max="10000"></label>
+                    <label
+                      class="browser-toolbox-check"><input id="show-command-hud" type="checkbox"> <span data-i18n="showHud">Show command HUD</span></label>
+                  </div>
+                  <p class="browser-toolbox-note"
+                    data-i18n="mouseTriggerButtonHint">The gesture button takes priority over super drag and rocker input when they use the same button. With the right button, a click or movement below the activation threshold keeps the native menu; when menu suppression is enabled, an activated gesture blocks it. Disabling suppression keeps the native menu but may conflict with gestures.</p>
+                  <label class="browser-toolbox-field browser-toolbox-pattern-input">
+                    <span data-i18n="patternInput">Gesture arrows (for example, ↑ · →)</span>
+                    <input id="gesture-pattern-input" type="text" autocomplete="off" spellcheck="false"
+                      aria-describedby="gesture-preview">
+                  </label>
+                  <div class="browser-toolbox-actions">
+                    <button id="add-gesture-binding" class="primary" data-i18n="addBinding">Add binding</button>
+                  </div>
+                  <div id="mouse-binding-error" class="browser-toolbox-error" role="alert"></div>
+                  <table class="browser-toolbox-table browser-toolbox-binding-cards-table">
+                    <thead>
+                      <tr>
+                        <th data-i18n="pattern">Pattern</th>
+                        <th data-i18n="command">Command</th>
+                        <th data-i18n="enabled">Enabled</th>
+                        <th data-i18n="options">Options</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody id="mouse-bindings"></tbody>
+                  </table>
+                </div>
+              </details>
+            </div>
+
+            <aside class="browser-toolbox-mouse-inspector" aria-labelledby="mouse-inspector-title">
+              <div class="browser-toolbox-inspector-crystal">
+                <div class="browser-toolbox-inspector-header">
+                  <h3 id="mouse-inspector-title" data-i18n="gestureEditor">Gesture editor</h3>
+                  <button id="clear-gesture" type="button" data-i18n="reset">Reset</button>
+                </div>
+                <div class="browser-toolbox-canvas-frame">
+                  <canvas id="gesture-canvas" width="320" height="200" tabindex="0"
+                    aria-label="Gesture editor" data-i18n-aria-label="gestureEditor"></canvas>
+                </div>
+                <div class="browser-toolbox-inspector-readout">
+                  <div id="gesture-preview" aria-live="polite"></div>
+                  <p id="gesture-lab-status" class="browser-toolbox-note" role="status"
+                    aria-live="polite"
+                    data-i18n="gestureLabHint">The gesture lab checks duplicates and prefix conflicts before adding a binding.</p>
+                </div>
+              </div>
+              <div class="browser-toolbox-inspector-detail">
+                <span class="browser-toolbox-inspector-detail-kicker" data-i18n="command">Command</span>
+                <strong id="mouse-inspector-command">-</strong>
+                <p id="mouse-inspector-pattern-note" class="browser-toolbox-note" data-i18n="mouseRunGesture">Run a mouse gesture</p>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="browser-toolbox-panel" data-panel="superDrag" hidden>
+          <h2 data-i18n="superDrag">Super Drag</h2>
+          <div class="browser-toolbox-settings-subcard">
+            <div class="browser-toolbox-grid">
+              <label
+                class="browser-toolbox-check"><input id="super-drag-enabled" type="checkbox"> <span data-i18n="enabled">Enabled</span></label>
+              <label
+                class="browser-toolbox-field"><span data-i18n="nativeBypassModifier">Native drag bypass modifier</span><select id="native-bypass-modifier"><option value="Alt" data-i18n="modifierAlt">Alt</option><option value="Control" data-i18n="modifierControl">Control</option><option value="Meta" data-i18n="modifierMeta">Command / Meta</option><option value="Shift" data-i18n="modifierShift">Shift</option></select></label>
+            </div>
+            <p class="browser-toolbox-note"
+              data-i18n="superDragSafety">The selected bypass modifier always keeps native dragging. File uploads, editors, password fields, custom draggable widgets, and invalid URLs are not intercepted.</p>
+          </div>
+          <div class="browser-toolbox-settings-subcard">
+            <table class="browser-toolbox-table browser-toolbox-binding-cards-table">
+              <thead>
+                <tr>
+                  <th data-i18n="context">Context</th>
+                  <th data-i18n="pattern">Pattern</th>
+                  <th data-i18n="command">Command</th>
+                  <th data-i18n="enabled">Enabled</th>
+                  <th data-i18n="options">Options</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="super-drag-bindings"></tbody>
+            </table>
+            <div
+              class="browser-toolbox-actions"><button id="add-super-drag-binding" type="button" data-i18n="addBinding">Add binding</button></div>
+          </div>
+        </section>
+
+        <section class="browser-toolbox-panel" data-panel="wheel" hidden>
+          <h2 data-i18n="wheelRocker">Wheel &amp; Rocker</h2>
+          <div class="browser-toolbox-settings-subcard">
+            <div class="browser-toolbox-grid browser-toolbox-wheel-grid">
+              <label
+                class="browser-toolbox-check"><input id="wheel-enabled" type="checkbox"> <span data-i18n="enabled">Enabled</span></label>
+              <label
+                class="browser-toolbox-check"><input id="wheel-continuous" type="checkbox"> <span data-i18n="continuousTabSwitching">Continuous tab switching</span></label>
+              <label
+                class="browser-toolbox-field"><span data-i18n="wheelThreshold">Wheel threshold</span><input id="wheel-threshold" type="number" min="10" max="2000"></label>
+              <label
+                class="browser-toolbox-field"><span data-i18n="cooldown">Cooldown (ms)</span><input id="wheel-cooldown" type="number" min="0" max="5000"></label>
+            </div>
+            <table class="browser-toolbox-table">
+              <thead>
+                <tr>
+                  <th data-i18n="button">Button</th>
+                  <th data-i18n="direction">Direction</th>
+                  <th data-i18n="command">Command</th>
+                  <th data-i18n="enabled">Enabled</th>
+                  <th data-i18n="options">Options</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="wheel-bindings"></tbody>
+            </table>
+            <div
+              class="browser-toolbox-actions"><button id="add-wheel-binding" type="button" data-i18n="addBinding">Add binding</button></div>
+          </div>
+          <div class="browser-toolbox-settings-subcard">
+            <div class="browser-toolbox-subcard-header">
+              <h3 data-i18n="rocker">Rocker</h3>
+              <label
+                class="browser-toolbox-check"><input id="rocker-enabled" type="checkbox"> <span data-i18n="enabled">Enabled</span></label>
+            </div>
+            <table class="browser-toolbox-table">
+              <thead>
+                <tr>
+                  <th data-i18n="sequence">Sequence</th>
+                  <th data-i18n="command">Command</th>
+                  <th data-i18n="enabled">Enabled</th>
+                  <th data-i18n="options">Options</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="rocker-bindings"></tbody>
+            </table>
+          </div>
         </section>
 
         <section class="browser-toolbox-panel" data-panel="keyboard" hidden>
           <h2 data-i18n="keyboard">Keyboard</h2>
-          <label
-            class="browser-toolbox-check"><input id="keyboard-enabled" type="checkbox"> <span data-i18n="enabled">Enabled</span></label>
-          <label
-            class="browser-toolbox-field"><span data-i18n="keyMappings">Keyboard mappings</span><textarea id="key-mappings" rows="10" spellcheck="false"></textarea></label>
-          <p class="browser-toolbox-note"
-            data-i18n="keyboardMappingNote">Vimium-compatible mappings are imported into the existing keyboard settings.</p>
+          <div class="browser-toolbox-settings-subcard">
+            <label
+              class="browser-toolbox-check"><input id="keyboard-enabled" type="checkbox"> <span data-i18n="enabled">Enabled</span></label>
+            <label
+              class="browser-toolbox-field"><span data-i18n="keyMappings">Keyboard mappings</span><textarea id="key-mappings" rows="10" spellcheck="false"></textarea></label>
+            <p class="browser-toolbox-note"
+              data-i18n="keyboardMappingNote">Vimium-compatible mappings are imported into the existing keyboard settings.</p>
+          </div>
+        </section>
+
+        <section class="browser-toolbox-panel" data-panel="appearance" hidden>
+          <h2 data-i18n="cursor">Custom pointer</h2>
+          <div class="browser-toolbox-settings-subcard">
+            <div class="browser-toolbox-grid">
+              <label
+                class="browser-toolbox-check"><input id="cursor-enabled" type="checkbox"> <span data-i18n="enabled">Enabled</span></label>
+              <label
+                class="browser-toolbox-field"><span data-i18n="cursorAsset">Local PNG pointer</span><input id="cursor-file" type="file" accept="image/png"></label>
+              <label
+                class="browser-toolbox-field"><span data-i18n="cursorHotspotX">Hotspot X</span><input id="cursor-hotspot-x" type="number" min="0" max="127"></label>
+              <label
+                class="browser-toolbox-field"><span data-i18n="cursorHotspotY">Hotspot Y</span><input id="cursor-hotspot-y" type="number" min="0" max="127"></label>
+            </div>
+            <div
+              class="browser-toolbox-cursor-preview"><img id="cursor-preview" alt=""><span id="cursor-file-status" data-i18n="noCursorAsset">No local pointer selected.</span></div>
+            <div
+              class="browser-toolbox-actions"><button id="reset-cursor" type="button" data-i18n="resetCursor">Disable current pointer</button></div>
+            <p class="browser-toolbox-note"
+              data-i18n="cursorRetentionNote">Replacing, disabling, or importing settings retains previous pointer images on this device and uses local extension storage. Safe cleanup is not yet available.</p>
+          </div>
+          <div id="local-cursor-assets" class="browser-toolbox-settings-subcard">
+            <h4 data-i18n="localCursorTitle">Local pointer images</h4>
+            <p class="browser-toolbox-note"
+              data-i18n="localCursorNote">Use the reviewed image in your draft or export it. Both use the content just reviewed; applying it requires saving. The list does not show whether an image is in use.</p>
+            <label class="browser-toolbox-field" for="local-cursor-select">
+              <span data-i18n="localCursorSelect">Choose a local image</span>
+              <select id="local-cursor-select" disabled></select>
+            </label>
+            <div class="browser-toolbox-actions">
+              <button type="button" id="local-cursor-refresh"
+                data-i18n="localCursorRefresh">Refresh images</button>
+              <button type="button" id="local-cursor-more" data-i18n="localCursorMore"
+                hidden>Load more</button>
+              <button type="button" id="local-cursor-view" data-i18n="localCursorView"
+                disabled>Review selected image</button>
+              <button type="button" id="local-cursor-use" data-i18n="localCursorUse"
+                disabled>Use reviewed image</button>
+              <button type="button" id="local-cursor-export" data-i18n="localCursorExport"
+                disabled>Export previewed image</button>
+            </div>
+            <img id="local-cursor-preview" alt="" hidden>
+            <p id="local-cursor-status" class="browser-toolbox-note" role="status"
+              aria-live="polite"></p>
+          </div>
         </section>
 
         <section class="browser-toolbox-panel" data-panel="toolsOverview" hidden>
           <div class="browser-toolbox-page-header">
             <div class="browser-toolbox-page-heading">
-              <span class="browser-toolbox-page-kicker" data-i18n="utilityTools">Utility tools</span>
-              <h2 data-i18n="toolsOverview">Tool overview</h2>
+              <span class="browser-toolbox-page-kicker"
+                data-i18n="navToolsAndRendering">Tools &amp; rendering</span>
+              <h2 data-i18n="shortcutToolsConfig">Quick tools</h2>
               <p class="browser-toolbox-note" data-i18n="toolOverviewDescription">
                 Choose the local tools shown in the popup and native selection menu.
               </p>
@@ -145,305 +587,75 @@
               <i aria-hidden="true"></i>
             </label>
           </div>
-          <h3 data-i18n="actionTools">Action popup tools</h3>
-          <p id="action-tool-list-description" class="browser-toolbox-note"
-            data-i18n="actionToolsHint">Choose tools to show in the action popup.</p>
-          <div id="action-tool-list" class="browser-toolbox-tool-list"
-            aria-describedby="action-tool-list-description"></div>
-          <p id="action-tool-list-status" class="browser-toolbox-error" role="status"></p>
-          <h3 data-i18n="contextMenuTools">Context-menu tools</h3>
-          <p id="context-menu-tool-list-description" class="browser-toolbox-note"
-            data-i18n="contextMenuToolsHint">Choose tools for the native context menu. Selected text is passed in when available.</p>
-          <div id="context-menu-tool-list" class="browser-toolbox-tool-list"
-            aria-describedby="context-menu-tool-list-description"></div>
-          <p id="context-menu-tool-list-status" class="browser-toolbox-error" role="status"></p>
-          <div class="browser-toolbox-directory-heading">
-            <div>
-              <h3 data-i18n="toolDirectory">Tool directory</h3>
-              <p class="browser-toolbox-note" data-i18n="toolDirectoryHint">Every local tool is listed here with its category and entry point.</p>
-            </div>
-            <label class="browser-toolbox-field browser-toolbox-directory-search">
-              <span class="browser-toolbox-visually-hidden" data-i18n="toolDirectorySearch">Search tool directory</span>
-              <input id="browser-tool-directory-search" type="search" autocomplete="off"
-                data-i18n-placeholder="toolDirectorySearchHint">
-            </label>
+          <div class="browser-toolbox-settings-subcard">
+            <h3 data-i18n="actionTools">Action popup tools</h3>
+            <p id="action-tool-list-description" class="browser-toolbox-note"
+              data-i18n="actionToolsHint">Choose tools to show in the action popup.</p>
+            <div id="action-tool-list" class="browser-toolbox-tool-list"
+              aria-describedby="action-tool-list-description"></div>
+            <p id="action-tool-list-status" class="browser-toolbox-error" role="status"></p>
           </div>
-          <div id="browser-tool-directory" class="browser-toolbox-tool-directory"></div>
-          <p id="browser-tool-directory-status" class="browser-toolbox-note" role="status" aria-live="polite"></p>
+          <div class="browser-toolbox-settings-subcard">
+            <h3 data-i18n="contextMenuTools">Context-menu tools</h3>
+            <p id="context-menu-tool-list-description" class="browser-toolbox-note"
+              data-i18n="contextMenuToolsHint">Choose tools for the native context menu. Selected text is passed in when available.</p>
+            <div id="context-menu-tool-list" class="browser-toolbox-tool-list"
+              aria-describedby="context-menu-tool-list-description"></div>
+            <p id="context-menu-tool-list-status" class="browser-toolbox-error" role="status"></p>
+          </div>
+          <div class="browser-toolbox-settings-subcard">
+            <div class="browser-toolbox-directory-heading">
+              <div>
+                <h3 data-i18n="toolDirectory">Tool directory</h3>
+                <p class="browser-toolbox-note"
+                  data-i18n="toolDirectoryHint">Every local tool is listed here with its category and entry point.</p>
+              </div>
+              <label class="browser-toolbox-field browser-toolbox-directory-search">
+                <span class="browser-toolbox-visually-hidden"
+                  data-i18n="toolDirectorySearch">Search tool directory</span>
+                <input id="browser-tool-directory-search" type="search" autocomplete="off"
+                  data-i18n-placeholder="toolDirectorySearchHint">
+              </label>
+            </div>
+            <div id="browser-tool-directory" class="browser-toolbox-tool-directory"></div>
+            <p id="browser-tool-directory-status" class="browser-toolbox-note" role="status"
+              aria-live="polite"></p>
+          </div>
         </section>
 
         <section class="browser-toolbox-panel" data-panel="jsonFormatter" hidden>
-          <span class="browser-toolbox-page-kicker" data-i18n="utilityTools">Utility tools</span>
-          <h2 data-i18n="jsonFormatter">JSON formatter</h2>
-          <p class="browser-toolbox-note" data-i18n="jsonFormatterDescription">Format JSON documents locally and keep the original page available.</p>
+          <span class="browser-toolbox-page-kicker" data-i18n="navToolsAndRendering">Tools &amp; rendering</span>
+          <h2 data-i18n="pageAutoFormatter">Auto-formatting</h2>
+          <p class="browser-toolbox-note"
+            data-i18n="jsonFormatterDescription">Format JSON documents locally and keep the original page available.</p>
           <label class="browser-toolbox-tool-toggle browser-toolbox-tool-toggle-wide">
             <input id="document-formatter-enabled" type="checkbox">
             <span><strong data-i18n="documentFormatterEnabled">Enable document auto-formatting</strong><small data-i18n="documentFormatterEnabledHint">Only matching document content is read; no page data is uploaded.</small></span>
             <i aria-hidden="true"></i>
           </label>
-          <h3 data-i18n="documentFormatterAutoFormat">Automatic formats</h3>
-          <div class="browser-toolbox-format-grid">
-            <label class="browser-toolbox-format-card"><input id="document-auto-json" type="checkbox"><span><strong data-i18n="documentFormatterAutoJson">JSON</strong><small data-i18n="documentFormatterJsonHint">Structured data</small></span><i aria-hidden="true"></i></label>
-            <label class="browser-toolbox-format-card"><input id="document-auto-xml" type="checkbox"><span><strong data-i18n="documentFormatterAutoXml">XML</strong><small data-i18n="documentFormatterXmlHint">Markup documents</small></span><i aria-hidden="true"></i></label>
-            <label class="browser-toolbox-format-card"><input id="document-auto-css" type="checkbox"><span><strong data-i18n="documentFormatterAutoCss">CSS</strong><small data-i18n="documentFormatterCssHint">Stylesheets</small></span><i aria-hidden="true"></i></label>
-            <label class="browser-toolbox-format-card"><input id="document-auto-javascript" type="checkbox"><span><strong data-i18n="documentFormatterAutoJavascript">JavaScript</strong><small data-i18n="documentFormatterJavascriptHint">Scripts</small></span><i aria-hidden="true"></i></label>
-            <label class="browser-toolbox-format-card"><input id="document-auto-java" type="checkbox"><span><strong data-i18n="documentFormatterAutoJava">Java</strong><small data-i18n="documentFormatterJavaHint">Source files</small></span><i aria-hidden="true"></i></label>
-          </div>
-          <div class="browser-toolbox-grid browser-toolbox-form-grid">
-            <label class="browser-toolbox-field"><span data-i18n="documentFormatterMaxAutoBytes">Automatic formatting limit (bytes)</span><input id="document-max-auto-bytes" type="number" min="0" max="10485760" step="1"></label>
-            <label class="browser-toolbox-field"><span data-i18n="documentFormatterJsonDefaults">JSON defaults</span><select id="document-json-sort"><option value="original" data-i18n="documentFormatterKeepOrder">Keep key order</option><option value="ascending" data-i18n="documentFormatterSortAscending">Sort keys ascending</option><option value="descending" data-i18n="documentFormatterSortDescending">Sort keys descending</option></select></label>
-            <label class="browser-toolbox-field"><span data-i18n="documentFormatterDefaultCollapseDepth">Default collapse depth</span><input id="document-json-collapse-depth" type="number" min="0" max="96" step="1"></label>
-          </div>
-        </section>
-
-        <section class="browser-toolbox-panel" data-panel="textDiff" hidden>
-          <span class="browser-toolbox-page-kicker" data-i18n="utilityTools">Utility tools</span>
-          <h2 data-i18n="textDiff">Content diff</h2>
-          <p class="browser-toolbox-note" data-i18n="textDiffSettingsDescription">Compare two local text values without sending content away.</p>
-          <div class="browser-toolbox-capability-summary" data-tool-capability="text.diff"></div>
-        </section>
-
-        <section class="browser-toolbox-panel" data-panel="codecTransform" hidden>
-          <span class="browser-toolbox-page-kicker" data-i18n="utilityTools">Utility tools</span>
-          <h2 data-i18n="codecTransform">Encoding &amp; conversion</h2>
-          <p class="browser-toolbox-note" data-i18n="codecTransformSettingsDescription">Encode, decode, and convert local text with explicit operations.</p>
-          <div class="browser-toolbox-capability-summary" data-tool-capability="codec.transform"></div>
-        </section>
-
-        <section class="browser-toolbox-panel" data-panel="timeAndId" hidden>
-          <span class="browser-toolbox-page-kicker" data-i18n="utilityTools">Utility tools</span>
-          <h2 data-i18n="timeAndId">Time &amp; IDs</h2>
-          <p class="browser-toolbox-note" data-i18n="timeAndIdSettingsDescription">Convert timestamps and generate identifiers locally.</p>
-          <div class="browser-toolbox-capability-summary" data-tool-capability="time.convert,id.generate,password.generate"></div>
-        </section>
-
-        <section class="browser-toolbox-panel" data-panel="search" hidden>
-          <h2 data-i18n="searchSettings">Search</h2>
-          <label
-            class="browser-toolbox-field"><span data-i18n="searchEngines">Search engines</span><textarea id="search-engines" rows="10" spellcheck="false"></textarea></label>
-          <p class="browser-toolbox-note"
-            data-i18n="searchEngineNote">Searches are sent only when you explicitly invoke a search command.</p>
-        </section>
-
-        <section class="browser-toolbox-panel" data-panel="appearance" hidden>
-          <h2 data-i18n="appearance">Appearance</h2>
-          <h3 data-i18n="cursor">Custom pointer</h3>
-          <div class="browser-toolbox-grid">
-            <label
-              class="browser-toolbox-check"><input id="cursor-enabled" type="checkbox"> <span data-i18n="enabled">Enabled</span></label>
-            <label
-              class="browser-toolbox-field"><span data-i18n="cursorAsset">Local PNG pointer</span><input id="cursor-file" type="file" accept="image/png"></label>
-            <label
-              class="browser-toolbox-field"><span data-i18n="cursorHotspotX">Hotspot X</span><input id="cursor-hotspot-x" type="number" min="0" max="127"></label>
-            <label
-              class="browser-toolbox-field"><span data-i18n="cursorHotspotY">Hotspot Y</span><input id="cursor-hotspot-y" type="number" min="0" max="127"></label>
-          </div>
-          <div
-            class="browser-toolbox-cursor-preview"><img id="cursor-preview" alt=""><span id="cursor-file-status" data-i18n="noCursorAsset">No local pointer selected.</span></div>
-          <div
-            class="browser-toolbox-actions"><button id="reset-cursor" type="button" data-i18n="resetCursor">Remove local pointer</button></div>
-        </section>
-
-        <section class="browser-toolbox-panel browser-toolbox-mouse-panel" data-panel="mouse" hidden>
-          <header class="browser-toolbox-settings-hero">
-            <div class="browser-toolbox-settings-hero-title">
-              <span class="browser-toolbox-settings-hero-icon" aria-hidden="true">
-                <svg viewBox="0 0 32 32" focusable="false">
-                  <path d="M16 3.5c-5.1 0-9.2 4-9.2 9v7.1c0 5.1 4.1 8.9 9.2 8.9s9.2-3.8 9.2-8.9v-7.1c0-5-4.1-9-9.2-9Z"></path>
-                  <path d="M16 4v9m-9.1 0h18.2"></path>
-                  <path d="M16 8.5v3"></path>
-                </svg>
-              </span>
-              <div>
-                <span class="browser-toolbox-page-kicker" data-i18n="browsingEnhancement">Browsing enhancements</span>
-                <h2 data-i18n="mouseGestures">Mouse Gestures</h2>
-                <p data-i18n="mouseSettingsSubtitle">Hold the right button and drag to run an action.</p>
-              </div>
+          <div class="browser-toolbox-settings-subcard">
+            <h3 data-i18n="documentFormatterAutoFormat">Automatic formats</h3>
+            <div class="browser-toolbox-format-grid">
+              <label
+                class="browser-toolbox-format-card"><input id="document-auto-json" type="checkbox"><span><strong data-i18n="documentFormatterAutoJson">JSON</strong><small data-i18n="documentFormatterJsonHint">Structured data</small></span><i aria-hidden="true"></i></label>
+              <label
+                class="browser-toolbox-format-card"><input id="document-auto-xml" type="checkbox"><span><strong data-i18n="documentFormatterAutoXml">XML</strong><small data-i18n="documentFormatterXmlHint">Markup documents</small></span><i aria-hidden="true"></i></label>
+              <label
+                class="browser-toolbox-format-card"><input id="document-auto-css" type="checkbox"><span><strong data-i18n="documentFormatterAutoCss">CSS</strong><small data-i18n="documentFormatterCssHint">Stylesheets</small></span><i aria-hidden="true"></i></label>
+              <label
+                class="browser-toolbox-format-card"><input id="document-auto-javascript" type="checkbox"><span><strong data-i18n="documentFormatterAutoJavascript">JavaScript</strong><small data-i18n="documentFormatterJavascriptHint">Scripts</small></span><i aria-hidden="true"></i></label>
+              <label
+                class="browser-toolbox-format-card"><input id="document-auto-java" type="checkbox"><span><strong data-i18n="documentFormatterAutoJava">Java</strong><small data-i18n="documentFormatterJavaHint">Source files</small></span><i aria-hidden="true"></i></label>
             </div>
-            <label class="browser-toolbox-settings-status">
-              <span class="browser-toolbox-settings-status-label" data-i18n="mouseEnabledStatus">Enabled</span>
-              <span class="browser-toolbox-switch browser-toolbox-switch-large">
-                <input id="mouse-enabled" type="checkbox" data-i18n-aria-label="mouseGestures">
-                <i aria-hidden="true"></i>
-              </span>
-            </label>
-          </header>
-
-          <section class="browser-toolbox-mouse-how-card" aria-labelledby="mouse-how-title">
-            <h3 id="mouse-how-title" data-i18n="mouseRightClickHow">How the right button works</h3>
-            <div class="browser-toolbox-mouse-how-flow">
-              <div class="browser-toolbox-mouse-how-step">
-                <span class="browser-toolbox-mouse-how-icon" aria-hidden="true">
-                  <svg viewBox="0 0 48 48" focusable="false">
-                    <path d="M24 7c-7 0-12.5 5.5-12.5 12.3v9.4C11.5 36.1 17 41 24 41s12.5-4.9 12.5-12.3v-9.4C36.5 12.5 31 7 24 7Z"></path>
-                    <path d="M24 8v12m-12.2 0h24.4"></path>
-                    <path d="M24 12v4"></path>
-                  </svg>
-                </span>
-                <span>
-                  <strong data-i18n="mouseRightClick">Right-click</strong>
-                  <small data-i18n="mouseOpenBrowserMenu">Open the browser menu</small>
-                </span>
-              </div>
-              <span class="browser-toolbox-mouse-how-arrow" aria-hidden="true">→</span>
-              <div class="browser-toolbox-mouse-how-step">
-                <span class="browser-toolbox-mouse-how-icon is-dragging" aria-hidden="true">
-                  <svg viewBox="0 0 48 48" focusable="false">
-                    <path d="M24 7c-7 0-12.5 5.5-12.5 12.3v9.4C11.5 36.1 17 41 24 41s12.5-4.9 12.5-12.3v-9.4C36.5 12.5 31 7 24 7Z"></path>
-                    <path d="M24 8v12m-12.2 0h24.4"></path>
-                    <path d="M24 12v4m17-4H29m8-4 4 4-4 4"></path>
-                  </svg>
-                </span>
-                <span>
-                  <strong data-i18n="mouseHoldAndDrag">Hold and drag</strong>
-                  <small data-i18n="mouseRunGesture">Run a mouse gesture</small>
-                </span>
-              </div>
+            <div class="browser-toolbox-grid browser-toolbox-form-grid">
+              <label
+                class="browser-toolbox-field"><span data-i18n="documentFormatterMaxAutoBytes">Automatic formatting limit (bytes)</span><input id="document-max-auto-bytes" type="number" min="0" max="10485760" step="1"></label>
+              <label
+                class="browser-toolbox-field"><span data-i18n="documentFormatterJsonDefaults">JSON defaults</span><select id="document-json-sort"><option value="original" data-i18n="documentFormatterKeepOrder">Keep key order</option><option value="ascending" data-i18n="documentFormatterSortAscending">Sort keys ascending</option><option value="descending" data-i18n="documentFormatterSortDescending">Sort keys descending</option></select></label>
+              <label
+                class="browser-toolbox-field"><span data-i18n="documentFormatterDefaultCollapseDepth">Default collapse depth</span><input id="document-json-collapse-depth" type="number" min="0" max="96" step="1"></label>
             </div>
-          </section>
-
-          <section class="browser-toolbox-mouse-gesture-section" aria-labelledby="mouse-gesture-overview-title">
-            <div class="browser-toolbox-section-heading">
-              <div>
-                <span class="browser-toolbox-page-kicker" data-i18n="browsingEnhancement">Browsing enhancements</span>
-                <h3 id="mouse-gesture-overview-title" data-i18n="mouseGestureActions">Gestures and actions</h3>
-              </div>
-              <span class="browser-toolbox-section-count" id="mouse-gesture-count">4</span>
-            </div>
-            <div id="mouse-gesture-cards" class="browser-toolbox-mouse-gesture-cards"></div>
-          </section>
-
-          <div class="browser-toolbox-mouse-settings-row">
-            <section class="browser-toolbox-mouse-settings-card" aria-labelledby="mouse-recognition-title">
-              <h3 id="mouse-recognition-title" data-i18n="mouseRecognitionSettings">Recognition settings</h3>
-              <label class="browser-toolbox-mouse-value-field">
-                <span data-i18n="mouseTriggerDistance">Trigger distance</span>
-                <span class="browser-toolbox-inline-number"><input id="activation-distance" type="number" min="1" max="200"><b>px</b></span>
-              </label>
-              <label class="browser-toolbox-setting-row">
-                <span data-i18n="mouseTrailHint">Trail hint</span>
-                <span class="browser-toolbox-switch"><input id="show-trail" type="checkbox"><i aria-hidden="true"></i></span>
-              </label>
-              <p class="browser-toolbox-note" data-i18n="mouseTrailDescription">Show the trail while dragging to learn and debug gestures.</p>
-            </section>
-            <section class="browser-toolbox-mouse-settings-card" aria-labelledby="mouse-context-title">
-              <h3 id="mouse-context-title" data-i18n="mouseContextMenuSettings">Right-click menu</h3>
-              <label class="browser-toolbox-setting-row">
-                <span data-i18n="mouseNormalClickMenu">Keep the browser menu for normal clicks</span>
-                <span class="browser-toolbox-switch"><input id="suppress-context-menu" type="checkbox"><i aria-hidden="true"></i></span>
-              </label>
-              <p class="browser-toolbox-note" data-i18n="mouseNativeMenuHint">A normal click that does not cross the activation distance always keeps the browser menu.</p>
-              <a class="browser-toolbox-settings-card-link" href="#toolsOverview" data-i18n="manageToolMenu">Manage tool menu</a>
-            </section>
           </div>
-
-          <details id="mouse-advanced-settings" class="browser-toolbox-mouse-advanced">
-            <summary data-i18n="mouseAdvancedSettings">Advanced recognition and bindings</summary>
-            <div class="browser-toolbox-mouse-advanced-body">
-              <div class="browser-toolbox-grid">
-                <label class="browser-toolbox-field"><span data-i18n="triggerButton">Gesture trigger button</span><select id="trigger-button"><option value="0" data-i18n="leftButton">Left button</option><option value="1" data-i18n="middleButton">Middle button</option><option value="2" data-i18n="rightButton">Right button</option></select></label>
-                <label class="browser-toolbox-field"><span data-i18n="sampleDistance">Sample distance (px)</span><input id="sample-distance" type="number" min="1" max="100"></label>
-                <label class="browser-toolbox-field"><span data-i18n="minimumSegmentDistance">Minimum segment (px)</span><input id="minimum-segment-distance" type="number" min="2" max="500"></label>
-                <label class="browser-toolbox-field"><span data-i18n="turnHysteresis">Turn hysteresis (degrees)</span><input id="turn-hysteresis" type="number" min="0" max="45"></label>
-                <label class="browser-toolbox-field"><span data-i18n="maxSegments">Maximum segments</span><input id="max-segments" type="number" min="1" max="8"></label>
-                <label class="browser-toolbox-field"><span data-i18n="maxDuration">Maximum duration (ms)</span><input id="max-duration" type="number" min="100" max="10000"></label>
-                <label class="browser-toolbox-check"><input id="show-command-hud" type="checkbox"> <span data-i18n="showHud">Show command HUD</span></label>
-              </div>
-              <p class="browser-toolbox-note" data-i18n="mouseTriggerButtonHint">The gesture button takes priority over super drag and rocker input when they use the same button. With the right button, a click or movement below the activation threshold keeps the native menu; when menu suppression is enabled, an activated gesture blocks it. Disabling suppression keeps the native menu but may conflict with gestures.</p>
-              <h3 data-i18n="pattern">Pattern</h3>
-              <canvas id="gesture-canvas" width="320" height="180" tabindex="0" aria-label="Gesture editor" data-i18n-aria-label="gestureEditor"></canvas>
-              <label class="browser-toolbox-field browser-toolbox-pattern-input">
-                <span data-i18n="patternInput">Gesture arrows (for example, ↑ · →)</span>
-                <input id="gesture-pattern-input" type="text" autocomplete="off" spellcheck="false" aria-describedby="gesture-preview">
-              </label>
-              <div id="gesture-preview" aria-live="polite"></div>
-              <p id="gesture-lab-status" class="browser-toolbox-note" role="status" aria-live="polite"
-                data-i18n="gestureLabHint">The gesture lab checks duplicates and prefix conflicts before adding a binding.</p>
-              <div class="browser-toolbox-actions"><button id="clear-gesture" data-i18n="reset">Reset</button><button id="add-gesture-binding" class="primary" data-i18n="addBinding">Add binding</button></div>
-              <div id="mouse-binding-error" class="browser-toolbox-error" role="alert"></div>
-              <table class="browser-toolbox-table">
-                <thead>
-                  <tr>
-                    <th data-i18n="pattern">Pattern</th>
-                    <th data-i18n="command">Command</th>
-                    <th data-i18n="enabled">Enabled</th>
-                    <th data-i18n="options">Options</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody id="mouse-bindings"></tbody>
-              </table>
-            </div>
-          </details>
-        </section>
-
-        <section class="browser-toolbox-panel" data-panel="superDrag" hidden>
-          <h2 data-i18n="superDrag">Super Drag</h2>
-          <label
-            class="browser-toolbox-check"><input id="super-drag-enabled" type="checkbox"> <span data-i18n="enabled">Enabled</span></label>
-          <label
-            class="browser-toolbox-field"><span data-i18n="nativeBypassModifier">Native drag bypass modifier</span><select id="native-bypass-modifier"><option value="Alt" data-i18n="modifierAlt">Alt</option><option value="Control" data-i18n="modifierControl">Control</option><option value="Meta" data-i18n="modifierMeta">Command / Meta</option><option value="Shift" data-i18n="modifierShift">Shift</option></select></label>
-          <p class="browser-toolbox-note"
-            data-i18n="superDragSafety">The selected bypass modifier always keeps native dragging. File uploads, editors, password fields, custom draggable widgets, and invalid URLs are not intercepted.</p>
-          <table class="browser-toolbox-table">
-            <thead>
-              <tr>
-                <th data-i18n="context">Context</th>
-                <th data-i18n="pattern">Pattern</th>
-                <th data-i18n="command">Command</th>
-                <th data-i18n="enabled">Enabled</th>
-                <th data-i18n="options">Options</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="super-drag-bindings"></tbody>
-          </table>
-          <div
-            class="browser-toolbox-actions"><button id="add-super-drag-binding" type="button" data-i18n="addBinding">Add binding</button></div>
-        </section>
-
-        <section class="browser-toolbox-panel" data-panel="wheel" hidden>
-          <h2 data-i18n="wheelRocker">Wheel &amp; Rocker</h2>
-          <div class="browser-toolbox-grid">
-            <label
-              class="browser-toolbox-check"><input id="wheel-enabled" type="checkbox"> <span data-i18n="enabled">Enabled</span></label>
-            <label
-              class="browser-toolbox-field"><span data-i18n="wheelThreshold">Wheel threshold</span><input id="wheel-threshold" type="number" min="10" max="2000"></label>
-            <label
-              class="browser-toolbox-field"><span data-i18n="cooldown">Cooldown (ms)</span><input id="wheel-cooldown" type="number" min="0" max="5000"></label>
-            <label
-              class="browser-toolbox-check"><input id="wheel-continuous" type="checkbox"> <span data-i18n="continuousTabSwitching">Continuous tab switching</span></label>
-          </div>
-          <table class="browser-toolbox-table">
-            <thead>
-              <tr>
-                <th data-i18n="button">Button</th>
-                <th data-i18n="direction">Direction</th>
-                <th data-i18n="command">Command</th>
-                <th data-i18n="enabled">Enabled</th>
-                <th data-i18n="options">Options</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="wheel-bindings"></tbody>
-          </table>
-          <div
-            class="browser-toolbox-actions"><button id="add-wheel-binding" type="button" data-i18n="addBinding">Add binding</button></div>
-          <h3 data-i18n="rocker">Rocker</h3>
-          <label
-            class="browser-toolbox-check"><input id="rocker-enabled" type="checkbox"> <span data-i18n="enabled">Enabled</span></label>
-          <table class="browser-toolbox-table">
-            <thead>
-              <tr>
-                <th data-i18n="sequence">Sequence</th>
-                <th data-i18n="command">Command</th>
-                <th data-i18n="enabled">Enabled</th>
-                <th data-i18n="options">Options</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="rocker-bindings"></tbody>
-          </table>
         </section>
 
         <section class="browser-toolbox-panel browser-toolbox-site-rules-panel"
@@ -465,18 +677,6 @@
               <span data-i18n="addRule">Add rule</span>
             </button>
           </div>
-          <table class="browser-toolbox-table browser-toolbox-site-rules-table">
-            <thead>
-              <tr>
-                <th data-i18n="siteRuleMatchType">Match type</th>
-                <th data-i18n="urlPattern">URL pattern</th>
-                <th data-i18n="siteRuleEnabled">Enable toolbox on this site</th>
-                <th data-i18n="siteRuleDisableModules">Disable modules on this site</th>
-                <th data-i18n="siteRuleActions">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="site-rules"></tbody>
-          </table>
           <div class="browser-toolbox-site-rule-test">
             <div class="browser-toolbox-site-rule-test-copy">
               <label for="site-rule-test-url" data-i18n="siteRuleTestUrl">URL to test</label>
@@ -501,20 +701,34 @@
               <p id="site-rule-test-effective" class="browser-toolbox-note"></p>
             </section>
           </div>
+          <table class="browser-toolbox-table browser-toolbox-site-rules-table">
+            <thead>
+              <tr>
+                <th data-i18n="siteRuleMatchType">Match type</th>
+                <th data-i18n="urlPattern">URL pattern</th>
+                <th data-i18n="siteRuleEnabled">Enable toolbox on this site</th>
+                <th data-i18n="siteRuleDisableModules">Disable modules on this site</th>
+                <th data-i18n="siteRuleActions">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="site-rules"></tbody>
+          </table>
         </section>
 
         <section class="browser-toolbox-panel" data-panel="privacy" hidden>
-          <h2 data-i18n="privacy">Privacy</h2>
-          <p data-i18n="noTelemetry">No telemetry, accounts, advertising, or paid features.</p>
-          <p
-            data-i18n="privacyImmutable">Telemetry, remote configuration, and background network access are permanently disabled.</p>
-          <p
-            data-i18n="privacyNetwork">Only user-initiated navigation, search, and local extension pages may cause network activity. No project server is contacted.</p>
-          <p><a href="privacy.html" target="_blank" data-i18n="privacy">Privacy policy</a> · <a href="../LICENSE" target="_blank" data-i18n="licenseGpl">GPL-3.0-or-later</a></p>
+          <h2 data-i18n="privacyStatement">Privacy notice</h2>
+          <div class="browser-toolbox-settings-subcard">
+            <p data-i18n="noTelemetry">No telemetry, accounts, advertising, or paid features.</p>
+            <p
+              data-i18n="privacyImmutable">Telemetry, remote configuration, and background network access are permanently disabled.</p>
+            <p
+              data-i18n="privacyNetwork">Only user-initiated navigation, search, and local extension pages may cause network activity. No project server is contacted.</p>
+            <p><a href="privacy.html" target="_blank" data-i18n="privacy">Privacy policy</a> · <a href="../LICENSE" target="_blank" data-i18n="licenseGpl">GPL-3.0-or-later</a></p>
+          </div>
         </section>
 
         <section class="browser-toolbox-panel" data-panel="backupAbout" hidden>
-          <span class="browser-toolbox-page-kicker" data-i18n="system">System</span>
+          <span class="browser-toolbox-page-kicker" data-i18n="navRulesAndData">Rules &amp; data</span>
           <div class="browser-toolbox-settings-subcard">
             <h2 data-i18n="backupRestore">Backup &amp; Restore</h2>
             <p class="browser-toolbox-note"
@@ -523,6 +737,27 @@
               data-i18n="vimiumBackup">You can also import a Vimium JSON backup. Recognized fields are copied to the compatible Vimium settings and Browser Toolbox settings; unknown fields are reported and ignored.</p>
             <div
               class="browser-toolbox-actions"><button id="restore-defaults" type="button" data-i18n="restoreDefaults">Restore defaults</button><button id="export-settings" type="button" data-i18n="exportSettings">Export settings</button><label><span data-i18n="importSettings">Import settings</span><input id="import-settings" type="file" accept="application/json,.json"></label></div>
+            <h3 data-i18n="beforeImportBackups">Local backups before import</h3>
+            <p class="browser-toolbox-note"
+              data-i18n="beforeImportBackupsNote">Before each import, saved settings and any available local pointer image are kept on this device. You can add a backup image to the draft or export it separately. Settings exports do not include images. Previous pointer images use local storage; safe cleanup is not yet available.</p>
+            <label class="browser-toolbox-field" for="import-backup-select">
+              <span data-i18n="beforeImportBackupSelect">Choose a backup</span>
+              <select id="import-backup-select"></select>
+            </label>
+            <div class="browser-toolbox-actions">
+              <button id="import-backup-refresh" type="button"
+                data-i18n="refreshBackupList">Refresh backups</button>
+              <button id="import-backup-preview" type="button" data-i18n="previewImportBackup"
+                disabled>Review restore differences</button>
+              <button id="import-backup-export" type="button" data-i18n="exportSelectedBackup"
+                disabled>Export selected backup</button>
+              <button id="import-backup-export-cursor" type="button" data-i18n="exportBackupCursor"
+                disabled>Export pointer image</button>
+              <button id="import-backup-use-cursor" type="button" data-i18n="useBackupCursor"
+                disabled>Use backup pointer image</button>
+            </div>
+            <p id="import-backup-status" class="browser-toolbox-note" role="status"
+              aria-live="polite"></p>
           </div>
           <div class="browser-toolbox-settings-subcard">
             <h2 data-i18n="aboutLicenses">About &amp; Licenses</h2>
@@ -534,20 +769,6 @@
           </div>
         </section>
 
-        <div class="browser-toolbox-save-bar">
-          <span class="browser-toolbox-save-hint">
-            <span aria-hidden="true">ⓘ</span>
-            <span data-i18n="saveOnlyOnSave">Changes take effect after saving.</span>
-          </span>
-          <span id="dirty-status" role="status" aria-live="polite"></span>
-          <div class="browser-toolbox-actions">
-            <button id="discard-changes" type="button" data-i18n="discardChanges"
-              disabled>Discard changes</button>
-            <button id="save-settings" class="primary" data-i18n="saveSettings" disabled>Save settings</button>
-            <span id="save-status" data-i18n="saved" aria-live="polite">Saved</span>
-          </div>
-        </div>
-        <div id="settings-error" class="browser-toolbox-error" role="alert"></div>
       </main>
     </div>
     <dialog id="import-preview-dialog" class="browser-toolbox-import-dialog" aria-modal="true"

@@ -1,0 +1,127 @@
+/* 维护页独立于设置表单和后台初始化，使用主题令牌并支持窄窗口。 */
+:root {
+  color-scheme: light dark;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+  --background: var(--bt-bg);
+  --surface: var(--bt-surface-card);
+  --text: var(--bt-text);
+  --muted: var(--bt-muted);
+  --border: var(--bt-border-subtle);
+  --accent: var(--bt-accent);
+}
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+}
+.recovery-page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 48px 24px;
+  line-height: 1.55;
+}
+.recovery-brand {
+  margin-bottom: 8px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+}
+h1 {
+  margin: 0 0 12px;
+  font-size: 30px;
+  line-height: 1.2;
+}
+h2 {
+  margin: 0 0 16px;
+  font-size: 18px;
+}
+.recovery-card {
+  margin: 24px 0;
+  padding: 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+dl {
+  margin: 0;
+}
+dl div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+dt {
+  font-weight: 650;
+}
+dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.recovery-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+button {
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+button:hover {
+  border-color: var(--accent);
+}
+button:disabled {
+  opacity: .55;
+  cursor: wait;
+}
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+a {
+  color: var(--accent);
+}
+.recovery-note {
+  color: var(--muted);
+  font-size: 14px;
+}
+#recovery-export-status:empty {
+  display: none;
+}
+#recovery-conflict-result {
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+@media (max-width: 520px) {
+  .recovery-page {
+    padding: 28px 16px;
+  }
+  .recovery-card {
+    padding: 18px;
+  }
+  dl div {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: var(--bt-bg);
+    --surface: var(--bt-surface-card);
+    --text: var(--bt-text);
+    --muted: var(--bt-muted);
+    --border: var(--bt-border-subtle);
+    --accent: var(--bt-accent);
+  }
+}

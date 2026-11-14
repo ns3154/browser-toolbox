@@ -239,6 +239,8 @@ import "../lib/browser_toolbox/command_invocation.js";
 
   async function init() {
     await i18n?.applyStoredLocale?.(document);
+    await globalThis.BrowserToolboxTheme?.applyStoredTheme?.(document);
+    globalThis.BrowserToolboxTheme?.watchTheme?.(document);
     i18n?.apply?.(document);
     state.tab = await findTargetTab();
     document.querySelector("#command-center-context").textContent = tabLabel(state.tab);

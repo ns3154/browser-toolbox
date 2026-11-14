@@ -103,4 +103,66 @@ context("Binding editor", () => {
     assert.equal(0, details.querySelectorAll(".browser-toolbox-options-fields").length);
     assert.equal('{\n  "position": "after"\n}', details.querySelector("textarea").value);
   });
+
+  should("render SVG gesture preview and full unclipped long pattern rows and update live", () => {
+    const settings = {
+      mouse: {
+        bindings: [
+          {
+            id: "long-gesture",
+            enabled: true,
+            pattern: ["D", "R", "U", "L", "D", "R"],
+            commandName: "openOptionsPage",
+            options: {},
+          },
+        ],
+      },
+      superDrag: { bindings: [] },
+    };
+    const visualEditor = new BrowserToolboxBindingEditor.BindingEditor({
+      documentRef: document,
+      getSettings: () => settings,
+      getRegistry: () => ({
+        commands: [{ name: "openOptionsPage", label: "Open options", sources: ["mouseGesture"] }],
+        getCommand: (name) =>
+          name === "openOptionsPage"
+            ? { name: "openOptionsPage", label: "Open options", sources: ["mouseGesture"] }
+            : null,
+      }),
+      message: (key) => ({
+        pattern: "Pattern",
+        command: "Command",
+        enabled: "Enabled",
+        options: "Options",
+        optionsHint: "JSON",
+        removeBinding: "Remove binding",
+        gestureDirectionUp: "Up",
+        gestureDirectionDown: "Down",
+        gestureDirectionLeft: "Left",
+        gestureDirectionRight: "Right",
+      }[key] || key),
+      quantizer: BrowserToolboxDirectionQuantizer,
+      markDirty: () => {},
+    });
+    visualEditor.renderMouseBindings();
+
+    const row = document.querySelector("#mouse-bindings tr.browser-toolbox-binding-card-row");
+    assert.isTrue(Boolean(row));
+    assert.equal("6", row.querySelector(".browser-toolbox-gesture-steps")?.textContent);
+    assert.isTrue(Boolean(row.querySelector(".browser-toolbox-gesture-thumb svg path")));
+    assert.equal(
+      "↓ → ↑ ← ↓ →",
+      row.querySelector(".browser-toolbox-pattern-arrows")?.textContent,
+    );
+    assert.equal(
+      "Down · Right · Up · Left · Down · Right",
+      row.querySelector(".browser-toolbox-pattern-names")?.textContent,
+    );
+
+    row._pattern.value = "U > D";
+    row._pattern.dispatchEvent(new window.Event("input", { bubbles: true }));
+    assert.equal("2", row.querySelector(".browser-toolbox-gesture-steps")?.textContent);
+    assert.equal("↑ ↓", row.querySelector(".browser-toolbox-pattern-arrows")?.textContent);
+    assert.equal("Up · Down", row.querySelector(".browser-toolbox-pattern-names")?.textContent);
+  });
 });

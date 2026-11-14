@@ -12,12 +12,94 @@
  * @property {function(string): void} [onBindingsChange] 绑定变更后的视图刷新回调。
  */
 (function () {
+  const SVG_NS = "http://www.w3.org/2000/svg";
   const DIRECTION_MESSAGE_KEYS = Object.freeze({
     U: "gestureDirectionUp",
     D: "gestureDirectionDown",
     L: "gestureDirectionLeft",
     R: "gestureDirectionRight",
   });
+  const DIRECTION_VECTORS = Object.freeze({
+    U: [0, -1],
+    D: [0, 1],
+    L: [-1, 0],
+    R: [1, 0],
+  });
+  const OPPOSITE_DIRECTIONS = Object.freeze({ U: "D", D: "U", L: "R", R: "L" });
+
+  // 按四向序列生成缩放居中且带折叠偏置的矢量轨迹点集，避免折返笔画完全重合。
+  function buildGesturePreviewGeometry(pattern) {
+    if (!Array.isArray(pattern) || pattern.length === 0) return null;
+    const raw = [[0, 0]];
+    const seenEdges = new Set();
+    for (let index = 0; index < pattern.length; index += 1) {
+      const dir = pattern[index];
+      const vec = DIRECTION_VECTORS[dir];
+      if (!vec) continue;
+      const prevPoint = raw[raw.length - 1];
+      let nextX = prevPoint[0] + vec[0];
+      let nextY = prevPoint[1] + vec[1];
+      const edgeKey = [
+        `${prevPoint[0]},${prevPoint[1]}`,
+        `${nextX},${nextY}`,
+      ].sort().join("->");
+      if (OPPOSITE_DIRECTIONS[pattern[index - 1]] === dir || seenEdges.has(edgeKey)) {
+        // 遇折返或重叠线段时先沿垂直法线平滑横向微移，保持往返竖/横线各自笔直平行。
+        const nudge = 0.34;
+        const shiftedStart = vec[0] === 0
+          ? [prevPoint[0] + nudge, prevPoint[1]]
+          : [prevPoint[0], prevPoint[1] + nudge];
+        raw.push(shiftedStart);
+        nextX = shiftedStart[0] + vec[0];
+        nextY = shiftedStart[1] + vec[1];
+      }
+      seenEdges.add(edgeKey);
+      raw.push([nextX, nextY]);
+    }
+    if (raw.length < 2) return null;
+    const xs = raw.map((point) => point[0]);
+    const ys = raw.map((point) => point[1]);
+    const minX = Math.min(...xs);
+    const maxX = Math.max(...xs);
+    const minY = Math.min(...ys);
+    const maxY = Math.max(...ys);
+    const spanX = maxX - minX;
+    const spanY = maxY - minY;
+    const padX = 8;
+    const padY = 7;
+    const drawW = 44 - padX * 2;
+    const drawH = 40 - padY * 2;
+    const scale = Math.min(
+      spanX > 0 ? drawW / spanX : drawW,
+      spanY > 0 ? drawH / spanY : drawH,
+    );
+    const offsetX = padX + (drawW - spanX * scale) / 2;
+    const offsetY = padY + (drawH - spanY * scale) / 2;
+    const points = raw.map(([x, y]) => [
+      Math.round((offsetX + (x - minX) * scale) * 10) / 10,
+      Math.round((offsetY + (y - minY) * scale) * 10) / 10,
+    ]);
+    const end = points[points.length - 1];
+    const beforeEnd = points[points.length - 2];
+    const dx = end[0] - beforeEnd[0];
+    const dy = end[1] - beforeEnd[1];
+    const len = Math.hypot(dx, dy) || 1;
+    const ux = dx / len;
+    const uy = dy / len;
+    const headSize = 4.2;
+    const wing = 3.1;
+    const tipPath = [
+      `M ${(end[0] - ux * headSize - uy * wing).toFixed(1)} ${(end[1] - uy * headSize + ux * wing).toFixed(1)}`,
+      `L ${end[0].toFixed(1)} ${end[1].toFixed(1)}`,
+      `L ${(end[0] - ux * headSize + uy * wing).toFixed(1)} ${(end[1] - uy * headSize - ux * wing).toFixed(1)}`,
+    ].join(" ");
+    const linePath = points.map(([px, py], idx) => `${idx === 0 ? "M" : "L"} ${px} ${py}`).join(" ");
+    return {
+      start: points[0],
+      linePath,
+      tipPath,
+    };
+  }
 
   class BindingEditor {
     /**
@@ -54,8 +136,11 @@
 
     cell(value) {
       const cell = this.document.createElement("td");
+      const NodeCtor = this.document.defaultView?.Node || globalThis.Node;
       if (
-        value && typeof globalThis.Node !== "undefined" && value instanceof globalThis.Node
+        value &&
+        (typeof value.nodeType === "number" ||
+          (typeof NodeCtor !== "undefined" && value instanceof NodeCtor))
       ) {
         cell.appendChild(value);
       } else {
@@ -64,11 +149,47 @@
       return cell;
     }
 
+    svgElement(tag, attributes = {}) {
+      const node = this.document.createElementNS(SVG_NS, tag);
+      for (const [key, value] of Object.entries(attributes)) {
+        node.setAttribute(key, String(value));
+      }
+      return node;
+    }
+
     rowButton(labelKey, onClick) {
       const button = this.document.createElement("button");
       button.type = "button";
       button.textContent = this.message(labelKey);
       button.setAttribute("aria-label", this.message(labelKey));
+      button.addEventListener("click", onClick);
+      return button;
+    }
+
+    // 用垃圾桶图标替代宽文本移除按钮，减少右侧操作区对轨迹与命令列的挤压。
+    removeIconButton(labelKey, onClick) {
+      const button = this.document.createElement("button");
+      button.type = "button";
+      button.className = "browser-toolbox-binding-remove-icon";
+      const label = this.message(labelKey);
+      button.setAttribute("aria-label", label);
+      button.title = label;
+      const svg = this.svgElement("svg", {
+        viewBox: "0 0 24 24",
+        width: 15,
+        height: 15,
+        fill: "none",
+        stroke: "currentColor",
+        "stroke-width": 1.9,
+        "stroke-linecap": "round",
+        "stroke-linejoin": "round",
+        "aria-hidden": "true",
+        focusable: "false",
+      });
+      svg.appendChild(
+        this.svgElement("path", { d: "M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14" }),
+      );
+      button.appendChild(svg);
       button.addEventListener("click", onClick);
       return button;
     }
@@ -318,15 +439,162 @@
       return { wrapper, select };
     }
 
-    enabledControl(binding) {
+    // 按方案 B 渲染矢量轨迹缩略图与可点击展开编辑的完整步骤条，避免窄列单行裁切。
+    createPatternVisualField(binding) {
+      const thumb = this.document.createElement("div");
+      thumb.className = "browser-toolbox-gesture-thumb";
+      const svg = this.svgElement("svg", {
+        viewBox: "0 0 44 40",
+        width: 38,
+        height: 34,
+        fill: "none",
+        "aria-hidden": "true",
+        focusable: "false",
+      });
+      const stepCount = this.document.createElement("span");
+      stepCount.className = "browser-toolbox-gesture-steps";
+      thumb.append(svg, stepCount);
+
+      const editor = this.document.createElement("div");
+      editor.className = "browser-toolbox-pattern-editor";
+      const readout = this.document.createElement("button");
+      readout.type = "button";
+      readout.className = "browser-toolbox-pattern-readout";
+      const arrowBadge = this.document.createElement("span");
+      arrowBadge.className = "browser-toolbox-pattern-arrows";
+      const namesLabel = this.document.createElement("span");
+      namesLabel.className = "browser-toolbox-pattern-names";
+      readout.append(arrowBadge);
+
+      const input = this.patternControl(binding);
+      const inputWrap = this.document.createElement("span");
+      inputWrap.className = "browser-toolbox-pattern-input-wrap";
+      inputWrap.appendChild(input);
+
+      const refreshVisual = () => {
+        const pattern = this.quantizer.normalizePattern(input.value);
+        const geometry = buildGesturePreviewGeometry(pattern);
+        svg.replaceChildren();
+        if (geometry) {
+          svg.append(
+            this.svgElement("path", {
+              d: geometry.linePath,
+              stroke: "currentColor",
+              "stroke-width": 2.4,
+              "stroke-linecap": "round",
+              "stroke-linejoin": "round",
+            }),
+            this.svgElement("circle", {
+              cx: geometry.start[0],
+              cy: geometry.start[1],
+              r: 2.5,
+              fill: "currentColor",
+            }),
+            this.svgElement("path", {
+              d: geometry.tipPath,
+              stroke: "currentColor",
+              "stroke-width": 2.1,
+              "stroke-linecap": "round",
+              "stroke-linejoin": "round",
+            }),
+          );
+        }
+        stepCount.textContent = String(pattern.length);
+        const arrows = this.quantizer.formatPattern(pattern, " ");
+        arrowBadge.textContent = arrows || this.message("none");
+        const labels = pattern.map((direction) => this.message(DIRECTION_MESSAGE_KEYS[direction]));
+        namesLabel.textContent = labels.join(" · ");
+        readout.setAttribute("aria-label", input.getAttribute("aria-label") || this.message("pattern"));
+      };
+
+      readout.addEventListener("click", () => {
+        input.focus();
+        input.select?.();
+      });
+      input.addEventListener("input", refreshVisual);
+      input.addEventListener("blur", refreshVisual);
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === "Escape") {
+          input.blur();
+        }
+      });
+      refreshVisual();
+
+      editor.append(readout, namesLabel, inputWrap);
+      return { thumb, patternField: editor, patternInput: input };
+    }
+
+    enabledControl(binding, { compact = false } = {}) {
       const label = this.document.createElement("label");
-      label.className = "browser-toolbox-check";
+      label.className = compact
+        ? "browser-toolbox-switch browser-toolbox-binding-switch"
+        : "browser-toolbox-check";
       const input = this.document.createElement("input");
       input.type = "checkbox";
       input.checked = binding.enabled !== false;
-      input.setAttribute("aria-label", this.message("enabled"));
-      label.append(input, this.document.createTextNode(this.message("enabled")));
+      const enabledText = this.message("enabled");
+      input.setAttribute("aria-label", enabledText);
+      if (compact) {
+        label.title = enabledText;
+        label.append(input);
+      } else {
+        label.append(input, this.document.createTextNode(enabledText));
+      }
       return { label, input };
+    }
+
+    // 统一构建手势与超级拖拽的主从卡片行：左侧矢量缩略图，中间完整轨迹条+命令，右侧紧凑操作组。
+    appendVisualBindingRow({
+      body,
+      binding,
+      inputSource,
+      contextType = null,
+      extraTopNode = null,
+      onRemove,
+    }) {
+      const row = this.document.createElement("tr");
+      row.className = "browser-toolbox-binding-card-row";
+      const { thumb, patternField, patternInput } = this.createPatternVisualField(binding);
+      const commandNode = this.commandControl(binding, inputSource, contextType);
+      const enabledNode = this.enabledControl(binding, { compact: true });
+      const remove = this.removeIconButton("removeBinding", onRemove);
+
+      const mainStack = this.document.createElement("div");
+      mainStack.className = "browser-toolbox-binding-main-stack";
+      const mainTop = this.document.createElement("div");
+      mainTop.className = "browser-toolbox-binding-main-top";
+      mainTop.appendChild(patternField);
+      if (extraTopNode) mainTop.appendChild(extraTopNode);
+
+      const commandHost = this.document.createElement("div");
+      commandHost.className = "browser-toolbox-command-cell";
+      commandHost.appendChild(commandNode.wrapper);
+      mainStack.append(mainTop, commandHost);
+
+      const thumbCell = Object.assign(this.cell(thumb), {
+        className: "browser-toolbox-binding-thumb-cell",
+      });
+      const mainCell = Object.assign(this.cell(mainStack), {
+        className: "browser-toolbox-binding-main-cell",
+      });
+      const enabledCell = Object.assign(this.cell(enabledNode.label), {
+        className: "browser-toolbox-binding-enabled-cell",
+      });
+      const optionsCell = Object.assign(
+        this.cell(this.optionsEditor(binding, this.registry.getCommand(binding.commandName))),
+        { className: "browser-toolbox-options-cell" },
+      );
+      const removeCell = Object.assign(this.cell(remove), {
+        className: "browser-toolbox-binding-remove-cell",
+      });
+
+      row.append(thumbCell, mainCell, enabledCell, optionsCell, removeCell);
+      row._binding = binding;
+      row._pattern = patternInput;
+      row._command = commandNode.select;
+      row._enabled = enabledNode.input;
+      body.appendChild(row);
+      return row;
     }
 
     ensureCommandCompatible(binding, inputSource, contextType) {
@@ -365,37 +633,19 @@
       if (!body) return;
       body.replaceChildren();
       for (const binding of this.settings.mouse.bindings) {
-        const row = this.document.createElement("tr");
-        const pattern = this.patternControl(binding);
-        const commandNode = this.commandControl(binding, "mouseGesture");
-        const enabledNode = this.enabledControl(binding);
-        const remove = this.rowButton("removeBinding", () => {
-          this.settings.mouse.bindings = this.settings.mouse.bindings.filter((item) =>
-            item !== binding
-          );
-          this.renderMouseBindings();
-          this.onBindingsChange("mouse");
-          this.markDirty();
+        this.appendVisualBindingRow({
+          body,
+          binding,
+          inputSource: "mouseGesture",
+          onRemove: () => {
+            this.settings.mouse.bindings = this.settings.mouse.bindings.filter((item) =>
+              item !== binding
+            );
+            this.renderMouseBindings();
+            this.onBindingsChange("mouse");
+            this.markDirty();
+          },
         });
-        row.append(
-          this.cell(pattern),
-          Object.assign(this.cell(commandNode.wrapper), {
-            className: "browser-toolbox-command-cell",
-          }),
-          this.cell(enabledNode.label),
-          Object.assign(
-            this.cell(this.optionsCell(binding, this.registry.getCommand(binding.commandName))),
-            {
-              className: "browser-toolbox-options-cell",
-            },
-          ),
-          this.cell(remove),
-        );
-        row._binding = binding;
-        row._pattern = pattern;
-        row._command = commandNode.select;
-        row._enabled = enabledNode.input;
-        body.appendChild(row);
       }
     }
 
@@ -404,49 +654,33 @@
       if (!body) return;
       body.replaceChildren();
       for (const binding of this.settings.superDrag.bindings) {
-        const row = this.document.createElement("tr");
-        row._binding = binding;
         const context = this.fieldSelect(binding.context, "context", [
           ["LINK", this.message("contextLink")],
           ["SELECTED_TEXT", this.message("contextSelection")],
           ["IMAGE", this.message("contextImage")],
         ]);
-        const pattern = this.patternControl(binding);
-        const commandNode = this.commandControl(binding, "superDrag", binding.context);
-        const enabledNode = this.enabledControl(binding);
-        const remove = this.rowButton("removeBinding", () => {
-          this.settings.superDrag.bindings = this.settings.superDrag.bindings.filter((item) =>
-            item !== binding
-          );
-          this.renderSuperDragBindings();
-          this.onBindingsChange("superDrag");
-          this.markDirty();
+        context.className = "browser-toolbox-super-drag-context";
+        const row = this.appendVisualBindingRow({
+          body,
+          binding,
+          inputSource: "superDrag",
+          contextType: binding.context,
+          extraTopNode: context,
+          onRemove: () => {
+            this.settings.superDrag.bindings = this.settings.superDrag.bindings.filter((item) =>
+              item !== binding
+            );
+            this.renderSuperDragBindings();
+            this.onBindingsChange("superDrag");
+            this.markDirty();
+          },
         });
+        row._context = context;
         context.addEventListener("change", () => {
           binding.context = context.value;
           this.renderCommandCells(row, binding, "superDrag", binding.context);
           this.markDirty();
         });
-        row.append(
-          this.cell(context),
-          this.cell(pattern),
-          Object.assign(this.cell(commandNode.wrapper), {
-            className: "browser-toolbox-command-cell",
-          }),
-          this.cell(enabledNode.label),
-          Object.assign(
-            this.cell(this.optionsCell(binding, this.registry.getCommand(binding.commandName))),
-            {
-              className: "browser-toolbox-options-cell",
-            },
-          ),
-          this.cell(remove),
-        );
-        row._context = context;
-        row._pattern = pattern;
-        row._command = commandNode.select;
-        row._enabled = enabledNode.input;
-        body.appendChild(row);
       }
     }
 

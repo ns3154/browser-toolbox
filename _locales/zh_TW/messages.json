@@ -493,7 +493,7 @@
   },
   "restoreDefaultsConfirm": {
     "description": "恢复默认确认",
-    "message": "要將瀏覽器工具箱設定還原為預設值嗎？"
+    "message": "要將瀏覽器工具箱設定還原為預設值嗎？ 舊指標圖片仍會保留在本機。"
   },
   "importSettings": {
     "description": "导入设置按钮",
@@ -691,9 +691,66 @@
     "description": "指针状态",
     "message": "尚未選擇本機游標。"
   },
+  "localCursorTitle": {
+    "message": "本機指標圖片"
+  },
+  "localCursorNote": {
+    "message": "可將已檢視的圖片放入草稿或匯出，兩者均使用剛檢視的內容；儲存設定後才會生效。清單不表示圖片是否正在使用。"
+  },
+  "localCursorSelect": {
+    "message": "選擇本機圖片"
+  },
+  "localCursorRefresh": {
+    "message": "重新整理圖片清單"
+  },
+  "localCursorMore": {
+    "message": "載入更多"
+  },
+  "localCursorView": {
+    "message": "檢視所選圖片"
+  },
+  "localCursorUse": {
+    "message": "使用已檢視圖片"
+  },
+  "localCursorDraftPreview": {
+    "message": "已選擇本機圖片（待儲存）"
+  },
+  "localCursorDraft": {
+    "message": "圖片已放入草稿，儲存設定後生效；原圖片仍保留在本機。"
+  },
+  "localCursorExport": {
+    "message": "匯出已檢視圖片"
+  },
+  "localCursorItem": {
+    "message": "本機圖片 $1"
+  },
+  "localCursorListed": {
+    "message": "已載入 $1 筆本機圖片紀錄。"
+  },
+  "localCursorEmpty": {
+    "message": "找不到本機指標圖片。"
+  },
+  "localCursorUnavailable": {
+    "message": "無法讀取本機圖片清單，現有資料未改變。"
+  },
+  "localCursorUnreadable": {
+    "message": "此紀錄無法作為受支援的圖片讀取，原始資料仍保留在本機。"
+  },
+  "localCursorPreviewed": {
+    "message": "瀏覽器可以預覽此圖片；匯出將使用剛檢視的內容。"
+  },
+  "localCursorOriginalOnly": {
+    "message": "此圖片無法預覽，可將原始位元組匯出為 .bin 檔案。"
+  },
+  "localCursorExported": {
+    "message": "已匯出剛檢視的內容，本機資料未改變。"
+  },
+  "cursorRetentionNote": {
+    "message": "更換或停用指標、恢復預設或匯入設定後，舊指標圖片仍保留在本機並佔用擴充功能儲存空間；目前版本尚無安全清理功能。"
+  },
   "resetCursor": {
     "description": "移除指针",
-    "message": "移除本機游標"
+    "message": "停用目前指標"
   },
   "wheelThreshold": {
     "description": "滚轮阈值",
@@ -3283,6 +3340,30 @@
     "description": "Vomnibar 键盘提示",
     "message": "關閉"
   },
+  "vomnibarHintOpenNewTab": {
+    "description": "Vomnibar Shift+Enter 鍵盤提示",
+    "message": "於新分頁開啟"
+  },
+  "generalTheme": {
+    "description": "介面主題選擇標籤",
+    "message": "介面主題"
+  },
+  "themeSageMist": {
+    "description": "鼠尾草霧綠預設",
+    "message": "鼠尾草霧綠（預設）"
+  },
+  "themeCobalt": {
+    "description": "日光鈷藍預設",
+    "message": "日光鈷藍"
+  },
+  "themePaperInk": {
+    "description": "暖紙墨預設",
+    "message": "暖紙墨"
+  },
+  "themeSlate": {
+    "description": "極簡石磨黑白預設",
+    "message": "極簡石磨黑白"
+  },
   "appearance": {
     "description": "外观分区",
     "message": "外觀"
@@ -3456,22 +3537,874 @@
   "languageSpanish": {
     "message": "Español"
   },
-  "syncQuotaItemExceeded": {"message": "工具箱設定超過單項同步容量（8 KiB）。請關閉「同步工具箱設定」後儲存至本機，也可以先匯出備份。", "description": "项目体验完善文案"},
-  "syncQuotaTotalExceeded": {"message": "瀏覽器同步空間不足。請關閉「同步工具箱設定」後儲存至本機，也可以先匯出備份。", "description": "项目体验完善文案"},
-  "toolTimeUnit": {"message": "時間戳記單位", "description": "项目体验完善文案"},
-  "toolTimeLocalOutput": {"message": "當地時間輸出", "description": "项目体验完善文案"},
-  "toolTimeUnixOutput": {"message": "Unix 時間戳記輸出", "description": "项目体验完善文案"},
-  "toolTimeFiletimeOutput": {"message": "FILETIME 輸出", "description": "项目体验完善文案"},
-  "onboardingTools": {"message": "從擴充功能彈出視窗開啟 JSON 格式化、文字比較或設定轉換。所有工具都在本機處理輸入。", "description": "项目体验完善文案"},
-  "onboardingPauseTitle": {"message": "遇到網頁操作衝突", "description": "项目体验完善文案"},
-  "onboardingPause": {"message": "在彈出視窗暫停所有網站的鍵鼠增強，處理完後點擊恢復；只想調整某個網站，可用「管理此網站」建立規則，檢查後儲存。", "description": "项目体验完善文案"},
-  "sessionAllSites": {"message": "所有網站 · 本次工作階段", "description": "会话与站点入口文案"},
-  "sessionScopeHint": {"message": "暫時開關適用於所有網站，還原後使用已儲存設定。", "description": "会话与站点入口文案"},
-  "restoreSession": {"message": "還原本次工作階段", "description": "会话与站点入口文案"},
-  "sessionUpdating": {"message": "正在更新……", "description": "会话与站点入口文案"},
-  "sessionUpdateFailed": {"message": "本次工作階段狀態更新失敗，請重試。", "description": "会话与站点入口文案"},
-  "manageCurrentSite": {"message": "管理此網站", "description": "会话与站点入口文案"},
-  "siteRuleShortcutInvalid": {"message": "網站參數無效，請從一般網頁的擴充功能彈出視窗重新開啟。", "description": "会话与站点入口文案"},
-  "siteRuleShortcutDraft": {"message": "已建立此網站的規則草稿，請調整後儲存。", "description": "会话与站点入口文案"},
-  "siteRuleShortcutExisting": {"message": "已定位此網站的現有規則，修改後請儲存。", "description": "会话与站点入口文案"}
+  "syncQuotaItemExceeded": {
+    "message": "工具箱設定超過單項同步容量（8 KiB）。請關閉「同步工具箱設定」後儲存至本機，也可以先匯出備份。",
+    "description": "项目体验完善文案"
+  },
+  "syncQuotaTotalExceeded": {
+    "message": "瀏覽器同步空間不足。請關閉「同步工具箱設定」後儲存至本機，也可以先匯出備份。",
+    "description": "项目体验完善文案"
+  },
+  "toolTimeUnit": {
+    "message": "時間戳記單位",
+    "description": "项目体验完善文案"
+  },
+  "toolTimeLocalOutput": {
+    "message": "當地時間輸出",
+    "description": "项目体验完善文案"
+  },
+  "toolTimeUnixOutput": {
+    "message": "Unix 時間戳記輸出",
+    "description": "项目体验完善文案"
+  },
+  "toolTimeFiletimeOutput": {
+    "message": "FILETIME 輸出",
+    "description": "项目体验完善文案"
+  },
+  "onboardingTools": {
+    "message": "從擴充功能彈出視窗開啟 JSON 格式化、文字比較或設定轉換。所有工具都在本機處理輸入。",
+    "description": "项目体验完善文案"
+  },
+  "onboardingPauseTitle": {
+    "message": "遇到網頁操作衝突",
+    "description": "项目体验完善文案"
+  },
+  "onboardingPause": {
+    "message": "在彈出視窗暫停所有網站的鍵鼠增強，處理完後點擊恢復；只想調整某個網站，可用「管理此網站」建立規則，檢查後儲存。",
+    "description": "项目体验完善文案"
+  },
+  "sessionAllSites": {
+    "message": "所有網站 · 本次工作階段",
+    "description": "会话与站点入口文案"
+  },
+  "sessionScopeHint": {
+    "message": "暫時開關適用於所有網站，還原後使用已儲存設定。",
+    "description": "会话与站点入口文案"
+  },
+  "restoreSession": {
+    "message": "還原本次工作階段",
+    "description": "会话与站点入口文案"
+  },
+  "sessionUpdating": {
+    "message": "正在更新……",
+    "description": "会话与站点入口文案"
+  },
+  "sessionUpdateFailed": {
+    "message": "本次工作階段狀態更新失敗，請重試。",
+    "description": "会话与站点入口文案"
+  },
+  "manageCurrentSite": {
+    "message": "管理此網站",
+    "description": "会话与站点入口文案"
+  },
+  "siteRuleShortcutInvalid": {
+    "message": "網站參數無效，請從一般網頁的擴充功能彈出視窗重新開啟。",
+    "description": "会话与站点入口文案"
+  },
+  "siteRuleShortcutDraft": {
+    "message": "已建立此網站的規則草稿，請調整後儲存。",
+    "description": "会话与站点入口文案"
+  },
+  "siteRuleShortcutExisting": {
+    "message": "已定位此網站的現有規則，修改後請儲存。",
+    "description": "会话与站点入口文案"
+  },
+  "runtimeMaintenance": {
+    "message": "執行階段維護",
+    "description": "兼容运行时维护入口"
+  },
+  "runtimeMaintenanceNote": {
+    "message": "鍵盤無法使用時可恢復相容引擎。舊頁面需要手動重新整理，請先儲存輸入。",
+    "description": "兼容运行时维护入口"
+  },
+  "runtimeInspect": {
+    "message": "檢查執行狀態",
+    "description": "兼容运行时维护入口"
+  },
+  "runtimeRestore": {
+    "message": "恢復相容引擎",
+    "description": "兼容运行时维护入口"
+  },
+  "runtimeStatus": {
+    "message": "相容引擎 · 方案 $1 · 活動 frame $2 · 失敗 frame $3 · 需要重新整理的 frame $4",
+    "description": "兼容运行时维护入口"
+  },
+  "runtimePending": {
+    "message": "$1 個 frame 的復原尚未完成，請稍後檢查；若仍未恢復，請再次嘗試復原。",
+    "description": "运行时维护仍在处理的提示"
+  },
+  "runtimeUnavailable": {
+    "message": "背景服務無法使用。請先儲存輸入，重新載入擴充功能，再重新整理受影響的頁面。",
+    "description": "兼容运行时维护入口"
+  },
+  "configurationInspect": {
+    "message": "檢查設定"
+  },
+  "configurationRollback": {
+    "message": "準備相容回復"
+  },
+  "configurationIncoming": {
+    "message": "採用外部變更"
+  },
+  "configurationCommitted": {
+    "message": "保留已儲存設定"
+  },
+  "configurationSaveFirst": {
+    "message": "請先儲存或放棄頁面上的修改，再處理設定。"
+  },
+  "configurationConflict": {
+    "message": "偵測到外部設定變更，目前保留最後有效設定。為保護資料，暫停衝突選擇操作。"
+  },
+  "configurationExportConflict": {
+    "message": "匯出衝突觀察紀錄"
+  },
+  "configurationConflictExportNote": {
+    "message": "檔案包含設定內容，但不含獨立的本機指標資源或未知的頂層鍵，不能直接作為設定備份匯入。"
+  },
+  "configurationConflictExported": {
+    "message": "已匯出衝突觀察紀錄，原始資料和衝突紀錄仍保留。"
+  },
+  "conflictObservationList": {
+    "message": "本機衝突觀察"
+  },
+  "conflictObservationNote": {
+    "message": "已儲存觀察包含受支援的設定內容，不含獨立指標資源或未儲存草稿，不能直接匯入。本機時間僅供參考；未知欄位只保留標記，原資料可能隨同步變更。"
+  },
+  "conflictObservationRefresh": {
+    "message": "重新整理觀察清單"
+  },
+  "conflictObservationCapture": {
+    "message": "儲存目前觀察"
+  },
+  "conflictObservationExport": {
+    "message": "匯出所選觀察"
+  },
+  "conflictObservationSaved": {
+    "message": "已儲存設定觀察"
+  },
+  "conflictObservationUnsupported": {
+    "message": "僅有標記，未儲存內容"
+  },
+  "conflictObservationQuotaMarker": {
+    "message": "僅有標記：儲存內容的空間不足"
+  },
+  "conflictObservationInvalid": {
+    "message": "觀察紀錄無效或損壞，仍會阻止寫入，請保留原紀錄。"
+  },
+  "conflictObservationListed": {
+    "message": "已列出 $1 筆本機觀察。"
+  },
+  "conflictObservationEmpty": {
+    "message": "尚無本機衝突觀察。"
+  },
+  "conflictObservationCaptured": {
+    "message": "已儲存本機觀察；它不證明來源或原子時點，衝突仍未解決。"
+  },
+  "conflictObservationOnlyMarker": {
+    "message": "存在無法確認的欄位，只儲存不含內容的標記。原資料可能隨同步變更；可立即匯出目前觀察。"
+  },
+  "conflictObservationQuota": {
+    "message": "本機空間或保留額度不足，未能儲存設定內容；可能僅保留阻斷標記。請立即匯出目前觀察，稍後可能無法找回。"
+  },
+  "conflictObservationFailed": {
+    "message": "無法確認本機觀察已儲存；請立即匯出目前觀察，稍後可能無法找回。"
+  },
+  "conflictObservationNotCaptured": {
+    "message": "尚未儲存本機觀察；可儲存或匯出目前觀察。"
+  },
+  "conflictObservationExported": {
+    "message": "已匯出所選觀察，原紀錄仍保留。"
+  },
+  "conflictReviewOpen": {
+    "message": "逐項檢視觀測"
+  },
+  "conflictReviewTitle": {
+    "message": "檢視已儲存觀測"
+  },
+  "conflictReviewNote": {
+    "message": "這兩份內容是本機儲存的觀測，可能不含最新同步變更、未知欄位或未儲存草稿。沒有可信的共同基準，請逐項選擇；陣列以整體選擇。匯出的候選備份不含本機指標資源，匯入後指標會停用。產生備份不會寫入設定或解除衝突保護。"
+  },
+  "conflictReviewExport": {
+    "message": "匯出候選備份"
+  },
+  "conflictReviewCommitted": {
+    "message": "已儲存的提交值"
+  },
+  "conflictReviewObserved": {
+    "message": "已儲存的觀測值"
+  },
+  "conflictReviewMissing": {
+    "message": "欄位不存在"
+  },
+  "conflictReviewChoose": {
+    "message": "請為每處差異選擇一個值，再匯出。"
+  },
+  "conflictReviewNoChanges": {
+    "message": "已儲存的兩份觀測沒有可選擇的差異。"
+  },
+  "conflictReviewTooLarge": {
+    "message": "觀測內容過大，無法在此檢視。可匯出觀測紀錄；原始資料仍受保護。"
+  },
+  "conflictReviewChanged": {
+    "message": "已儲存的觀測發生變化或無法驗證，請重新整理清單並再次檢視。"
+  },
+  "conflictReviewInvalid": {
+    "message": "這些選擇無法組成有效候選，請重新檢查；現有資料未改變。"
+  },
+  "conflictReviewExported": {
+    "message": "已匯出候選備份，原觀測紀錄與衝突保護仍然保留。"
+  },
+  "configurationUnavailable": {
+    "message": "設定暫時無法提交。請保留現有資料，匯出備份並稍後重試。"
+  },
+  "configurationStatus": {
+    "message": "設定已儲存（版本 $1），目前設定可用於相容回復。"
+  },
+  "configurationExport": {
+    "message": "匯出復原設定"
+  },
+  "configurationBaselineExported": {
+    "message": "僅匯出遷移前復原基線，不包含後續修改。"
+  },
+  "runtimeStatusCanary": {
+    "message": "輸入 Canary · 方案 $1 · 活動 frame $2 · 失敗 frame $3 · 需要重新整理的 frame $4",
+    "description": "输入试用运行时的脱敏状态"
+  },
+  "markUnavailable": {
+    "message": "無法讀取或儲存標記。",
+    "description": "标记存储失败或运行时不可用时的提示"
+  },
+  "recoveryPageLink": {
+    "message": "復原狀態與診斷",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryPageTitle": {
+    "message": "復原狀態",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryPageIntro": {
+    "message": "即使擴充功能背景程式無法使用，仍可檢查本機復原記錄。",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryPagePrivacy": {
+    "message": "上方還原狀態摘要不校驗資料完整性。匯出的診斷僅包含擴充功能版本和記錄狀態，不包含設定或頁面內容。",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryRecordCompatibilityConflicts": {
+    "message": "本機衝突觀察"
+  },
+  "recoveryCompatibilityConflictCount": {
+    "message": "偵測到 $1 筆紀錄；未驗證完整性。"
+  },
+  "recoveryRecordConfiguration": {
+    "message": "設定儲存",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryRecordRollback": {
+    "message": "相容回退",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryRecordSync": {
+    "message": "鍵盤同步準備",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryNotChecked": {
+    "message": "尚未檢查",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryStateAbsent": {
+    "message": "沒有記錄",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryStatePending": {
+    "message": "進行中或等待復原",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryStateCommitted": {
+    "message": "記錄顯示已完成",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryStateAborted": {
+    "message": "記錄顯示已中止",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryStateInvalid": {
+    "message": "無法識別記錄格式",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryStateUnsupported": {
+    "message": "不支援此記錄版本",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryConflictLabel": {
+    "message": "有衝突標記",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryBlocked": {
+    "message": "存在遷移復原記錄，可能阻止儲存設定。請保留現有記錄和備份。",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryNoBlock": {
+    "message": "沒有發現獨立同步發布或回退記錄；這不代表設定完整性已驗證。",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryReadUnavailable": {
+    "message": "無法讀取本機復原記錄；此頁面未修改資料。",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryInspect": {
+    "message": "重新檢查",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryExport": {
+    "message": "匯出去識別化診斷",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryExported": {
+    "message": "診斷已準備下載。",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryExportFailed": {
+    "message": "無法下載診斷。",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryBack": {
+    "message": "返回設定",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "legacyBackupUnknownFields": {
+    "message": "備份包含無法識別的欄位，這些欄位不會匯入，原始檔案不會改變。是否繼續匯入可識別的設定？",
+    "description": "旧键盘备份的未知字段提示"
+  },
+  "legacyBackupUnsupportedRules": {
+    "message": "部分排除規則欄位無法安全保留，未匯入任何設定。請保留原始備份。",
+    "description": "旧键盘备份的排除规则字段提示"
+  },
+  "legacyBackupPreview": {
+    "message": "請在匯入前核對備份欄位，原始檔案不會改變。是否繼續？",
+    "description": "旧键盘备份导入预览"
+  },
+  "legacyBackupRecognizedFields": {
+    "message": "將匯入的欄位",
+    "description": "旧键盘备份识别字段"
+  },
+  "legacyBackupConvertedFields": {
+    "message": "已轉換的欄位",
+    "description": "旧键盘备份转换字段"
+  },
+  "legacyBackupErrorFields": {
+    "message": "無效欄位",
+    "description": "旧键盘备份错误字段"
+  },
+  "legacyBackupInvalidFields": {
+    "message": "備份包含無效欄位，未匯入任何設定。請保留原始備份。",
+    "description": "旧键盘备份无效字段提示"
+  },
+  "beforeImportBackups": {
+    "message": "匯入前的本機備份",
+    "description": "导入前本机备份"
+  },
+  "beforeImportBackupsNote": {
+    "message": "每次匯入前會在本機儲存目前設定和存在的指標圖片。可將備份圖片放入草稿，也可單獨匯出；設定檔案不含圖片。舊圖片會佔用本機儲存空間，目前版本尚無安全清理功能。",
+    "description": "导入前本机备份"
+  },
+  "refreshBackupList": {
+    "message": "重新整理備份",
+    "description": "导入前本机备份"
+  },
+  "exportSelectedBackup": {
+    "message": "匯出選取的備份",
+    "description": "导入前本机备份"
+  },
+  "importBackupInvalid": {
+    "message": "備份已損壞或格式不受支援",
+    "description": "导入前本机备份"
+  },
+  "importBackupExported": {
+    "message": "備份已匯出，不包含本機指標圖片。",
+    "description": "导入前本机备份"
+  },
+  "importBackupAssetMissing": {
+    "message": "原本機指標圖片缺失",
+    "description": "导入前本机备份"
+  },
+  "configurationBackupQuota": {
+    "message": "本機設定備份空間不足，操作已停止。請先匯出需要保留的備份；目前版本尚未提供備份清理。",
+    "description": "导入前本机备份"
+  },
+  "configurationLocalQuota": {
+    "message": "本機擴充功能儲存空間不足，操作已停止；既有設定和備份未被刪除。",
+    "description": "导入前本机备份"
+  },
+  "importBackupUnsupported": {
+    "message": "此備份包含目前版本無法匯入的欄位，請保留匯出檔案",
+    "description": "导入前备份兼容限制"
+  },
+  "beforeImportBackupSelect": {
+    "message": "選擇備份",
+    "description": "导入前备份选择"
+  },
+  "importBackupAssetInvalid": {
+    "message": "原本機指標圖片無效或無法檢查",
+    "description": "导入前备份指针资源提示"
+  },
+  "previewImportBackup": {
+    "message": "檢視還原差異",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "useBackupCursor": {
+    "message": "使用備份中的指標圖片"
+  },
+  "importBackupCursorLoading": {
+    "message": "正在讀取備份圖片…"
+  },
+  "importBackupCursorUseInvalid": {
+    "message": "備份圖片無法通過瀏覽器預覽，不能放入草稿；原備份仍保留。"
+  },
+  "importBackupCursorUseFailed": {
+    "message": "無法讀取備份圖片；原備份仍保留。"
+  },
+  "exportBackupCursor": {
+    "message": "匯出指標圖片",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupPreviewIntro": {
+    "message": "此預覽不會還原設定，也不能證明跨裝置資料來源。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupPreviewKeyboard": {
+    "message": "不同的鍵盤欄位",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupToolboxChanged": {
+    "message": "工具箱設定有差異。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupToolboxSame": {
+    "message": "工具箱設定相同。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupPreviewCursor": {
+    "message": "備份中的指標",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorNone": {
+    "message": "未參照本機指標圖片。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorMissing": {
+    "message": "原本機圖片缺失。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorInvalid": {
+    "message": "PNG 簽章或尺寸未通過檢查。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorUnchecked": {
+    "message": "無法檢查指標圖片。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorHeaderValid": {
+    "message": "僅通過 PNG 簽章和尺寸檢查，尚未驗證完整解碼。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorChanged": {
+    "message": "目前指標設定或圖片與備份不同。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorDecodeFailed": {
+    "message": "圖片資料的 Base64 無法解碼，未下載；原始備份仍保留。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorExported": {
+    "message": "指標圖片已匯出。如能正常開啟，請在「外觀」中重新選擇並儲存。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorExportedInvalid": {
+    "message": "原始資料已匯出；它未通過 PNG 簽章或尺寸檢查，可能無法作為指標使用。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "recoveryConflictDetails": {
+    "message": "交易衝突唯讀分類",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictDetailsIntro": {
+    "message": "需要背景服務可用。欄位狀態僅反映本次讀取；不會執行選擇或解除寫入保護，也不能證明跨裝置來源。",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryInspectRollbackConflict": {
+    "message": "檢視回退欄位狀態",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryInspectSyncConflict": {
+    "message": "檢視同步欄位狀態",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictSelect": {
+    "message": "有已完成或已停止的交易記錄時，可檢視對應分類。",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictLoading": {
+    "message": "正在檢查交易詳情……",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictUnavailable": {
+    "message": "無法分類。背景服務可能無法使用，或記錄、備份、目前資料無效或已變更；本次檢查不會修改它們。",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictUnchanged": {
+    "message": "交易前後相同的欄位數量",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictBefore": {
+    "message": "與交易前一致",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictAfter": {
+    "message": "與交易後一致",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictOther": {
+    "message": "與交易前後均不同",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictAbsent": {
+    "message": "缺失",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictMatching": {
+    "message": "與記錄一致",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictDifferent": {
+    "message": "與記錄不同",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictIndex": {
+    "message": "同步索引",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictChunks": {
+    "message": "分片一致 / 缺失 / 不同",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryOtherSyncChanged": {
+    "message": "其他同步資料與記錄不同。",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryOtherSyncSame": {
+    "message": "本次讀取中，其他同步資料與記錄一致。",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryLocalChanged": {
+    "message": "本機工具箱資料與記錄不同。",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryLocalSame": {
+    "message": "本次讀取中，本機工具箱資料與記錄一致。",
+    "description": "事务冲突只读分类"
+  },
+  "exclusionRulePreserved": {
+    "message": "此規則含目前版本無法編輯的附加欄位，已設為唯讀並原樣保留。包含這些欄位的備份需要使用支援它們的版本還原。",
+    "description": "排除规则附加字段的保留提示"
+  },
+  "configurationExistingRulesProtected": {
+    "message": "匯入已停止：目前排除規則含本版本無法安全取代的附加欄位。現有設定和備份檔案均已保留，請使用支援這些欄位的版本處理。",
+    "description": "导入保护现有排除规则附加字段"
+  },
+  "importSavedWithDraft": {
+    "message": "匯入已完成，目前表單中的未儲存修改仍保留；再次儲存時會檢查它們與匯入設定的衝突。",
+    "description": "导入成功后保留未保存表单草稿"
+  },
+  "thirdPartyFeatureBreakdownTitle": {
+    "message": "元件與功能歸屬清單",
+    "description": "第三方声明页面功能对照标题"
+  },
+  "thirdPartyVimiumHeading": {
+    "message": "Vimium v2.4.2（MIT 許可證）",
+    "description": "Vimium 第三方声明条目标题"
+  },
+  "thirdPartyVimiumFeatures": {
+    "message": "負責鍵盤導覽與按鍵模式（普通模式 / 插入模式 / 視覺選取模式）、Link Hints 連結字母跳轉、鍵盤捲動、頁內尋找（/）、位置標記（Marks）、Vomnibar 全能搜尋列及書籤/歷史/分頁補全、鍵盤 HUD 狀態列、URL 排除規則，以及傳統選項頁、說明彈窗與命令清單頁。",
+    "description": "Vimium 所承载的功能清单"
+  },
+  "thirdPartyYamlHeading": {
+    "message": "yaml 2.9.1（ISC 許可證）",
+    "description": "yaml 解析器第三方声明条目标题"
+  },
+  "thirdPartyYamlFeatures": {
+    "message": "負責實用工具箱中 Properties 與 YAML 設定互轉工具的本機 YAML 解析與產生。",
+    "description": "yaml 解析器所承载的功能"
+  },
+  "thirdPartyShouldaHeading": {
+    "message": "shoulda.js（MIT 許可證，僅用於測試）",
+    "description": "shoulda.js 第三方声明条目标题"
+  },
+  "thirdPartyShouldaFeatures": {
+    "message": "僅用於開發與建置階段的單元測試框架，不參與擴充套件實際瀏覽器的執行階段功能。",
+    "description": "shoulda.js 的使用范围"
+  },
+  "thirdPartySelfHeading": {
+    "message": "瀏覽器工具箱自研部分（GPL-3.0-or-later）",
+    "description": "本项目自研模块标题"
+  },
+  "thirdPartySelfFeatures": {
+    "message": "獨立實作的功能：滑鼠手勢（軌跡與懸浮膠囊 HUD、取消熱區、右鍵雙擊選單相容、跨 iframe 橋接）、超級拖曳、滾輪手勢、搖桿手勢、自訂游標、統一命令調度與命令中心、分頁清單彈窗、網頁 JSON 文件直出美化、8 項本機離線實用工具（JSON 格式化、Properties/YAML 互轉、文字對比、編解碼與摘要、時間時區、ID 產生、隨機密碼、表格轉換）、依站台開關規則、設定遷移與匯入復原、多語系以及新版設定介面。",
+    "description": "浏览器工具箱自研功能清单"
+  },
+  "command_scrollDown": {
+    "message": "向下滾動"
+  },
+  "command_scrollUp": {
+    "message": "向上滾動"
+  },
+  "command_scrollPageDown": {
+    "message": "向下滾動半頁"
+  },
+  "command_scrollPageUp": {
+    "message": "向上滾動半頁"
+  },
+  "command_scrollLeft": {
+    "message": "向左滾動"
+  },
+  "command_scrollRight": {
+    "message": "向右滾動"
+  },
+  "command_scrollToLeft": {
+    "message": "滾動到最左側"
+  },
+  "command_scrollToRight": {
+    "message": "滾動到最右側"
+  },
+  "command_copyCurrentUrl": {
+    "message": "複製目前網址到剪貼簿"
+  },
+  "command_openCopiedUrlInCurrentTab": {
+    "message": "在目前分頁打開剪貼簿網址"
+  },
+  "command_openCopiedUrlInNewTab": {
+    "message": "在新分頁打開剪貼簿網址"
+  },
+  "command_goUp": {
+    "message": "返回上一層網址目錄"
+  },
+  "command_goToRoot": {
+    "message": "跳轉到目前網址根目錄"
+  },
+  "command_enterInsertMode": {
+    "message": "進入輸入模式"
+  },
+  "command_enterVisualMode": {
+    "message": "進入可視選取模式"
+  },
+  "command_enterVisualLineMode": {
+    "message": "進入可視行選取模式"
+  },
+  "command_passNextKey": {
+    "message": "將下一個按鍵透傳給網頁"
+  },
+  "command_focusInput": {
+    "message": "聚焦網頁第一個文字輸入框"
+  },
+  "command_LinkHints_activateMode": {
+    "message": "在目前分頁打開連結"
+  },
+  "command_LinkHints_activateModeToOpenInNewTab": {
+    "message": "在背景新分頁打開連結"
+  },
+  "command_LinkHints_activateModeToOpenInNewForegroundTab": {
+    "message": "在前景新分頁打開連結並切換"
+  },
+  "command_LinkHints_activateModeWithQueue": {
+    "message": "連續在新分頁打開多個連結"
+  },
+  "command_LinkHints_activateModeToDownloadLink": {
+    "message": "下載連結指向的內容"
+  },
+  "command_LinkHints_activateModeToOpenIncognito": {
+    "message": "在無痕視窗打開連結"
+  },
+  "command_LinkHints_activateModeToCopyLinkUrl": {
+    "message": "複製連結網址到剪貼簿"
+  },
+  "command_goPrevious": {
+    "message": "跳轉到上一頁連結（上一頁 / <）"
+  },
+  "command_goNext": {
+    "message": "跳轉到下一頁連結（下一頁 / >）"
+  },
+  "command_nextFrame": {
+    "message": "切換到網頁下一個框架"
+  },
+  "command_mainFrame": {
+    "message": "切換到網頁主框架"
+  },
+  "command_Marks_activateCreateMode": {
+    "message": "建立位置書籤標記"
+  },
+  "command_Marks_activateGotoMode": {
+    "message": "跳轉到位置書籤標記"
+  },
+  "command_Vomnibar_activate": {
+    "message": "在目前分頁打開網址、書籤或瀏覽紀錄"
+  },
+  "command_Vomnibar_activateInNewTab": {
+    "message": "在新分頁打開網址、書籤或瀏覽紀錄"
+  },
+  "command_Vomnibar_activateBookmarks": {
+    "message": "搜尋並在目前分頁打開書籤"
+  },
+  "command_Vomnibar_activateBookmarksInNewTab": {
+    "message": "搜尋並在新分頁打開書籤"
+  },
+  "command_Vomnibar_activateTabSelection": {
+    "message": "搜尋並切換已打開的分頁"
+  },
+  "command_Vomnibar_activateEditUrl": {
+    "message": "編輯目前頁面網址"
+  },
+  "command_Vomnibar_activateEditUrlInNewTab": {
+    "message": "編輯目前網址並在新分頁打開"
+  },
+  "command_enterFindMode": {
+    "message": "進入頁內尋找模式"
+  },
+  "command_performFind": {
+    "message": "跳轉到下一個尋找符合項目"
+  },
+  "command_performBackwardsFind": {
+    "message": "跳轉到上一個尋找符合項目"
+  },
+  "command_findSelected": {
+    "message": "向下尋找目前選取的文字"
+  },
+  "command_findSelectedBackwards": {
+    "message": "向上尋找目前選取的文字"
+  },
+  "command_createTab": {
+    "message": "新增分頁"
+  },
+  "command_visitPreviousTab": {
+    "message": "切換到上一個瀏覽的分頁"
+  },
+  "command_firstTab": {
+    "message": "切換到第一個分頁"
+  },
+  "command_lastTab": {
+    "message": "切換到最後一個分頁"
+  },
+  "command_duplicateTab": {
+    "message": "複製目前分頁"
+  },
+  "command_togglePinTab": {
+    "message": "釘選或取消釘選目前分頁"
+  },
+  "command_toggleMuteTab": {
+    "message": "靜音或取消靜音目前分頁"
+  },
+  "command_moveTabToNewWindow": {
+    "message": "將分頁移至新窗口"
+  },
+  "command_closeTabsOnLeft": {
+    "message": "關閉左側分頁"
+  },
+  "command_closeTabsOnRight": {
+    "message": "關閉右側分頁"
+  },
+  "command_closeOtherTabs": {
+    "message": "關閉其他所有分頁"
+  },
+  "command_moveTabLeft": {
+    "message": "向左移動分頁"
+  },
+  "command_moveTabRight": {
+    "message": "向右移動分頁"
+  },
+  "command_setZoom": {
+    "message": "設定頁面縮放比例"
+  },
+  "command_zoomIn": {
+    "message": "放大頁面"
+  },
+  "command_zoomOut": {
+    "message": "縮小頁面"
+  },
+  "command_zoomReset": {
+    "message": "重設頁面縮放"
+  },
+  "command_toggleViewSource": {
+    "message": "檢視網頁原始碼"
+  },
+  "command_showHelp": {
+    "message": "顯示說明"
+  },
+  "navBasicPreferences": {
+    "message": "基本偏好"
+  },
+  "navInteractionEnhancement": {
+    "message": "互動增強"
+  },
+  "navToolsAndRendering": {
+    "message": "工具與算繪"
+  },
+  "navRulesAndData": {
+    "message": "規則與資料"
+  },
+  "generalAndTheme": {
+    "message": "常規與主題"
+  },
+  "shortcutToolsConfig": {
+    "message": "快捷工具設定"
+  },
+  "pageAutoFormatter": {
+    "message": "網頁自動格式化"
+  },
+  "privacyStatement": {
+    "message": "隱私聲明"
+  },
+  "searchEnginesDescription": {
+    "message": "將目標搜尋引擎綁定為短關鍵字，在網頁快速啟動列（Vomnibar）中直接搜尋，無需先開啟引擎首頁。"
+  },
+  "searchStep1Kicker": {
+    "message": "第 1 步 · 設定並儲存"
+  },
+  "searchStep1Title": {
+    "message": "在下方填寫或編輯關鍵字規則"
+  },
+  "searchStep1Desc": {
+    "message": "每行一條「關鍵字: 搜尋網址 [名稱]」（如 bd: https://www.baidu.com/s?wd=%s 百度），改好後點擊右上角「儲存設定」。"
+  },
+  "searchStep2Kicker": {
+    "message": "第 2 步 · 網頁中叫出"
+  },
+  "searchStep2Title": {
+    "message": "按 o（目前分頁）或 O（新分頁）"
+  },
+  "searchStep2Desc": {
+    "message": "叫出快速啟動列；請確保「鍵盤導航」已開啟（或透過自訂手勢／命令中心開啟）。"
+  },
+  "searchStep3Kicker": {
+    "message": "第 3 步 · 關鍵字檢索"
+  },
+  "searchStep3Title": {
+    "message": "輸入 bd 搜尋詞 並按 Enter"
+  },
+  "searchStep3Desc": {
+    "message": "關鍵字後加空格即可切換為百度搜尋，繼續輸入關鍵詞按 Enter 直接開啟結果頁。"
+  },
+  "searchRulesLabel": {
+    "message": "自訂規則清單"
+  },
+  "searchSyntaxFormatLabel": {
+    "message": "行格式規範"
+  },
+  "searchSyntaxFormatDesc": {
+    "message": "格式為「關鍵字: URL [顯示名稱]」（例如 bd: https://www.baidu.com/s?wd=%s 百度）。%s 會替換為 URL 編碼後的搜尋詞，%S 保持原樣不編碼；未寫佔位符時自動接在網址末尾。"
+  },
+  "searchSyntaxCommentLabel": {
+    "message": "註解與生效"
+  },
+  "searchSyntaxCommentDesc": {
+    "message": "以 # 或 \" 開頭的行視為註解不會生效；編輯完成後需點擊右上角「儲存設定」。"
+  }
 }

@@ -1,28 +1,76 @@
 {
-  "extensionName": { "message": "Browser Toolbox", "description": "扩展名称" },
+  "extensionName": {
+    "message": "Browser Toolbox",
+    "description": "扩展名称"
+  },
   "extensionDescription": {
     "message": "使用键盘和鼠标导航网页、执行页面操作并管理标签页。 Navigate pages, run page actions, and manage tabs with keyboard and mouse.",
     "description": "扩展说明"
   },
-  "browserToolbox": { "message": "浏览器工具箱", "description": "产品名称" },
-  "save": { "message": "保存", "description": "保存按钮" },
-  "saved": { "message": "已保存", "description": "保存状态" },
-  "saving": { "message": "正在保存……", "description": "保存进行中" },
-  "saveChanges": { "message": "保存修改", "description": "保存修改状态" },
-  "noChanges": { "message": "没有修改", "description": "没有修改状态" },
-  "cancel": { "message": "取消", "description": "取消按钮" },
-  "close": { "message": "关闭", "description": "关闭按钮" },
-  "reset": { "message": "重置", "description": "重置按钮" },
-  "enabled": { "message": "启用", "description": "启用标签" },
-  "disabled": { "message": "停用", "description": "禁用标签" },
-  "general": { "message": "常规", "description": "常规设置" },
-  "globalShowHud": { "message": "显示工具箱命令提示", "description": "工具箱全局 HUD" },
-  "browserSyncEnabled": { "message": "同步工具箱配置", "description": "浏览器同步开关" },
+  "browserToolbox": {
+    "message": "浏览器工具箱",
+    "description": "产品名称"
+  },
+  "save": {
+    "message": "保存",
+    "description": "保存按钮"
+  },
+  "saved": {
+    "message": "已保存",
+    "description": "保存状态"
+  },
+  "saving": {
+    "message": "正在保存……",
+    "description": "保存进行中"
+  },
+  "saveChanges": {
+    "message": "保存修改",
+    "description": "保存修改状态"
+  },
+  "noChanges": {
+    "message": "没有修改",
+    "description": "没有修改状态"
+  },
+  "cancel": {
+    "message": "取消",
+    "description": "取消按钮"
+  },
+  "close": {
+    "message": "关闭",
+    "description": "关闭按钮"
+  },
+  "reset": {
+    "message": "重置",
+    "description": "重置按钮"
+  },
+  "enabled": {
+    "message": "启用",
+    "description": "启用标签"
+  },
+  "disabled": {
+    "message": "停用",
+    "description": "禁用标签"
+  },
+  "general": {
+    "message": "常规",
+    "description": "常规设置"
+  },
+  "globalShowHud": {
+    "message": "显示工具箱命令提示",
+    "description": "工具箱全局 HUD"
+  },
+  "browserSyncEnabled": {
+    "message": "同步工具箱配置",
+    "description": "浏览器同步开关"
+  },
   "browserSyncNote": {
     "message": "此开关仅控制工具箱配置。关闭后，工具箱配置保存在本机；键盘快捷键、搜索引擎等 Vimium 设置仍沿用浏览器同步。",
     "description": "浏览器同步说明"
   },
-  "browserStartup": { "message": "浏览器启动", "description": "浏览器启动设置" },
+  "browserStartup": {
+    "message": "浏览器启动",
+    "description": "浏览器启动设置"
+  },
   "browserStartupEnabled": {
     "message": "Chrome 启动时打开网站",
     "description": "浏览器启动开关"
@@ -31,8 +79,14 @@
     "message": "新标签页也打开此网站",
     "description": "新标签页跳转开关"
   },
-  "browserStartupUrl": { "message": "启动网站 URL", "description": "浏览器启动网址" },
-  "browserStartupUrlPlaceholder": { "message": "https://example.com", "description": "浏览器启动网址占位符" },
+  "browserStartupUrl": {
+    "message": "启动网站 URL",
+    "description": "浏览器启动网址"
+  },
+  "browserStartupUrlPlaceholder": {
+    "message": "https://example.com",
+    "description": "浏览器启动网址占位符"
+  },
   "browserStartupNote": {
     "message": "在此 Chrome 配置文件启动时打开一个网站。可以单独启用普通新标签页跳转；会保留浏览器恢复的已有标签页。",
     "description": "浏览器启动说明"
@@ -53,17 +107,50 @@
     "message": "启动网站 URL 过长。",
     "description": "浏览器启动网址长度错误"
   },
-  "keyboard": { "message": "键盘导航", "description": "键盘设置" },
-  "mouseGestures": { "message": "鼠标手势", "description": "鼠标手势设置" },
-  "superDrag": { "message": "超级拖拽", "description": "超级拖拽设置" },
-  "wheelRocker": { "message": "滚轮与摇杆", "description": "滚轮和摇杆设置" },
-  "rocker": { "message": "摇杆", "description": "摇杆设置" },
-  "siteRules": { "message": "站点规则", "description": "站点规则设置" },
-  "backupRestore": { "message": "备份与恢复", "description": "备份设置" },
-  "privacy": { "message": "隐私", "description": "隐私设置" },
-  "privacyTitle": { "message": "浏览器工具箱隐私", "description": "隐私页面标题" },
-  "aboutLicenses": { "message": "关于与许可证", "description": "关于页面" },
-  "openSettings": { "message": "打开设置", "description": "打开设置按钮" },
+  "keyboard": {
+    "message": "键盘导航",
+    "description": "键盘设置"
+  },
+  "mouseGestures": {
+    "message": "鼠标手势",
+    "description": "鼠标手势设置"
+  },
+  "superDrag": {
+    "message": "超级拖拽",
+    "description": "超级拖拽设置"
+  },
+  "wheelRocker": {
+    "message": "滚轮与摇杆",
+    "description": "滚轮和摇杆设置"
+  },
+  "rocker": {
+    "message": "摇杆",
+    "description": "摇杆设置"
+  },
+  "siteRules": {
+    "message": "站点规则",
+    "description": "站点规则设置"
+  },
+  "backupRestore": {
+    "message": "备份与恢复",
+    "description": "备份设置"
+  },
+  "privacy": {
+    "message": "隐私",
+    "description": "隐私设置"
+  },
+  "privacyTitle": {
+    "message": "浏览器工具箱隐私",
+    "description": "隐私页面标题"
+  },
+  "aboutLicenses": {
+    "message": "关于与许可证",
+    "description": "关于页面"
+  },
+  "openSettings": {
+    "message": "打开设置",
+    "description": "打开设置按钮"
+  },
   "openBrowserToolboxSettings": {
     "message": "浏览器工具箱的鼠标、拖拽、滚轮和隐私设置",
     "description": "Vimium 选项页中的浏览器工具箱入口"
@@ -72,12 +159,18 @@
     "message": "浏览器工具箱设置",
     "description": "浏览器工具箱命令分组标题"
   },
-  "browserToolboxHelpTitle": { "message": "浏览器工具箱帮助", "description": "帮助标题" },
+  "browserToolboxHelpTitle": {
+    "message": "浏览器工具箱帮助",
+    "description": "帮助标题"
+  },
   "browserToolboxHelpIntro": {
     "message": "键盘导航以 Vimium 为基线；这里汇总浏览器工具箱模块和当前页面状态。",
     "description": "帮助介绍"
   },
-  "browserToolboxCurrentPage": { "message": "当前页面状态", "description": "帮助页面状态标题" },
+  "browserToolboxCurrentPage": {
+    "message": "当前页面状态",
+    "description": "帮助页面状态标题"
+  },
   "browserToolboxAllModulesEnabled": {
     "message": "当前页面已启用浏览器工具箱的全部模块。",
     "description": "全部模块状态"
@@ -90,7 +183,10 @@
     "message": "当前页面状态暂时不可用。",
     "description": "页面状态不可用"
   },
-  "browserToolboxAppliedRule": { "message": "生效的站点规则", "description": "生效规则标签" },
+  "browserToolboxAppliedRule": {
+    "message": "生效的站点规则",
+    "description": "生效规则标签"
+  },
   "browserToolboxNoMatchingRule": {
     "message": "当前页面没有匹配的浏览器工具箱站点规则。",
     "description": "无匹配规则"
@@ -135,28 +231,82 @@
     "message": "打开浏览器工具箱设置",
     "description": "帮助设置链接"
   },
-  "openPrivacyPolicy": { "message": "隐私政策", "description": "隐私政策链接" },
-  "openLicense": { "message": "许可证", "description": "许可证链接" },
+  "openPrivacyPolicy": {
+    "message": "隐私政策",
+    "description": "隐私政策链接"
+  },
+  "openLicense": {
+    "message": "许可证",
+    "description": "许可证链接"
+  },
   "keyboardBaselineNotice": {
     "message": "键盘导航基线：Vimium v2.4.2。",
     "description": "键盘基线说明"
   },
-  "help": { "message": "帮助", "description": "帮助标签" },
-  "wiki": { "message": "Wiki", "description": "Wiki 链接" },
-  "navigatingThePage": { "message": "页面导航", "description": "帮助分区标题" },
-  "usingTheVomnibar": { "message": "使用 Vomnibar", "description": "帮助分区标题" },
-  "usingFind": { "message": "使用查找", "description": "帮助分区标题" },
-  "navigatingHistory": { "message": "浏览历史", "description": "帮助分区标题" },
-  "manipulatingTabs": { "message": "操作标签页", "description": "帮助分区标题" },
-  "linksAndSelections": { "message": "链接和选择", "description": "帮助分区标题" },
-  "windows": { "message": "窗口", "description": "帮助分区标题" },
-  "miscellaneous": { "message": "其他", "description": "帮助分区标题" },
-  "showAdvancedCommands": { "message": "显示高级命令", "description": "高级命令切换" },
-  "hideAdvancedCommands": { "message": "隐藏高级命令", "description": "高级命令切换" },
-  "whatsNew": { "message": "更新内容", "description": "更新日志链接" },
-  "version": { "message": "版本", "description": "版本标签" },
-  "openHelp": { "message": "打开帮助", "description": "打开帮助按钮" },
-  "currentSite": { "message": "当前站点", "description": "当前站点标题" },
+  "help": {
+    "message": "帮助",
+    "description": "帮助标签"
+  },
+  "wiki": {
+    "message": "Wiki",
+    "description": "Wiki 链接"
+  },
+  "navigatingThePage": {
+    "message": "页面导航",
+    "description": "帮助分区标题"
+  },
+  "usingTheVomnibar": {
+    "message": "使用 Vomnibar",
+    "description": "帮助分区标题"
+  },
+  "usingFind": {
+    "message": "使用查找",
+    "description": "帮助分区标题"
+  },
+  "navigatingHistory": {
+    "message": "浏览历史",
+    "description": "帮助分区标题"
+  },
+  "manipulatingTabs": {
+    "message": "操作标签页",
+    "description": "帮助分区标题"
+  },
+  "linksAndSelections": {
+    "message": "链接和选择",
+    "description": "帮助分区标题"
+  },
+  "windows": {
+    "message": "窗口",
+    "description": "帮助分区标题"
+  },
+  "miscellaneous": {
+    "message": "其他",
+    "description": "帮助分区标题"
+  },
+  "showAdvancedCommands": {
+    "message": "显示高级命令",
+    "description": "高级命令切换"
+  },
+  "hideAdvancedCommands": {
+    "message": "隐藏高级命令",
+    "description": "高级命令切换"
+  },
+  "whatsNew": {
+    "message": "更新内容",
+    "description": "更新日志链接"
+  },
+  "version": {
+    "message": "版本",
+    "description": "版本标签"
+  },
+  "openHelp": {
+    "message": "打开帮助",
+    "description": "打开帮助按钮"
+  },
+  "currentSite": {
+    "message": "当前站点",
+    "description": "当前站点标题"
+  },
   "disableForSession": {
     "message": "暂停所有网站",
     "description": "全局会话操作与状态"
@@ -165,18 +315,30 @@
     "message": "本次会话已暂停全部网站的浏览增强。",
     "description": "全局会话操作与状态"
   },
-  "disabling": { "message": "正在停用……", "description": "会话停用进行中" },
+  "disabling": {
+    "message": "正在停用……",
+    "description": "会话停用进行中"
+  },
   "sessionDisableFailed": {
     "message": "本次会话停用失败，请重试。",
     "description": "会话停用失败"
   },
-  "inactive": { "message": "已停用", "description": "当前站点停用状态" },
+  "inactive": {
+    "message": "已停用",
+    "description": "当前站点停用状态"
+  },
   "allModulesEnabled": {
     "message": "当前站点已启用浏览器工具箱的全部模块。",
     "description": "当前站点状态"
   },
-  "pageUnavailable": { "message": "浏览器不允许扩展在此页面运行。", "description": "受限页面提示" },
-  "actionPageTitle": { "message": "浏览器工具箱", "description": "动作页标题" },
+  "pageUnavailable": {
+    "message": "浏览器不允许扩展在此页面运行。",
+    "description": "受限页面提示"
+  },
+  "actionPageTitle": {
+    "message": "浏览器工具箱",
+    "description": "动作页标题"
+  },
   "firefoxMissingHostsPermission": {
     "message": "Vimium 缺少“所有网站”权限。",
     "description": "Firefox 权限标题"
@@ -185,7 +347,10 @@
     "message": "Firefox 要求用户手动授予此权限。你可以使用下面的按钮启用：",
     "description": "Firefox 权限说明"
   },
-  "grantHostsPermission": { "message": "启用所有网站权限", "description": "授予网站权限" },
+  "grantHostsPermission": {
+    "message": "启用所有网站权限",
+    "description": "授予网站权限"
+  },
   "firefoxPermissionPathIntro": {
     "message": "或者按以下路径操作：",
     "description": "Firefox 权限路径引导"
@@ -194,55 +359,154 @@
     "message": "about:addons > Vimium > 管理（三点菜单）> 权限 > 启用“访问所有网站上的数据”。",
     "description": "Firefox 权限路径"
   },
-  "seePermissionsHelp": { "message": "查看权限帮助", "description": "权限帮助链接" },
+  "seePermissionsHelp": {
+    "message": "查看权限帮助",
+    "description": "权限帮助链接"
+  },
   "vimiumKeysEnabledOnPage": {
     "message": "Vimium 按键已在此页面启用。",
     "description": "键位启用状态"
   },
-  "excludeKeysOnPage": { "message": "在此页面停用 Vimium 按键", "description": "添加页面排除规则" },
-  "matchingPatterns": { "message": "匹配当前页面的规则", "description": "排除规则表头" },
-  "keysToExclude": { "message": "要停用的键", "description": "排除键表头" },
-  "seeExclusionRules": { "message": "查看全部排除规则，前往", "description": "排除规则链接前缀" },
-  "optionsPage": { "message": "选项", "description": "选项页面链接" },
-  "page": { "message": "页面。", "description": "页面后缀" },
-  "noTelemetry": { "message": "无遥测、无账号、无广告、无付费功能。", "description": "隐私承诺" },
-  "pattern": { "message": "轨迹", "description": "手势轨迹标签" },
-  "patternInput": { "message": "手势箭头（例如 ↑ · →）", "description": "键盘手势轨迹输入" },
-  "gestureLab": { "message": "手势实验室", "description": "手势冲突检查器" },
+  "excludeKeysOnPage": {
+    "message": "在此页面停用 Vimium 按键",
+    "description": "添加页面排除规则"
+  },
+  "matchingPatterns": {
+    "message": "匹配当前页面的规则",
+    "description": "排除规则表头"
+  },
+  "keysToExclude": {
+    "message": "要停用的键",
+    "description": "排除键表头"
+  },
+  "seeExclusionRules": {
+    "message": "查看全部排除规则，前往",
+    "description": "排除规则链接前缀"
+  },
+  "optionsPage": {
+    "message": "选项",
+    "description": "选项页面链接"
+  },
+  "page": {
+    "message": "页面。",
+    "description": "页面后缀"
+  },
+  "noTelemetry": {
+    "message": "无遥测、无账号、无广告、无付费功能。",
+    "description": "隐私承诺"
+  },
+  "pattern": {
+    "message": "轨迹",
+    "description": "手势轨迹标签"
+  },
+  "patternInput": {
+    "message": "手势箭头（例如 ↑ · →）",
+    "description": "键盘手势轨迹输入"
+  },
+  "gestureLab": {
+    "message": "手势实验室",
+    "description": "手势冲突检查器"
+  },
   "gestureLabHint": {
     "message": "添加绑定前，手势实验室会检查重复和前缀冲突。",
     "description": "手势冲突检查提示"
   },
-  "gestureLabReady": { "message": "此手势可以使用。", "description": "手势冲突检查结果" },
-  "gestureLabDuplicateWarning": { "message": "此手势已经分配", "description": "手势冲突检查结果" },
-  "gestureLabPrefixWarning": { "message": "此手势是更长绑定的前缀。", "description": "手势冲突检查结果" },
-  "gestureLabLongerWarning": { "message": "已有更短绑定以此手势开头。", "description": "手势冲突检查结果" },
-  "command": { "message": "命令", "description": "命令标签" },
-  "options": { "message": "选项", "description": "命令选项" },
-  "optionsDefault": { "message": "默认", "description": "命令选项默认值" },
-  "optionsHint": { "message": "JSON 对象；保存前会校验内容。", "description": "命令选项提示" },
+  "gestureLabReady": {
+    "message": "此手势可以使用。",
+    "description": "手势冲突检查结果"
+  },
+  "gestureLabDuplicateWarning": {
+    "message": "此手势已经分配",
+    "description": "手势冲突检查结果"
+  },
+  "gestureLabPrefixWarning": {
+    "message": "此手势是更长绑定的前缀。",
+    "description": "手势冲突检查结果"
+  },
+  "gestureLabLongerWarning": {
+    "message": "已有更短绑定以此手势开头。",
+    "description": "手势冲突检查结果"
+  },
+  "command": {
+    "message": "命令",
+    "description": "命令标签"
+  },
+  "options": {
+    "message": "选项",
+    "description": "命令选项"
+  },
+  "optionsDefault": {
+    "message": "默认",
+    "description": "命令选项默认值"
+  },
+  "optionsHint": {
+    "message": "JSON 对象；保存前会校验内容。",
+    "description": "命令选项提示"
+  },
   "dangerousCommandWarning": {
     "message": "可能关闭标签页或窗口。",
     "description": "危险命令提示"
   },
-  "addBinding": { "message": "添加绑定", "description": "添加绑定按钮" },
-  "addRule": { "message": "添加规则", "description": "添加站点规则按钮" },
-  "removeBinding": { "message": "移除绑定", "description": "删除绑定按钮" },
-  "removeRule": { "message": "删除规则", "description": "删除站点规则按钮" },
-  "moveUp": { "message": "上移", "description": "上移站点规则" },
-  "moveDown": { "message": "下移", "description": "下移站点规则" },
-  "duplicateRule": { "message": "复制规则", "description": "复制站点规则" },
-  "discardChanges": { "message": "放弃修改", "description": "放弃设置草稿" },
-  "unsavedChanges": { "message": "有未保存的修改。", "description": "未保存设置状态" },
-  "restoreDefaults": { "message": "恢复默认值", "description": "恢复默认按钮" },
+  "addBinding": {
+    "message": "添加绑定",
+    "description": "添加绑定按钮"
+  },
+  "addRule": {
+    "message": "添加规则",
+    "description": "添加站点规则按钮"
+  },
+  "removeBinding": {
+    "message": "移除绑定",
+    "description": "删除绑定按钮"
+  },
+  "removeRule": {
+    "message": "删除规则",
+    "description": "删除站点规则按钮"
+  },
+  "moveUp": {
+    "message": "上移",
+    "description": "上移站点规则"
+  },
+  "moveDown": {
+    "message": "下移",
+    "description": "下移站点规则"
+  },
+  "duplicateRule": {
+    "message": "复制规则",
+    "description": "复制站点规则"
+  },
+  "discardChanges": {
+    "message": "放弃修改",
+    "description": "放弃设置草稿"
+  },
+  "unsavedChanges": {
+    "message": "有未保存的修改。",
+    "description": "未保存设置状态"
+  },
+  "restoreDefaults": {
+    "message": "恢复默认值",
+    "description": "恢复默认按钮"
+  },
   "restoreDefaultsConfirm": {
-    "message": "要将浏览器工具箱设置恢复为默认值吗？",
+    "message": "要将浏览器工具箱设置恢复为默认值吗？ 旧指针图片仍会保留在本机。",
     "description": "恢复默认确认"
   },
-  "importSettings": { "message": "导入设置", "description": "导入设置按钮" },
-  "exportSettings": { "message": "导出设置", "description": "导出设置按钮" },
-  "chooseFile": { "message": "选择文件", "description": "文件选择标签" },
-  "invalidSettings": { "message": "设置文件无效。", "description": "设置错误提示" },
+  "importSettings": {
+    "message": "导入设置",
+    "description": "导入设置按钮"
+  },
+  "exportSettings": {
+    "message": "导出设置",
+    "description": "导出设置按钮"
+  },
+  "chooseFile": {
+    "message": "选择文件",
+    "description": "文件选择标签"
+  },
+  "invalidSettings": {
+    "message": "设置文件无效。",
+    "description": "设置错误提示"
+  },
   "settingsConflict": {
     "message": "这些设置已在其他浏览器工具箱页面或设备上修改，请重新加载页面后再保存。",
     "description": "并发设置修改提示"
@@ -259,48 +523,138 @@
     "message": "保存失败，自动恢复未完全成功。请重新加载页面后再继续编辑。",
     "description": "设置恢复警告"
   },
-  "validationUnknownCommand": { "message": "未知命令", "description": "设置校验错误" },
+  "validationUnknownCommand": {
+    "message": "未知命令",
+    "description": "设置校验错误"
+  },
   "validationUnsupportedInput": {
     "message": "此输入方式不支持该命令",
     "description": "设置校验错误"
   },
-  "validationInvalidOptions": { "message": "命令选项无效", "description": "设置校验错误" },
-  "validationDuplicate": { "message": "重复绑定", "description": "设置校验错误" },
-  "validationInvalidPattern": { "message": "手势轨迹无效", "description": "设置校验错误" },
-  "validationInvalidRegex": { "message": "正则表达式无效", "description": "设置校验错误" },
-  "validationRegexComplexity": { "message": "正则表达式过于复杂", "description": "设置校验错误" },
+  "validationInvalidOptions": {
+    "message": "命令选项无效",
+    "description": "设置校验错误"
+  },
+  "validationDuplicate": {
+    "message": "重复绑定",
+    "description": "设置校验错误"
+  },
+  "validationInvalidPattern": {
+    "message": "手势轨迹无效",
+    "description": "设置校验错误"
+  },
+  "validationInvalidRegex": {
+    "message": "正则表达式无效",
+    "description": "设置校验错误"
+  },
+  "validationRegexComplexity": {
+    "message": "正则表达式过于复杂",
+    "description": "设置校验错误"
+  },
   "siteRuleDuplicateWarning": {
     "message": "此匹配式也被其他规则使用；发生字段重叠时，配置顺序靠后的规则优先。",
     "description": "重复站点规则提示"
   },
-  "validationInvalidSiteRule": { "message": "站点规则无效", "description": "设置校验错误" },
-  "validationOutOfRange": { "message": "数值超出允许范围", "description": "设置校验错误" },
-  "validationPrivacy": { "message": "隐私保证不可修改", "description": "设置校验错误" },
-  "validationSchema": { "message": "设置版本不受支持", "description": "设置校验错误" },
-  "gestureUnrecognized": { "message": "未识别手势", "description": "手势反馈" },
-  "gestureCancelled": { "message": "手势已取消", "description": "手势反馈" },
-  "gestureDirectionUp": { "message": "向上", "description": "手势方向" },
-  "gestureDirectionDown": { "message": "向下", "description": "手势方向" },
-  "gestureDirectionLeft": { "message": "向左", "description": "手势方向" },
-  "gestureDirectionRight": { "message": "向右", "description": "手势方向" },
-  "browserRestriction": { "message": "此页面受浏览器限制。", "description": "浏览器限制提示" },
-  "language": { "message": "语言", "description": "语言设置" },
-  "languageAuto": { "message": "跟随浏览器", "description": "自动语言" },
-  "languageEnglish": { "message": "English", "description": "英语" },
-  "languageChinese": { "message": "简体中文", "description": "简体中文" },
-  "triggerButton": { "message": "手势触发按键", "description": "手势触发按键" },
+  "validationInvalidSiteRule": {
+    "message": "站点规则无效",
+    "description": "设置校验错误"
+  },
+  "validationOutOfRange": {
+    "message": "数值超出允许范围",
+    "description": "设置校验错误"
+  },
+  "validationPrivacy": {
+    "message": "隐私保证不可修改",
+    "description": "设置校验错误"
+  },
+  "validationSchema": {
+    "message": "设置版本不受支持",
+    "description": "设置校验错误"
+  },
+  "gestureUnrecognized": {
+    "message": "未识别手势",
+    "description": "手势反馈"
+  },
+  "gestureCancelled": {
+    "message": "手势已取消",
+    "description": "手势反馈"
+  },
+  "gestureDirectionUp": {
+    "message": "向上",
+    "description": "手势方向"
+  },
+  "gestureDirectionDown": {
+    "message": "向下",
+    "description": "手势方向"
+  },
+  "gestureDirectionLeft": {
+    "message": "向左",
+    "description": "手势方向"
+  },
+  "gestureDirectionRight": {
+    "message": "向右",
+    "description": "手势方向"
+  },
+  "browserRestriction": {
+    "message": "此页面受浏览器限制。",
+    "description": "浏览器限制提示"
+  },
+  "language": {
+    "message": "语言",
+    "description": "语言设置"
+  },
+  "languageAuto": {
+    "message": "跟随浏览器",
+    "description": "自动语言"
+  },
+  "languageEnglish": {
+    "message": "English",
+    "description": "英语"
+  },
+  "languageChinese": {
+    "message": "简体中文",
+    "description": "简体中文"
+  },
+  "triggerButton": {
+    "message": "手势触发按键",
+    "description": "手势触发按键"
+  },
   "mouseTriggerButtonHint": {
     "message": "手势按键与超级拖拽或摇杆使用同一按键时，手势优先。启用右键菜单接管时，第一次右键按住移动执行手势，在同一位置快速右键两次打开原生菜单；关闭接管后第一次右键直接打开原生菜单，但可能与手势冲突。",
     "description": "手势按键冲突行为"
   },
-  "activationDistance": { "message": "激活距离（像素）", "description": "手势阈值" },
-  "sampleDistance": { "message": "采样距离（像素）", "description": "手势采样距离" },
-  "minimumSegmentDistance": { "message": "最小分段距离（像素）", "description": "手势分段阈值" },
-  "turnHysteresis": { "message": "转向滞后角度（度）", "description": "手势转向滞后" },
-  "maxSegments": { "message": "最大分段数", "description": "手势分段上限" },
-  "maxDuration": { "message": "最大持续时间（毫秒）", "description": "手势持续时间上限" },
-  "showTrail": { "message": "显示手势轨迹", "description": "轨迹开关" },
-  "showHud": { "message": "显示命令提示", "description": "HUD 开关" },
+  "activationDistance": {
+    "message": "激活距离（像素）",
+    "description": "手势阈值"
+  },
+  "sampleDistance": {
+    "message": "采样距离（像素）",
+    "description": "手势采样距离"
+  },
+  "minimumSegmentDistance": {
+    "message": "最小分段距离（像素）",
+    "description": "手势分段阈值"
+  },
+  "turnHysteresis": {
+    "message": "转向滞后角度（度）",
+    "description": "手势转向滞后"
+  },
+  "maxSegments": {
+    "message": "最大分段数",
+    "description": "手势分段上限"
+  },
+  "maxDuration": {
+    "message": "最大持续时间（毫秒）",
+    "description": "手势持续时间上限"
+  },
+  "showTrail": {
+    "message": "显示手势轨迹",
+    "description": "轨迹开关"
+  },
+  "showHud": {
+    "message": "显示命令提示",
+    "description": "HUD 开关"
+  },
   "suppressContextMenu": {
     "message": "为右键手势接管原生菜单",
     "description": "手势期间原生菜单抑制"
@@ -309,33 +663,171 @@
     "message": "遥测、远程配置和后台网络访问永久关闭。",
     "description": "不可变隐私状态"
   },
-  "tabs": { "message": "标签页", "description": "标签页列表标题" },
-  "cursor": { "message": "自定义指针", "description": "自定义指针分区" },
-  "cursorAsset": { "message": "本地 PNG 指针", "description": "本地指针资源" },
-  "cursorHotspotX": { "message": "热点 X", "description": "指针热点 X" },
-  "cursorHotspotY": { "message": "热点 Y", "description": "指针热点 Y" },
-  "noCursorAsset": { "message": "尚未选择本地指针。", "description": "指针状态" },
-  "resetCursor": { "message": "移除本地指针", "description": "移除指针" },
-  "wheelThreshold": { "message": "滚轮阈值", "description": "滚轮阈值" },
-  "cooldown": { "message": "冷却时间（毫秒）", "description": "滚轮冷却时间" },
-  "continuousTabSwitching": { "message": "连续切换标签页", "description": "滚轮标签页切换模式" },
-  "button": { "message": "按键", "description": "鼠标按键" },
-  "direction": { "message": "方向", "description": "方向" },
-  "sequence": { "message": "顺序", "description": "摇杆顺序" },
-  "leftButton": { "message": "左键", "description": "鼠标按键" },
-  "rightButton": { "message": "右键", "description": "鼠标按键" },
-  "middleButton": { "message": "中键", "description": "鼠标按键" },
-  "up": { "message": "向上", "description": "滚轮方向" },
-  "down": { "message": "向下", "description": "滚轮方向" },
-  "holdRightThenClickLeft": { "message": "按住右键再点左键", "description": "摇杆顺序" },
-  "holdLeftThenClickRight": { "message": "按住左键再点右键", "description": "摇杆顺序" },
-  "urlPattern": { "message": "网址匹配式", "description": "站点网址匹配式" },
-  "modules": { "message": "模块", "description": "站点模块" },
-  "siteRuleMatchType": { "message": "匹配方式", "description": "站点规则匹配方式" },
-  "siteRuleGlob": { "message": "Glob 通配式", "description": "Glob 站点规则" },
-  "siteRuleRegex": { "message": "正则表达式", "description": "正则表达式站点规则" },
-  "siteRuleEnabled": { "message": "在此站点启用工具箱", "description": "站点规则总开关" },
-  "siteRuleDisableModules": { "message": "在此站点停用模块", "description": "站点规则模块开关" },
+  "tabs": {
+    "message": "标签页",
+    "description": "标签页列表标题"
+  },
+  "cursor": {
+    "message": "自定义指针",
+    "description": "自定义指针分区"
+  },
+  "cursorAsset": {
+    "message": "本地 PNG 指针",
+    "description": "本地指针资源"
+  },
+  "cursorHotspotX": {
+    "message": "热点 X",
+    "description": "指针热点 X"
+  },
+  "cursorHotspotY": {
+    "message": "热点 Y",
+    "description": "指针热点 Y"
+  },
+  "noCursorAsset": {
+    "message": "尚未选择本地指针。",
+    "description": "指针状态"
+  },
+  "localCursorTitle": {
+    "message": "本机指针图片"
+  },
+  "localCursorNote": {
+    "message": "可将已查看的图片放入草稿或导出，二者均使用刚查看的内容；保存设置后才会生效。列表不表示图片是否正在使用。"
+  },
+  "localCursorSelect": {
+    "message": "选择本机图片"
+  },
+  "localCursorRefresh": {
+    "message": "刷新图片列表"
+  },
+  "localCursorMore": {
+    "message": "加载更多"
+  },
+  "localCursorView": {
+    "message": "查看所选图片"
+  },
+  "localCursorUse": {
+    "message": "使用已查看图片"
+  },
+  "localCursorDraftPreview": {
+    "message": "已选择本机图片（待保存）"
+  },
+  "localCursorDraft": {
+    "message": "图片已放入草稿，保存设置后生效；原图片仍保留在本机。"
+  },
+  "localCursorExport": {
+    "message": "导出已查看图片"
+  },
+  "localCursorItem": {
+    "message": "本机图片 $1"
+  },
+  "localCursorListed": {
+    "message": "已加载 $1 条本机图片记录。"
+  },
+  "localCursorEmpty": {
+    "message": "未找到本机指针图片。"
+  },
+  "localCursorUnavailable": {
+    "message": "无法读取本机图片列表，现有数据未改变。"
+  },
+  "localCursorUnreadable": {
+    "message": "此记录无法作为受支持的图片读取，原始数据仍保留在本机。"
+  },
+  "localCursorPreviewed": {
+    "message": "浏览器可以预览此图片；导出将使用刚查看的内容。"
+  },
+  "localCursorOriginalOnly": {
+    "message": "此图片无法预览，可将原始字节导出为 .bin 文件。"
+  },
+  "localCursorExported": {
+    "message": "已导出刚查看的内容，本机数据未改变。"
+  },
+  "cursorRetentionNote": {
+    "message": "替换或停用指针、恢复默认或导入设置后，旧指针图片仍保留在本机并占用扩展存储；当前版本尚无安全清理功能。"
+  },
+  "resetCursor": {
+    "message": "停用当前指针",
+    "description": "移除指针"
+  },
+  "wheelThreshold": {
+    "message": "滚轮阈值",
+    "description": "滚轮阈值"
+  },
+  "cooldown": {
+    "message": "冷却时间（毫秒）",
+    "description": "滚轮冷却时间"
+  },
+  "continuousTabSwitching": {
+    "message": "连续切换标签页",
+    "description": "滚轮标签页切换模式"
+  },
+  "button": {
+    "message": "按键",
+    "description": "鼠标按键"
+  },
+  "direction": {
+    "message": "方向",
+    "description": "方向"
+  },
+  "sequence": {
+    "message": "顺序",
+    "description": "摇杆顺序"
+  },
+  "leftButton": {
+    "message": "左键",
+    "description": "鼠标按键"
+  },
+  "rightButton": {
+    "message": "右键",
+    "description": "鼠标按键"
+  },
+  "middleButton": {
+    "message": "中键",
+    "description": "鼠标按键"
+  },
+  "up": {
+    "message": "向上",
+    "description": "滚轮方向"
+  },
+  "down": {
+    "message": "向下",
+    "description": "滚轮方向"
+  },
+  "holdRightThenClickLeft": {
+    "message": "按住右键再点左键",
+    "description": "摇杆顺序"
+  },
+  "holdLeftThenClickRight": {
+    "message": "按住左键再点右键",
+    "description": "摇杆顺序"
+  },
+  "urlPattern": {
+    "message": "网址匹配式",
+    "description": "站点网址匹配式"
+  },
+  "modules": {
+    "message": "模块",
+    "description": "站点模块"
+  },
+  "siteRuleMatchType": {
+    "message": "匹配方式",
+    "description": "站点规则匹配方式"
+  },
+  "siteRuleGlob": {
+    "message": "Glob 通配式",
+    "description": "Glob 站点规则"
+  },
+  "siteRuleRegex": {
+    "message": "正则表达式",
+    "description": "正则表达式站点规则"
+  },
+  "siteRuleEnabled": {
+    "message": "在此站点启用工具箱",
+    "description": "站点规则总开关"
+  },
+  "siteRuleDisableModules": {
+    "message": "在此站点停用模块",
+    "description": "站点规则模块开关"
+  },
   "siteRuleModuleHint": {
     "message": "勾选模块即可在此站点停用它。",
     "description": "站点规则模块开关说明"
@@ -352,16 +844,34 @@
     "message": "示例：^https://(www\\.)?example\\.com/",
     "description": "正则表达式站点规则示例"
   },
-  "siteRulePriority": { "message": "优先级", "description": "站点规则优先级" },
-  "siteRuleOrder": { "message": "配置顺序", "description": "站点规则配置顺序" },
-  "siteRulePrecedence": { "message": "匹配顺序", "description": "站点规则匹配顺序" },
-  "siteRuleActions": { "message": "操作", "description": "站点规则操作" },
+  "siteRulePriority": {
+    "message": "优先级",
+    "description": "站点规则优先级"
+  },
+  "siteRuleOrder": {
+    "message": "配置顺序",
+    "description": "站点规则配置顺序"
+  },
+  "siteRulePrecedence": {
+    "message": "匹配顺序",
+    "description": "站点规则匹配顺序"
+  },
+  "siteRuleActions": {
+    "message": "操作",
+    "description": "站点规则操作"
+  },
   "siteRuleNoRules": {
     "message": "还没有站点规则。添加一条规则来配置网址。",
     "description": "空站点规则状态"
   },
-  "testSiteUrl": { "message": "测试网址", "description": "用输入的网址测试站点规则" },
-  "siteRuleTestUrl": { "message": "待测试网址", "description": "网址测试字段标签" },
+  "testSiteUrl": {
+    "message": "测试网址",
+    "description": "用输入的网址测试站点规则"
+  },
+  "siteRuleTestUrl": {
+    "message": "待测试网址",
+    "description": "网址测试字段标签"
+  },
   "siteRuleTestUrlHint": {
     "message": "https://example.com/path",
     "description": "网址测试字段占位提示"
@@ -370,16 +880,34 @@
     "message": "请输入网址；此字段不会保存。",
     "description": "网址测试字段说明"
   },
-  "siteRuleEnterTestUrl": { "message": "请输入要测试的网址。", "description": "缺少测试网址" },
-  "siteRuleInvalidTestUrl": { "message": "请输入有效的网址。", "description": "测试网址无效" },
-  "siteRuleMatched": { "message": "该网址匹配到站点规则：", "description": "站点规则匹配结果" },
+  "siteRuleEnterTestUrl": {
+    "message": "请输入要测试的网址。",
+    "description": "缺少测试网址"
+  },
+  "siteRuleInvalidTestUrl": {
+    "message": "请输入有效的网址。",
+    "description": "测试网址无效"
+  },
+  "siteRuleMatched": {
+    "message": "该网址匹配到站点规则：",
+    "description": "站点规则匹配结果"
+  },
   "siteRuleNotMatched": {
     "message": "该网址没有匹配任何站点规则。",
     "description": "站点规则未匹配结果"
   },
-  "siteRuleEffectiveState": { "message": "最终模块状态", "description": "站点规则最终状态" },
-  "siteRuleDisabledModules": { "message": "已停用模块", "description": "站点已停用模块" },
-  "siteRuleAllModulesEnabled": { "message": "所有模块均已启用", "description": "站点已启用模块" },
+  "siteRuleEffectiveState": {
+    "message": "最终模块状态",
+    "description": "站点规则最终状态"
+  },
+  "siteRuleDisabledModules": {
+    "message": "已停用模块",
+    "description": "站点已停用模块"
+  },
+  "siteRuleAllModulesEnabled": {
+    "message": "所有模块均已启用",
+    "description": "站点已启用模块"
+  },
   "siteRuleExplanationTitle": {
     "message": "为什么会得到这个结果",
     "description": "站点规则解释标题"
@@ -388,21 +916,66 @@
     "message": "没有浏览器工具箱站点规则匹配此网址。",
     "description": "站点规则解释未匹配项"
   },
-  "patternDoesNotMatch": { "message": "匹配式与当前网址不匹配", "description": "当前网址校验" },
-  "untitledTab": { "message": "（无标题）", "description": "无标题标签页名称" },
-  "allKeys": { "message": "全部", "description": "全部键位说明" },
-  "noKeys": { "message": "无", "description": "无键位说明" },
-  "someKeys": { "message": "部分", "description": "部分键位说明" },
-  "context": { "message": "对象", "description": "拖拽对象" },
-  "contextLink": { "message": "链接", "description": "拖拽对象" },
-  "contextSelection": { "message": "选中文本", "description": "拖拽对象" },
-  "contextImage": { "message": "图片", "description": "拖拽对象" },
-  "openOnboarding": { "message": "打开入门说明", "description": "入门说明链接" },
-  "projectCharter": { "message": "项目章程", "description": "项目章程链接" },
-  "thirdPartyNotices": { "message": "第三方声明", "description": "第三方声明链接" },
-  "command_BrowserToolbox_closeWindow": { "message": "关闭当前窗口", "description": "命令标题" },
-  "command_BrowserToolbox_newWindow": { "message": "打开新窗口", "description": "命令标题" },
-  "command_BrowserToolbox_toggleFullscreen": { "message": "切换全屏", "description": "命令标题" },
+  "patternDoesNotMatch": {
+    "message": "匹配式与当前网址不匹配",
+    "description": "当前网址校验"
+  },
+  "untitledTab": {
+    "message": "（无标题）",
+    "description": "无标题标签页名称"
+  },
+  "allKeys": {
+    "message": "全部",
+    "description": "全部键位说明"
+  },
+  "noKeys": {
+    "message": "无",
+    "description": "无键位说明"
+  },
+  "someKeys": {
+    "message": "部分",
+    "description": "部分键位说明"
+  },
+  "context": {
+    "message": "对象",
+    "description": "拖拽对象"
+  },
+  "contextLink": {
+    "message": "链接",
+    "description": "拖拽对象"
+  },
+  "contextSelection": {
+    "message": "选中文本",
+    "description": "拖拽对象"
+  },
+  "contextImage": {
+    "message": "图片",
+    "description": "拖拽对象"
+  },
+  "openOnboarding": {
+    "message": "打开入门说明",
+    "description": "入门说明链接"
+  },
+  "projectCharter": {
+    "message": "项目章程",
+    "description": "项目章程链接"
+  },
+  "thirdPartyNotices": {
+    "message": "第三方声明",
+    "description": "第三方声明链接"
+  },
+  "command_BrowserToolbox_closeWindow": {
+    "message": "关闭当前窗口",
+    "description": "命令标题"
+  },
+  "command_BrowserToolbox_newWindow": {
+    "message": "打开新窗口",
+    "description": "命令标题"
+  },
+  "command_BrowserToolbox_toggleFullscreen": {
+    "message": "切换全屏",
+    "description": "命令标题"
+  },
   "command_BrowserToolbox_minimizeWindow": {
     "message": "最小化当前窗口",
     "description": "命令标题"
@@ -411,8 +984,14 @@
     "message": "最大化当前窗口",
     "description": "命令标题"
   },
-  "command_BrowserToolbox_showTabList": { "message": "显示标签页列表", "description": "命令标题" },
-  "command_BrowserToolbox_openCommandCenter": { "message": "打开命令中心", "description": "命令标题" },
+  "command_BrowserToolbox_showTabList": {
+    "message": "显示标签页列表",
+    "description": "命令标题"
+  },
+  "command_BrowserToolbox_openCommandCenter": {
+    "message": "打开命令中心",
+    "description": "命令标题"
+  },
   "command_BrowserToolbox_openSettings": {
     "message": "打开浏览器工具箱设置",
     "description": "命令标题"
@@ -421,7 +1000,10 @@
     "message": "打开浏览器工具箱工具",
     "description": "打开本地浏览器工具箱工具"
   },
-  "command_BrowserToolbox_toggleKeyboard": { "message": "切换键盘导航", "description": "命令标题" },
+  "command_BrowserToolbox_toggleKeyboard": {
+    "message": "切换键盘导航",
+    "description": "命令标题"
+  },
   "command_BrowserToolbox_toggleMouseGestures": {
     "message": "切换鼠标手势",
     "description": "命令标题"
@@ -430,10 +1012,22 @@
     "message": "切换超级拖拽",
     "description": "命令标题"
   },
-  "command_BrowserToolbox_copySelection": { "message": "复制选中文本", "description": "命令标题" },
-  "command_BrowserToolbox_copyLinkText": { "message": "复制链接文本", "description": "命令标题" },
-  "command_BrowserToolbox_copyLinkUrl": { "message": "复制链接网址", "description": "命令标题" },
-  "command_BrowserToolbox_copyImageUrl": { "message": "复制图片网址", "description": "命令标题" },
+  "command_BrowserToolbox_copySelection": {
+    "message": "复制选中文本",
+    "description": "命令标题"
+  },
+  "command_BrowserToolbox_copyLinkText": {
+    "message": "复制链接文本",
+    "description": "命令标题"
+  },
+  "command_BrowserToolbox_copyLinkUrl": {
+    "message": "复制链接网址",
+    "description": "命令标题"
+  },
+  "command_BrowserToolbox_copyImageUrl": {
+    "message": "复制图片网址",
+    "description": "命令标题"
+  },
   "command_BrowserToolbox_searchSelection": {
     "message": "搜索选中文本",
     "description": "命令标题"
@@ -454,21 +1048,66 @@
     "message": "后台打开图片",
     "description": "命令标题"
   },
-  "command_BrowserToolbox_downloadImage": { "message": "下载图片", "description": "命令标题" },
-  "command_goBack": { "message": "后退", "description": "手势命令标题" },
-  "command_goForward": { "message": "前进", "description": "手势命令标题" },
-  "command_removeTab": { "message": "关闭标签页", "description": "手势命令标题" },
-  "command_restoreTab": { "message": "恢复关闭的标签页", "description": "手势命令标题" },
-  "command_scrollToTop": { "message": "回到顶部", "description": "手势命令标题" },
-  "command_scrollToBottom": { "message": "滚动到底部", "description": "手势命令标题" },
-  "command_scrollFullPageUp": { "message": "向上翻页", "description": "手势命令标题" },
-  "command_scrollFullPageDown": { "message": "向下翻页", "description": "手势命令标题" },
-  "command_reload": { "message": "刷新", "description": "手势命令标题" },
-  "command_reloadHard": { "message": "强制刷新", "description": "手势命令标题" },
-  "command_previousTab": { "message": "上一个标签页", "description": "手势命令标题" },
-  "command_nextTab": { "message": "下一个标签页", "description": "手势命令标题" },
-  "settingsSections": { "message": "设置分区", "description": "设置导航" },
-  "settingsSearch": { "message": "搜索设置", "description": "设置导航搜索" },
+  "command_BrowserToolbox_downloadImage": {
+    "message": "下载图片",
+    "description": "命令标题"
+  },
+  "command_goBack": {
+    "message": "后退",
+    "description": "手势命令标题"
+  },
+  "command_goForward": {
+    "message": "前进",
+    "description": "手势命令标题"
+  },
+  "command_removeTab": {
+    "message": "关闭标签页",
+    "description": "手势命令标题"
+  },
+  "command_restoreTab": {
+    "message": "恢复关闭的标签页",
+    "description": "手势命令标题"
+  },
+  "command_scrollToTop": {
+    "message": "回到顶部",
+    "description": "手势命令标题"
+  },
+  "command_scrollToBottom": {
+    "message": "滚动到底部",
+    "description": "手势命令标题"
+  },
+  "command_scrollFullPageUp": {
+    "message": "向上翻页",
+    "description": "手势命令标题"
+  },
+  "command_scrollFullPageDown": {
+    "message": "向下翻页",
+    "description": "手势命令标题"
+  },
+  "command_reload": {
+    "message": "刷新",
+    "description": "手势命令标题"
+  },
+  "command_reloadHard": {
+    "message": "强制刷新",
+    "description": "手势命令标题"
+  },
+  "command_previousTab": {
+    "message": "上一个标签页",
+    "description": "手势命令标题"
+  },
+  "command_nextTab": {
+    "message": "下一个标签页",
+    "description": "手势命令标题"
+  },
+  "settingsSections": {
+    "message": "设置分区",
+    "description": "设置导航"
+  },
+  "settingsSearch": {
+    "message": "搜索设置",
+    "description": "设置导航搜索"
+  },
   "settingsSearchHint": {
     "message": "搜索设置",
     "description": "设置导航搜索提示"
@@ -481,561 +1120,2094 @@
     "message": "没有匹配的设置分区。",
     "description": "设置导航无结果提示"
   },
-  "browsingEnhancement": { "message": "浏览增强", "description": "设置一级分组" },
-  "utilityTools": { "message": "实用工具", "description": "设置一级分组" },
-  "system": { "message": "系统", "description": "设置一级分组" },
-  "quickTools": { "message": "快捷工具", "description": "动作弹窗标题" },
-  "running": { "message": "运行中", "description": "动作弹窗状态" },
-  "active": { "message": "已启用", "description": "当前站点状态" },
-  "currentSiteDetails": { "message": "当前站点详情", "description": "当前站点入口" },
-  "actionFooter": { "message": "动作入口", "description": "动作弹窗底部" },
-  "commandCenter": { "message": "命令中心", "description": "命令中心入口" },
-  "commandCenterTitle": { "message": "命令中心", "description": "命令中心标题" },
-  "commandCenterSubtitle": { "message": "搜索命令、工具和设置。", "description": "命令中心副标题" },
-  "commandCenterContext": { "message": "目标", "description": "命令中心目标标签" },
-  "commandCenterNoTarget": { "message": "未选择页面", "description": "命令中心目标状态" },
-  "commandCenterSearchLabel": { "message": "搜索", "description": "命令中心搜索标签" },
-  "commandCenterSearchHint": { "message": "搜索命令、工具或设置……", "description": "命令中心搜索提示" },
-  "commandCenterResults": { "message": "命令中心结果", "description": "命令中心结果标签" },
-  "commandCenterKeyboardHint": { "message": "使用 ↑ 和 ↓ 选择，回车执行，Escape 关闭。", "description": "命令中心键盘提示" },
-  "commandCenterCommands": { "message": "命令", "description": "命令中心分类" },
-  "commandCenterTools": { "message": "工具", "description": "命令中心分类" },
-  "commandCenterSettings": { "message": "设置", "description": "命令中心分类" },
-  "commandCenterResultCount": { "message": "个结果", "description": "命令中心结果数量" },
-  "commandCenterEmpty": { "message": "没有可用入口。", "description": "命令中心空状态" },
-  "commandCenterNoResults": { "message": "没有匹配的入口。", "description": "命令中心搜索空状态" },
-  "commandCenterLoadFailed": { "message": "无法加载命令中心入口。", "description": "命令中心加载错误" },
-  "commandCenterExecuteFailed": { "message": "无法执行所选入口。", "description": "命令中心执行错误" },
-  "commandCenterDangerousConfirm": { "message": "此操作可能关闭标签页或窗口，继续吗？", "description": "命令中心确认提示" },
-  "commandCenterMouseSettings": { "message": "鼠标与手势设置", "description": "命令中心设置入口" },
-  "commandCenterMouseSettingsDescription": { "message": "调整手势识别和绑定。", "description": "命令中心设置入口" },
-  "commandCenterSiteRules": { "message": "站点配置档与规则", "description": "命令中心设置入口" },
-  "commandCenterSiteRulesDescription": { "message": "为不同站点配置独立行为。", "description": "命令中心设置入口" },
-  "commandCenterToolSettings": { "message": "工具设置", "description": "命令中心设置入口" },
-  "commandCenterToolSettingsDescription": { "message": "选择本地工具和右键菜单入口。", "description": "命令中心设置入口" },
-  "actionKeyboardSummary": { "message": "Vimium 键盘导航", "description": "动作弹窗模块摘要" },
-  "actionMouseSummary": { "message": "按住右键拖动执行手势", "description": "动作弹窗模块摘要" },
-  "actionSuperDragSummary": { "message": "拖动链接、图片或文本执行操作", "description": "动作弹窗模块摘要" },
-  "actionWheelSummary": { "message": "使用滚轮或摇杆切换标签页", "description": "动作弹窗模块摘要" },
-  "navigationKeyboard": { "message": "导航与键盘", "description": "设置一级分类" },
-  "mouseDrag": { "message": "鼠标与拖拽", "description": "设置一级分类" },
-  "searchTabs": { "message": "搜索与标签", "description": "设置一级分类" },
-  "appearanceBehavior": { "message": "外观与行为", "description": "设置一级分类" },
-  "sitePrivacy": { "message": "站点与隐私", "description": "设置一级分类" },
-  "backupAbout": { "message": "备份与关于", "description": "设置一级分类" },
-  "tools": { "message": "工具", "description": "工具设置分类" },
-  "documentFormatter": { "message": "文档格式化器", "description": "文档格式化器模块" },
-  "actionTools": { "message": "动作弹窗工具", "description": "动作弹窗工具选择" },
+  "browsingEnhancement": {
+    "message": "浏览增强",
+    "description": "设置一级分组"
+  },
+  "utilityTools": {
+    "message": "实用工具",
+    "description": "设置一级分组"
+  },
+  "system": {
+    "message": "系统",
+    "description": "设置一级分组"
+  },
+  "quickTools": {
+    "message": "快捷工具",
+    "description": "动作弹窗标题"
+  },
+  "running": {
+    "message": "运行中",
+    "description": "动作弹窗状态"
+  },
+  "active": {
+    "message": "已启用",
+    "description": "当前站点状态"
+  },
+  "currentSiteDetails": {
+    "message": "当前站点详情",
+    "description": "当前站点入口"
+  },
+  "actionFooter": {
+    "message": "动作入口",
+    "description": "动作弹窗底部"
+  },
+  "commandCenter": {
+    "message": "命令中心",
+    "description": "命令中心入口"
+  },
+  "commandCenterTitle": {
+    "message": "命令中心",
+    "description": "命令中心标题"
+  },
+  "commandCenterSubtitle": {
+    "message": "搜索命令、工具和设置。",
+    "description": "命令中心副标题"
+  },
+  "commandCenterContext": {
+    "message": "目标",
+    "description": "命令中心目标标签"
+  },
+  "commandCenterNoTarget": {
+    "message": "未选择页面",
+    "description": "命令中心目标状态"
+  },
+  "commandCenterSearchLabel": {
+    "message": "搜索",
+    "description": "命令中心搜索标签"
+  },
+  "commandCenterSearchHint": {
+    "message": "搜索命令、工具或设置……",
+    "description": "命令中心搜索提示"
+  },
+  "commandCenterResults": {
+    "message": "命令中心结果",
+    "description": "命令中心结果标签"
+  },
+  "commandCenterKeyboardHint": {
+    "message": "使用 ↑ 和 ↓ 选择，回车执行，Escape 关闭。",
+    "description": "命令中心键盘提示"
+  },
+  "commandCenterCommands": {
+    "message": "命令",
+    "description": "命令中心分类"
+  },
+  "commandCenterTools": {
+    "message": "工具",
+    "description": "命令中心分类"
+  },
+  "commandCenterSettings": {
+    "message": "设置",
+    "description": "命令中心分类"
+  },
+  "commandCenterResultCount": {
+    "message": "个结果",
+    "description": "命令中心结果数量"
+  },
+  "commandCenterEmpty": {
+    "message": "没有可用入口。",
+    "description": "命令中心空状态"
+  },
+  "commandCenterNoResults": {
+    "message": "没有匹配的入口。",
+    "description": "命令中心搜索空状态"
+  },
+  "commandCenterLoadFailed": {
+    "message": "无法加载命令中心入口。",
+    "description": "命令中心加载错误"
+  },
+  "commandCenterExecuteFailed": {
+    "message": "无法执行所选入口。",
+    "description": "命令中心执行错误"
+  },
+  "commandCenterDangerousConfirm": {
+    "message": "此操作可能关闭标签页或窗口，继续吗？",
+    "description": "命令中心确认提示"
+  },
+  "commandCenterMouseSettings": {
+    "message": "鼠标与手势设置",
+    "description": "命令中心设置入口"
+  },
+  "commandCenterMouseSettingsDescription": {
+    "message": "调整手势识别和绑定。",
+    "description": "命令中心设置入口"
+  },
+  "commandCenterSiteRules": {
+    "message": "站点配置档与规则",
+    "description": "命令中心设置入口"
+  },
+  "commandCenterSiteRulesDescription": {
+    "message": "为不同站点配置独立行为。",
+    "description": "命令中心设置入口"
+  },
+  "commandCenterToolSettings": {
+    "message": "工具设置",
+    "description": "命令中心设置入口"
+  },
+  "commandCenterToolSettingsDescription": {
+    "message": "选择本地工具和右键菜单入口。",
+    "description": "命令中心设置入口"
+  },
+  "actionKeyboardSummary": {
+    "message": "Vimium 键盘导航",
+    "description": "动作弹窗模块摘要"
+  },
+  "actionMouseSummary": {
+    "message": "按住右键拖动执行手势",
+    "description": "动作弹窗模块摘要"
+  },
+  "actionSuperDragSummary": {
+    "message": "拖动链接、图片或文本执行操作",
+    "description": "动作弹窗模块摘要"
+  },
+  "actionWheelSummary": {
+    "message": "使用滚轮或摇杆切换标签页",
+    "description": "动作弹窗模块摘要"
+  },
+  "navigationKeyboard": {
+    "message": "导航与键盘",
+    "description": "设置一级分类"
+  },
+  "mouseDrag": {
+    "message": "鼠标与拖拽",
+    "description": "设置一级分类"
+  },
+  "searchTabs": {
+    "message": "搜索与标签",
+    "description": "设置一级分类"
+  },
+  "appearanceBehavior": {
+    "message": "外观与行为",
+    "description": "设置一级分类"
+  },
+  "sitePrivacy": {
+    "message": "站点与隐私",
+    "description": "设置一级分类"
+  },
+  "backupAbout": {
+    "message": "备份与关于",
+    "description": "设置一级分类"
+  },
+  "tools": {
+    "message": "工具",
+    "description": "工具设置分类"
+  },
+  "documentFormatter": {
+    "message": "文档格式化器",
+    "description": "文档格式化器模块"
+  },
+  "actionTools": {
+    "message": "动作弹窗工具",
+    "description": "动作弹窗工具选择"
+  },
   "actionToolsHint": {
     "message": "选择显示在扩展动作弹窗中的工具。",
     "description": "动作弹窗工具选择提示"
   },
-  "contextMenuTools": { "message": "右键菜单工具", "description": "右键菜单工具选择" },
+  "contextMenuTools": {
+    "message": "右键菜单工具",
+    "description": "右键菜单工具选择"
+  },
   "contextMenuToolsHint": {
     "message": "选择显示在原生右键菜单中的工具；有选中文本时会自动带入。",
     "description": "右键菜单工具选择提示"
   },
-  "toolSelectionLimit": { "message": "选择上限", "description": "工具选择上限" },
+  "toolSelectionLimit": {
+    "message": "选择上限",
+    "description": "工具选择上限"
+  },
   "toolLocalOnly": {
     "message": "所有工具都在本地运行；输入通过短时一次性会话令牌传递。",
     "description": "本地工具隐私边界"
   },
-  "allTools": { "message": "全部工具", "description": "全部工具右键菜单" },
-  "manageTools": { "message": "管理工具", "description": "管理工具右键菜单" },
-  "toolConfigConvert": {"message": "Properties ↔ YAML", "description": "配置互转工具文案"},
-  "toolConfigConvertDescription": {"message": "在本地双向转换 Properties 与 YAML 配置文件。", "description": "配置互转工具文案"},
-  "toolKeywordProperties": {"message": "Properties", "description": "配置互转工具文案"},
-  "toolKeywordYaml": {"message": "YAML YML", "description": "配置互转工具文案"},
-  "toolKeywordConfig": {"message": "配置 Spring application", "description": "配置互转工具文案"},
-  "toolConfigDirection": {"message": "转换方向", "description": "配置互转工具文案"},
-  "toolConfigSwap": {"message": "交换", "description": "配置互转工具文案"},
-  "toolConfigSwapHint": {"message": "将结果作为输入，并反转转换方向", "description": "配置互转工具文案"},
-  "toolConfigCopy": {"message": "复制", "description": "配置互转工具文案"},
-  "toolConfigPropertiesHint": {"message": "粘贴 Properties，例如：server.port=8080", "description": "配置互转工具文案"},
-  "toolConfigYamlHint": {"message": "粘贴 YAML 配置内容", "description": "配置互转工具文案"},
-  "toolConfigOutputHint": {"message": "转换结果将显示在这里", "description": "配置互转工具文案"},
-  "toolConfigSemantics": {"message": "点号表示层级，[0] 表示数组下标。值按字符串保留；注释和 YAML 类型不保留。", "description": "配置互转工具文案"},
-  "toolConfigConverted": {"message": "转换完成", "description": "配置互转工具文案"},
-  "toolConfigLineSummary": {"message": "输入 {input} 行 · 输出 {output} 行", "description": "配置互转工具文案"},
-  "toolConfigErrorLocation": {"message": "第 {line} 行，第 {column} 列：{message}", "description": "配置互转工具文案"},
-  "toolConfigUnicodeError": {"message": "Properties Unicode 转义无效；\\u 后需要四位十六进制数字。", "description": "配置互转工具文案"},
-  "toolConfigInvalidPath": {"message": "键路径无效。请用点号分隔层级，用 [0] 等非负整数表示数组下标。", "description": "配置互转工具文案"},
-  "toolConfigConflict": {"message": "键路径冲突：同一个键同时作为值和容器，或混用了对象与数组路径。", "description": "配置互转工具文案"},
-  "toolConfigDuplicate": {"message": "存在重复键，请消除重复后再转换。", "description": "配置互转工具文案"},
-  "toolConfigSparseArray": {"message": "数组下标必须从 0 开始且连续，不能缺项。", "description": "配置互转工具文案"},
-  "toolConfigYamlSyntax": {"message": "YAML 语法无效或不受支持，请检查缩进、引号、文档分隔符和标签。", "description": "配置互转工具文案"},
-  "toolConfigRoot": {"message": "YAML 必须是单个对象或数组文档。", "description": "配置互转工具文案"},
-  "toolConfigEmptyCollection": {"message": "Properties 无法表示 YAML 空对象或空数组，请先明确处理这些值。", "description": "配置互转工具文案"},
-  "toolConfigNull": {"message": "Properties 无法表示 YAML null；如果需要空字符串，请使用引号表示。", "description": "配置互转工具文案"},
-  "toolConfigAlias": {"message": "请先展开 YAML 别名和合并键，再进行转换。", "description": "配置互转工具文案"},
-  "toolConfigAmbiguousKey": {"message": "YAML 的空键、含点号或方括号的键无法明确映射为 Properties 路径。", "description": "配置互转工具文案"},
-  "toolConfigLimit": {"message": "超过转换限制：输入 1 MiB、输出 5 MiB、20,000 个节点或 64 层嵌套。", "description": "配置互转工具文案"},
-  "toolConfigTimeout": {"message": "转换超时，请缩小输入或简化嵌套结构。", "description": "配置互转工具文案"},
-  "toolConfigWorkerError": {"message": "本地转换器未能启动，请刷新工具页后重试。", "description": "配置互转工具文案"},
-  "toolConfigEncoding": {"message": "请导入 UTF-8 文本；旧编码的 Properties 可先使用 Unicode 转义。", "description": "配置互转工具文案"},
-  "yamlLicenseNotice": {"message": "yaml 2.9.1 解析器：ISC 许可证", "description": "配置互转工具文案"},
-  "toolJsonFormat": { "message": "JSON 格式化", "description": "工具标题" },
-  "toolJsonInput": { "message": "输入 JSON", "description": "JSON 工具输入标题" },
-  "toolJsonOutput": { "message": "解析结果", "description": "JSON 工具输出标题" },
+  "allTools": {
+    "message": "全部工具",
+    "description": "全部工具右键菜单"
+  },
+  "manageTools": {
+    "message": "管理工具",
+    "description": "管理工具右键菜单"
+  },
+  "toolConfigConvert": {
+    "message": "Properties ↔ YAML",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigConvertDescription": {
+    "message": "在本地双向转换 Properties 与 YAML 配置文件。",
+    "description": "配置互转工具文案"
+  },
+  "toolKeywordProperties": {
+    "message": "Properties",
+    "description": "配置互转工具文案"
+  },
+  "toolKeywordYaml": {
+    "message": "YAML YML",
+    "description": "配置互转工具文案"
+  },
+  "toolKeywordConfig": {
+    "message": "配置 Spring application",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigDirection": {
+    "message": "转换方向",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigSwap": {
+    "message": "交换",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigSwapHint": {
+    "message": "将结果作为输入，并反转转换方向",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigCopy": {
+    "message": "复制",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigPropertiesHint": {
+    "message": "粘贴 Properties，例如：server.port=8080",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigYamlHint": {
+    "message": "粘贴 YAML 配置内容",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigOutputHint": {
+    "message": "转换结果将显示在这里",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigSemantics": {
+    "message": "点号表示层级，[0] 表示数组下标。值按字符串保留；注释和 YAML 类型不保留。",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigConverted": {
+    "message": "转换完成",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigLineSummary": {
+    "message": "输入 {input} 行 · 输出 {output} 行",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigErrorLocation": {
+    "message": "第 {line} 行，第 {column} 列：{message}",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigUnicodeError": {
+    "message": "Properties Unicode 转义无效；\\u 后需要四位十六进制数字。",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigInvalidPath": {
+    "message": "键路径无效。请用点号分隔层级，用 [0] 等非负整数表示数组下标。",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigConflict": {
+    "message": "键路径冲突：同一个键同时作为值和容器，或混用了对象与数组路径。",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigDuplicate": {
+    "message": "存在重复键，请消除重复后再转换。",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigSparseArray": {
+    "message": "数组下标必须从 0 开始且连续，不能缺项。",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigYamlSyntax": {
+    "message": "YAML 语法无效或不受支持，请检查缩进、引号、文档分隔符和标签。",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigRoot": {
+    "message": "YAML 必须是单个对象或数组文档。",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigEmptyCollection": {
+    "message": "Properties 无法表示 YAML 空对象或空数组，请先明确处理这些值。",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigNull": {
+    "message": "Properties 无法表示 YAML null；如果需要空字符串，请使用引号表示。",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigAlias": {
+    "message": "请先展开 YAML 别名和合并键，再进行转换。",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigAmbiguousKey": {
+    "message": "YAML 的空键、含点号或方括号的键无法明确映射为 Properties 路径。",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigLimit": {
+    "message": "超过转换限制：输入 1 MiB、输出 5 MiB、20,000 个节点或 64 层嵌套。",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigTimeout": {
+    "message": "转换超时，请缩小输入或简化嵌套结构。",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigWorkerError": {
+    "message": "本地转换器未能启动，请刷新工具页后重试。",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigEncoding": {
+    "message": "请导入 UTF-8 文本；旧编码的 Properties 可先使用 Unicode 转义。",
+    "description": "配置互转工具文案"
+  },
+  "yamlLicenseNotice": {
+    "message": "yaml 2.9.1 解析器：ISC 许可证",
+    "description": "配置互转工具文案"
+  },
+  "toolJsonFormat": {
+    "message": "JSON 格式化",
+    "description": "工具标题"
+  },
+  "toolJsonInput": {
+    "message": "输入 JSON",
+    "description": "JSON 工具输入标题"
+  },
+  "toolJsonOutput": {
+    "message": "解析结果",
+    "description": "JSON 工具输出标题"
+  },
   "toolJsonFormatDescription": {
     "message": "格式化 JSON，同时保留重复键和数字原文。",
     "description": "工具说明"
   },
-  "toolTextDiff": { "message": "文本对比", "description": "工具标题" },
-  "toolTextDiffDescription": { "message": "在本地对比两段文本。", "description": "工具说明" },
-  "toolCodecTransform": { "message": "编码转换", "description": "工具标题" },
+  "toolTextDiff": {
+    "message": "文本对比",
+    "description": "工具标题"
+  },
+  "toolTextDiffDescription": {
+    "message": "在本地对比两段文本。",
+    "description": "工具说明"
+  },
+  "toolCodecTransform": {
+    "message": "编码转换",
+    "description": "工具标题"
+  },
   "toolCodecTransformDescription": {
     "message": "在本地转换 Base64、URL、Unicode、XML、字节和 Data URL，或计算 MD5 摘要。",
     "description": "工具说明"
   },
-  "toolTimeConvert": { "message": "时间转换", "description": "工具标题" },
+  "toolTimeConvert": {
+    "message": "时间转换",
+    "description": "工具标题"
+  },
   "toolTimeConvertDescription": {
     "message": "在本地转换 ISO 日期和 Unix 时间戳。",
     "description": "工具说明"
   },
-  "toolTimeDefinition": { "message": "Unix时间戳定义", "description": "时间工具分区标题" },
-  "toolTimeCurrentLocal": { "message": "现在的当地时间为：", "description": "时间工具标签" },
-  "toolTimeCurrentUnix": { "message": "现在的Unix时间戳：", "description": "时间工具标签" },
-  "toolTimePause": { "message": "暂停", "description": "时间工具操作" },
-  "toolTimeResume": { "message": "继续", "description": "时间工具操作" },
-  "toolTimeUnixToLocal": { "message": "Unix时间戳 转 当地时间", "description": "时间工具分区标题" },
-  "toolTimeLocalToUnix": { "message": "当地时间 转 Unix时间戳", "description": "时间工具分区标题" },
-  "toolTimeFiletime": { "message": "Windows FILETIME 转换", "description": "时间工具分区标题" },
-  "toolTimeWorldClock": { "message": "世界时钟", "description": "时间工具分区标题" },
-  "toolTimeTimestampPlaceholder": { "message": "时间戳(eg:1388307215)", "description": "时间工具占位提示" },
-  "toolTimeDatePlaceholder": { "message": "时间(eg:2015-04-01 10:01:01.620)", "description": "时间工具占位提示" },
-  "toolTimeFiletimePlaceholder": { "message": "Windows FILETIME (eg: 133574880000000000)", "description": "时间工具占位提示" },
-  "toolTimeSecondsShort": { "message": "秒(s)", "description": "时间工具单位" },
-  "toolTimeMillisecondsShort": { "message": "毫秒(ms)", "description": "时间工具单位" },
-  "toolTimeSecondsLabel": { "message": "秒", "description": "时间工具单位标签" },
-  "toolTimeMillisecondsLabel": { "message": "毫秒", "description": "时间工具单位标签" },
-  "toolTimeFiletimeToDate": { "message": "FileTime→日期", "description": "时间工具操作" },
-  "toolTimeCurrentToFiletime": { "message": "当前时间→FileTime", "description": "时间工具操作" },
-  "toolTimeRegion": { "message": "地区", "description": "世界时钟表头" },
-  "toolTimeClockTime": { "message": "时间", "description": "世界时钟表头" },
-  "toolTimeLocal": { "message": "当地时间", "description": "世界时钟地区" },
-  "toolTimeGmt": { "message": "格林威治时间（GMT）", "description": "世界时钟地区" },
-  "toolTimeNewYork": { "message": "美国东部时间（EST）", "description": "世界时钟地区" },
-  "toolTimeLondon": { "message": "英国时间（GMT）", "description": "世界时钟地区" },
-  "toolTimeTokyo": { "message": "日本标准时间（JST）", "description": "世界时钟地区" },
-  "toolTimeBeijing": { "message": "中国标准时间（CST）", "description": "世界时钟地区" },
-  "toolIdGenerate": { "message": "ID 生成", "description": "工具标题" },
+  "toolTimeDefinition": {
+    "message": "Unix时间戳定义",
+    "description": "时间工具分区标题"
+  },
+  "toolTimeCurrentLocal": {
+    "message": "现在的当地时间为：",
+    "description": "时间工具标签"
+  },
+  "toolTimeCurrentUnix": {
+    "message": "现在的Unix时间戳：",
+    "description": "时间工具标签"
+  },
+  "toolTimePause": {
+    "message": "暂停",
+    "description": "时间工具操作"
+  },
+  "toolTimeResume": {
+    "message": "继续",
+    "description": "时间工具操作"
+  },
+  "toolTimeUnixToLocal": {
+    "message": "Unix时间戳 转 当地时间",
+    "description": "时间工具分区标题"
+  },
+  "toolTimeLocalToUnix": {
+    "message": "当地时间 转 Unix时间戳",
+    "description": "时间工具分区标题"
+  },
+  "toolTimeFiletime": {
+    "message": "Windows FILETIME 转换",
+    "description": "时间工具分区标题"
+  },
+  "toolTimeWorldClock": {
+    "message": "世界时钟",
+    "description": "时间工具分区标题"
+  },
+  "toolTimeTimestampPlaceholder": {
+    "message": "时间戳(eg:1388307215)",
+    "description": "时间工具占位提示"
+  },
+  "toolTimeDatePlaceholder": {
+    "message": "时间(eg:2015-04-01 10:01:01.620)",
+    "description": "时间工具占位提示"
+  },
+  "toolTimeFiletimePlaceholder": {
+    "message": "Windows FILETIME (eg: 133574880000000000)",
+    "description": "时间工具占位提示"
+  },
+  "toolTimeSecondsShort": {
+    "message": "秒(s)",
+    "description": "时间工具单位"
+  },
+  "toolTimeMillisecondsShort": {
+    "message": "毫秒(ms)",
+    "description": "时间工具单位"
+  },
+  "toolTimeSecondsLabel": {
+    "message": "秒",
+    "description": "时间工具单位标签"
+  },
+  "toolTimeMillisecondsLabel": {
+    "message": "毫秒",
+    "description": "时间工具单位标签"
+  },
+  "toolTimeFiletimeToDate": {
+    "message": "FileTime→日期",
+    "description": "时间工具操作"
+  },
+  "toolTimeCurrentToFiletime": {
+    "message": "当前时间→FileTime",
+    "description": "时间工具操作"
+  },
+  "toolTimeRegion": {
+    "message": "地区",
+    "description": "世界时钟表头"
+  },
+  "toolTimeClockTime": {
+    "message": "时间",
+    "description": "世界时钟表头"
+  },
+  "toolTimeLocal": {
+    "message": "当地时间",
+    "description": "世界时钟地区"
+  },
+  "toolTimeGmt": {
+    "message": "格林威治时间（GMT）",
+    "description": "世界时钟地区"
+  },
+  "toolTimeNewYork": {
+    "message": "美国东部时间（EST）",
+    "description": "世界时钟地区"
+  },
+  "toolTimeLondon": {
+    "message": "英国时间（GMT）",
+    "description": "世界时钟地区"
+  },
+  "toolTimeTokyo": {
+    "message": "日本标准时间（JST）",
+    "description": "世界时钟地区"
+  },
+  "toolTimeBeijing": {
+    "message": "中国标准时间（CST）",
+    "description": "世界时钟地区"
+  },
+  "toolIdGenerate": {
+    "message": "ID 生成",
+    "description": "工具标题"
+  },
   "toolIdGenerateDescription": {
     "message": "生成 UUID 和可排序的本地标识。",
     "description": "工具说明"
   },
-  "toolPasswordGenerate": { "message": "密码生成", "description": "工具标题" },
+  "toolPasswordGenerate": {
+    "message": "密码生成",
+    "description": "工具标题"
+  },
   "toolPasswordGenerateDescription": {
     "message": "在本地生成密码学随机密码。",
     "description": "工具说明"
   },
-  "toolTableConvert": { "message": "CSV / TSV 转换", "description": "工具标题" },
+  "toolTableConvert": {
+    "message": "CSV / TSV 转换",
+    "description": "工具标题"
+  },
   "toolTableConvertDescription": {
     "message": "把分隔文本转换为安全表格或 CSV。",
     "description": "工具说明"
   },
-  "toolCatalog": { "message": "工具目录", "description": "工具目录标题" },
-  "toolCatalogSearch": { "message": "搜索工具", "description": "工具目录搜索" },
-  "toolCatalogSearchHint": { "message": "按名称、描述、关键词或 ID 搜索", "description": "工具目录搜索提示" },
-  "toolCatalogNoResults": { "message": "没有匹配的工具。", "description": "工具目录无结果提示" },
-  "toolOpen": { "message": "打开工具", "description": "打开工具操作" },
-  "toolsOverview": { "message": "工具总览", "description": "工具设置分区" },
-  "jsonFormatter": { "message": "JSON 美化", "description": "JSON 设置分区" },
-  "textDiff": { "message": "内容比对", "description": "文本比对设置分区" },
-  "codecTransform": { "message": "编码与转换", "description": "编码设置分区" },
-  "timeAndId": { "message": "时间与 ID", "description": "时间和标识设置分区" },
-  "toolOverviewDescription": { "message": "选择显示在弹窗和原生右键菜单中的本地工具；有选中文本时会自动带入。", "description": "工具总览说明" },
-  "toolEnabledHint": { "message": "让工具页始终可以使用这些工具。", "description": "工具总览说明" },
-  "contextMenuEnabledHint": { "message": "启用后显示原生右键工具；有选中文本时会自动带入。", "description": "工具总览说明" },
-  "toolDirectory": { "message": "工具目录", "description": "工具目录标题" },
-  "toolDirectoryHint": { "message": "这里列出全部本地工具、分类和入口。", "description": "工具目录说明" },
-  "toolDirectorySearch": { "message": "搜索工具目录", "description": "工具目录搜索" },
-  "toolDirectorySearchHint": { "message": "搜索本地工具目录", "description": "工具目录搜索提示" },
-  "jsonFormatterDescription": { "message": "在本地美化 JSON 文档，并保留查看原文的入口。", "description": "JSON 设置说明" },
-  "documentFormatterEnabledHint": { "message": "只读取匹配的文档内容，不上传页面数据。", "description": "文档格式化器设置提示" },
-  "documentFormatterJsonHint": { "message": "结构化数据", "description": "文档格式化器格式提示" },
-  "documentFormatterXmlHint": { "message": "标记文档", "description": "文档格式化器格式提示" },
-  "documentFormatterCssHint": { "message": "样式表", "description": "文档格式化器格式提示" },
-  "documentFormatterJavascriptHint": { "message": "脚本", "description": "文档格式化器格式提示" },
-  "documentFormatterJavaHint": { "message": "源代码文件", "description": "文档格式化器格式提示" },
-  "textDiffSettingsDescription": { "message": "在本地比对两段文本，不把内容发送到外部。", "description": "内容比对设置说明" },
-  "codecTransformSettingsDescription": { "message": "通过明确的操作在本地编码、解码和转换文本。", "description": "编码设置说明" },
-  "timeAndIdSettingsDescription": { "message": "在本地转换时间戳并生成标识符。", "description": "时间和标识设置说明" },
-  "toolEnabled": { "message": "启用本地工具", "description": "工具设置开关" },
-  "contextMenuEnabled": { "message": "启用原生右键工具菜单", "description": "右键菜单设置开关" },
-  "documentFormatterEnabled": { "message": "启用文档自动美化", "description": "文档格式化器设置开关" },
-  "documentFormatterAutoFormat": { "message": "自动美化格式", "description": "文档格式化器格式设置" },
-  "documentFormatterAutoJson": { "message": "JSON", "description": "文档格式化器格式" },
-  "documentFormatterAutoXml": { "message": "XML", "description": "文档格式化器格式" },
-  "documentFormatterAutoCss": { "message": "CSS", "description": "文档格式化器格式" },
-  "documentFormatterAutoJavascript": { "message": "JavaScript", "description": "文档格式化器格式" },
-  "documentFormatterAutoJava": { "message": "Java", "description": "文档格式化器格式" },
-  "documentFormatterMaxAutoBytes": { "message": "自动美化上限（字节）", "description": "文档格式化器大小设置" },
-  "documentFormatterJsonDefaults": { "message": "JSON 默认值", "description": "文档格式化器 JSON 设置" },
-  "toolFile": { "message": "本地文件", "description": "工具文件输入" },
-  "toolFileChoose": { "message": "选择文件", "description": "工具文件选择按钮" },
-  "toolFileNone": { "message": "未选择任何文件", "description": "工具文件选择状态" },
-  "toolChooseFile": { "message": "导入本地文本文件", "description": "工具文件输入" },
-  "toolFileLoaded": { "message": "已加载本地文件", "description": "工具文件状态" },
-  "toolFileTooLarge": { "message": "所选文件超过此工具的本地输入上限。", "description": "工具文件大小错误" },
-  "toolCategoryDeveloper": { "message": "开发", "description": "工具目录分类" },
-  "toolCategoryText": { "message": "文本", "description": "工具目录分类" },
-  "toolCategoryGenerate": { "message": "生成", "description": "工具目录分类" },
-  "toolCategoryData": { "message": "数据", "description": "工具目录分类" },
-  "toolCompact": { "message": "压缩输出", "description": "工具压缩选项" },
-  "toolExpandEscaped": { "message": "展开转义 JSON", "description": "工具嵌套 JSON 选项" },
-  "toolJsonOperation": { "message": "JSON 操作", "description": "JSON 工具操作" },
-  "toolJsonFormatOperation": { "message": "格式化", "description": "JSON 工具操作" },
-  "toolJsonCompactOperation": { "message": "压缩", "description": "JSON 工具操作" },
-  "toolJsonValidateOperation": { "message": "校验", "description": "JSON 工具操作" },
-  "toolJsonSortOperation": { "message": "排序键", "description": "JSON 工具操作" },
-  "toolJsonMoreOptions": { "message": "更多选项", "description": "JSON 工具附加选项" },
-  "toolDownloadShort": { "message": "下载", "description": "紧凑工具下载操作" },
-  "toolJsonLine": { "message": "行", "description": "JSON 光标行号" },
-  "toolJsonColumn": { "message": "列", "description": "JSON 光标列号" },
-  "toolJsonCharacters": { "message": "字符", "description": "JSON 字符数" },
-  "toolJsonLength": { "message": "长度", "description": "JSON 字节长度" },
-  "toolJsonObject": { "message": "JSON 对象", "description": "JSON 根类型" },
-  "toolJsonArray": { "message": "JSON 数组", "description": "JSON 根类型" },
-  "toolJsonValue": { "message": "JSON 值", "description": "JSON 根类型" },
-  "toolJsonDepth": { "message": "深度", "description": "JSON 深度" },
-  "toolJsonResponsiveHint": { "message": "窄屏时标题换行，工具栏可横向滚动", "description": "JSON 响应式布局提示" },
-  "toolTimezone": { "message": "时区", "description": "工具时区选项" },
-  "toolIndent2": { "message": "2 个空格", "description": "工具缩进选项" },
-  "toolIndent4": { "message": "4 个空格", "description": "工具缩进选项" },
-  "toolIndent8": { "message": "8 个空格", "description": "工具缩进选项" },
-  "toolIndentTab": { "message": "制表符", "description": "工具缩进选项" },
-  "toolSortDescending": { "message": "降序", "description": "工具排序选项" },
-  "toolBase64Encode": { "message": "Base64 编码", "description": "编码选项" },
-  "toolBase64Decode": { "message": "Base64 解码", "description": "编码选项" },
-  "toolUnicodeEncode": { "message": "Unicode 码点编码", "description": "编码选项" },
-  "toolUnicodeDecode": { "message": "Unicode 码点解码", "description": "编码选项" },
-  "toolUtf8Encode": { "message": "UTF-8 编码", "description": "编码选项" },
-  "toolUtf8Decode": { "message": "UTF-8 解码", "description": "编码选项" },
-  "toolHexEncode": { "message": "Hex 编码", "description": "编码选项" },
-  "toolHexDecode": { "message": "Hex 解码", "description": "编码选项" },
-  "toolUtf16Encode": { "message": "UTF-16 编码", "description": "编码选项" },
-  "toolUtf16Decode": { "message": "UTF-16 解码", "description": "编码选项" },
-  "toolUrlEncode": { "message": "URL 编码", "description": "编码选项" },
-  "toolUrlDecode": { "message": "URL 解码", "description": "编码选项" },
-  "toolHtmlEncode": { "message": "HTML 编码", "description": "编码选项" },
-  "toolHtmlDecode": { "message": "HTML 解码", "description": "编码选项" },
-  "toolJwtDecode": { "message": "解析 JWT 结构", "description": "编码选项" },
-  "toolCookieParse": { "message": "解析 Cookie 请求头", "description": "编码选项" },
-  "toolGzipCompress": { "message": "Gzip 压缩", "description": "编码选项" },
-  "toolGzipDecompress": { "message": "Gzip 解压", "description": "编码选项" },
-  "toolMd5": { "message": "MD5（旧系统兼容；不适合安全用途）", "description": "旧摘要选项" },
-  "toolSha1": { "message": "SHA-1（旧系统兼容；不适合安全用途）", "description": "旧摘要选项" },
-  "toolIsoToUnixSeconds": { "message": "ISO 转 Unix 秒", "description": "时间选项" },
-  "toolIsoToUnixMilliseconds": { "message": "ISO 转 Unix 毫秒", "description": "时间选项" },
-  "toolUnixSecondsToIso": { "message": "Unix 秒转 ISO", "description": "时间选项" },
-  "toolUnixMillisecondsToIso": { "message": "Unix 毫秒转 ISO", "description": "时间选项" },
-  "toolIsoToTimezone": { "message": "ISO 转时区显示", "description": "时间选项" },
-  "toolUnixToFiletime": { "message": "Unix 秒转 FILETIME", "description": "时间选项" },
-  "toolFiletimeToUnix": { "message": "FILETIME 转 Unix 秒", "description": "时间选项" },
-  "toolUuid": { "message": "UUID v4", "description": "ID 选项" },
-  "toolUlid": { "message": "ULID 风格 ID", "description": "ID 选项" },
-  "toolSnowflake": { "message": "Snowflake 风格 ID", "description": "ID 选项" },
-  "toolNanoid": { "message": "NanoID 风格 ID", "description": "ID 选项" },
-  "toolCount1": { "message": "1 个值", "description": "ID 数量选项" },
-  "toolCount5": { "message": "5 个值", "description": "ID 数量选项" },
-  "toolCount10": { "message": "10 个值", "description": "ID 数量选项" },
-  "toolLength12": { "message": "12 位", "description": "密码长度选项" },
-  "toolLength20": { "message": "20 位", "description": "密码长度选项" },
-  "toolLength32": { "message": "32 位", "description": "密码长度选项" },
-  "toolLength64": { "message": "64 位", "description": "密码长度选项" },
-  "toolCsvToMarkdown": { "message": "CSV 转 Markdown", "description": "表格选项" },
-  "toolTsvToMarkdown": { "message": "TSV 转 Markdown", "description": "表格选项" },
-  "toolCsvToTsv": { "message": "CSV 转 TSV", "description": "表格选项" },
-  "toolTsvToCsv": { "message": "TSV 转 CSV", "description": "表格选项" },
-  "toolCsvToJson": { "message": "CSV 转 JSON", "description": "表格选项" },
-  "toolTsvToJson": { "message": "TSV 转 JSON", "description": "表格选项" },
-  "toolCsvToXml": { "message": "CSV 转 XML", "description": "表格选项" },
-  "toolTsvToXml": { "message": "TSV 转 XML", "description": "表格选项" },
-  "toolCsvToMysql": { "message": "CSV 转 MySQL", "description": "表格选项" },
-  "toolTsvToMysql": { "message": "TSV 转 MySQL", "description": "表格选项" },
-  "toolCsvToPhp": { "message": "CSV 转 PHP", "description": "表格选项" },
-  "toolTsvToPhp": { "message": "TSV 转 PHP", "description": "表格选项" },
-  "toolKeywordJson": { "message": "JSON", "description": "工具搜索关键字" },
-  "toolKeywordFormat": { "message": "格式化", "description": "工具搜索关键字" },
-  "toolKeywordValidate": { "message": "校验", "description": "工具搜索关键字" },
-  "toolKeywordDiff": { "message": "差异", "description": "工具搜索关键字" },
-  "toolKeywordText": { "message": "文本", "description": "工具搜索关键字" },
-  "toolKeywordCodec": { "message": "编码", "description": "工具搜索关键字" },
-  "toolKeywordBase64": { "message": "Base64", "description": "工具搜索关键字" },
-  "toolKeywordJwt": { "message": "JWT", "description": "工具搜索关键字" },
-  "toolKeywordTime": { "message": "时间", "description": "工具搜索关键字" },
-  "toolKeywordUnix": { "message": "Unix", "description": "工具搜索关键字" },
-  "toolKeywordTimezone": { "message": "时区", "description": "工具搜索关键字" },
-  "toolKeywordId": { "message": "ID", "description": "工具搜索关键字" },
-  "toolKeywordUuid": { "message": "UUID", "description": "工具搜索关键字" },
-  "toolKeywordSnowflake": { "message": "Snowflake", "description": "工具搜索关键字" },
-  "toolKeywordPassword": { "message": "密码", "description": "工具搜索关键字" },
-  "toolKeywordRandom": { "message": "随机", "description": "工具搜索关键字" },
-  "toolKeywordCsv": { "message": "CSV", "description": "工具搜索关键字" },
-  "toolKeywordTsv": { "message": "TSV", "description": "工具搜索关键字" },
-  "toolKeywordSql": { "message": "SQL", "description": "工具搜索关键字" },
-  "toolBack": { "message": "返回工具总览", "description": "独立工具页返回入口" },
-  "toolSettings": { "message": "打开工具设置", "description": "打开统一工具设置" },
-  "toolWorkspace": { "message": "工作区", "description": "独立工具页工作区标签" },
-  "toolLocalBadge": { "message": "仅本地处理", "description": "本地处理标记" },
-  "toolInputHint": { "message": "在此粘贴或输入本地文本", "description": "工具输入提示" },
-  "toolInputLeft": { "message": "左侧输入", "description": "工具左侧输入标签" },
-  "toolRawInput": { "message": "原始数据", "description": "编码原始输入标签" },
-  "toolParsedOutput": { "message": "解析结果", "description": "编码解析结果标签" },
-  "toolConvert": { "message": "转换", "description": "编码转换操作" },
-  "toolPicker": { "message": "工具", "description": "工具选择标签" },
-  "toolInput": { "message": "输入", "description": "工具输入标签" },
-  "toolInputRight": { "message": "右侧输入", "description": "工具第二输入标签" },
-  "toolRun": { "message": "运行", "description": "运行工具" },
-  "toolCopy": { "message": "复制输出", "description": "复制工具输出" },
-  "toolDownload": { "message": "下载输出", "description": "下载工具输出" },
-  "toolRestore": { "message": "恢复原文", "description": "恢复工具输入" },
-  "toolOutput": { "message": "输出", "description": "工具输出标签" },
-  "toolIndent": { "message": "缩进", "description": "格式化器缩进选项" },
-  "toolSort": { "message": "排序", "description": "格式化器排序选项" },
-  "toolKeepOrder": { "message": "原始", "description": "格式化器顺序选项" },
-  "toolSortAscending": { "message": "升序", "description": "格式化器顺序选项" },
-  "toolCollapse": { "message": "折叠", "description": "格式化器折叠选项" },
-  "toolExpand": { "message": "展开", "description": "格式化器展开选项" },
-  "toolCopyNode": { "message": "复制节点", "description": "复制 JSON 节点" },
-  "toolDeleteNode": { "message": "删除节点", "description": "删除 JSON 节点" },
-  "toolCollapseNode": { "message": "折叠节点", "description": "折叠 JSON 节点" },
-  "toolExpandNode": { "message": "展开节点", "description": "展开 JSON 节点" },
-  "toolCollapseAll": { "message": "折叠全部节点", "description": "折叠全部 JSON 节点" },
-  "toolExpandAll": { "message": "展开全部节点", "description": "展开全部 JSON 节点" },
-  "toolJsonNoResult": { "message": "暂无 JSON 美化结果", "description": "JSON 空结果状态" },
-  "toolJsonNodeDeleted": { "message": "已删除 JSON 节点", "description": "JSON 节点删除状态" },
-  "toolCodecOperation": { "message": "操作", "description": "编码操作标签" },
-  "toolCodecType": { "message": "转换类型", "description": "编码类型标签" },
-  "toolCodecAdvanced": { "message": "更多本地转换", "description": "其他编码转换" },
-  "toolEncode": { "message": "编码", "description": "编码操作" },
-  "toolDecode": { "message": "解码", "description": "解码操作" },
-  "toolCodecUnicode": { "message": "Unicode 码点", "description": "编码类型" },
-  "toolCodecUrl": { "message": "URL 参数", "description": "编码类型" },
-  "toolCodecUtf8": { "message": "UTF-8", "description": "编码类型" },
-  "toolCodecBase64": { "message": "Base64", "description": "编码类型" },
-  "toolCodecHex": { "message": "Hex", "description": "编码类型" },
-  "toolCodecUtf16": { "message": "UTF-16", "description": "编码类型" },
-  "toolCodecHtml": { "message": "HTML", "description": "编码类型" },
-  "toolCodecUri": {"message": "完整 URL", "description": "编码转换功能"},
-  "toolCodecUnicodeEscape": {"message": "Unicode 转义", "description": "编码转换功能"},
-  "toolCodecJsonString": {"message": "JSON 字符串转义", "description": "编码转换功能"},
-  "toolCodecXml": {"message": "XML 实体", "description": "编码转换功能"},
-  "toolCodecBinary": {"message": "二进制字节", "description": "编码转换功能"},
-  "toolCodecOctal": {"message": "八进制字节", "description": "编码转换功能"},
-  "toolCodecDecimal": {"message": "十进制字节", "description": "编码转换功能"},
-  "toolCodecDataUrl": {"message": "Data URL", "description": "编码转换功能"},
-  "toolCodecAscii": {"message": "ASCII", "description": "编码转换功能"},
-  "toolCodecMd5": {"message": "MD5", "description": "编码转换功能"},
-  "toolCodecDigest": {"message": "计算摘要", "description": "编码转换功能"},
-  "toolCodecCopyShort": {"message": "复制", "description": "编码转换功能"},
-  "toolCodecUseText": {"message": "改为文本输入", "description": "编码转换功能"},
-  "toolCodecByteUnit": {"message": "字节", "description": "编码转换功能"},
-  "toolCodecAutoConverted": {"message": "自动转换已完成", "description": "编码转换功能"},
-  "toolCodecConverted": {"message": "转换已完成", "description": "编码转换功能"},
-  "toolCodecBinaryResult": {"message": "二进制内容 · 下方为十六进制预览，下载可还原文件。", "description": "编码转换功能"},
-  "toolCodecBase64Hint": {"message": "文本按 UTF-8 编码，支持中文和表情。", "description": "编码转换功能"},
-  "toolCodecUrlHint": {"message": "转换单个参数值。空格编码为 %20，解码时 + 保持为加号。", "description": "编码转换功能"},
-  "toolCodecUriHint": {"message": "转换完整 URL，保留 : / ? & = # 等结构分隔符。", "description": "编码转换功能"},
-  "toolCodecUnicodeHint": {"message": "以空格分隔 Unicode 码点，例如 U+4F60 U+597D。", "description": "编码转换功能"},
-  "toolCodecUnicodeEscapeHint": {"message": "编码为 \\uXXXX，解码兼容 \\uXXXX 和 \\u{1F600}。", "description": "编码转换功能"},
-  "toolCodecJsonStringHint": {"message": "转换完整 JSON 字符串，包含外层双引号。", "description": "编码转换功能"},
-  "toolCodecXmlHint": {"message": "转义 XML 的五种预定义实体；支持解码十进制、十六进制数字实体。", "description": "编码转换功能"},
-  "toolCodecBytesHint": {"message": "按 UTF-8 字节转换，以空格分隔。解码也可用换行或逗号分隔。", "description": "编码转换功能"},
-  "toolCodecAsciiHint": {"message": "ASCII 字符与 0–127 十进制编码互转。中文请用十进制字节。", "description": "编码转换功能"},
-  "toolCodecDataUrlHint": {"message": "支持文本或本地文件。解码后可预览文本，也可下载还原文件。", "description": "编码转换功能"},
-  "toolCodecMd5Hint": {"message": "MD5 是单向摘要，无法解码。仅用于旧系统兼容，不适合安全用途。", "description": "编码转换功能"},
-  "toolCodecInvalidUtf8": {"message": "字节序列不是有效的文本编码。", "description": "编码转换功能"},
-  "toolCodecInvalidBase64": {"message": "Base64 格式无效。", "description": "编码转换功能"},
-  "toolCodecInvalidCodePoint": {"message": "Unicode 码点无效。请使用 U+4F60 格式，范围不超过 U+10FFFF 且不包含代理码点。", "description": "编码转换功能"},
-  "toolCodecInvalidEscape": {"message": "Unicode 转义无效，请使用 \\u4f60 或 \\u{1f600}。", "description": "编码转换功能"},
-  "toolCodecInvalidJsonString": {"message": "请输入包含双引号的完整 JSON 字符串。", "description": "编码转换功能"},
-  "toolCodecInvalidXml": {"message": "XML 实体或字符无效，仅支持 XML 预定义实体和数字实体。", "description": "编码转换功能"},
-  "toolCodecInvalidAscii": {"message": "ASCII 仅支持 0–127 的字符和十进制编码。", "description": "编码转换功能"},
-  "toolCodecInvalidByte": {"message": "请输入以空格分隔的有效字节，每个字节的值应在 0–255 之间。", "description": "编码转换功能"},
-  "toolCodecInvalidUrl": {"message": "URL 转义无效，请检查百分号后是否是完整的 UTF-8 字节。", "description": "编码转换功能"},
-  "toolCodecInvalidDataUrl": {"message": "Data URL 无效，请检查媒体类型、参数和编码内容。", "description": "编码转换功能"},
-  "toolCodecOutputTooLarge": {"message": "转换结果超过 10 MiB，请缩小输入后重试。", "description": "编码转换功能"},
-  "toolUriEncode": {"message": "完整 URL 编码", "description": "编码转换功能"},
-  "toolUriDecode": {"message": "完整 URL 解码", "description": "编码转换功能"},
-  "toolUnicodeEscapeEncode": {"message": "Unicode 转义 编码", "description": "编码转换功能"},
-  "toolUnicodeEscapeDecode": {"message": "Unicode 转义 解码", "description": "编码转换功能"},
-  "toolJsonStringEncode": {"message": "JSON 字符串 编码", "description": "编码转换功能"},
-  "toolJsonStringDecode": {"message": "JSON 字符串 解码", "description": "编码转换功能"},
-  "toolXmlEncode": {"message": "XML 实体 编码", "description": "编码转换功能"},
-  "toolXmlDecode": {"message": "XML 实体 解码", "description": "编码转换功能"},
-  "toolBinaryEncode": {"message": "二进制字节 编码", "description": "编码转换功能"},
-  "toolBinaryDecode": {"message": "二进制字节 解码", "description": "编码转换功能"},
-  "toolOctalEncode": {"message": "八进制字节 编码", "description": "编码转换功能"},
-  "toolOctalDecode": {"message": "八进制字节 解码", "description": "编码转换功能"},
-  "toolDecimalEncode": {"message": "十进制字节 编码", "description": "编码转换功能"},
-  "toolDecimalDecode": {"message": "十进制字节 解码", "description": "编码转换功能"},
-  "toolDataUrlEncode": {"message": "Data URL 编码", "description": "编码转换功能"},
-  "toolDataUrlDecode": {"message": "Data URL 解码", "description": "编码转换功能"},
-  "toolAsciiEncode": {"message": "ASCII 编码", "description": "编码转换功能"},
-  "toolAsciiDecode": {"message": "ASCII 解码", "description": "编码转换功能"},
-  "toolDiffPanel": { "message": "差异结果", "description": "对比结果面板" },
-  "toolRepair": { "message": "修复乱码", "description": "格式化器修复选项" },
-  "toolMode": { "message": "模式", "description": "工具模式选项" },
-  "toolCount": { "message": "数量", "description": "生成器数量选项" },
-  "toolLength": { "message": "长度", "description": "密码长度选项" },
-  "toolSymbols": { "message": "包含符号", "description": "密码符号选项" },
-  "toolRepairConfirm": { "message": "预览并应用可逆的文本修复？", "description": "格式化器修复确认" },
-  "toolReady": { "message": "就绪", "description": "工具状态" },
-  "toolAutoParsed": { "message": "自动解析完成（输入内容变化后自动更新）", "description": "工具自动解析状态" },
-  "toolInvalid": { "message": "输入无效", "description": "工具输入无效状态" },
-  "toolCopied": { "message": "已在本地复制", "description": "工具复制状态" },
-  "toolCopyUnavailable": { "message": "剪贴板不可用；请选中输出后复制。", "description": "工具复制回退提示" },
-  "toolDownloaded": { "message": "已在本地下载", "description": "工具下载状态" },
-  "toolRestored": { "message": "已恢复原文", "description": "工具恢复状态" },
-  "toolTokenInvalid": { "message": "一次性输入令牌无效或已过期。", "description": "工具令牌错误" },
-  "toolEmptySelection": { "message": "没有选中文本；请粘贴或导入本地文件。", "description": "工具空选区提示" },
-  "toolSelectionTooLarge": { "message": "选中文本过大；请粘贴或导入本地文件。", "description": "工具选区大小提示" },
-  "toolMetadataField": { "message": "元数据", "description": "工具元数据标签" },
-  "toolMetadataMode": { "message": "模式", "description": "工具元数据标签" },
-  "toolMetadataRepresentation": { "message": "表示方式", "description": "工具元数据标签" },
-  "toolMetadataOutputEncoding": { "message": "输出编码", "description": "工具元数据标签" },
-  "toolMetadataInputEncoding": { "message": "输入编码", "description": "工具元数据标签" },
-  "toolMetadataMilliseconds": { "message": "毫秒时间戳", "description": "工具元数据标签" },
-  "toolMetadataTimezone": { "message": "时区", "description": "工具元数据标签" },
-  "toolMetadataUnit": { "message": "单位", "description": "工具元数据标签" },
-  "toolMetadataCount": { "message": "数量", "description": "工具元数据标签" },
-  "toolMetadataLength": { "message": "长度", "description": "工具元数据标签" },
-  "toolMetadataSymbols": { "message": "符号", "description": "工具元数据标签" },
-  "toolMetadataValid": { "message": "有效", "description": "工具元数据标签" },
-  "toolMetadataOperation": { "message": "操作", "description": "工具元数据标签" },
-  "toolMetadataExpandedEscaped": { "message": "已展开转义 JSON", "description": "工具元数据标签" },
-  "toolMetadataLeftLines": { "message": "左侧行数", "description": "工具元数据标签" },
-  "toolMetadataRightLines": { "message": "右侧行数", "description": "工具元数据标签" },
-  "toolMetadataRows": { "message": "行数", "description": "工具元数据标签" },
-  "toolMetadataColumns": { "message": "列数", "description": "工具元数据标签" },
-  "toolMetadataFormulaCells": { "message": "疑似公式单元格", "description": "工具元数据标签" },
-  "toolMetadataFormulaWarning": { "message": "公式提示", "description": "工具元数据标签" },
-  "toolMetadataWarning": { "message": "提示", "description": "工具元数据标签" },
-  "toolMetadataBytes": { "message": "字节数", "description": "工具元数据标签" },
-  "toolMetadataNodes": { "message": "节点数", "description": "工具元数据标签" },
-  "toolMetadataStrings": { "message": "字符串数", "description": "工具元数据标签" },
-  "toolMetadataNumbers": { "message": "数字数", "description": "工具元数据标签" },
-  "toolMetadataBooleans": { "message": "布尔值数", "description": "工具元数据标签" },
-  "toolMetadataNulls": { "message": "空值数", "description": "工具元数据标签" },
-  "toolMetadataUnsafeNumbers": { "message": "不安全整数原文数", "description": "工具元数据标签" },
-  "toolMetadataStringCharacters": { "message": "字符串字符数", "description": "工具元数据标签" },
-  "toolMetadataCharacters": { "message": "字符数", "description": "工具元数据标签" },
-  "toolMetadataObjects": { "message": "对象数", "description": "工具元数据标签" },
-  "toolMetadataArrays": { "message": "数组数", "description": "工具元数据标签" },
-  "toolMetadataKeys": { "message": "键数", "description": "工具元数据标签" },
-  "toolMetadataDuplicateKeys": { "message": "重复键数", "description": "工具元数据标签" },
-  "toolMetadataDuplicateKeyPositions": { "message": "重复键位置", "description": "工具元数据标签" },
-  "toolMetadataMaxDepth": { "message": "最大深度", "description": "工具元数据标签" },
-  "toolMetadataParseMs": { "message": "解析耗时（毫秒）", "description": "工具元数据标签" },
-  "toolMetadataFormatMs": { "message": "格式化耗时（毫秒）", "description": "工具元数据标签" },
-  "toolMetadataSortOrder": { "message": "排序顺序", "description": "工具元数据标签" },
-  "toolMetadataCollapsed": { "message": "已折叠", "description": "工具元数据标签" },
-  "toolMetadataLines": { "message": "行数", "description": "工具元数据标签" },
-  "toolMetadataConservative": { "message": "保守格式化", "description": "工具元数据标签" },
-  "toolJwtWarning": { "message": "JWT 只解析结构，不验证签名或可信性。", "description": "工具安全提示" },
-  "toolMd5Warning": { "message": "MD5 仅用于旧系统兼容，不适合安全用途。", "description": "工具安全提示" },
-  "toolSha1Warning": { "message": "SHA-1 仅用于旧系统兼容，不适合安全用途。", "description": "工具安全提示" },
-  "toolFormulaWarning": { "message": "可能被电子表格解释为公式；导入前请复核。", "description": "工具表格提示" },
-  "toolSqlWarning": { "message": "SQL 输出是已转义文本；请使用参数化查询。", "description": "工具 SQL 提示" },
-  "documentFormatterTitleSuffix": { "message": "自动美化", "description": "文档格式化器工具栏标题" },
-  "documentFormatterToolbar": { "message": "浏览器工具箱文档格式化器", "description": "文档格式化器工具栏" },
-  "documentFormatterIndent": { "message": "缩进大小", "description": "文档格式化器缩进" },
-  "documentFormatterTab": { "message": "制表符", "description": "文档格式化器制表符缩进" },
-  "documentFormatterSpaces": { "message": "个空格", "description": "文档格式化器空格" },
-  "documentFormatterSortAria": { "message": "排序 JSON 键", "description": "文档格式化器排序标签" },
-  "documentFormatterKeepOrder": { "message": "保持键顺序", "description": "文档格式化器顺序" },
-  "documentFormatterSort": { "message": "排序键", "description": "文档格式化器排序" },
-  "documentFormatterSortAscending": { "message": "按升序排序键", "description": "文档格式化器排序" },
-  "documentFormatterSortDescending": { "message": "按降序排序键", "description": "文档格式化器排序" },
-  "documentFormatterRepair": { "message": "修复乱码", "description": "文档格式化器修复" },
-  "documentFormatterUndoRepair": { "message": "撤销修复", "description": "文档格式化器撤销" },
-  "documentFormatterCollapse": { "message": "折叠", "description": "文档格式化器折叠" },
-  "documentFormatterExpand": { "message": "展开", "description": "文档格式化器展开" },
-  "documentFormatterCopy": { "message": "复制", "description": "文档格式化器复制" },
-  "documentFormatterDownload": { "message": "下载", "description": "文档格式化器下载" },
-  "documentFormatterRestore": { "message": "恢复原文", "description": "文档格式化器恢复" },
-  "documentFormatterViewOriginal": { "message": "查看原文", "description": "文档格式化器操作" },
-  "documentFormatterRestoreView": { "message": "恢复美化视图", "description": "文档格式化器操作" },
-  "documentFormatterShowingOriginal": { "message": "当前显示原文", "description": "文档格式化器状态" },
-  "documentFormatterKeptOriginal": { "message": "已保留原文", "description": "文档格式化器回退" },
-  "documentFormatterCopied": { "message": "已在本地复制", "description": "文档格式化器复制状态" },
-  "documentFormatterCopyUnavailable": { "message": "剪贴板不可用；请选中输出后复制。", "description": "文档格式化器复制回退" },
-  "documentFormatterDownloaded": { "message": "已在本地下载", "description": "文档格式化器下载状态" },
-  "documentFormatterNoRepair": { "message": "没有发现可逆的乱码候选文本。", "description": "文档格式化器修复状态" },
-  "documentFormatterRepairConfirm": { "message": "预览并应用可逆的文本修复？", "description": "文档格式化器修复确认" },
-  "documentFormatterRepairPreviewCount": { "message": "受影响字符串数", "description": "文档格式化器修复预览" },
-  "documentFormatterRepairPreviewBefore": { "message": "修复前", "description": "文档格式化器修复预览" },
-  "documentFormatterRepairPreviewAfter": { "message": "修复后", "description": "文档格式化器修复预览" },
-  "documentFormatterLargeConfirm": { "message": "要格式化这个较大的本地文档吗？", "description": "文档格式化器大小确认" },
-  "documentFormatterBytes": { "message": "字节", "description": "文档格式化器字节标签" },
-  "documentFormatterKeys": { "message": "键", "description": "文档格式化器键标签" },
-  "documentFormatterDuplicateKeys": { "message": "重复键", "description": "文档格式化器重复键标签" },
-  "documentFormatterDuplicateKeyPositions": { "message": "重复键位置", "description": "文档格式化器重复键位置" },
-  "documentFormatterTooLarge": { "message": "过大", "description": "文档格式化器大小状态" },
-  "documentFormatterRepairApplied": { "message": "已应用文本修复", "description": "文档格式化器修复状态" },
-  "documentFormatterMetadata": { "message": "文档元数据", "description": "文档格式化器元数据" },
-  "documentFormatterCharacters": { "message": "字符数", "description": "文档格式化器元数据" },
-  "documentFormatterRootType": { "message": "根类型", "description": "文档格式化器元数据" },
-  "documentFormatterObjects": { "message": "对象数", "description": "文档格式化器元数据" },
-  "documentFormatterArrays": { "message": "数组数", "description": "文档格式化器元数据" },
-  "documentFormatterStrings": { "message": "字符串数", "description": "文档格式化器元数据" },
-  "documentFormatterNumbers": { "message": "数字数", "description": "文档格式化器元数据" },
-  "documentFormatterBooleans": { "message": "布尔值数", "description": "文档格式化器元数据" },
-  "documentFormatterNulls": { "message": "空值数", "description": "文档格式化器元数据" },
-  "documentFormatterMaxDepth": { "message": "最大深度", "description": "文档格式化器元数据" },
-  "documentFormatterUnsafeNumbers": { "message": "不安全整数原文数", "description": "文档格式化器元数据" },
-  "documentFormatterContentType": { "message": "内容类型", "description": "文档格式化器元数据" },
-  "documentFormatterCharset": { "message": "字符集", "description": "文档格式化器元数据" },
-  "documentFormatterParseMs": { "message": "解析耗时（毫秒）", "description": "文档格式化器元数据" },
-  "documentFormatterRenderMs": { "message": "渲染耗时（毫秒）", "description": "文档格式化器元数据" },
-  "documentFormatterSortState": { "message": "排序状态", "description": "文档格式化器元数据" },
-  "documentFormatterCollapseState": { "message": "折叠状态", "description": "文档格式化器元数据" },
-  "documentFormatterDefaultCollapseDepth": { "message": "默认折叠深度", "description": "文档格式化器设置" },
-  "documentFormatterRepairState": { "message": "文本修复", "description": "文档格式化器元数据" },
-  "documentFormatterExpanded": { "message": "已展开", "description": "文档格式化器元数据" },
-  "documentFormatterApplied": { "message": "已应用", "description": "文档格式化器元数据" },
-  "documentFormatterNotApplied": { "message": "未应用", "description": "文档格式化器元数据" },
-  "documentFormatterCollapseNode": { "message": "折叠此 JSON 节点", "description": "文档格式化器节点控件" },
-  "documentFormatterExpandNode": { "message": "展开此 JSON 节点", "description": "文档格式化器节点控件" },
-  "gestureEditor": { "message": "手势编辑器", "description": "手势编辑器标签" },
+  "toolCatalog": {
+    "message": "工具目录",
+    "description": "工具目录标题"
+  },
+  "toolCatalogSearch": {
+    "message": "搜索工具",
+    "description": "工具目录搜索"
+  },
+  "toolCatalogSearchHint": {
+    "message": "按名称、描述、关键词或 ID 搜索",
+    "description": "工具目录搜索提示"
+  },
+  "toolCatalogNoResults": {
+    "message": "没有匹配的工具。",
+    "description": "工具目录无结果提示"
+  },
+  "toolOpen": {
+    "message": "打开工具",
+    "description": "打开工具操作"
+  },
+  "toolsOverview": {
+    "message": "工具总览",
+    "description": "工具设置分区"
+  },
+  "jsonFormatter": {
+    "message": "JSON 美化",
+    "description": "JSON 设置分区"
+  },
+  "textDiff": {
+    "message": "内容比对",
+    "description": "文本比对设置分区"
+  },
+  "codecTransform": {
+    "message": "编码与转换",
+    "description": "编码设置分区"
+  },
+  "timeAndId": {
+    "message": "时间与 ID",
+    "description": "时间和标识设置分区"
+  },
+  "toolOverviewDescription": {
+    "message": "选择显示在弹窗和原生右键菜单中的本地工具；有选中文本时会自动带入。",
+    "description": "工具总览说明"
+  },
+  "toolEnabledHint": {
+    "message": "让工具页始终可以使用这些工具。",
+    "description": "工具总览说明"
+  },
+  "contextMenuEnabledHint": {
+    "message": "启用后显示原生右键工具；有选中文本时会自动带入。",
+    "description": "工具总览说明"
+  },
+  "toolDirectory": {
+    "message": "工具目录",
+    "description": "工具目录标题"
+  },
+  "toolDirectoryHint": {
+    "message": "这里列出全部本地工具、分类和入口。",
+    "description": "工具目录说明"
+  },
+  "toolDirectorySearch": {
+    "message": "搜索工具目录",
+    "description": "工具目录搜索"
+  },
+  "toolDirectorySearchHint": {
+    "message": "搜索本地工具目录",
+    "description": "工具目录搜索提示"
+  },
+  "jsonFormatterDescription": {
+    "message": "在本地美化 JSON 文档，并保留查看原文的入口。",
+    "description": "JSON 设置说明"
+  },
+  "documentFormatterEnabledHint": {
+    "message": "只读取匹配的文档内容，不上传页面数据。",
+    "description": "文档格式化器设置提示"
+  },
+  "documentFormatterJsonHint": {
+    "message": "结构化数据",
+    "description": "文档格式化器格式提示"
+  },
+  "documentFormatterXmlHint": {
+    "message": "标记文档",
+    "description": "文档格式化器格式提示"
+  },
+  "documentFormatterCssHint": {
+    "message": "样式表",
+    "description": "文档格式化器格式提示"
+  },
+  "documentFormatterJavascriptHint": {
+    "message": "脚本",
+    "description": "文档格式化器格式提示"
+  },
+  "documentFormatterJavaHint": {
+    "message": "源代码文件",
+    "description": "文档格式化器格式提示"
+  },
+  "textDiffSettingsDescription": {
+    "message": "在本地比对两段文本，不把内容发送到外部。",
+    "description": "内容比对设置说明"
+  },
+  "codecTransformSettingsDescription": {
+    "message": "通过明确的操作在本地编码、解码和转换文本。",
+    "description": "编码设置说明"
+  },
+  "timeAndIdSettingsDescription": {
+    "message": "在本地转换时间戳并生成标识符。",
+    "description": "时间和标识设置说明"
+  },
+  "toolEnabled": {
+    "message": "启用本地工具",
+    "description": "工具设置开关"
+  },
+  "contextMenuEnabled": {
+    "message": "启用原生右键工具菜单",
+    "description": "右键菜单设置开关"
+  },
+  "documentFormatterEnabled": {
+    "message": "启用文档自动美化",
+    "description": "文档格式化器设置开关"
+  },
+  "documentFormatterAutoFormat": {
+    "message": "自动美化格式",
+    "description": "文档格式化器格式设置"
+  },
+  "documentFormatterAutoJson": {
+    "message": "JSON",
+    "description": "文档格式化器格式"
+  },
+  "documentFormatterAutoXml": {
+    "message": "XML",
+    "description": "文档格式化器格式"
+  },
+  "documentFormatterAutoCss": {
+    "message": "CSS",
+    "description": "文档格式化器格式"
+  },
+  "documentFormatterAutoJavascript": {
+    "message": "JavaScript",
+    "description": "文档格式化器格式"
+  },
+  "documentFormatterAutoJava": {
+    "message": "Java",
+    "description": "文档格式化器格式"
+  },
+  "documentFormatterMaxAutoBytes": {
+    "message": "自动美化上限（字节）",
+    "description": "文档格式化器大小设置"
+  },
+  "documentFormatterJsonDefaults": {
+    "message": "JSON 默认值",
+    "description": "文档格式化器 JSON 设置"
+  },
+  "toolFile": {
+    "message": "本地文件",
+    "description": "工具文件输入"
+  },
+  "toolFileChoose": {
+    "message": "选择文件",
+    "description": "工具文件选择按钮"
+  },
+  "toolFileNone": {
+    "message": "未选择任何文件",
+    "description": "工具文件选择状态"
+  },
+  "toolChooseFile": {
+    "message": "导入本地文本文件",
+    "description": "工具文件输入"
+  },
+  "toolFileLoaded": {
+    "message": "已加载本地文件",
+    "description": "工具文件状态"
+  },
+  "toolFileTooLarge": {
+    "message": "所选文件超过此工具的本地输入上限。",
+    "description": "工具文件大小错误"
+  },
+  "toolCategoryDeveloper": {
+    "message": "开发",
+    "description": "工具目录分类"
+  },
+  "toolCategoryText": {
+    "message": "文本",
+    "description": "工具目录分类"
+  },
+  "toolCategoryGenerate": {
+    "message": "生成",
+    "description": "工具目录分类"
+  },
+  "toolCategoryData": {
+    "message": "数据",
+    "description": "工具目录分类"
+  },
+  "toolCompact": {
+    "message": "压缩输出",
+    "description": "工具压缩选项"
+  },
+  "toolExpandEscaped": {
+    "message": "展开转义 JSON",
+    "description": "工具嵌套 JSON 选项"
+  },
+  "toolJsonOperation": {
+    "message": "JSON 操作",
+    "description": "JSON 工具操作"
+  },
+  "toolJsonFormatOperation": {
+    "message": "格式化",
+    "description": "JSON 工具操作"
+  },
+  "toolJsonCompactOperation": {
+    "message": "压缩",
+    "description": "JSON 工具操作"
+  },
+  "toolJsonValidateOperation": {
+    "message": "校验",
+    "description": "JSON 工具操作"
+  },
+  "toolJsonSortOperation": {
+    "message": "排序键",
+    "description": "JSON 工具操作"
+  },
+  "toolJsonMoreOptions": {
+    "message": "更多选项",
+    "description": "JSON 工具附加选项"
+  },
+  "toolDownloadShort": {
+    "message": "下载",
+    "description": "紧凑工具下载操作"
+  },
+  "toolJsonLine": {
+    "message": "行",
+    "description": "JSON 光标行号"
+  },
+  "toolJsonColumn": {
+    "message": "列",
+    "description": "JSON 光标列号"
+  },
+  "toolJsonCharacters": {
+    "message": "字符",
+    "description": "JSON 字符数"
+  },
+  "toolJsonLength": {
+    "message": "长度",
+    "description": "JSON 字节长度"
+  },
+  "toolJsonObject": {
+    "message": "JSON 对象",
+    "description": "JSON 根类型"
+  },
+  "toolJsonArray": {
+    "message": "JSON 数组",
+    "description": "JSON 根类型"
+  },
+  "toolJsonValue": {
+    "message": "JSON 值",
+    "description": "JSON 根类型"
+  },
+  "toolJsonDepth": {
+    "message": "深度",
+    "description": "JSON 深度"
+  },
+  "toolJsonResponsiveHint": {
+    "message": "窄屏时标题换行，工具栏可横向滚动",
+    "description": "JSON 响应式布局提示"
+  },
+  "toolTimezone": {
+    "message": "时区",
+    "description": "工具时区选项"
+  },
+  "toolIndent2": {
+    "message": "2 个空格",
+    "description": "工具缩进选项"
+  },
+  "toolIndent4": {
+    "message": "4 个空格",
+    "description": "工具缩进选项"
+  },
+  "toolIndent8": {
+    "message": "8 个空格",
+    "description": "工具缩进选项"
+  },
+  "toolIndentTab": {
+    "message": "制表符",
+    "description": "工具缩进选项"
+  },
+  "toolSortDescending": {
+    "message": "降序",
+    "description": "工具排序选项"
+  },
+  "toolBase64Encode": {
+    "message": "Base64 编码",
+    "description": "编码选项"
+  },
+  "toolBase64Decode": {
+    "message": "Base64 解码",
+    "description": "编码选项"
+  },
+  "toolUnicodeEncode": {
+    "message": "Unicode 码点编码",
+    "description": "编码选项"
+  },
+  "toolUnicodeDecode": {
+    "message": "Unicode 码点解码",
+    "description": "编码选项"
+  },
+  "toolUtf8Encode": {
+    "message": "UTF-8 编码",
+    "description": "编码选项"
+  },
+  "toolUtf8Decode": {
+    "message": "UTF-8 解码",
+    "description": "编码选项"
+  },
+  "toolHexEncode": {
+    "message": "Hex 编码",
+    "description": "编码选项"
+  },
+  "toolHexDecode": {
+    "message": "Hex 解码",
+    "description": "编码选项"
+  },
+  "toolUtf16Encode": {
+    "message": "UTF-16 编码",
+    "description": "编码选项"
+  },
+  "toolUtf16Decode": {
+    "message": "UTF-16 解码",
+    "description": "编码选项"
+  },
+  "toolUrlEncode": {
+    "message": "URL 编码",
+    "description": "编码选项"
+  },
+  "toolUrlDecode": {
+    "message": "URL 解码",
+    "description": "编码选项"
+  },
+  "toolHtmlEncode": {
+    "message": "HTML 编码",
+    "description": "编码选项"
+  },
+  "toolHtmlDecode": {
+    "message": "HTML 解码",
+    "description": "编码选项"
+  },
+  "toolJwtDecode": {
+    "message": "解析 JWT 结构",
+    "description": "编码选项"
+  },
+  "toolCookieParse": {
+    "message": "解析 Cookie 请求头",
+    "description": "编码选项"
+  },
+  "toolGzipCompress": {
+    "message": "Gzip 压缩",
+    "description": "编码选项"
+  },
+  "toolGzipDecompress": {
+    "message": "Gzip 解压",
+    "description": "编码选项"
+  },
+  "toolMd5": {
+    "message": "MD5（旧系统兼容；不适合安全用途）",
+    "description": "旧摘要选项"
+  },
+  "toolSha1": {
+    "message": "SHA-1（旧系统兼容；不适合安全用途）",
+    "description": "旧摘要选项"
+  },
+  "toolIsoToUnixSeconds": {
+    "message": "ISO 转 Unix 秒",
+    "description": "时间选项"
+  },
+  "toolIsoToUnixMilliseconds": {
+    "message": "ISO 转 Unix 毫秒",
+    "description": "时间选项"
+  },
+  "toolUnixSecondsToIso": {
+    "message": "Unix 秒转 ISO",
+    "description": "时间选项"
+  },
+  "toolUnixMillisecondsToIso": {
+    "message": "Unix 毫秒转 ISO",
+    "description": "时间选项"
+  },
+  "toolIsoToTimezone": {
+    "message": "ISO 转时区显示",
+    "description": "时间选项"
+  },
+  "toolUnixToFiletime": {
+    "message": "Unix 秒转 FILETIME",
+    "description": "时间选项"
+  },
+  "toolFiletimeToUnix": {
+    "message": "FILETIME 转 Unix 秒",
+    "description": "时间选项"
+  },
+  "toolUuid": {
+    "message": "UUID v4",
+    "description": "ID 选项"
+  },
+  "toolUlid": {
+    "message": "ULID 风格 ID",
+    "description": "ID 选项"
+  },
+  "toolSnowflake": {
+    "message": "Snowflake 风格 ID",
+    "description": "ID 选项"
+  },
+  "toolNanoid": {
+    "message": "NanoID 风格 ID",
+    "description": "ID 选项"
+  },
+  "toolCount1": {
+    "message": "1 个值",
+    "description": "ID 数量选项"
+  },
+  "toolCount5": {
+    "message": "5 个值",
+    "description": "ID 数量选项"
+  },
+  "toolCount10": {
+    "message": "10 个值",
+    "description": "ID 数量选项"
+  },
+  "toolLength12": {
+    "message": "12 位",
+    "description": "密码长度选项"
+  },
+  "toolLength20": {
+    "message": "20 位",
+    "description": "密码长度选项"
+  },
+  "toolLength32": {
+    "message": "32 位",
+    "description": "密码长度选项"
+  },
+  "toolLength64": {
+    "message": "64 位",
+    "description": "密码长度选项"
+  },
+  "toolCsvToMarkdown": {
+    "message": "CSV 转 Markdown",
+    "description": "表格选项"
+  },
+  "toolTsvToMarkdown": {
+    "message": "TSV 转 Markdown",
+    "description": "表格选项"
+  },
+  "toolCsvToTsv": {
+    "message": "CSV 转 TSV",
+    "description": "表格选项"
+  },
+  "toolTsvToCsv": {
+    "message": "TSV 转 CSV",
+    "description": "表格选项"
+  },
+  "toolCsvToJson": {
+    "message": "CSV 转 JSON",
+    "description": "表格选项"
+  },
+  "toolTsvToJson": {
+    "message": "TSV 转 JSON",
+    "description": "表格选项"
+  },
+  "toolCsvToXml": {
+    "message": "CSV 转 XML",
+    "description": "表格选项"
+  },
+  "toolTsvToXml": {
+    "message": "TSV 转 XML",
+    "description": "表格选项"
+  },
+  "toolCsvToMysql": {
+    "message": "CSV 转 MySQL",
+    "description": "表格选项"
+  },
+  "toolTsvToMysql": {
+    "message": "TSV 转 MySQL",
+    "description": "表格选项"
+  },
+  "toolCsvToPhp": {
+    "message": "CSV 转 PHP",
+    "description": "表格选项"
+  },
+  "toolTsvToPhp": {
+    "message": "TSV 转 PHP",
+    "description": "表格选项"
+  },
+  "toolKeywordJson": {
+    "message": "JSON",
+    "description": "工具搜索关键字"
+  },
+  "toolKeywordFormat": {
+    "message": "格式化",
+    "description": "工具搜索关键字"
+  },
+  "toolKeywordValidate": {
+    "message": "校验",
+    "description": "工具搜索关键字"
+  },
+  "toolKeywordDiff": {
+    "message": "差异",
+    "description": "工具搜索关键字"
+  },
+  "toolKeywordText": {
+    "message": "文本",
+    "description": "工具搜索关键字"
+  },
+  "toolKeywordCodec": {
+    "message": "编码",
+    "description": "工具搜索关键字"
+  },
+  "toolKeywordBase64": {
+    "message": "Base64",
+    "description": "工具搜索关键字"
+  },
+  "toolKeywordJwt": {
+    "message": "JWT",
+    "description": "工具搜索关键字"
+  },
+  "toolKeywordTime": {
+    "message": "时间",
+    "description": "工具搜索关键字"
+  },
+  "toolKeywordUnix": {
+    "message": "Unix",
+    "description": "工具搜索关键字"
+  },
+  "toolKeywordTimezone": {
+    "message": "时区",
+    "description": "工具搜索关键字"
+  },
+  "toolKeywordId": {
+    "message": "ID",
+    "description": "工具搜索关键字"
+  },
+  "toolKeywordUuid": {
+    "message": "UUID",
+    "description": "工具搜索关键字"
+  },
+  "toolKeywordSnowflake": {
+    "message": "Snowflake",
+    "description": "工具搜索关键字"
+  },
+  "toolKeywordPassword": {
+    "message": "密码",
+    "description": "工具搜索关键字"
+  },
+  "toolKeywordRandom": {
+    "message": "随机",
+    "description": "工具搜索关键字"
+  },
+  "toolKeywordCsv": {
+    "message": "CSV",
+    "description": "工具搜索关键字"
+  },
+  "toolKeywordTsv": {
+    "message": "TSV",
+    "description": "工具搜索关键字"
+  },
+  "toolKeywordSql": {
+    "message": "SQL",
+    "description": "工具搜索关键字"
+  },
+  "toolBack": {
+    "message": "返回工具总览",
+    "description": "独立工具页返回入口"
+  },
+  "toolSettings": {
+    "message": "打开工具设置",
+    "description": "打开统一工具设置"
+  },
+  "toolWorkspace": {
+    "message": "工作区",
+    "description": "独立工具页工作区标签"
+  },
+  "toolLocalBadge": {
+    "message": "仅本地处理",
+    "description": "本地处理标记"
+  },
+  "toolInputHint": {
+    "message": "在此粘贴或输入本地文本",
+    "description": "工具输入提示"
+  },
+  "toolInputLeft": {
+    "message": "左侧输入",
+    "description": "工具左侧输入标签"
+  },
+  "toolRawInput": {
+    "message": "原始数据",
+    "description": "编码原始输入标签"
+  },
+  "toolParsedOutput": {
+    "message": "解析结果",
+    "description": "编码解析结果标签"
+  },
+  "toolConvert": {
+    "message": "转换",
+    "description": "编码转换操作"
+  },
+  "toolPicker": {
+    "message": "工具",
+    "description": "工具选择标签"
+  },
+  "toolInput": {
+    "message": "输入",
+    "description": "工具输入标签"
+  },
+  "toolInputRight": {
+    "message": "右侧输入",
+    "description": "工具第二输入标签"
+  },
+  "toolRun": {
+    "message": "运行",
+    "description": "运行工具"
+  },
+  "toolCopy": {
+    "message": "复制输出",
+    "description": "复制工具输出"
+  },
+  "toolDownload": {
+    "message": "下载输出",
+    "description": "下载工具输出"
+  },
+  "toolRestore": {
+    "message": "恢复原文",
+    "description": "恢复工具输入"
+  },
+  "toolOutput": {
+    "message": "输出",
+    "description": "工具输出标签"
+  },
+  "toolIndent": {
+    "message": "缩进",
+    "description": "格式化器缩进选项"
+  },
+  "toolSort": {
+    "message": "排序",
+    "description": "格式化器排序选项"
+  },
+  "toolKeepOrder": {
+    "message": "原始",
+    "description": "格式化器顺序选项"
+  },
+  "toolSortAscending": {
+    "message": "升序",
+    "description": "格式化器顺序选项"
+  },
+  "toolCollapse": {
+    "message": "折叠",
+    "description": "格式化器折叠选项"
+  },
+  "toolExpand": {
+    "message": "展开",
+    "description": "格式化器展开选项"
+  },
+  "toolCopyNode": {
+    "message": "复制节点",
+    "description": "复制 JSON 节点"
+  },
+  "toolDeleteNode": {
+    "message": "删除节点",
+    "description": "删除 JSON 节点"
+  },
+  "toolCollapseNode": {
+    "message": "折叠节点",
+    "description": "折叠 JSON 节点"
+  },
+  "toolExpandNode": {
+    "message": "展开节点",
+    "description": "展开 JSON 节点"
+  },
+  "toolCollapseAll": {
+    "message": "折叠全部节点",
+    "description": "折叠全部 JSON 节点"
+  },
+  "toolExpandAll": {
+    "message": "展开全部节点",
+    "description": "展开全部 JSON 节点"
+  },
+  "toolJsonNoResult": {
+    "message": "暂无 JSON 美化结果",
+    "description": "JSON 空结果状态"
+  },
+  "toolJsonNodeDeleted": {
+    "message": "已删除 JSON 节点",
+    "description": "JSON 节点删除状态"
+  },
+  "toolCodecOperation": {
+    "message": "操作",
+    "description": "编码操作标签"
+  },
+  "toolCodecType": {
+    "message": "转换类型",
+    "description": "编码类型标签"
+  },
+  "toolCodecAdvanced": {
+    "message": "更多本地转换",
+    "description": "其他编码转换"
+  },
+  "toolEncode": {
+    "message": "编码",
+    "description": "编码操作"
+  },
+  "toolDecode": {
+    "message": "解码",
+    "description": "解码操作"
+  },
+  "toolCodecUnicode": {
+    "message": "Unicode 码点",
+    "description": "编码类型"
+  },
+  "toolCodecUrl": {
+    "message": "URL 参数",
+    "description": "编码类型"
+  },
+  "toolCodecUtf8": {
+    "message": "UTF-8",
+    "description": "编码类型"
+  },
+  "toolCodecBase64": {
+    "message": "Base64",
+    "description": "编码类型"
+  },
+  "toolCodecHex": {
+    "message": "Hex",
+    "description": "编码类型"
+  },
+  "toolCodecUtf16": {
+    "message": "UTF-16",
+    "description": "编码类型"
+  },
+  "toolCodecHtml": {
+    "message": "HTML",
+    "description": "编码类型"
+  },
+  "toolCodecUri": {
+    "message": "完整 URL",
+    "description": "编码转换功能"
+  },
+  "toolCodecUnicodeEscape": {
+    "message": "Unicode 转义",
+    "description": "编码转换功能"
+  },
+  "toolCodecJsonString": {
+    "message": "JSON 字符串转义",
+    "description": "编码转换功能"
+  },
+  "toolCodecXml": {
+    "message": "XML 实体",
+    "description": "编码转换功能"
+  },
+  "toolCodecBinary": {
+    "message": "二进制字节",
+    "description": "编码转换功能"
+  },
+  "toolCodecOctal": {
+    "message": "八进制字节",
+    "description": "编码转换功能"
+  },
+  "toolCodecDecimal": {
+    "message": "十进制字节",
+    "description": "编码转换功能"
+  },
+  "toolCodecDataUrl": {
+    "message": "Data URL",
+    "description": "编码转换功能"
+  },
+  "toolCodecAscii": {
+    "message": "ASCII",
+    "description": "编码转换功能"
+  },
+  "toolCodecMd5": {
+    "message": "MD5",
+    "description": "编码转换功能"
+  },
+  "toolCodecDigest": {
+    "message": "计算摘要",
+    "description": "编码转换功能"
+  },
+  "toolCodecCopyShort": {
+    "message": "复制",
+    "description": "编码转换功能"
+  },
+  "toolCodecUseText": {
+    "message": "改为文本输入",
+    "description": "编码转换功能"
+  },
+  "toolCodecByteUnit": {
+    "message": "字节",
+    "description": "编码转换功能"
+  },
+  "toolCodecAutoConverted": {
+    "message": "自动转换已完成",
+    "description": "编码转换功能"
+  },
+  "toolCodecConverted": {
+    "message": "转换已完成",
+    "description": "编码转换功能"
+  },
+  "toolCodecBinaryResult": {
+    "message": "二进制内容 · 下方为十六进制预览，下载可还原文件。",
+    "description": "编码转换功能"
+  },
+  "toolCodecBase64Hint": {
+    "message": "文本按 UTF-8 编码，支持中文和表情。",
+    "description": "编码转换功能"
+  },
+  "toolCodecUrlHint": {
+    "message": "转换单个参数值。空格编码为 %20，解码时 + 保持为加号。",
+    "description": "编码转换功能"
+  },
+  "toolCodecUriHint": {
+    "message": "转换完整 URL，保留 : / ? & = # 等结构分隔符。",
+    "description": "编码转换功能"
+  },
+  "toolCodecUnicodeHint": {
+    "message": "以空格分隔 Unicode 码点，例如 U+4F60 U+597D。",
+    "description": "编码转换功能"
+  },
+  "toolCodecUnicodeEscapeHint": {
+    "message": "编码为 \\uXXXX，解码兼容 \\uXXXX 和 \\u{1F600}。",
+    "description": "编码转换功能"
+  },
+  "toolCodecJsonStringHint": {
+    "message": "转换完整 JSON 字符串，包含外层双引号。",
+    "description": "编码转换功能"
+  },
+  "toolCodecXmlHint": {
+    "message": "转义 XML 的五种预定义实体；支持解码十进制、十六进制数字实体。",
+    "description": "编码转换功能"
+  },
+  "toolCodecBytesHint": {
+    "message": "按 UTF-8 字节转换，以空格分隔。解码也可用换行或逗号分隔。",
+    "description": "编码转换功能"
+  },
+  "toolCodecAsciiHint": {
+    "message": "ASCII 字符与 0–127 十进制编码互转。中文请用十进制字节。",
+    "description": "编码转换功能"
+  },
+  "toolCodecDataUrlHint": {
+    "message": "支持文本或本地文件。解码后可预览文本，也可下载还原文件。",
+    "description": "编码转换功能"
+  },
+  "toolCodecMd5Hint": {
+    "message": "MD5 是单向摘要，无法解码。仅用于旧系统兼容，不适合安全用途。",
+    "description": "编码转换功能"
+  },
+  "toolCodecInvalidUtf8": {
+    "message": "字节序列不是有效的文本编码。",
+    "description": "编码转换功能"
+  },
+  "toolCodecInvalidBase64": {
+    "message": "Base64 格式无效。",
+    "description": "编码转换功能"
+  },
+  "toolCodecInvalidCodePoint": {
+    "message": "Unicode 码点无效。请使用 U+4F60 格式，范围不超过 U+10FFFF 且不包含代理码点。",
+    "description": "编码转换功能"
+  },
+  "toolCodecInvalidEscape": {
+    "message": "Unicode 转义无效，请使用 \\u4f60 或 \\u{1f600}。",
+    "description": "编码转换功能"
+  },
+  "toolCodecInvalidJsonString": {
+    "message": "请输入包含双引号的完整 JSON 字符串。",
+    "description": "编码转换功能"
+  },
+  "toolCodecInvalidXml": {
+    "message": "XML 实体或字符无效，仅支持 XML 预定义实体和数字实体。",
+    "description": "编码转换功能"
+  },
+  "toolCodecInvalidAscii": {
+    "message": "ASCII 仅支持 0–127 的字符和十进制编码。",
+    "description": "编码转换功能"
+  },
+  "toolCodecInvalidByte": {
+    "message": "请输入以空格分隔的有效字节，每个字节的值应在 0–255 之间。",
+    "description": "编码转换功能"
+  },
+  "toolCodecInvalidUrl": {
+    "message": "URL 转义无效，请检查百分号后是否是完整的 UTF-8 字节。",
+    "description": "编码转换功能"
+  },
+  "toolCodecInvalidDataUrl": {
+    "message": "Data URL 无效，请检查媒体类型、参数和编码内容。",
+    "description": "编码转换功能"
+  },
+  "toolCodecOutputTooLarge": {
+    "message": "转换结果超过 10 MiB，请缩小输入后重试。",
+    "description": "编码转换功能"
+  },
+  "toolUriEncode": {
+    "message": "完整 URL 编码",
+    "description": "编码转换功能"
+  },
+  "toolUriDecode": {
+    "message": "完整 URL 解码",
+    "description": "编码转换功能"
+  },
+  "toolUnicodeEscapeEncode": {
+    "message": "Unicode 转义 编码",
+    "description": "编码转换功能"
+  },
+  "toolUnicodeEscapeDecode": {
+    "message": "Unicode 转义 解码",
+    "description": "编码转换功能"
+  },
+  "toolJsonStringEncode": {
+    "message": "JSON 字符串 编码",
+    "description": "编码转换功能"
+  },
+  "toolJsonStringDecode": {
+    "message": "JSON 字符串 解码",
+    "description": "编码转换功能"
+  },
+  "toolXmlEncode": {
+    "message": "XML 实体 编码",
+    "description": "编码转换功能"
+  },
+  "toolXmlDecode": {
+    "message": "XML 实体 解码",
+    "description": "编码转换功能"
+  },
+  "toolBinaryEncode": {
+    "message": "二进制字节 编码",
+    "description": "编码转换功能"
+  },
+  "toolBinaryDecode": {
+    "message": "二进制字节 解码",
+    "description": "编码转换功能"
+  },
+  "toolOctalEncode": {
+    "message": "八进制字节 编码",
+    "description": "编码转换功能"
+  },
+  "toolOctalDecode": {
+    "message": "八进制字节 解码",
+    "description": "编码转换功能"
+  },
+  "toolDecimalEncode": {
+    "message": "十进制字节 编码",
+    "description": "编码转换功能"
+  },
+  "toolDecimalDecode": {
+    "message": "十进制字节 解码",
+    "description": "编码转换功能"
+  },
+  "toolDataUrlEncode": {
+    "message": "Data URL 编码",
+    "description": "编码转换功能"
+  },
+  "toolDataUrlDecode": {
+    "message": "Data URL 解码",
+    "description": "编码转换功能"
+  },
+  "toolAsciiEncode": {
+    "message": "ASCII 编码",
+    "description": "编码转换功能"
+  },
+  "toolAsciiDecode": {
+    "message": "ASCII 解码",
+    "description": "编码转换功能"
+  },
+  "toolDiffPanel": {
+    "message": "差异结果",
+    "description": "对比结果面板"
+  },
+  "toolRepair": {
+    "message": "修复乱码",
+    "description": "格式化器修复选项"
+  },
+  "toolMode": {
+    "message": "模式",
+    "description": "工具模式选项"
+  },
+  "toolCount": {
+    "message": "数量",
+    "description": "生成器数量选项"
+  },
+  "toolLength": {
+    "message": "长度",
+    "description": "密码长度选项"
+  },
+  "toolSymbols": {
+    "message": "包含符号",
+    "description": "密码符号选项"
+  },
+  "toolRepairConfirm": {
+    "message": "预览并应用可逆的文本修复？",
+    "description": "格式化器修复确认"
+  },
+  "toolReady": {
+    "message": "就绪",
+    "description": "工具状态"
+  },
+  "toolAutoParsed": {
+    "message": "自动解析完成（输入内容变化后自动更新）",
+    "description": "工具自动解析状态"
+  },
+  "toolInvalid": {
+    "message": "输入无效",
+    "description": "工具输入无效状态"
+  },
+  "toolCopied": {
+    "message": "已在本地复制",
+    "description": "工具复制状态"
+  },
+  "toolCopyUnavailable": {
+    "message": "剪贴板不可用；请选中输出后复制。",
+    "description": "工具复制回退提示"
+  },
+  "toolDownloaded": {
+    "message": "已在本地下载",
+    "description": "工具下载状态"
+  },
+  "toolRestored": {
+    "message": "已恢复原文",
+    "description": "工具恢复状态"
+  },
+  "toolTokenInvalid": {
+    "message": "一次性输入令牌无效或已过期。",
+    "description": "工具令牌错误"
+  },
+  "toolEmptySelection": {
+    "message": "没有选中文本；请粘贴或导入本地文件。",
+    "description": "工具空选区提示"
+  },
+  "toolSelectionTooLarge": {
+    "message": "选中文本过大；请粘贴或导入本地文件。",
+    "description": "工具选区大小提示"
+  },
+  "toolMetadataField": {
+    "message": "元数据",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataMode": {
+    "message": "模式",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataRepresentation": {
+    "message": "表示方式",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataOutputEncoding": {
+    "message": "输出编码",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataInputEncoding": {
+    "message": "输入编码",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataMilliseconds": {
+    "message": "毫秒时间戳",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataTimezone": {
+    "message": "时区",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataUnit": {
+    "message": "单位",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataCount": {
+    "message": "数量",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataLength": {
+    "message": "长度",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataSymbols": {
+    "message": "符号",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataValid": {
+    "message": "有效",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataOperation": {
+    "message": "操作",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataExpandedEscaped": {
+    "message": "已展开转义 JSON",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataLeftLines": {
+    "message": "左侧行数",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataRightLines": {
+    "message": "右侧行数",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataRows": {
+    "message": "行数",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataColumns": {
+    "message": "列数",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataFormulaCells": {
+    "message": "疑似公式单元格",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataFormulaWarning": {
+    "message": "公式提示",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataWarning": {
+    "message": "提示",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataBytes": {
+    "message": "字节数",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataNodes": {
+    "message": "节点数",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataStrings": {
+    "message": "字符串数",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataNumbers": {
+    "message": "数字数",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataBooleans": {
+    "message": "布尔值数",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataNulls": {
+    "message": "空值数",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataUnsafeNumbers": {
+    "message": "不安全整数原文数",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataStringCharacters": {
+    "message": "字符串字符数",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataCharacters": {
+    "message": "字符数",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataObjects": {
+    "message": "对象数",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataArrays": {
+    "message": "数组数",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataKeys": {
+    "message": "键数",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataDuplicateKeys": {
+    "message": "重复键数",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataDuplicateKeyPositions": {
+    "message": "重复键位置",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataMaxDepth": {
+    "message": "最大深度",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataParseMs": {
+    "message": "解析耗时（毫秒）",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataFormatMs": {
+    "message": "格式化耗时（毫秒）",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataSortOrder": {
+    "message": "排序顺序",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataCollapsed": {
+    "message": "已折叠",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataLines": {
+    "message": "行数",
+    "description": "工具元数据标签"
+  },
+  "toolMetadataConservative": {
+    "message": "保守格式化",
+    "description": "工具元数据标签"
+  },
+  "toolJwtWarning": {
+    "message": "JWT 只解析结构，不验证签名或可信性。",
+    "description": "工具安全提示"
+  },
+  "toolMd5Warning": {
+    "message": "MD5 仅用于旧系统兼容，不适合安全用途。",
+    "description": "工具安全提示"
+  },
+  "toolSha1Warning": {
+    "message": "SHA-1 仅用于旧系统兼容，不适合安全用途。",
+    "description": "工具安全提示"
+  },
+  "toolFormulaWarning": {
+    "message": "可能被电子表格解释为公式；导入前请复核。",
+    "description": "工具表格提示"
+  },
+  "toolSqlWarning": {
+    "message": "SQL 输出是已转义文本；请使用参数化查询。",
+    "description": "工具 SQL 提示"
+  },
+  "documentFormatterTitleSuffix": {
+    "message": "自动美化",
+    "description": "文档格式化器工具栏标题"
+  },
+  "documentFormatterToolbar": {
+    "message": "浏览器工具箱文档格式化器",
+    "description": "文档格式化器工具栏"
+  },
+  "documentFormatterIndent": {
+    "message": "缩进大小",
+    "description": "文档格式化器缩进"
+  },
+  "documentFormatterTab": {
+    "message": "制表符",
+    "description": "文档格式化器制表符缩进"
+  },
+  "documentFormatterSpaces": {
+    "message": "个空格",
+    "description": "文档格式化器空格"
+  },
+  "documentFormatterSortAria": {
+    "message": "排序 JSON 键",
+    "description": "文档格式化器排序标签"
+  },
+  "documentFormatterKeepOrder": {
+    "message": "保持键顺序",
+    "description": "文档格式化器顺序"
+  },
+  "documentFormatterSort": {
+    "message": "排序键",
+    "description": "文档格式化器排序"
+  },
+  "documentFormatterSortAscending": {
+    "message": "按升序排序键",
+    "description": "文档格式化器排序"
+  },
+  "documentFormatterSortDescending": {
+    "message": "按降序排序键",
+    "description": "文档格式化器排序"
+  },
+  "documentFormatterRepair": {
+    "message": "修复乱码",
+    "description": "文档格式化器修复"
+  },
+  "documentFormatterUndoRepair": {
+    "message": "撤销修复",
+    "description": "文档格式化器撤销"
+  },
+  "documentFormatterCollapse": {
+    "message": "折叠",
+    "description": "文档格式化器折叠"
+  },
+  "documentFormatterExpand": {
+    "message": "展开",
+    "description": "文档格式化器展开"
+  },
+  "documentFormatterCopy": {
+    "message": "复制",
+    "description": "文档格式化器复制"
+  },
+  "documentFormatterDownload": {
+    "message": "下载",
+    "description": "文档格式化器下载"
+  },
+  "documentFormatterRestore": {
+    "message": "恢复原文",
+    "description": "文档格式化器恢复"
+  },
+  "documentFormatterViewOriginal": {
+    "message": "查看原文",
+    "description": "文档格式化器操作"
+  },
+  "documentFormatterRestoreView": {
+    "message": "恢复美化视图",
+    "description": "文档格式化器操作"
+  },
+  "documentFormatterShowingOriginal": {
+    "message": "当前显示原文",
+    "description": "文档格式化器状态"
+  },
+  "documentFormatterKeptOriginal": {
+    "message": "已保留原文",
+    "description": "文档格式化器回退"
+  },
+  "documentFormatterCopied": {
+    "message": "已在本地复制",
+    "description": "文档格式化器复制状态"
+  },
+  "documentFormatterCopyUnavailable": {
+    "message": "剪贴板不可用；请选中输出后复制。",
+    "description": "文档格式化器复制回退"
+  },
+  "documentFormatterDownloaded": {
+    "message": "已在本地下载",
+    "description": "文档格式化器下载状态"
+  },
+  "documentFormatterNoRepair": {
+    "message": "没有发现可逆的乱码候选文本。",
+    "description": "文档格式化器修复状态"
+  },
+  "documentFormatterRepairConfirm": {
+    "message": "预览并应用可逆的文本修复？",
+    "description": "文档格式化器修复确认"
+  },
+  "documentFormatterRepairPreviewCount": {
+    "message": "受影响字符串数",
+    "description": "文档格式化器修复预览"
+  },
+  "documentFormatterRepairPreviewBefore": {
+    "message": "修复前",
+    "description": "文档格式化器修复预览"
+  },
+  "documentFormatterRepairPreviewAfter": {
+    "message": "修复后",
+    "description": "文档格式化器修复预览"
+  },
+  "documentFormatterLargeConfirm": {
+    "message": "要格式化这个较大的本地文档吗？",
+    "description": "文档格式化器大小确认"
+  },
+  "documentFormatterBytes": {
+    "message": "字节",
+    "description": "文档格式化器字节标签"
+  },
+  "documentFormatterKeys": {
+    "message": "键",
+    "description": "文档格式化器键标签"
+  },
+  "documentFormatterDuplicateKeys": {
+    "message": "重复键",
+    "description": "文档格式化器重复键标签"
+  },
+  "documentFormatterDuplicateKeyPositions": {
+    "message": "重复键位置",
+    "description": "文档格式化器重复键位置"
+  },
+  "documentFormatterTooLarge": {
+    "message": "过大",
+    "description": "文档格式化器大小状态"
+  },
+  "documentFormatterRepairApplied": {
+    "message": "已应用文本修复",
+    "description": "文档格式化器修复状态"
+  },
+  "documentFormatterMetadata": {
+    "message": "文档元数据",
+    "description": "文档格式化器元数据"
+  },
+  "documentFormatterCharacters": {
+    "message": "字符数",
+    "description": "文档格式化器元数据"
+  },
+  "documentFormatterRootType": {
+    "message": "根类型",
+    "description": "文档格式化器元数据"
+  },
+  "documentFormatterObjects": {
+    "message": "对象数",
+    "description": "文档格式化器元数据"
+  },
+  "documentFormatterArrays": {
+    "message": "数组数",
+    "description": "文档格式化器元数据"
+  },
+  "documentFormatterStrings": {
+    "message": "字符串数",
+    "description": "文档格式化器元数据"
+  },
+  "documentFormatterNumbers": {
+    "message": "数字数",
+    "description": "文档格式化器元数据"
+  },
+  "documentFormatterBooleans": {
+    "message": "布尔值数",
+    "description": "文档格式化器元数据"
+  },
+  "documentFormatterNulls": {
+    "message": "空值数",
+    "description": "文档格式化器元数据"
+  },
+  "documentFormatterMaxDepth": {
+    "message": "最大深度",
+    "description": "文档格式化器元数据"
+  },
+  "documentFormatterUnsafeNumbers": {
+    "message": "不安全整数原文数",
+    "description": "文档格式化器元数据"
+  },
+  "documentFormatterContentType": {
+    "message": "内容类型",
+    "description": "文档格式化器元数据"
+  },
+  "documentFormatterCharset": {
+    "message": "字符集",
+    "description": "文档格式化器元数据"
+  },
+  "documentFormatterParseMs": {
+    "message": "解析耗时（毫秒）",
+    "description": "文档格式化器元数据"
+  },
+  "documentFormatterRenderMs": {
+    "message": "渲染耗时（毫秒）",
+    "description": "文档格式化器元数据"
+  },
+  "documentFormatterSortState": {
+    "message": "排序状态",
+    "description": "文档格式化器元数据"
+  },
+  "documentFormatterCollapseState": {
+    "message": "折叠状态",
+    "description": "文档格式化器元数据"
+  },
+  "documentFormatterDefaultCollapseDepth": {
+    "message": "默认折叠深度",
+    "description": "文档格式化器设置"
+  },
+  "documentFormatterRepairState": {
+    "message": "文本修复",
+    "description": "文档格式化器元数据"
+  },
+  "documentFormatterExpanded": {
+    "message": "已展开",
+    "description": "文档格式化器元数据"
+  },
+  "documentFormatterApplied": {
+    "message": "已应用",
+    "description": "文档格式化器元数据"
+  },
+  "documentFormatterNotApplied": {
+    "message": "未应用",
+    "description": "文档格式化器元数据"
+  },
+  "documentFormatterCollapseNode": {
+    "message": "折叠此 JSON 节点",
+    "description": "文档格式化器节点控件"
+  },
+  "documentFormatterExpandNode": {
+    "message": "展开此 JSON 节点",
+    "description": "文档格式化器节点控件"
+  },
+  "gestureEditor": {
+    "message": "手势编辑器",
+    "description": "手势编辑器标签"
+  },
   "superDragSafety": {
     "message": "按住所选旁路修饰键始终保留原生拖拽。文件上传、编辑器、密码框、自定义 draggable 控件和无效网址不会被拦截。",
     "description": "超级拖拽安全说明"
   },
-  "nativeBypassModifier": { "message": "原生拖拽旁路修饰键", "description": "超级拖拽旁路修饰键" },
-  "modifierAlt": { "message": "Alt", "description": "修饰键选项" },
-  "modifierControl": { "message": "Control", "description": "修饰键选项" },
-  "modifierMeta": { "message": "Command / Meta", "description": "修饰键选项" },
-  "modifierShift": { "message": "Shift", "description": "修饰键选项" },
+  "nativeBypassModifier": {
+    "message": "原生拖拽旁路修饰键",
+    "description": "超级拖拽旁路修饰键"
+  },
+  "modifierAlt": {
+    "message": "Alt",
+    "description": "修饰键选项"
+  },
+  "modifierControl": {
+    "message": "Control",
+    "description": "修饰键选项"
+  },
+  "modifierMeta": {
+    "message": "Command / Meta",
+    "description": "修饰键选项"
+  },
+  "modifierShift": {
+    "message": "Shift",
+    "description": "修饰键选项"
+  },
   "siteRuleSpecificity": {
     "message": "Glob 通配式按匹配度优先；匹配度相同时后面的规则优先。也支持显式正则表达式。顶层页面网址控制所有框架。",
     "description": "站点规则行为"
   },
-  "siteRuleProfile": { "message": "站点配置档", "description": "站点配置档标签" },
-  "siteRuleProfileHint": { "message": "为此站点覆盖输入行为；留空字段会继承全局设置。", "description": "站点配置档提示" },
-  "siteRuleProfileInherit": { "message": "继承全局设置", "description": "站点配置档预设" },
-  "siteRuleProfileCustom": { "message": "自定义配置档", "description": "站点配置档预设" },
-  "siteProfileBalanced": { "message": "均衡", "description": "站点配置档预设" },
-  "siteProfileBalancedDescription": { "message": "适合普通浏览，使用标准阈值。", "description": "站点配置档说明" },
-  "siteProfileEditor": { "message": "编辑器安全", "description": "站点配置档预设" },
-  "siteProfileEditorDescription": { "message": "在编辑器和设计工具中避免误触手势。", "description": "站点配置档说明" },
-  "siteProfileReading": { "message": "阅读", "description": "站点配置档预设" },
-  "siteProfileReadingDescription": { "message": "长时间阅读时减少输入反馈干扰。", "description": "站点配置档说明" },
-  "siteProfileName": { "message": "配置档名称", "description": "站点配置档名称" },
-  "siteProfileMouse": { "message": "鼠标手势", "description": "站点配置档分组" },
-  "siteProfileSuperDrag": { "message": "超级拖拽", "description": "站点配置档分组" },
-  "siteProfileWheel": { "message": "滚轮", "description": "站点配置档分组" },
-  "siteProfileTriggerButton": { "message": "触发按钮", "description": "站点配置档字段" },
-  "siteProfileActivationDistance": { "message": "激活距离（像素）", "description": "站点配置档字段" },
-  "siteProfileMinimumSegmentDistance": { "message": "最小分段距离（像素）", "description": "站点配置档字段" },
-  "siteProfileShowTrail": { "message": "显示手势轨迹", "description": "站点配置档字段" },
-  "siteProfileShowHud": { "message": "显示命令提示", "description": "站点配置档字段" },
-  "siteProfileEnabled": { "message": "启用", "description": "站点配置档字段" },
-  "siteProfileBypassModifier": { "message": "原生拖拽旁路键", "description": "站点配置档字段" },
-  "siteProfileWheelThreshold": { "message": "滚轮阈值", "description": "站点配置档字段" },
-  "siteProfileCooldown": { "message": "冷却时间（毫秒）", "description": "站点配置档字段" },
+  "siteRuleProfile": {
+    "message": "站点配置档",
+    "description": "站点配置档标签"
+  },
+  "siteRuleProfileHint": {
+    "message": "为此站点覆盖输入行为；留空字段会继承全局设置。",
+    "description": "站点配置档提示"
+  },
+  "siteRuleProfileInherit": {
+    "message": "继承全局设置",
+    "description": "站点配置档预设"
+  },
+  "siteRuleProfileCustom": {
+    "message": "自定义配置档",
+    "description": "站点配置档预设"
+  },
+  "siteProfileBalanced": {
+    "message": "均衡",
+    "description": "站点配置档预设"
+  },
+  "siteProfileBalancedDescription": {
+    "message": "适合普通浏览，使用标准阈值。",
+    "description": "站点配置档说明"
+  },
+  "siteProfileEditor": {
+    "message": "编辑器安全",
+    "description": "站点配置档预设"
+  },
+  "siteProfileEditorDescription": {
+    "message": "在编辑器和设计工具中避免误触手势。",
+    "description": "站点配置档说明"
+  },
+  "siteProfileReading": {
+    "message": "阅读",
+    "description": "站点配置档预设"
+  },
+  "siteProfileReadingDescription": {
+    "message": "长时间阅读时减少输入反馈干扰。",
+    "description": "站点配置档说明"
+  },
+  "siteProfileName": {
+    "message": "配置档名称",
+    "description": "站点配置档名称"
+  },
+  "siteProfileMouse": {
+    "message": "鼠标手势",
+    "description": "站点配置档分组"
+  },
+  "siteProfileSuperDrag": {
+    "message": "超级拖拽",
+    "description": "站点配置档分组"
+  },
+  "siteProfileWheel": {
+    "message": "滚轮",
+    "description": "站点配置档分组"
+  },
+  "siteProfileTriggerButton": {
+    "message": "触发按钮",
+    "description": "站点配置档字段"
+  },
+  "siteProfileActivationDistance": {
+    "message": "激活距离（像素）",
+    "description": "站点配置档字段"
+  },
+  "siteProfileMinimumSegmentDistance": {
+    "message": "最小分段距离（像素）",
+    "description": "站点配置档字段"
+  },
+  "siteProfileShowTrail": {
+    "message": "显示手势轨迹",
+    "description": "站点配置档字段"
+  },
+  "siteProfileShowHud": {
+    "message": "显示命令提示",
+    "description": "站点配置档字段"
+  },
+  "siteProfileEnabled": {
+    "message": "启用",
+    "description": "站点配置档字段"
+  },
+  "siteProfileBypassModifier": {
+    "message": "原生拖拽旁路键",
+    "description": "站点配置档字段"
+  },
+  "siteProfileWheelThreshold": {
+    "message": "滚轮阈值",
+    "description": "站点配置档字段"
+  },
+  "siteProfileCooldown": {
+    "message": "冷却时间（毫秒）",
+    "description": "站点配置档字段"
+  },
   "backupContents": {
     "message": "导出文件只包含设置，不包含页面内容、历史、书签、临时手势或远程资源。",
     "description": "备份范围"
@@ -1044,7 +3216,10 @@
     "message": "只有用户主动发起的导航、搜索和本地扩展页面可能产生网络活动；项目不会连接服务器。",
     "description": "网络隐私"
   },
-  "licenseGpl": { "message": "GPL-3.0-or-later", "description": "许可证名称" },
+  "licenseGpl": {
+    "message": "GPL-3.0-or-later",
+    "description": "许可证名称"
+  },
   "aboutText": {
     "message": "浏览器工具箱以 Vimium v2.4.2 为键盘基线，保持免费和开源。",
     "description": "关于文本"
@@ -1053,17 +3228,26 @@
     "message": "仓库保留 Vimium 与 shoulda.js 的声明。鼠标功能仅依据公开行为描述独立实现，不复制闭源代码、资产、文案或界面。",
     "description": "洁净室声明"
   },
-  "dataHandling": { "message": "数据处理", "description": "隐私分区" },
+  "dataHandling": {
+    "message": "数据处理",
+    "description": "隐私分区"
+  },
   "privacyData": {
     "message": "浏览器工具箱不会向项目服务器或第三方分析服务发送网址、历史、书签、页面内容、选中文本、搜索词、按键、鼠标轨迹、指针图片、配置、设备标识、安装标识或崩溃报告。",
     "description": "隐私数据声明"
   },
-  "localStorage": { "message": "本地存储", "description": "存储分区" },
+  "localStorage": {
+    "message": "本地存储",
+    "description": "存储分区"
+  },
   "privacyStorage": {
     "message": "设置保存在浏览器存储中。启用的自定义指针只保存在本地，不同步、不上传。",
     "description": "存储隐私"
   },
-  "security": { "message": "安全", "description": "安全链接" },
+  "security": {
+    "message": "安全",
+    "description": "安全链接"
+  },
   "charterFree": {
     "message": "浏览器工具箱永久免费、开源，并向所有用户提供同一套完整功能。",
     "description": "项目章程可用性"
@@ -1108,11 +3292,26 @@
     "message": "所有动作都经过校验后的命令调用协议。",
     "description": "入门调用协议"
   },
-  "search": { "message": "搜索", "description": "搜索标签" },
-  "searchSettings": { "message": "搜索", "description": "搜索设置分区" },
-  "vomnibarSearchOrOpen": { "message": "搜索或打开", "description": "Vomnibar 综合模式标题" },
-  "vomnibarSearchBookmarks": { "message": "搜索书签", "description": "Vomnibar 书签模式标题" },
-  "vomnibarSearchTabs": { "message": "搜索标签页", "description": "Vomnibar 标签页模式标题" },
+  "search": {
+    "message": "搜索",
+    "description": "搜索标签"
+  },
+  "searchSettings": {
+    "message": "搜索",
+    "description": "搜索设置分区"
+  },
+  "vomnibarSearchOrOpen": {
+    "message": "搜索或打开",
+    "description": "Vomnibar 综合模式标题"
+  },
+  "vomnibarSearchBookmarks": {
+    "message": "搜索书签",
+    "description": "Vomnibar 书签模式标题"
+  },
+  "vomnibarSearchTabs": {
+    "message": "搜索标签页",
+    "description": "Vomnibar 标签页模式标题"
+  },
   "vomnibarPlaceholderOmni": {
     "message": "输入搜索词或网址",
     "description": "Vomnibar 综合输入提示"
@@ -1125,13 +3324,58 @@
     "message": "输入标签页标题或网址",
     "description": "Vomnibar 标签页输入提示"
   },
-  "vomnibarNewTab": { "message": "新标签页", "description": "Vomnibar 新标签页提示" },
-  "vomnibarHintSelect": { "message": "选择", "description": "Vomnibar 键盘提示" },
-  "vomnibarHintOpen": { "message": "打开", "description": "Vomnibar 键盘提示" },
-  "vomnibarHintClose": { "message": "关闭", "description": "Vomnibar 键盘提示" },
-  "appearance": { "message": "外观", "description": "外观分区" },
-  "keyMappings": { "message": "键盘映射", "description": "键盘映射" },
-  "searchEngines": { "message": "搜索引擎", "description": "搜索引擎" },
+  "vomnibarNewTab": {
+    "message": "新标签页",
+    "description": "Vomnibar 新标签页提示"
+  },
+  "vomnibarHintSelect": {
+    "message": "选择",
+    "description": "Vomnibar 键盘提示"
+  },
+  "vomnibarHintOpen": {
+    "message": "打开",
+    "description": "Vomnibar 键盘提示"
+  },
+  "vomnibarHintClose": {
+    "message": "退出",
+    "description": "Vomnibar 键盘提示"
+  },
+  "vomnibarHintOpenNewTab": {
+    "message": "跳转新页面",
+    "description": "Vomnibar Shift+Enter 键盘提示"
+  },
+  "generalTheme": {
+    "message": "界面主题",
+    "description": "界面主题选择标签"
+  },
+  "themeSageMist": {
+    "message": "鼠尾草雾绿（默认）",
+    "description": "鼠尾草雾绿预设"
+  },
+  "themeCobalt": {
+    "message": "日光钴蓝",
+    "description": "日光钴蓝预设"
+  },
+  "themePaperInk": {
+    "message": "暖纸墨",
+    "description": "暖纸墨预设"
+  },
+  "themeSlate": {
+    "message": "极简石磨黑白",
+    "description": "极简石磨黑白预设"
+  },
+  "appearance": {
+    "message": "外观",
+    "description": "外观分区"
+  },
+  "keyMappings": {
+    "message": "键盘映射",
+    "description": "键盘映射"
+  },
+  "searchEngines": {
+    "message": "搜索引擎",
+    "description": "搜索引擎"
+  },
   "keyboardMappingNote": {
     "message": "兼容 Vimium 的键盘映射会导入现有键盘设置。",
     "description": "键盘导入说明"
@@ -1144,23 +3388,50 @@
     "message": "也可以导入 Vimium JSON 备份。兼容字段会写入 Vimium 设置和浏览器工具箱设置；未知字段会列出，能保留的设置字段会保留，其余字段会忽略。",
     "description": "Vimium 导入说明"
   },
-  "importSummary": { "message": "导入以下设置", "description": "导入确认" },
-  "changedSettings": { "message": "将修改的设置", "description": "修改设置摘要" },
-  "ignoredFields": { "message": "已忽略字段", "description": "忽略字段摘要" },
+  "importSummary": {
+    "message": "导入以下设置",
+    "description": "导入确认"
+  },
+  "changedSettings": {
+    "message": "将修改的设置",
+    "description": "修改设置摘要"
+  },
+  "ignoredFields": {
+    "message": "已忽略字段",
+    "description": "忽略字段摘要"
+  },
   "unrecognizedFields": {
     "message": "未识别设置（已保留）",
     "description": "导入时保留未识别的设置字段"
   },
-  "importPreviewTitle": { "message": "确认导入设置", "description": "导入预览标题" },
+  "importPreviewTitle": {
+    "message": "确认导入设置",
+    "description": "导入预览标题"
+  },
   "importPreviewDescription": {
     "message": "请先检查变更，确认后才会写入设置。",
     "description": "导入预览说明"
   },
-  "importPreviewAdded": { "message": "新增", "description": "导入预览新增设置" },
-  "importPreviewChanged": { "message": "修改", "description": "导入预览修改设置" },
-  "importPreviewRemoved": { "message": "删除", "description": "导入预览删除设置" },
-  "importPreviewConfirm": { "message": "导入这些变更", "description": "导入预览确认按钮" },
-  "importPreviewCancel": { "message": "取消导入", "description": "导入预览取消按钮" },
+  "importPreviewAdded": {
+    "message": "新增",
+    "description": "导入预览新增设置"
+  },
+  "importPreviewChanged": {
+    "message": "修改",
+    "description": "导入预览修改设置"
+  },
+  "importPreviewRemoved": {
+    "message": "删除",
+    "description": "导入预览删除设置"
+  },
+  "importPreviewConfirm": {
+    "message": "导入这些变更",
+    "description": "导入预览确认按钮"
+  },
+  "importPreviewCancel": {
+    "message": "取消导入",
+    "description": "导入预览取消按钮"
+  },
   "importPreviewNoChanges": {
     "message": "不会修改浏览器工具箱设置。",
     "description": "导入预览无变更"
@@ -1169,54 +3440,971 @@
     "message": "部分详细变更已省略。",
     "description": "导入预览省略提示"
   },
-  "none": { "message": "无", "description": "空摘要" },
-  "saveSettings": { "message": "保存设置" },
-  "saveOnlyOnSave": { "message": "修改仅在保存后生效" },
-  "mouseSettingsSubtitle": { "message": "按住右键并拖动执行动作。" },
-  "mouseRightClickHow": { "message": "右键如何工作" },
-  "mouseRightClick": { "message": "点按右键" },
-  "mouseOpenBrowserMenu": { "message": "打开浏览器菜单" },
-  "mouseHoldAndDrag": { "message": "按住并拖动" },
-  "mouseRunGesture": { "message": "执行鼠标手势" },
-  "mouseGestureActions": { "message": "手势与动作" },
-  "mouseRecognitionSettings": { "message": "识别设置" },
-  "mouseRecognitionHint": { "message": "距离更长可以减少误触，距离更短则响应更快。" },
-  "mouseContextMenuSettings": { "message": "右键菜单" },
-  "mouseNativeMenuHint": { "message": "未越过激活距离的普通点按始终保留浏览器菜单。" },
-  "mouseAdvancedSettings": { "message": "高级识别与绑定设置" },
-  "mouseEnabledStatus": { "message": "已启用" },
-  "mouseDisabledStatus": { "message": "已停用" },
-  "mouseTriggerDistance": { "message": "触发距离" },
-  "mouseTrailHint": { "message": "轨迹提示" },
-  "mouseTrailDescription": { "message": "拖动时显示轨迹，便于学习和调试手势。" },
-  "mouseNormalClickMenu": { "message": "普通点按始终保留浏览器菜单" },
-  "manageToolMenu": { "message": "管理工具菜单" },
-  "searchAndTabs": { "message": "搜索与标签" },
-  "unassigned": { "message": "未绑定" },
-  "toolJsonInputHint": { "message": "在这里粘贴需要格式化的 JSON 代码" },
-  "toolJsonEmptyTitle": { "message": "粘贴 JSON 后自动格式化" },
-  "toolJsonEmptyHint": { "message": "支持本地格式化、压缩、排序和树形浏览" },
-  "documentFormatterAutoFormatted": { "message": "已自动美化" },
-  "documentFormatterKeyCount": { "message": "个键" },
-  "languageChineseTraditional": { "message": "繁體中文" },
-  "languageJapanese": { "message": "日本語" },
-  "languageSpanish": { "message": "Español" },
-  "syncQuotaItemExceeded": {"message": "工具箱配置超过单项同步容量（8 KiB）。请关闭“同步工具箱配置”后保存到本机，也可以先导出备份。", "description": "项目体验完善文案"},
-  "syncQuotaTotalExceeded": {"message": "浏览器同步空间不足。请关闭“同步工具箱配置”后保存到本机，也可以先导出备份。", "description": "项目体验完善文案"},
-  "toolTimeUnit": {"message": "时间戳单位", "description": "项目体验完善文案"},
-  "toolTimeLocalOutput": {"message": "当地时间输出", "description": "项目体验完善文案"},
-  "toolTimeUnixOutput": {"message": "Unix 时间戳输出", "description": "项目体验完善文案"},
-  "toolTimeFiletimeOutput": {"message": "FILETIME 输出", "description": "项目体验完善文案"},
-  "onboardingTools": {"message": "从扩展弹窗打开 JSON 格式化、文本对比或配置转换。所有工具都在本地处理输入。", "description": "项目体验完善文案"},
-  "onboardingPauseTitle": {"message": "遇到网页操作冲突", "description": "项目体验完善文案"},
-  "onboardingPause": {"message": "在弹窗暂停全部网站的键鼠增强，处理完后点击恢复；只想调整某个网站，可用“管理此网站”创建规则，检查后保存。", "description": "项目体验完善文案"},
-  "sessionAllSites": {"message": "全部网站 · 本次会话", "description": "会话与站点入口文案"},
-  "sessionScopeHint": {"message": "临时开关作用于全部网站，恢复后使用已保存设置。", "description": "会话与站点入口文案"},
-  "restoreSession": {"message": "恢复本次会话", "description": "会话与站点入口文案"},
-  "sessionUpdating": {"message": "正在更新……", "description": "会话与站点入口文案"},
-  "sessionUpdateFailed": {"message": "本次会话状态更新失败，请重试。", "description": "会话与站点入口文案"},
-  "manageCurrentSite": {"message": "管理此网站", "description": "会话与站点入口文案"},
-  "siteRuleShortcutInvalid": {"message": "网站参数无效，请从普通网页的扩展弹窗重新打开。", "description": "会话与站点入口文案"},
-  "siteRuleShortcutDraft": {"message": "已创建此网站的规则草稿，请调整后保存。", "description": "会话与站点入口文案"},
-  "siteRuleShortcutExisting": {"message": "已定位此网站的现有规则，修改后请保存。", "description": "会话与站点入口文案"}
+  "none": {
+    "message": "无",
+    "description": "空摘要"
+  },
+  "saveSettings": {
+    "message": "保存设置"
+  },
+  "saveOnlyOnSave": {
+    "message": "修改仅在保存后生效"
+  },
+  "mouseSettingsSubtitle": {
+    "message": "按住右键并拖动执行动作。"
+  },
+  "mouseRightClickHow": {
+    "message": "右键如何工作"
+  },
+  "mouseRightClick": {
+    "message": "点按右键"
+  },
+  "mouseOpenBrowserMenu": {
+    "message": "打开浏览器菜单"
+  },
+  "mouseHoldAndDrag": {
+    "message": "按住并拖动"
+  },
+  "mouseRunGesture": {
+    "message": "执行鼠标手势"
+  },
+  "mouseGestureActions": {
+    "message": "手势与动作"
+  },
+  "mouseRecognitionSettings": {
+    "message": "识别设置"
+  },
+  "mouseRecognitionHint": {
+    "message": "距离更长可以减少误触，距离更短则响应更快。"
+  },
+  "mouseContextMenuSettings": {
+    "message": "右键菜单"
+  },
+  "mouseNativeMenuHint": {
+    "message": "未越过激活距离的普通点按始终保留浏览器菜单。"
+  },
+  "mouseAdvancedSettings": {
+    "message": "高级识别与绑定设置"
+  },
+  "mouseEnabledStatus": {
+    "message": "已启用"
+  },
+  "mouseDisabledStatus": {
+    "message": "已停用"
+  },
+  "mouseTriggerDistance": {
+    "message": "触发距离"
+  },
+  "mouseTrailHint": {
+    "message": "轨迹提示"
+  },
+  "mouseTrailDescription": {
+    "message": "拖动时显示轨迹，便于学习和调试手势。"
+  },
+  "mouseNormalClickMenu": {
+    "message": "普通点按始终保留浏览器菜单"
+  },
+  "manageToolMenu": {
+    "message": "管理工具菜单"
+  },
+  "searchAndTabs": {
+    "message": "搜索与标签"
+  },
+  "unassigned": {
+    "message": "未绑定"
+  },
+  "toolJsonInputHint": {
+    "message": "在这里粘贴需要格式化的 JSON 代码"
+  },
+  "toolJsonEmptyTitle": {
+    "message": "粘贴 JSON 后自动格式化"
+  },
+  "toolJsonEmptyHint": {
+    "message": "支持本地格式化、压缩、排序和树形浏览"
+  },
+  "documentFormatterAutoFormatted": {
+    "message": "已自动美化"
+  },
+  "documentFormatterKeyCount": {
+    "message": "个键"
+  },
+  "languageChineseTraditional": {
+    "message": "繁體中文"
+  },
+  "languageJapanese": {
+    "message": "日本語"
+  },
+  "languageSpanish": {
+    "message": "Español"
+  },
+  "syncQuotaItemExceeded": {
+    "message": "工具箱配置超过单项同步容量（8 KiB）。请关闭“同步工具箱配置”后保存到本机，也可以先导出备份。",
+    "description": "项目体验完善文案"
+  },
+  "syncQuotaTotalExceeded": {
+    "message": "浏览器同步空间不足。请关闭“同步工具箱配置”后保存到本机，也可以先导出备份。",
+    "description": "项目体验完善文案"
+  },
+  "toolTimeUnit": {
+    "message": "时间戳单位",
+    "description": "项目体验完善文案"
+  },
+  "toolTimeLocalOutput": {
+    "message": "当地时间输出",
+    "description": "项目体验完善文案"
+  },
+  "toolTimeUnixOutput": {
+    "message": "Unix 时间戳输出",
+    "description": "项目体验完善文案"
+  },
+  "toolTimeFiletimeOutput": {
+    "message": "FILETIME 输出",
+    "description": "项目体验完善文案"
+  },
+  "onboardingTools": {
+    "message": "从扩展弹窗打开 JSON 格式化、文本对比或配置转换。所有工具都在本地处理输入。",
+    "description": "项目体验完善文案"
+  },
+  "onboardingPauseTitle": {
+    "message": "遇到网页操作冲突",
+    "description": "项目体验完善文案"
+  },
+  "onboardingPause": {
+    "message": "在弹窗暂停全部网站的键鼠增强，处理完后点击恢复；只想调整某个网站，可用“管理此网站”创建规则，检查后保存。",
+    "description": "项目体验完善文案"
+  },
+  "sessionAllSites": {
+    "message": "全部网站 · 本次会话",
+    "description": "会话与站点入口文案"
+  },
+  "sessionScopeHint": {
+    "message": "临时开关作用于全部网站，恢复后使用已保存设置。",
+    "description": "会话与站点入口文案"
+  },
+  "restoreSession": {
+    "message": "恢复本次会话",
+    "description": "会话与站点入口文案"
+  },
+  "sessionUpdating": {
+    "message": "正在更新……",
+    "description": "会话与站点入口文案"
+  },
+  "sessionUpdateFailed": {
+    "message": "本次会话状态更新失败，请重试。",
+    "description": "会话与站点入口文案"
+  },
+  "manageCurrentSite": {
+    "message": "管理此网站",
+    "description": "会话与站点入口文案"
+  },
+  "siteRuleShortcutInvalid": {
+    "message": "网站参数无效，请从普通网页的扩展弹窗重新打开。",
+    "description": "会话与站点入口文案"
+  },
+  "siteRuleShortcutDraft": {
+    "message": "已创建此网站的规则草稿，请调整后保存。",
+    "description": "会话与站点入口文案"
+  },
+  "siteRuleShortcutExisting": {
+    "message": "已定位此网站的现有规则，修改后请保存。",
+    "description": "会话与站点入口文案"
+  },
+  "runtimeMaintenance": {
+    "message": "运行时维护",
+    "description": "兼容运行时维护入口"
+  },
+  "runtimeMaintenanceNote": {
+    "message": "键盘无法使用时可恢复兼容引擎。旧页面需要手动刷新，请先保存输入。",
+    "description": "兼容运行时维护入口"
+  },
+  "runtimeInspect": {
+    "message": "检查运行状态",
+    "description": "兼容运行时维护入口"
+  },
+  "runtimeRestore": {
+    "message": "恢复兼容引擎",
+    "description": "兼容运行时维护入口"
+  },
+  "runtimeStatus": {
+    "message": "兼容引擎 · 方案 $1 · 活动 frame $2 · 失败 frame $3 · 需要刷新的 frame $4",
+    "description": "兼容运行时维护入口"
+  },
+  "runtimePending": {
+    "message": "$1 个 frame 的恢复尚未完成，请稍后检查；若仍未恢复，请再次尝试恢复。",
+    "description": "运行时维护仍在处理的提示"
+  },
+  "runtimeUnavailable": {
+    "message": "后台服务不可用。请先保存输入，重新加载扩展，再刷新受影响的页面。",
+    "description": "兼容运行时维护入口"
+  },
+  "configurationInspect": {
+    "message": "检查配置"
+  },
+  "configurationRollback": {
+    "message": "准备兼容回退"
+  },
+  "configurationIncoming": {
+    "message": "采用外部更改"
+  },
+  "configurationCommitted": {
+    "message": "保留已提交配置"
+  },
+  "configurationSaveFirst": {
+    "message": "请先保存或放弃页面上的修改，再处理配置。"
+  },
+  "configurationConflict": {
+    "message": "检测到外部配置更改，当前保留最后有效设置。为保护数据，冲突选择操作暂时停用。"
+  },
+  "configurationExportConflict": {
+    "message": "导出冲突观察记录"
+  },
+  "configurationConflictExportNote": {
+    "message": "文件包含配置正文，不包含独立的本机指针资源或未知顶层键；它不能直接作为设置备份导入。"
+  },
+  "configurationConflictExported": {
+    "message": "已导出冲突观察记录，原数据和冲突记录仍被保留。"
+  },
+  "conflictObservationList": {
+    "message": "本机冲突观察"
+  },
+  "conflictObservationNote": {
+    "message": "已保存观察包含受支持的配置正文，不含独立指针资源或未保存草稿，不能直接导入。本机时间仅供参考；未知字段仅保留标记，原数据可能随同步变化。"
+  },
+  "conflictObservationRefresh": {
+    "message": "刷新观察列表"
+  },
+  "conflictObservationCapture": {
+    "message": "保存当前观察"
+  },
+  "conflictObservationExport": {
+    "message": "导出所选观察"
+  },
+  "conflictObservationSaved": {
+    "message": "已保存配置观察"
+  },
+  "conflictObservationUnsupported": {
+    "message": "仅有标记，未保存正文"
+  },
+  "conflictObservationQuotaMarker": {
+    "message": "仅有标记：保存正文的空间不足"
+  },
+  "conflictObservationInvalid": {
+    "message": "观察记录无效或损坏，仍会阻止写入，请保留原记录。"
+  },
+  "conflictObservationListed": {
+    "message": "已列出 $1 条本机观察。"
+  },
+  "conflictObservationEmpty": {
+    "message": "尚无本机冲突观察。"
+  },
+  "conflictObservationCaptured": {
+    "message": "已保存本机观察；它不证明来源或原子时点，冲突仍未解决。"
+  },
+  "conflictObservationOnlyMarker": {
+    "message": "存在无法确认的字段，只保存了不含正文的标记。原数据可能随同步变化；可立即导出当前观察。"
+  },
+  "conflictObservationQuota": {
+    "message": "本机空间或保留额度不足，未能保存配置正文；可能仅保留阻断标记。请立即导出当前观察，稍后可能无法找回。"
+  },
+  "conflictObservationFailed": {
+    "message": "本机观察未能确认保存；请立即导出当前观察，稍后可能无法找回。"
+  },
+  "conflictObservationNotCaptured": {
+    "message": "尚未保存本机观察；可保存或导出当前观察。"
+  },
+  "conflictObservationExported": {
+    "message": "已导出所选观察，原记录仍被保留。"
+  },
+  "conflictReviewOpen": {
+    "message": "逐项复核观察"
+  },
+  "conflictReviewTitle": {
+    "message": "复核已保存观察"
+  },
+  "conflictReviewNote": {
+    "message": "这两份内容是本机保存的观察，可能不含最新同步变化、未知字段或未保存草稿。没有可信共同基线，请逐项选择；数组按整体选择。导出的候选备份不包含本机指针资源，导入后指针将被禁用。生成备份不会写入配置或解除冲突保护。"
+  },
+  "conflictReviewExport": {
+    "message": "导出候选备份"
+  },
+  "conflictReviewCommitted": {
+    "message": "已保存的提交值"
+  },
+  "conflictReviewObserved": {
+    "message": "已保存的观察值"
+  },
+  "conflictReviewMissing": {
+    "message": "字段不存在"
+  },
+  "conflictReviewChoose": {
+    "message": "请为每一处差异选择一个值，再导出。"
+  },
+  "conflictReviewNoChanges": {
+    "message": "已保存的两份观察没有可选择的差异。"
+  },
+  "conflictReviewTooLarge": {
+    "message": "观察内容过大，无法在此复核。可导出观察记录；原数据继续受保护。"
+  },
+  "conflictReviewChanged": {
+    "message": "已保存的观察发生变化或无法验证，请刷新列表后重新复核。"
+  },
+  "conflictReviewInvalid": {
+    "message": "这些选择无法组成有效候选，请重新检查；现有数据未改变。"
+  },
+  "conflictReviewExported": {
+    "message": "已导出候选备份，原观察记录与冲突保护仍然保留。"
+  },
+  "configurationUnavailable": {
+    "message": "配置暂时无法提交。请保留现有数据，导出备份并稍后重试。"
+  },
+  "configurationStatus": {
+    "message": "配置已保存（版本 $1），当前设置可用于兼容回退。"
+  },
+  "configurationExport": {
+    "message": "导出恢复配置"
+  },
+  "configurationBaselineExported": {
+    "message": "仅导出迁移前恢复基线，不包含后续修改。"
+  },
+  "runtimeStatusCanary": {
+    "message": "输入 Canary · 方案 $1 · 活动 frame $2 · 失败 frame $3 · 需要刷新的 frame $4",
+    "description": "输入试用运行时的脱敏状态"
+  },
+  "markUnavailable": {
+    "message": "无法读取或保存标记。",
+    "description": "标记存储失败或运行时不可用时的提示"
+  },
+  "recoveryPageLink": {
+    "message": "恢复状态与诊断",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryPageTitle": {
+    "message": "恢复状态",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryPageIntro": {
+    "message": "扩展后台不可用时，也可以检查本机恢复记录。",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryPagePrivacy": {
+    "message": "上方恢复状态摘要不校验数据完整性。导出的诊断仅包含扩展版本和记录状态，不包含设置或页面正文。",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryRecordCompatibilityConflicts": {
+    "message": "本机冲突观察"
+  },
+  "recoveryCompatibilityConflictCount": {
+    "message": "检测到 $1 条记录；未校验完整性。"
+  },
+  "recoveryRecordConfiguration": {
+    "message": "配置保存",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryRecordRollback": {
+    "message": "兼容回退",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryRecordSync": {
+    "message": "键盘同步准备",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryNotChecked": {
+    "message": "尚未检查",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryStateAbsent": {
+    "message": "没有记录",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryStatePending": {
+    "message": "进行中或等待恢复",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryStateCommitted": {
+    "message": "记录显示已完成",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryStateAborted": {
+    "message": "记录显示已中止",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryStateInvalid": {
+    "message": "无法识别记录格式",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryStateUnsupported": {
+    "message": "不支持此记录版本",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryConflictLabel": {
+    "message": "有冲突标记",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryBlocked": {
+    "message": "存在迁移恢复记录，可能阻止设置保存。请保留现有记录和备份。",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryNoBlock": {
+    "message": "没有发现独立同步发布或回退记录；这不代表配置完整性已验证。",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryReadUnavailable": {
+    "message": "无法读取本机恢复记录；此页面未修改数据。",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryInspect": {
+    "message": "重新检查",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryExport": {
+    "message": "导出脱敏诊断",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryExported": {
+    "message": "诊断已准备下载。",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryExportFailed": {
+    "message": "无法下载诊断。",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryBack": {
+    "message": "返回设置",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "legacyBackupUnknownFields": {
+    "message": "备份包含无法识别的字段，这些字段不会导入，原始文件不会改变。是否继续导入可识别的设置？",
+    "description": "旧键盘备份的未知字段提示"
+  },
+  "legacyBackupUnsupportedRules": {
+    "message": "部分排除规则字段无法安全保留，未导入任何设置。请保留原始备份。",
+    "description": "旧键盘备份的排除规则字段提示"
+  },
+  "legacyBackupPreview": {
+    "message": "请在导入前核对备份字段，原始文件不会改变。是否继续？",
+    "description": "旧键盘备份导入预览"
+  },
+  "legacyBackupRecognizedFields": {
+    "message": "将导入的字段",
+    "description": "旧键盘备份识别字段"
+  },
+  "legacyBackupConvertedFields": {
+    "message": "已转换的字段",
+    "description": "旧键盘备份转换字段"
+  },
+  "legacyBackupErrorFields": {
+    "message": "无效字段",
+    "description": "旧键盘备份错误字段"
+  },
+  "legacyBackupInvalidFields": {
+    "message": "备份包含无效字段，未导入任何设置。请保留原始备份。",
+    "description": "旧键盘备份无效字段提示"
+  },
+  "beforeImportBackups": {
+    "message": "导入前的本地备份",
+    "description": "导入前本机备份"
+  },
+  "beforeImportBackupsNote": {
+    "message": "每次导入前会在本机保存当前设置和存在的指针图片。可将备份图片放入草稿，也可单独导出；设置文件不含图片。旧图片会占用本机存储，当前版本尚无安全清理功能。",
+    "description": "导入前本机备份"
+  },
+  "refreshBackupList": {
+    "message": "刷新备份",
+    "description": "导入前本机备份"
+  },
+  "exportSelectedBackup": {
+    "message": "导出选中备份",
+    "description": "导入前本机备份"
+  },
+  "importBackupInvalid": {
+    "message": "备份已损坏或格式不受支持",
+    "description": "导入前本机备份"
+  },
+  "importBackupExported": {
+    "message": "备份已导出，不包含本地指针图片。",
+    "description": "导入前本机备份"
+  },
+  "importBackupAssetMissing": {
+    "message": "原本机指针图片缺失",
+    "description": "导入前本机备份"
+  },
+  "configurationBackupQuota": {
+    "message": "本机配置备份空间不足，操作已停止。请先导出需要保留的备份；当前版本尚未提供备份清理。",
+    "description": "导入前本机备份"
+  },
+  "configurationLocalQuota": {
+    "message": "本机扩展存储空间不足，操作已停止；已有配置和备份未被删除。",
+    "description": "导入前本机备份"
+  },
+  "importBackupUnsupported": {
+    "message": "此备份包含当前版本无法导入的字段，请保留导出文件",
+    "description": "导入前备份兼容限制"
+  },
+  "beforeImportBackupSelect": {
+    "message": "选择备份",
+    "description": "导入前备份选择"
+  },
+  "importBackupAssetInvalid": {
+    "message": "原本机指针图片无效或无法检查",
+    "description": "导入前备份指针资源提示"
+  },
+  "previewImportBackup": {
+    "message": "查看恢复差异",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "useBackupCursor": {
+    "message": "使用备份中的指针图片"
+  },
+  "importBackupCursorLoading": {
+    "message": "正在读取备份图片…"
+  },
+  "importBackupCursorUseInvalid": {
+    "message": "备份图片无法通过浏览器预览，不能放入草稿；原备份仍被保留。"
+  },
+  "importBackupCursorUseFailed": {
+    "message": "无法读取备份图片；原备份仍被保留。"
+  },
+  "exportBackupCursor": {
+    "message": "导出指针图片",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupPreviewIntro": {
+    "message": "此预览不会恢复设置，也不能证明跨设备数据来源。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupPreviewKeyboard": {
+    "message": "不同的键盘字段",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupToolboxChanged": {
+    "message": "工具箱设置有差异。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupToolboxSame": {
+    "message": "工具箱设置相同。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupPreviewCursor": {
+    "message": "备份中的指针",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorNone": {
+    "message": "未引用本地指针图片。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorMissing": {
+    "message": "原本机图片缺失。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorInvalid": {
+    "message": "PNG 签名或尺寸未通过检查。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorUnchecked": {
+    "message": "无法检查指针图片。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorHeaderValid": {
+    "message": "仅通过 PNG 签名和尺寸检查，尚未验证完整解码。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorChanged": {
+    "message": "当前指针配置或图片与备份不同。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorDecodeFailed": {
+    "message": "图片数据的 Base64 无法解码，未下载；原始备份仍保留。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorExported": {
+    "message": "指针图片已导出。如能正常打开，请在“外观”中重新选择并保存。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorExportedInvalid": {
+    "message": "原始数据已导出；它未通过 PNG 签名或尺寸检查，可能无法作为指针使用。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "recoveryConflictDetails": {
+    "message": "事务冲突只读分类",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictDetailsIntro": {
+    "message": "需要后台可用。字段状态仅反映本次读取；不会执行选择或解除写保护，也不能证明跨设备来源。",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryInspectRollbackConflict": {
+    "message": "查看回退字段状态",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryInspectSyncConflict": {
+    "message": "查看同步字段状态",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictSelect": {
+    "message": "存在已完成或已停止的事务记录时，可查看相应分类。",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictLoading": {
+    "message": "正在检查事务详情……",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictUnavailable": {
+    "message": "无法分类。后台可能不可用，或记录、备份、当前数据无效或已变化；本次检查不会修改它们。",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictUnchanged": {
+    "message": "事务前后相同的字段数量",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictBefore": {
+    "message": "与事务前一致",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictAfter": {
+    "message": "与事务后一致",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictOther": {
+    "message": "与事务前后均不同",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictAbsent": {
+    "message": "缺失",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictMatching": {
+    "message": "与记录一致",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictDifferent": {
+    "message": "与记录不同",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictIndex": {
+    "message": "同步索引",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictChunks": {
+    "message": "分片一致 / 缺失 / 不同",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryOtherSyncChanged": {
+    "message": "其他同步数据与记录不同。",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryOtherSyncSame": {
+    "message": "本次读取中，其他同步数据与记录一致。",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryLocalChanged": {
+    "message": "本机工具箱数据与记录不同。",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryLocalSame": {
+    "message": "本次读取中，本机工具箱数据与记录一致。",
+    "description": "事务冲突只读分类"
+  },
+  "exclusionRulePreserved": {
+    "message": "此规则含当前版本无法编辑的附加字段，已设为只读并原样保留。包含这些字段的备份需要使用支持它们的版本恢复。",
+    "description": "排除规则附加字段的保留提示"
+  },
+  "configurationExistingRulesProtected": {
+    "message": "导入已停止：当前排除规则含本版本无法安全替换的附加字段。现有设置和备份文件均已保留，请使用支持这些字段的版本处理。",
+    "description": "导入保护现有排除规则附加字段"
+  },
+  "importSavedWithDraft": {
+    "message": "导入已完成，当前表单中的未保存修改仍保留；再次保存时会检查它们与导入设置的冲突。",
+    "description": "导入成功后保留未保存表单草稿"
+  },
+  "thirdPartyFeatureBreakdownTitle": {
+    "message": "组件与功能归属清单",
+    "description": "第三方声明页面功能对照标题"
+  },
+  "thirdPartyVimiumHeading": {
+    "message": "Vimium v2.4.2（MIT 许可证）",
+    "description": "Vimium 第三方声明条目标题"
+  },
+  "thirdPartyVimiumFeatures": {
+    "message": "负责键盘导航与按键模式（普通模式 / 插入模式 / 可视选择模式）、Link Hints 链接字母跳转、键盘滚屏、页内查找（/）、位置标记（Marks）、Vomnibar 全能搜索框及书签/历史/标签页补全、键盘 HUD 状态条、URL 排除规则，以及传统选项页、帮助弹窗与命令列表页。",
+    "description": "Vimium 所承载的功能清单"
+  },
+  "thirdPartyYamlHeading": {
+    "message": "yaml 2.9.1（ISC 许可证）",
+    "description": "yaml 解析器第三方声明条目标题"
+  },
+  "thirdPartyYamlFeatures": {
+    "message": "负责实用工具箱中 Properties 与 YAML 配置互转工具的本地 YAML 解析与生成。",
+    "description": "yaml 解析器所承载的功能"
+  },
+  "thirdPartyShouldaHeading": {
+    "message": "shoulda.js（MIT 许可证，仅用于测试）",
+    "description": "shoulda.js 第三方声明条目标题"
+  },
+  "thirdPartyShouldaFeatures": {
+    "message": "仅用于开发与构建阶段的单元测试框架，不参与扩展实际浏览器的运行时功能。",
+    "description": "shoulda.js 的使用范围"
+  },
+  "thirdPartySelfHeading": {
+    "message": "浏览器工具箱自研部分（GPL-3.0-or-later）",
+    "description": "本项目自研模块标题"
+  },
+  "thirdPartySelfFeatures": {
+    "message": "独立实现的功能：鼠标手势（轨迹与悬浮胶囊 HUD、取消热区、右键双点击菜单兼容、跨 iframe 桥接）、超级拖拽、滚轮手势、摇杆手势、自定义指针、统一命令调度与命令中心、标签页列表弹窗、网页 JSON 文档直出美化、8 项本地离线实用工具（JSON 格式化、Properties/YAML 互转、文本对比、编解码与摘要、时间时区、ID 生成、随机密码、表格转换）、按站点开关规则、配置迁移与导入恢复、多语言以及新版设置界面。",
+    "description": "浏览器工具箱自研功能清单"
+  },
+  "command_scrollDown": {
+    "message": "向下滚动"
+  },
+  "command_scrollUp": {
+    "message": "向上滚动"
+  },
+  "command_scrollPageDown": {
+    "message": "向下滚动半页"
+  },
+  "command_scrollPageUp": {
+    "message": "向上滚动半页"
+  },
+  "command_scrollLeft": {
+    "message": "向左滚动"
+  },
+  "command_scrollRight": {
+    "message": "向右滚动"
+  },
+  "command_scrollToLeft": {
+    "message": "滚动到最左侧"
+  },
+  "command_scrollToRight": {
+    "message": "滚动到最右侧"
+  },
+  "command_copyCurrentUrl": {
+    "message": "复制当前网址到剪贴板"
+  },
+  "command_openCopiedUrlInCurrentTab": {
+    "message": "在当前标签页打开剪贴板网址"
+  },
+  "command_openCopiedUrlInNewTab": {
+    "message": "在新标签页打开剪贴板网址"
+  },
+  "command_goUp": {
+    "message": "返回上一级网址目录"
+  },
+  "command_goToRoot": {
+    "message": "跳转到当前网址根目录"
+  },
+  "command_enterInsertMode": {
+    "message": "进入输入模式"
+  },
+  "command_enterVisualMode": {
+    "message": "进入可视选择模式"
+  },
+  "command_enterVisualLineMode": {
+    "message": "进入可视行选择模式"
+  },
+  "command_passNextKey": {
+    "message": "将下一个按键透传给网页"
+  },
+  "command_focusInput": {
+    "message": "聚焦页面第一个文本输入框"
+  },
+  "command_LinkHints_activateMode": {
+    "message": "在当前标签页打开链接"
+  },
+  "command_LinkHints_activateModeToOpenInNewTab": {
+    "message": "在后台新标签页打开链接"
+  },
+  "command_LinkHints_activateModeToOpenInNewForegroundTab": {
+    "message": "在前台新标签页打开链接并切换"
+  },
+  "command_LinkHints_activateModeWithQueue": {
+    "message": "连续在新标签页打开多个链接"
+  },
+  "command_LinkHints_activateModeToDownloadLink": {
+    "message": "下载链接指向的内容"
+  },
+  "command_LinkHints_activateModeToOpenIncognito": {
+    "message": "在无痕窗口打开链接"
+  },
+  "command_LinkHints_activateModeToCopyLinkUrl": {
+    "message": "复制链接网址到剪贴板"
+  },
+  "command_goPrevious": {
+    "message": "跳转到上一页链接（上一页 / <）"
+  },
+  "command_goNext": {
+    "message": "跳转到下一页链接（下一页 / >）"
+  },
+  "command_nextFrame": {
+    "message": "切换到页面下一个框架"
+  },
+  "command_mainFrame": {
+    "message": "切换到页面主框架"
+  },
+  "command_Marks_activateCreateMode": {
+    "message": "创建位置书签标记"
+  },
+  "command_Marks_activateGotoMode": {
+    "message": "跳转到位置书签标记"
+  },
+  "command_Vomnibar_activate": {
+    "message": "在当前页打开网址、书签或历史记录"
+  },
+  "command_Vomnibar_activateInNewTab": {
+    "message": "在新标签页打开网址、书签或历史记录"
+  },
+  "command_Vomnibar_activateBookmarks": {
+    "message": "搜索并在当前页打开书签"
+  },
+  "command_Vomnibar_activateBookmarksInNewTab": {
+    "message": "搜索并在新标签页打开书签"
+  },
+  "command_Vomnibar_activateTabSelection": {
+    "message": "搜索并切换已打开的标签页"
+  },
+  "command_Vomnibar_activateEditUrl": {
+    "message": "编辑当前页面网址"
+  },
+  "command_Vomnibar_activateEditUrlInNewTab": {
+    "message": "编辑当前网址并在新标签页打开"
+  },
+  "command_enterFindMode": {
+    "message": "进入页内查找模式"
+  },
+  "command_performFind": {
+    "message": "跳转到下一个查找匹配项"
+  },
+  "command_performBackwardsFind": {
+    "message": "跳转到上一个查找匹配项"
+  },
+  "command_findSelected": {
+    "message": "向下查找当前选中的文本"
+  },
+  "command_findSelectedBackwards": {
+    "message": "向上查找当前选中的文本"
+  },
+  "command_createTab": {
+    "message": "新建标签页"
+  },
+  "command_visitPreviousTab": {
+    "message": "切换到上一个访问的标签页"
+  },
+  "command_firstTab": {
+    "message": "切换到第一个标签页"
+  },
+  "command_lastTab": {
+    "message": "切换到最后一个标签页"
+  },
+  "command_duplicateTab": {
+    "message": "复制当前标签页"
+  },
+  "command_togglePinTab": {
+    "message": "固定或取消固定当前标签页"
+  },
+  "command_toggleMuteTab": {
+    "message": "静音或取消静音当前标签页"
+  },
+  "command_moveTabToNewWindow": {
+    "message": "将标签页移至新窗口"
+  },
+  "command_closeTabsOnLeft": {
+    "message": "关闭左侧标签页"
+  },
+  "command_closeTabsOnRight": {
+    "message": "关闭右侧标签页"
+  },
+  "command_closeOtherTabs": {
+    "message": "关闭其他所有标签页"
+  },
+  "command_moveTabLeft": {
+    "message": "向左移动标签页"
+  },
+  "command_moveTabRight": {
+    "message": "向右移动标签页"
+  },
+  "command_setZoom": {
+    "message": "设置页面缩放比例"
+  },
+  "command_zoomIn": {
+    "message": "放大页面"
+  },
+  "command_zoomOut": {
+    "message": "缩小页面"
+  },
+  "command_zoomReset": {
+    "message": "重置页面缩放"
+  },
+  "command_toggleViewSource": {
+    "message": "查看网页源代码"
+  },
+  "command_showHelp": {
+    "message": "显示帮助"
+  },
+  "navBasicPreferences": {
+    "message": "基础偏好"
+  },
+  "navInteractionEnhancement": {
+    "message": "交互增强"
+  },
+  "navToolsAndRendering": {
+    "message": "工具与渲染"
+  },
+  "navRulesAndData": {
+    "message": "规则与数据"
+  },
+  "generalAndTheme": {
+    "message": "常规与主题"
+  },
+  "shortcutToolsConfig": {
+    "message": "快捷工具配置"
+  },
+  "pageAutoFormatter": {
+    "message": "网页自动格式化"
+  },
+  "privacyStatement": {
+    "message": "隐私声明"
+  },
+  "searchEnginesDescription": {
+    "message": "将目标搜索引擎绑定为短关键字，在网页快速启动栏（Vomnibar）中直接搜索，无需先打开搜索引擎首页。"
+  },
+  "searchStep1Kicker": {
+    "message": "第 1 步 · 配置并保存"
+  },
+  "searchStep1Title": {
+    "message": "在下方填写或编辑关键字规则"
+  },
+  "searchStep1Desc": {
+    "message": "每行一条「关键字: 搜索地址 [名称]」（如 bd: https://www.baidu.com/s?wd=%s 百度），改好后点击右上角“保存设置”。"
+  },
+  "searchStep2Kicker": {
+    "message": "第 2 步 · 网页中呼出"
+  },
+  "searchStep2Title": {
+    "message": "按 o（当前页）或 O（新标签）"
+  },
+  "searchStep2Desc": {
+    "message": "呼出快速启动栏；请确保「键盘导航」已开启（或通过自定义手势／命令中心打开）。"
+  },
+  "searchStep3Kicker": {
+    "message": "第 3 步 · 关键字检索"
+  },
+  "searchStep3Title": {
+    "message": "输入 bd 搜索词 并回车"
+  },
+  "searchStep3Desc": {
+    "message": "关键字后加空格即可切换为百度搜索，继续输入关键词回车直接打开结果页。"
+  },
+  "searchRulesLabel": {
+    "message": "自定义规则列表"
+  },
+  "searchSyntaxFormatLabel": {
+    "message": "行格式规范"
+  },
+  "searchSyntaxFormatDesc": {
+    "message": "格式为「关键字: URL [显示名称]」（例如 bd: https://www.baidu.com/s?wd=%s 百度）。%s 会替换为 URL 编码后的搜索词，%S 保持原样不编码；未写占位符时自动拼在地址末尾。"
+  },
+  "searchSyntaxCommentLabel": {
+    "message": "注释与生效"
+  },
+  "searchSyntaxCommentDesc": {
+    "message": "以 # 或 \" 开头的行视作注释不会生效；编辑完成后需点击右上角「保存设置」。"
+  }
 }

@@ -1,5 +1,6 @@
 import "./all_content_scripts.js";
 import "../lib/i18n.js";
+import "../lib/browser_toolbox/theme.js";
 import "../background_scripts/browser_toolbox/settings_storage.js";
 import * as UIComponentMessenger from "./ui_component_messenger.js";
 import { allCommands } from "../background_scripts/all_commands.js";
@@ -273,8 +274,12 @@ globalThis.isVimiumHelpDialogPage = true;
 
 const testEnv = globalThis.window == null;
 if (!testEnv) {
+  globalThis.BrowserToolboxTheme?.applyStoredTheme?.(document);
+  globalThis.BrowserToolboxTheme?.watchTheme?.(document);
   document.addEventListener("DOMContentLoaded", async () => {
+    await BrowserToolboxUIAuthorization.ready;
     await Settings.onLoaded();
+    await globalThis.BrowserToolboxTheme?.applyStoredTheme?.(document);
     DomUtils.injectUserCss(); // Manually inject custom user styles.
   });
   init();

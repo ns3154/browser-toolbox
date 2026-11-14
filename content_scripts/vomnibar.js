@@ -9,16 +9,16 @@ const Vomnibar = {
 
   activate(sourceFrameId, registryEntry) {
     const options = Object.assign({}, registryEntry.options, { completer: "omni" });
-    this.open(sourceFrameId, options);
+    return this.open(sourceFrameId, options);
   },
 
   activateInNewTab(sourceFrameId, registryEntry) {
     const options = Object.assign({}, registryEntry.options, { completer: "omni", newTab: true });
-    this.open(sourceFrameId, options);
+    return this.open(sourceFrameId, options);
   },
 
   activateTabSelection(sourceFrameId) {
-    this.open(sourceFrameId, {
+    return this.open(sourceFrameId, {
       completer: "tabs",
       selectFirst: true,
     });
@@ -29,7 +29,7 @@ const Vomnibar = {
       completer: "bookmarks",
       selectFirst: true,
     });
-    this.open(sourceFrameId, options);
+    return this.open(sourceFrameId, options);
   },
 
   activateBookmarksInNewTab(sourceFrameId, registryEntry) {
@@ -38,11 +38,11 @@ const Vomnibar = {
       selectFirst: true,
       newTab: true,
     });
-    this.open(sourceFrameId, options);
+    return this.open(sourceFrameId, options);
   },
 
   activateEditUrl(sourceFrameId) {
-    this.open(sourceFrameId, {
+    return this.open(sourceFrameId, {
       completer: "omni",
       selectFirst: false,
       query: globalThis.location.href,
@@ -50,7 +50,7 @@ const Vomnibar = {
   },
 
   activateEditUrlInNewTab(sourceFrameId) {
-    this.open(sourceFrameId, {
+    return this.open(sourceFrameId, {
       completer: "omni",
       selectFirst: false,
       query: globalThis.location.href,
@@ -73,11 +73,14 @@ const Vomnibar = {
   //     newTab: Optional. Whether to open the result in a new tab.
   //     keyword: A keyword which will scope the search to a UserSearchEngine.
   open(sourceFrameId, vomnibarShowOptions) {
+    if (globalThis.BrowserToolboxVomnibarControllerInstance) {
+      return BrowserToolboxVomnibarControllerInstance.open(sourceFrameId, vomnibarShowOptions);
+    }
     this.init();
     // The Vomnibar cannot coexist with the help dialog (it causes focus issues).
     HelpDialog.abort();
     Utils.assertType(VomnibarShowOptions, vomnibarShowOptions);
-    this.vomnibarUI.show(
+    return this.vomnibarUI.show(
       Object.assign(vomnibarShowOptions, { name: "activate" }),
       { sourceFrameId, focus: true },
     );

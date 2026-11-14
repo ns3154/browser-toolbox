@@ -12,11 +12,24 @@
   const protocol = globalThis.BrowserToolboxMessageProtocol;
 
   class CommandDispatcher {
-    constructor({ registry, browserAdapter, backgroundCommands, gestureCoordinator = null }) {
+    constructor(
+      {
+        registry,
+        browserAdapter,
+        backgroundCommands,
+        selectBackgroundCommands = null,
+        gestureCoordinator = null,
+        requestLedger = null,
+        targetIdentity = null,
+      },
+    ) {
       this.registry = registry;
       this.browserAdapter = browserAdapter;
       this.backgroundCommands = backgroundCommands;
+      this.selectBackgroundCommands = selectBackgroundCommands;
       this.gestureCoordinator = gestureCoordinator;
+      this.requestLedger = requestLedger;
+      this.targetIdentity = targetIdentity;
       this.seenDangerousRequests = new Map();
     }
 
@@ -43,9 +56,21 @@
      * @param {Object} [sender] Runtime 发送方上下文。
      * @returns {Promise<BrowserToolboxCommandResult>} 路由结果。
      */
-    async dispatch(invocation, sender = {}) {
-      const validation = invocationApi.validateInvocation(invocation, this.registry);
+    async dispatch(invocation, sender = {}, authority = null, revalidate = null) {
+      const keyboardTrusted = Boolean(
+        authority && ["content", "ownedUi"].includes(authority.role) ||
+          authority?.component === "help",
+      );
+      const validation = invocationApi.validateInvocation(invocation, this.registry, {
+        keyboardTrusted,
+      });
       if (!validation.ok) return validation;
+      const command = this.registry.getCommand(invocation.commandName);
+      invocation = invocationApi.normalizeInvocation(invocation, command);
+      if (invocation.protocolVersion === 2 && authority && authority.role !== "ownedUi") {
+        invocation = { ...invocation, context: { ...invocation.context,
+          sourcePlanVersion: authority.planVersion || 1 } };
+      }
       const tabId = sender.tab?.id ?? invocation.context?.tabId;
       if (invocation.source.type === "mouseGesture" && this.gestureCoordinator) {
         if (!this.gestureCoordinator.isActive(tabId, sender.frameId, invocation.requestId)) {
@@ -55,26 +80,78 @@
       if (this.rememberRequest(invocation, tabId)) {
         return invocationApi.createResult(false, invocationApi.ERROR_CODES.DUPLICATE_REQUEST);
       }
-      const command = this.registry.getCommand(invocation.commandName);
+      const persistent = this.requestLedger &&
+        (command.dangerous || invocationApi.DANGEROUS_COMMANDS.has(command.name));
+      let effectStarted = false;
+      let timer;
       try {
+        if (persistent) {
+          const failure = await this.requestLedger.begin(invocation, sender);
+          if (failure) return invocationApi.createResult(false, failure);
+        }
+        if (revalidate) await revalidate();
+        const deadline = Date.now() + (command.countPolicy?.executionBudgetMs || 30000);
+        const guard = async () => {
+          if (Date.now() >= deadline) {
+            throw Object.assign(new Error("EXECUTION_BUDGET_EXCEEDED"), { code: "RESULT_UNKNOWN" });
+          }
+          if (revalidate) await revalidate();
+        };
+        effectStarted = true;
+        let work;
         if (command.execution === "background") {
           const custom = invocation.commandName.startsWith("BrowserToolbox.");
-          return custom
-            ? await this.browserAdapter.execute(invocation, sender)
-            : await this.browserAdapter.executeExisting(
+          work = custom
+            ? this.browserAdapter.execute(invocation, sender)
+            : this.browserAdapter.executeExisting(
               invocation.commandName,
               invocation,
               sender,
-              this.backgroundCommands,
+              invocation.protocolVersion === 2 && revalidate
+                ? this.selectBackgroundCommands?.(invocation, authority) || this.backgroundCommands
+                : this.backgroundCommands,
+              invocation.protocolVersion === 2 ? guard : null,
             );
+        } else {work = this.dispatchToPage(
+            invocation,
+            sender,
+            command.execution === "topFrame",
+          );}
+        let result;
+        if (invocation.protocolVersion === 2) {
+          // 超时只能停止等待，已交给浏览器的动作不能撤销；重复适配器会在下一动作前检查执行预算。
+          result = await Promise.race([
+            work,
+            new Promise((resolve) =>
+              timer = setTimeout(
+                () => resolve(invocationApi.createResult(false, "RESULT_UNKNOWN")),
+                Math.max(0, deadline - Date.now()),
+              )
+            ),
+          ]);
+        } else result = await work;
+        if (persistent) {
+          try {
+            await this.requestLedger.complete(invocation, sender, result);
+          } catch (_) {
+            return invocationApi.createResult(false, "RESULT_UNKNOWN");
+          }
         }
-        return await this.dispatchToPage(invocation, sender, command.execution === "topFrame");
+        return result;
       } catch (error) {
+        const code = invocation.protocolVersion === 2
+          ? effectStarted ? "RESULT_UNKNOWN" : error.code || "COMMAND_UNAVAILABLE"
+          : invocationApi.ERROR_CODES.COMMAND_FAILED;
+        if (persistent && effectStarted) {
+          await this.requestLedger.complete(invocation, sender, { code }).catch(() => {});
+        }
         return invocationApi.createResult(
           false,
-          invocationApi.ERROR_CODES.COMMAND_FAILED,
-          error.message,
+          code,
+          invocation.protocolVersion === 2 ? undefined : error.message,
         );
+      } finally {
+        clearTimeout(timer);
       }
     }
 
@@ -87,6 +164,13 @@
      */
     async dispatchToPage(invocation, sender, topFrame) {
       let tab = sender.tab;
+      if (invocation.source.type === "ui" && invocation.context?.tabId != null) {
+        try {
+          tab = await chrome.tabs.get(invocation.context.tabId);
+        } catch (_) {
+          return invocationApi.createResult(false, invocationApi.ERROR_CODES.NO_ACTIVE_TAB);
+        }
+      }
       if (!tab && invocation.context?.tabId != null) {
         try {
           tab = await chrome.tabs.get(invocation.context.tabId);
@@ -106,9 +190,26 @@
         : sender.frameId == null
         ? {}
         : { frameId: sender.frameId };
-      const message = protocol.create("browserToolbox.executePageCommand", { invocation });
-      message.handler = message.type;
+      let message;
+      if (invocation.protocolVersion === 2) {
+        const frameId = topFrame ? 0 : sender.frameId;
+        const identity = await this.targetIdentity(tab.id, frameId);
+        if (invocation.context.sourcePlanVersion != null &&
+          identity.planVersion != null && invocation.context.sourcePlanVersion !== identity.planVersion) {
+          return invocationApi.createResult(false, "RUNTIME_PLAN_MISMATCH");
+        }
+        options.documentId = identity.documentId;
+        delete options.frameId;
+        message = protocol.envelope("command", "execute", { invocation }, identity);
+        message.requestId = invocation.requestId;
+      } else {
+        message = protocol.create("browserToolbox.executePageCommand", { invocation });
+        message.handler = message.type;
+      }
       const result = await chrome.tabs.sendMessage(tab.id, message, options);
+      if (invocation.protocolVersion === 2 && result?.ok == null) {
+        return invocationApi.createResult(false, "RESULT_UNKNOWN");
+      }
       return result?.ok == null ? invocationApi.createResult(true) : result;
     }
   }

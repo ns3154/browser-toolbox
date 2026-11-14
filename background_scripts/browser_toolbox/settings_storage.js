@@ -50,8 +50,12 @@
   function serializedSize(value) {
     const serialized = JSON.stringify(value);
     if (serialized === undefined) return 0;
-    // Chrome storage 配额按序列化后的字节数计算，不能用 JavaScript 字符数代替。
-    return new TextEncoder().encode(serialized).byteLength;
+    // Chromium 的存储序列化额外转义这些字符，必须计入配额。
+    const escaped = serialized.replace(
+      /[<\u2028\u2029]/g,
+      (character) => `\\u${character.charCodeAt(0).toString(16).padStart(4, "0")}`,
+    );
+    return new TextEncoder().encode(escaped).byteLength;
   }
 
   function serializedItemSize(key, value) {
@@ -132,6 +136,10 @@
      * @returns {Promise<BrowserToolboxStoredSettings>} 存储结果。
      */
     async readSettings() {
+      const configuration = globalThis.BrowserToolboxConfigurationClientInstance;
+      if (this.sync === globalThis.chrome?.storage?.sync && configuration?.enabled) {
+        return (await configuration.read()).toolboxSource;
+      }
       const [syncValues, localValues] = await Promise.all([
         this.sync.get([SETTINGS_KEY, LEGACY_SETTINGS_KEY]),
         this.local.get([SETTINGS_KEY, LEGACY_SETTINGS_KEY]),
@@ -196,6 +204,11 @@
      * @returns {Promise<"sync"|"local">} 实际写入的存储区域。
      */
     async writeSettings(value) {
+      const configuration = globalThis.BrowserToolboxConfigurationClientInstance;
+      if (this.sync === globalThis.chrome?.storage?.sync && configuration?.enabled) {
+        const result = await configuration.commit({ toolbox: value });
+        return result.toolboxSource.area;
+      }
       const area = this.areaForSettings(value);
       const target = area === "local" ? this.local : this.sync;
       if (area === "sync") await this.assertSyncBudget(value);
@@ -262,6 +275,11 @@
     }
 
     async restoreSettings(value, state) {
+      const configuration = globalThis.BrowserToolboxConfigurationClientInstance;
+      if (this.sync === globalThis.chrome?.storage?.sync && configuration?.enabled) {
+        await configuration.commit({ toolbox: value });
+        return;
+      }
       if (typeof state === "boolean") {
         if (!state) await this.sync.remove(SETTINGS_KEY);
         else await this.sync.set({ [SETTINGS_KEY]: value });
@@ -294,6 +312,11 @@
     async getStoredLocale() {
       const stored = await this.readSettings();
       return stored.value?.general?.language;
+    }
+
+    async getStoredTheme() {
+      const stored = await this.readSettings();
+      return stored.value?.general?.theme;
     }
   }
 

@@ -1,22 +1,64 @@
 {
-  "extensionName": { "message": "Browser Toolbox", "description": "Extension name" },
+  "extensionName": {
+    "message": "Browser Toolbox",
+    "description": "Extension name"
+  },
   "extensionDescription": {
     "message": "Navigate pages, run page actions, and manage tabs with keyboard and mouse. 使用键盘和鼠标导航网页、执行页面操作并管理标签页。",
     "description": "Extension description"
   },
-  "browserToolbox": { "message": "Browser Toolbox", "description": "Product name" },
-  "save": { "message": "Save", "description": "Save button" },
-  "saved": { "message": "Saved", "description": "Saved status" },
-  "saving": { "message": "Saving…", "description": "Save in progress" },
-  "saveChanges": { "message": "Save changes", "description": "Save changes status" },
-  "noChanges": { "message": "No changes", "description": "No changes status" },
-  "cancel": { "message": "Cancel", "description": "Cancel button" },
-  "close": { "message": "Close", "description": "Close button" },
-  "reset": { "message": "Reset", "description": "Reset button" },
-  "enabled": { "message": "Enabled", "description": "Enabled label" },
-  "disabled": { "message": "Disabled", "description": "Disabled label" },
-  "general": { "message": "General", "description": "General settings" },
-  "globalShowHud": { "message": "Show toolbox command hints", "description": "Global toolbox HUD" },
+  "browserToolbox": {
+    "message": "Browser Toolbox",
+    "description": "Product name"
+  },
+  "save": {
+    "message": "Save",
+    "description": "Save button"
+  },
+  "saved": {
+    "message": "Saved",
+    "description": "Saved status"
+  },
+  "saving": {
+    "message": "Saving…",
+    "description": "Save in progress"
+  },
+  "saveChanges": {
+    "message": "Save changes",
+    "description": "Save changes status"
+  },
+  "noChanges": {
+    "message": "No changes",
+    "description": "No changes status"
+  },
+  "cancel": {
+    "message": "Cancel",
+    "description": "Cancel button"
+  },
+  "close": {
+    "message": "Close",
+    "description": "Close button"
+  },
+  "reset": {
+    "message": "Reset",
+    "description": "Reset button"
+  },
+  "enabled": {
+    "message": "Enabled",
+    "description": "Enabled label"
+  },
+  "disabled": {
+    "message": "Disabled",
+    "description": "Disabled label"
+  },
+  "general": {
+    "message": "General",
+    "description": "General settings"
+  },
+  "globalShowHud": {
+    "message": "Show toolbox command hints",
+    "description": "Global toolbox HUD"
+  },
   "browserSyncEnabled": {
     "message": "Sync toolbox settings",
     "description": "Browser sync toggle"
@@ -25,7 +67,10 @@
     "message": "This switch only controls toolbox settings. When off, they stay on this device. Vimium settings, including keyboard shortcuts and search engines, still use browser sync.",
     "description": "Browser sync explanation"
   },
-  "browserStartup": { "message": "Browser startup", "description": "Browser startup settings" },
+  "browserStartup": {
+    "message": "Browser startup",
+    "description": "Browser startup settings"
+  },
   "browserStartupEnabled": {
     "message": "Open a website when Chrome starts",
     "description": "Browser startup toggle"
@@ -34,8 +79,14 @@
     "message": "Also open this website in new tabs",
     "description": "New tab redirect toggle"
   },
-  "browserStartupUrl": { "message": "Startup website URL", "description": "Browser startup URL" },
-  "browserStartupUrlPlaceholder": { "message": "https://example.com", "description": "Browser startup URL placeholder" },
+  "browserStartupUrl": {
+    "message": "Startup website URL",
+    "description": "Browser startup URL"
+  },
+  "browserStartupUrlPlaceholder": {
+    "message": "https://example.com",
+    "description": "Browser startup URL placeholder"
+  },
   "browserStartupNote": {
     "message": "Opens one website when this Chrome profile starts. You can separately enable it for normal new tabs; existing restored tabs are kept.",
     "description": "Browser startup explanation"
@@ -56,17 +107,50 @@
     "message": "The startup website URL is too long.",
     "description": "Browser startup URL length error"
   },
-  "keyboard": { "message": "Keyboard", "description": "Keyboard settings" },
-  "mouseGestures": { "message": "Mouse Gestures", "description": "Mouse gesture settings" },
-  "superDrag": { "message": "Super Drag", "description": "Super drag settings" },
-  "wheelRocker": { "message": "Wheel & Rocker", "description": "Wheel and rocker settings" },
-  "rocker": { "message": "Rocker", "description": "Rocker settings" },
-  "siteRules": { "message": "Site Rules", "description": "Site rule settings" },
-  "backupRestore": { "message": "Backup & Restore", "description": "Backup settings" },
-  "privacy": { "message": "Privacy", "description": "Privacy settings" },
-  "privacyTitle": { "message": "Browser Toolbox Privacy", "description": "Privacy page title" },
-  "aboutLicenses": { "message": "About & Licenses", "description": "About page" },
-  "openSettings": { "message": "Open settings", "description": "Open settings button" },
+  "keyboard": {
+    "message": "Keyboard",
+    "description": "Keyboard settings"
+  },
+  "mouseGestures": {
+    "message": "Mouse Gestures",
+    "description": "Mouse gesture settings"
+  },
+  "superDrag": {
+    "message": "Super Drag",
+    "description": "Super drag settings"
+  },
+  "wheelRocker": {
+    "message": "Wheel & Rocker",
+    "description": "Wheel and rocker settings"
+  },
+  "rocker": {
+    "message": "Rocker",
+    "description": "Rocker settings"
+  },
+  "siteRules": {
+    "message": "Site Rules",
+    "description": "Site rule settings"
+  },
+  "backupRestore": {
+    "message": "Backup & Restore",
+    "description": "Backup settings"
+  },
+  "privacy": {
+    "message": "Privacy",
+    "description": "Privacy settings"
+  },
+  "privacyTitle": {
+    "message": "Browser Toolbox Privacy",
+    "description": "Privacy page title"
+  },
+  "aboutLicenses": {
+    "message": "About & Licenses",
+    "description": "About page"
+  },
+  "openSettings": {
+    "message": "Open settings",
+    "description": "Open settings button"
+  },
   "openBrowserToolboxSettings": {
     "message": "Browser Toolbox mouse, drag, wheel and privacy settings",
     "description": "Browser Toolbox link from the Vimium options page"
@@ -75,7 +159,10 @@
     "message": "Browser Toolbox settings",
     "description": "Browser Toolbox command group heading"
   },
-  "browserToolboxHelpTitle": { "message": "Browser Toolbox Help", "description": "Help title" },
+  "browserToolboxHelpTitle": {
+    "message": "Browser Toolbox Help",
+    "description": "Help title"
+  },
   "browserToolboxHelpIntro": {
     "message": "Keyboard navigation uses the Vimium baseline; this section summarizes Browser Toolbox modules and the current page state.",
     "description": "Help introduction"
@@ -144,25 +231,58 @@
     "message": "Open Browser Toolbox settings",
     "description": "Help settings link"
   },
-  "openPrivacyPolicy": { "message": "Privacy policy", "description": "Privacy policy link" },
-  "openLicense": { "message": "License", "description": "License link" },
+  "openPrivacyPolicy": {
+    "message": "Privacy policy",
+    "description": "Privacy policy link"
+  },
+  "openLicense": {
+    "message": "License",
+    "description": "License link"
+  },
   "keyboardBaselineNotice": {
     "message": "Keyboard navigation baseline: Vimium v2.4.2.",
     "description": "Keyboard baseline notice"
   },
-  "help": { "message": "Help", "description": "Help label" },
-  "wiki": { "message": "Wiki", "description": "Wiki link" },
-  "navigatingThePage": { "message": "Navigating the page", "description": "Help section heading" },
-  "usingTheVomnibar": { "message": "Using the Vomnibar", "description": "Help section heading" },
-  "usingFind": { "message": "Using find", "description": "Help section heading" },
-  "navigatingHistory": { "message": "Navigating history", "description": "Help section heading" },
-  "manipulatingTabs": { "message": "Manipulating tabs", "description": "Help section heading" },
+  "help": {
+    "message": "Help",
+    "description": "Help label"
+  },
+  "wiki": {
+    "message": "Wiki",
+    "description": "Wiki link"
+  },
+  "navigatingThePage": {
+    "message": "Navigating the page",
+    "description": "Help section heading"
+  },
+  "usingTheVomnibar": {
+    "message": "Using the Vomnibar",
+    "description": "Help section heading"
+  },
+  "usingFind": {
+    "message": "Using find",
+    "description": "Help section heading"
+  },
+  "navigatingHistory": {
+    "message": "Navigating history",
+    "description": "Help section heading"
+  },
+  "manipulatingTabs": {
+    "message": "Manipulating tabs",
+    "description": "Help section heading"
+  },
   "linksAndSelections": {
     "message": "Links and selections",
     "description": "Help section heading"
   },
-  "windows": { "message": "Windows", "description": "Help section heading" },
-  "miscellaneous": { "message": "Miscellaneous", "description": "Help section heading" },
+  "windows": {
+    "message": "Windows",
+    "description": "Help section heading"
+  },
+  "miscellaneous": {
+    "message": "Miscellaneous",
+    "description": "Help section heading"
+  },
   "showAdvancedCommands": {
     "message": "Show advanced commands",
     "description": "Advanced command toggle"
@@ -171,10 +291,22 @@
     "message": "Hide advanced commands",
     "description": "Advanced command toggle"
   },
-  "whatsNew": { "message": "What's new?", "description": "Changelog link" },
-  "version": { "message": "Version", "description": "Version label" },
-  "openHelp": { "message": "Open help", "description": "Open help button" },
-  "currentSite": { "message": "Current site", "description": "Current site heading" },
+  "whatsNew": {
+    "message": "What's new?",
+    "description": "Changelog link"
+  },
+  "version": {
+    "message": "Version",
+    "description": "Version label"
+  },
+  "openHelp": {
+    "message": "Open help",
+    "description": "Open help button"
+  },
+  "currentSite": {
+    "message": "Current site",
+    "description": "Current site heading"
+  },
   "disableForSession": {
     "message": "Pause all sites",
     "description": "全局会话操作与状态"
@@ -183,12 +315,18 @@
     "message": "All sites paused for this session.",
     "description": "全局会话操作与状态"
   },
-  "disabling": { "message": "Disabling…", "description": "Session disable in progress" },
+  "disabling": {
+    "message": "Disabling…",
+    "description": "Session disable in progress"
+  },
   "sessionDisableFailed": {
     "message": "Could not disable for this session. Try again.",
     "description": "Session disable failure"
   },
-  "inactive": { "message": "Inactive", "description": "Inactive current site state" },
+  "inactive": {
+    "message": "Inactive",
+    "description": "Inactive current site state"
+  },
   "allModulesEnabled": {
     "message": "All Browser Toolbox modules are enabled on this site.",
     "description": "Current site status"
@@ -197,7 +335,10 @@
     "message": "The browser does not allow extensions to run on this page.",
     "description": "Restricted page message"
   },
-  "actionPageTitle": { "message": "Browser Toolbox", "description": "Action page title" },
+  "actionPageTitle": {
+    "message": "Browser Toolbox",
+    "description": "Action page title"
+  },
   "firefoxMissingHostsPermission": {
     "message": "Vimium is missing the \"all hosts\" permission.",
     "description": "Firefox permission heading"
@@ -234,34 +375,70 @@
     "message": "Patterns matching the current page",
     "description": "Exclusion pattern header"
   },
-  "keysToExclude": { "message": "Keys to exclude", "description": "Excluded keys header" },
+  "keysToExclude": {
+    "message": "Keys to exclude",
+    "description": "Excluded keys header"
+  },
   "seeExclusionRules": {
     "message": "See all exclusion rules on the",
     "description": "Exclusion rules link prefix"
   },
-  "optionsPage": { "message": "Options", "description": "Options page link" },
-  "page": { "message": "page.", "description": "Page suffix" },
+  "optionsPage": {
+    "message": "Options",
+    "description": "Options page link"
+  },
+  "page": {
+    "message": "page.",
+    "description": "Page suffix"
+  },
   "noTelemetry": {
     "message": "No telemetry, accounts, advertising, or paid features.",
     "description": "Privacy promise"
   },
-  "pattern": { "message": "Pattern", "description": "Gesture pattern label" },
+  "pattern": {
+    "message": "Pattern",
+    "description": "Gesture pattern label"
+  },
   "patternInput": {
     "message": "Gesture arrows (for example, ↑ · →)",
     "description": "Keyboard gesture pattern input"
   },
-  "gestureLab": { "message": "Gesture lab", "description": "Gesture conflict checker" },
+  "gestureLab": {
+    "message": "Gesture lab",
+    "description": "Gesture conflict checker"
+  },
   "gestureLabHint": {
     "message": "The gesture lab checks duplicates and prefix conflicts before adding a binding.",
     "description": "Gesture conflict checker hint"
   },
-  "gestureLabReady": { "message": "This pattern is available.", "description": "Gesture conflict checker result" },
-  "gestureLabDuplicateWarning": { "message": "This pattern is already assigned", "description": "Gesture conflict checker result" },
-  "gestureLabPrefixWarning": { "message": "This pattern is a prefix of a longer binding.", "description": "Gesture conflict checker result" },
-  "gestureLabLongerWarning": { "message": "A shorter binding already starts this pattern.", "description": "Gesture conflict checker result" },
-  "command": { "message": "Command", "description": "Command label" },
-  "options": { "message": "Options", "description": "Command options" },
-  "optionsDefault": { "message": "Default", "description": "Default command option value" },
+  "gestureLabReady": {
+    "message": "This pattern is available.",
+    "description": "Gesture conflict checker result"
+  },
+  "gestureLabDuplicateWarning": {
+    "message": "This pattern is already assigned",
+    "description": "Gesture conflict checker result"
+  },
+  "gestureLabPrefixWarning": {
+    "message": "This pattern is a prefix of a longer binding.",
+    "description": "Gesture conflict checker result"
+  },
+  "gestureLabLongerWarning": {
+    "message": "A shorter binding already starts this pattern.",
+    "description": "Gesture conflict checker result"
+  },
+  "command": {
+    "message": "Command",
+    "description": "Command label"
+  },
+  "options": {
+    "message": "Options",
+    "description": "Command options"
+  },
+  "optionsDefault": {
+    "message": "Default",
+    "description": "Default command option value"
+  },
   "optionsHint": {
     "message": "JSON object; values are validated before saving.",
     "description": "Command options hint"
@@ -270,26 +447,62 @@
     "message": "May close tabs or windows.",
     "description": "Dangerous command warning"
   },
-  "addBinding": { "message": "Add binding", "description": "Add binding button" },
-  "addRule": { "message": "Add rule", "description": "Add site rule button" },
-  "removeBinding": { "message": "Remove binding", "description": "Remove binding button" },
-  "removeRule": { "message": "Remove rule", "description": "Remove site rule button" },
-  "moveUp": { "message": "Move up", "description": "Move site rule up" },
-  "moveDown": { "message": "Move down", "description": "Move site rule down" },
-  "duplicateRule": { "message": "Duplicate rule", "description": "Duplicate site rule" },
-  "discardChanges": { "message": "Discard changes", "description": "Discard draft settings" },
+  "addBinding": {
+    "message": "Add binding",
+    "description": "Add binding button"
+  },
+  "addRule": {
+    "message": "Add rule",
+    "description": "Add site rule button"
+  },
+  "removeBinding": {
+    "message": "Remove binding",
+    "description": "Remove binding button"
+  },
+  "removeRule": {
+    "message": "Remove rule",
+    "description": "Remove site rule button"
+  },
+  "moveUp": {
+    "message": "Move up",
+    "description": "Move site rule up"
+  },
+  "moveDown": {
+    "message": "Move down",
+    "description": "Move site rule down"
+  },
+  "duplicateRule": {
+    "message": "Duplicate rule",
+    "description": "Duplicate site rule"
+  },
+  "discardChanges": {
+    "message": "Discard changes",
+    "description": "Discard draft settings"
+  },
   "unsavedChanges": {
     "message": "You have unsaved changes.",
     "description": "Unsaved settings status"
   },
-  "restoreDefaults": { "message": "Restore defaults", "description": "Restore defaults button" },
+  "restoreDefaults": {
+    "message": "Restore defaults",
+    "description": "Restore defaults button"
+  },
   "restoreDefaultsConfirm": {
-    "message": "Restore Browser Toolbox settings to their defaults?",
+    "message": "Restore Browser Toolbox settings to their defaults? Previous pointer images remain on this device.",
     "description": "Restore defaults confirmation"
   },
-  "importSettings": { "message": "Import settings", "description": "Import settings button" },
-  "exportSettings": { "message": "Export settings", "description": "Export settings button" },
-  "chooseFile": { "message": "Choose a file", "description": "File picker label" },
+  "importSettings": {
+    "message": "Import settings",
+    "description": "Import settings button"
+  },
+  "exportSettings": {
+    "message": "Export settings",
+    "description": "Export settings button"
+  },
+  "chooseFile": {
+    "message": "Choose a file",
+    "description": "File picker label"
+  },
   "invalidSettings": {
     "message": "The settings file is invalid.",
     "description": "Invalid settings message"
@@ -310,7 +523,10 @@
     "message": "The save failed and automatic recovery was incomplete. Reload before editing further.",
     "description": "Settings recovery warning"
   },
-  "validationUnknownCommand": { "message": "Unknown command", "description": "Validation error" },
+  "validationUnknownCommand": {
+    "message": "Unknown command",
+    "description": "Validation error"
+  },
   "validationUnsupportedInput": {
     "message": "This command is not available for this input",
     "description": "Validation error"
@@ -319,7 +535,10 @@
     "message": "Invalid command options",
     "description": "Validation error"
   },
-  "validationDuplicate": { "message": "Duplicate binding", "description": "Validation error" },
+  "validationDuplicate": {
+    "message": "Duplicate binding",
+    "description": "Validation error"
+  },
   "validationInvalidPattern": {
     "message": "Invalid gesture pattern",
     "description": "Validation error"
@@ -352,21 +571,54 @@
     "message": "Unsupported settings schema",
     "description": "Validation error"
   },
-  "gestureUnrecognized": { "message": "Gesture not recognized", "description": "Gesture feedback" },
-  "gestureCancelled": { "message": "Gesture cancelled", "description": "Gesture feedback" },
-  "gestureDirectionUp": { "message": "Up", "description": "Gesture direction" },
-  "gestureDirectionDown": { "message": "Down", "description": "Gesture direction" },
-  "gestureDirectionLeft": { "message": "Left", "description": "Gesture direction" },
-  "gestureDirectionRight": { "message": "Right", "description": "Gesture direction" },
+  "gestureUnrecognized": {
+    "message": "Gesture not recognized",
+    "description": "Gesture feedback"
+  },
+  "gestureCancelled": {
+    "message": "Gesture cancelled",
+    "description": "Gesture feedback"
+  },
+  "gestureDirectionUp": {
+    "message": "Up",
+    "description": "Gesture direction"
+  },
+  "gestureDirectionDown": {
+    "message": "Down",
+    "description": "Gesture direction"
+  },
+  "gestureDirectionLeft": {
+    "message": "Left",
+    "description": "Gesture direction"
+  },
+  "gestureDirectionRight": {
+    "message": "Right",
+    "description": "Gesture direction"
+  },
   "browserRestriction": {
     "message": "This page is restricted by the browser.",
     "description": "Browser limitation"
   },
-  "language": { "message": "Language", "description": "Language setting" },
-  "languageAuto": { "message": "Follow browser", "description": "Automatic language" },
-  "languageEnglish": { "message": "English", "description": "English language" },
-  "languageChinese": { "message": "简体中文", "description": "Simplified Chinese language" },
-  "triggerButton": { "message": "Gesture trigger button", "description": "Gesture trigger button" },
+  "language": {
+    "message": "Language",
+    "description": "Language setting"
+  },
+  "languageAuto": {
+    "message": "Follow browser",
+    "description": "Automatic language"
+  },
+  "languageEnglish": {
+    "message": "English",
+    "description": "English language"
+  },
+  "languageChinese": {
+    "message": "简体中文",
+    "description": "Simplified Chinese language"
+  },
+  "triggerButton": {
+    "message": "Gesture trigger button",
+    "description": "Gesture trigger button"
+  },
   "mouseTriggerButtonHint": {
     "message": "The gesture button takes priority over super drag and rocker input when they use the same button. With right-button menu capture enabled, hold the first press and move to gesture; right-click twice quickly in the same spot for the native menu. Disabling capture restores the native menu on the first click but may conflict with gestures.",
     "description": "Gesture button conflict behavior"
@@ -387,10 +639,22 @@
     "message": "Turn hysteresis (degrees)",
     "description": "Gesture turn hysteresis"
   },
-  "maxSegments": { "message": "Maximum segments", "description": "Gesture segment limit" },
-  "maxDuration": { "message": "Maximum duration (ms)", "description": "Gesture duration limit" },
-  "showTrail": { "message": "Show gesture trail", "description": "Trail toggle" },
-  "showHud": { "message": "Show command HUD", "description": "HUD toggle" },
+  "maxSegments": {
+    "message": "Maximum segments",
+    "description": "Gesture segment limit"
+  },
+  "maxDuration": {
+    "message": "Maximum duration (ms)",
+    "description": "Gesture duration limit"
+  },
+  "showTrail": {
+    "message": "Show gesture trail",
+    "description": "Trail toggle"
+  },
+  "showHud": {
+    "message": "Show command HUD",
+    "description": "HUD toggle"
+  },
   "suppressContextMenu": {
     "message": "Capture context menu for right-button gestures",
     "description": "Context menu suppression during gesture sessions"
@@ -399,27 +663,135 @@
     "message": "Telemetry, remote configuration, and background network access are permanently disabled.",
     "description": "Immutable privacy status"
   },
-  "tabs": { "message": "Tabs", "description": "Tab list title" },
-  "cursor": { "message": "Custom pointer", "description": "Custom pointer section" },
-  "cursorAsset": { "message": "Local PNG pointer", "description": "Local pointer asset" },
-  "cursorHotspotX": { "message": "Hotspot X", "description": "Pointer hotspot X" },
-  "cursorHotspotY": { "message": "Hotspot Y", "description": "Pointer hotspot Y" },
-  "noCursorAsset": { "message": "No local pointer selected.", "description": "Pointer status" },
-  "resetCursor": { "message": "Remove local pointer", "description": "Remove pointer" },
-  "wheelThreshold": { "message": "Wheel threshold", "description": "Wheel threshold" },
-  "cooldown": { "message": "Cooldown (ms)", "description": "Wheel cooldown" },
+  "tabs": {
+    "message": "Tabs",
+    "description": "Tab list title"
+  },
+  "cursor": {
+    "message": "Custom pointer",
+    "description": "Custom pointer section"
+  },
+  "cursorAsset": {
+    "message": "Local PNG pointer",
+    "description": "Local pointer asset"
+  },
+  "cursorHotspotX": {
+    "message": "Hotspot X",
+    "description": "Pointer hotspot X"
+  },
+  "cursorHotspotY": {
+    "message": "Hotspot Y",
+    "description": "Pointer hotspot Y"
+  },
+  "noCursorAsset": {
+    "message": "No local pointer selected.",
+    "description": "Pointer status"
+  },
+  "localCursorTitle": {
+    "message": "Local pointer images"
+  },
+  "localCursorNote": {
+    "message": "Use the reviewed image in your draft or export it. Both use the content just reviewed; applying it requires saving. The list does not show whether an image is in use."
+  },
+  "localCursorSelect": {
+    "message": "Choose a local image"
+  },
+  "localCursorRefresh": {
+    "message": "Refresh images"
+  },
+  "localCursorMore": {
+    "message": "Load more"
+  },
+  "localCursorView": {
+    "message": "Review selected image"
+  },
+  "localCursorUse": {
+    "message": "Use reviewed image"
+  },
+  "localCursorDraftPreview": {
+    "message": "Local image selected (not saved)"
+  },
+  "localCursorDraft": {
+    "message": "Image added to the draft. Save settings to apply it; the original image remains on this device."
+  },
+  "localCursorExport": {
+    "message": "Export reviewed image"
+  },
+  "localCursorItem": {
+    "message": "Local image $1"
+  },
+  "localCursorListed": {
+    "message": "Loaded $1 local image records."
+  },
+  "localCursorEmpty": {
+    "message": "No local pointer images found."
+  },
+  "localCursorUnavailable": {
+    "message": "The local image list is unavailable. Existing data remains unchanged."
+  },
+  "localCursorUnreadable": {
+    "message": "This record cannot be read as a supported image. Its original data remains on this device."
+  },
+  "localCursorPreviewed": {
+    "message": "The browser can preview this image. Export will use the content just reviewed."
+  },
+  "localCursorOriginalOnly": {
+    "message": "This image cannot be previewed. You can export its original bytes as a .bin file."
+  },
+  "localCursorExported": {
+    "message": "The reviewed content was exported. Local data remains unchanged."
+  },
+  "cursorRetentionNote": {
+    "message": "Replacing or disabling the pointer, restoring defaults, or importing settings retains previous pointer images on this device. They use local extension storage; safe cleanup is not yet available."
+  },
+  "resetCursor": {
+    "message": "Disable current pointer",
+    "description": "Remove pointer"
+  },
+  "wheelThreshold": {
+    "message": "Wheel threshold",
+    "description": "Wheel threshold"
+  },
+  "cooldown": {
+    "message": "Cooldown (ms)",
+    "description": "Wheel cooldown"
+  },
   "continuousTabSwitching": {
     "message": "Continuous tab switching",
     "description": "Wheel tab switching mode"
   },
-  "button": { "message": "Button", "description": "Mouse button" },
-  "direction": { "message": "Direction", "description": "Direction" },
-  "sequence": { "message": "Sequence", "description": "Rocker sequence" },
-  "leftButton": { "message": "Left button", "description": "Mouse button" },
-  "rightButton": { "message": "Right button", "description": "Mouse button" },
-  "middleButton": { "message": "Middle button", "description": "Mouse button" },
-  "up": { "message": "Up", "description": "Wheel direction" },
-  "down": { "message": "Down", "description": "Wheel direction" },
+  "button": {
+    "message": "Button",
+    "description": "Mouse button"
+  },
+  "direction": {
+    "message": "Direction",
+    "description": "Direction"
+  },
+  "sequence": {
+    "message": "Sequence",
+    "description": "Rocker sequence"
+  },
+  "leftButton": {
+    "message": "Left button",
+    "description": "Mouse button"
+  },
+  "rightButton": {
+    "message": "Right button",
+    "description": "Mouse button"
+  },
+  "middleButton": {
+    "message": "Middle button",
+    "description": "Mouse button"
+  },
+  "up": {
+    "message": "Up",
+    "description": "Wheel direction"
+  },
+  "down": {
+    "message": "Down",
+    "description": "Wheel direction"
+  },
   "holdRightThenClickLeft": {
     "message": "Hold right, click left",
     "description": "Rocker sequence"
@@ -428,10 +800,22 @@
     "message": "Hold left, click right",
     "description": "Rocker sequence"
   },
-  "urlPattern": { "message": "URL pattern", "description": "Site URL pattern" },
-  "modules": { "message": "Modules", "description": "Site modules" },
-  "siteRuleMatchType": { "message": "Match type", "description": "Site rule match type" },
-  "siteRuleGlob": { "message": "Glob", "description": "Glob site rule" },
+  "urlPattern": {
+    "message": "URL pattern",
+    "description": "Site URL pattern"
+  },
+  "modules": {
+    "message": "Modules",
+    "description": "Site modules"
+  },
+  "siteRuleMatchType": {
+    "message": "Match type",
+    "description": "Site rule match type"
+  },
+  "siteRuleGlob": {
+    "message": "Glob",
+    "description": "Glob site rule"
+  },
   "siteRuleRegex": {
     "message": "Regular expression",
     "description": "Regular expression site rule"
@@ -460,7 +844,10 @@
     "message": "Example: ^https://(www\\.)?example\\.com/",
     "description": "Regular expression site rule example"
   },
-  "siteRulePriority": { "message": "Priority", "description": "Site rule priority" },
+  "siteRulePriority": {
+    "message": "Priority",
+    "description": "Site rule priority"
+  },
   "siteRuleOrder": {
     "message": "Configuration order",
     "description": "Site rule configuration order"
@@ -469,13 +856,22 @@
     "message": "Match precedence",
     "description": "Site rule match precedence"
   },
-  "siteRuleActions": { "message": "Actions", "description": "Site rule actions" },
+  "siteRuleActions": {
+    "message": "Actions",
+    "description": "Site rule actions"
+  },
   "siteRuleNoRules": {
     "message": "No site rules yet. Add one to configure a URL.",
     "description": "Empty site rule state"
   },
-  "testSiteUrl": { "message": "Test URL", "description": "Test site rule against an entered URL" },
-  "siteRuleTestUrl": { "message": "URL to test", "description": "URL test field label" },
+  "testSiteUrl": {
+    "message": "Test URL",
+    "description": "Test site rule against an entered URL"
+  },
+  "siteRuleTestUrl": {
+    "message": "URL to test",
+    "description": "URL test field label"
+  },
   "siteRuleTestUrlHint": {
     "message": "https://example.com/path",
     "description": "URL test field placeholder"
@@ -524,16 +920,46 @@
     "message": "Pattern does not match the current URL",
     "description": "Current URL validation"
   },
-  "untitledTab": { "message": "(untitled)", "description": "Untitled tab label" },
-  "allKeys": { "message": "All", "description": "All keys enabled caption" },
-  "noKeys": { "message": "No", "description": "No keys enabled caption" },
-  "someKeys": { "message": "Some", "description": "Some keys enabled caption" },
-  "context": { "message": "Context", "description": "Drag context" },
-  "contextLink": { "message": "Link", "description": "Drag context" },
-  "contextSelection": { "message": "Selected text", "description": "Drag context" },
-  "contextImage": { "message": "Image", "description": "Drag context" },
-  "openOnboarding": { "message": "Open onboarding", "description": "Onboarding link" },
-  "projectCharter": { "message": "Project Charter", "description": "Project charter link" },
+  "untitledTab": {
+    "message": "(untitled)",
+    "description": "Untitled tab label"
+  },
+  "allKeys": {
+    "message": "All",
+    "description": "All keys enabled caption"
+  },
+  "noKeys": {
+    "message": "No",
+    "description": "No keys enabled caption"
+  },
+  "someKeys": {
+    "message": "Some",
+    "description": "Some keys enabled caption"
+  },
+  "context": {
+    "message": "Context",
+    "description": "Drag context"
+  },
+  "contextLink": {
+    "message": "Link",
+    "description": "Drag context"
+  },
+  "contextSelection": {
+    "message": "Selected text",
+    "description": "Drag context"
+  },
+  "contextImage": {
+    "message": "Image",
+    "description": "Drag context"
+  },
+  "openOnboarding": {
+    "message": "Open onboarding",
+    "description": "Onboarding link"
+  },
+  "projectCharter": {
+    "message": "Project Charter",
+    "description": "Project charter link"
+  },
   "thirdPartyNotices": {
     "message": "Third-party notices",
     "description": "Third-party notices link"
@@ -626,26 +1052,62 @@
     "message": "Download image",
     "description": "Command title"
   },
-  "command_goBack": { "message": "Go back", "description": "Gesture command title" },
-  "command_goForward": { "message": "Go forward", "description": "Gesture command title" },
-  "command_removeTab": { "message": "Close tab", "description": "Gesture command title" },
+  "command_goBack": {
+    "message": "Go back",
+    "description": "Gesture command title"
+  },
+  "command_goForward": {
+    "message": "Go forward",
+    "description": "Gesture command title"
+  },
+  "command_removeTab": {
+    "message": "Close tab",
+    "description": "Gesture command title"
+  },
   "command_restoreTab": {
     "message": "Restore closed tab",
     "description": "Gesture command title"
   },
-  "command_scrollToTop": { "message": "Scroll to top", "description": "Gesture command title" },
+  "command_scrollToTop": {
+    "message": "Scroll to top",
+    "description": "Gesture command title"
+  },
   "command_scrollToBottom": {
     "message": "Scroll to bottom",
     "description": "Gesture command title"
   },
-  "command_scrollFullPageUp": { "message": "Page up", "description": "Gesture command title" },
-  "command_scrollFullPageDown": { "message": "Page down", "description": "Gesture command title" },
-  "command_reload": { "message": "Refresh", "description": "Gesture command title" },
-  "command_reloadHard": { "message": "Hard refresh", "description": "Gesture command title" },
-  "command_previousTab": { "message": "Previous tab", "description": "Gesture command title" },
-  "command_nextTab": { "message": "Next tab", "description": "Gesture command title" },
-  "settingsSections": { "message": "Settings sections", "description": "Settings navigation" },
-  "settingsSearch": { "message": "Search settings", "description": "Settings navigation search" },
+  "command_scrollFullPageUp": {
+    "message": "Page up",
+    "description": "Gesture command title"
+  },
+  "command_scrollFullPageDown": {
+    "message": "Page down",
+    "description": "Gesture command title"
+  },
+  "command_reload": {
+    "message": "Refresh",
+    "description": "Gesture command title"
+  },
+  "command_reloadHard": {
+    "message": "Hard refresh",
+    "description": "Gesture command title"
+  },
+  "command_previousTab": {
+    "message": "Previous tab",
+    "description": "Gesture command title"
+  },
+  "command_nextTab": {
+    "message": "Next tab",
+    "description": "Gesture command title"
+  },
+  "settingsSections": {
+    "message": "Settings sections",
+    "description": "Settings navigation"
+  },
+  "settingsSearch": {
+    "message": "Search settings",
+    "description": "Settings navigation search"
+  },
   "settingsSearchHint": {
     "message": "Search settings",
     "description": "Settings navigation search hint"
@@ -658,528 +1120,1974 @@
     "message": "No matching settings sections.",
     "description": "Settings navigation empty result"
   },
-  "browsingEnhancement": { "message": "Browsing enhancements", "description": "Settings group" },
-  "utilityTools": { "message": "Utility tools", "description": "Settings group" },
-  "system": { "message": "System", "description": "Settings group" },
-  "quickTools": { "message": "Quick tools", "description": "Action popup heading" },
-  "running": { "message": "Running", "description": "Action popup status" },
-  "active": { "message": "Active", "description": "Current site status" },
-  "currentSiteDetails": { "message": "Current site details", "description": "Current site entry" },
-  "actionFooter": { "message": "Action links", "description": "Action popup footer" },
-  "commandCenter": { "message": "Command center", "description": "Command center entry" },
-  "commandCenterTitle": { "message": "Command center", "description": "Command center title" },
-  "commandCenterSubtitle": { "message": "Search commands, tools, and settings.", "description": "Command center subtitle" },
-  "commandCenterContext": { "message": "Target", "description": "Command center target label" },
-  "commandCenterNoTarget": { "message": "No page selected", "description": "Command center target state" },
-  "commandCenterSearchLabel": { "message": "Search", "description": "Command center search label" },
-  "commandCenterSearchHint": { "message": "Search commands, tools, or settings…", "description": "Command center search hint" },
-  "commandCenterResults": { "message": "Command center results", "description": "Command center result label" },
-  "commandCenterKeyboardHint": { "message": "Use ↑ and ↓ to choose, Enter to run, and Escape to close.", "description": "Command center keyboard hint" },
-  "commandCenterCommands": { "message": "Commands", "description": "Command center category" },
-  "commandCenterTools": { "message": "Tools", "description": "Command center category" },
-  "commandCenterSettings": { "message": "Settings", "description": "Command center category" },
-  "commandCenterResultCount": { "message": "results", "description": "Command center result count" },
-  "commandCenterEmpty": { "message": "No entries available.", "description": "Command center empty state" },
-  "commandCenterNoResults": { "message": "No matching entries.", "description": "Command center search empty state" },
-  "commandCenterLoadFailed": { "message": "Could not load command center entries.", "description": "Command center load error" },
-  "commandCenterExecuteFailed": { "message": "The selected entry could not be run.", "description": "Command center execution error" },
-  "commandCenterDangerousConfirm": { "message": "This action may close a tab or window. Continue?", "description": "Command center confirmation" },
-  "commandCenterMouseSettings": { "message": "Mouse & gesture settings", "description": "Command center setting entry" },
-  "commandCenterMouseSettingsDescription": { "message": "Tune gesture recognition and bindings.", "description": "Command center setting entry" },
-  "commandCenterSiteRules": { "message": "Site profiles & rules", "description": "Command center setting entry" },
-  "commandCenterSiteRulesDescription": { "message": "Configure behavior for individual sites.", "description": "Command center setting entry" },
-  "commandCenterToolSettings": { "message": "Tool settings", "description": "Command center setting entry" },
-  "commandCenterToolSettingsDescription": { "message": "Choose local tools and context-menu entries.", "description": "Command center setting entry" },
-  "actionKeyboardSummary": { "message": "Vimium keyboard navigation", "description": "Action popup module summary" },
-  "actionMouseSummary": { "message": "Hold right-click and draw a path", "description": "Action popup module summary" },
-  "actionSuperDragSummary": { "message": "Drag links, images, or text to act", "description": "Action popup module summary" },
-  "actionWheelSummary": { "message": "Switch tabs with wheel or rocker", "description": "Action popup module summary" },
-  "navigationKeyboard": { "message": "Navigation & Keyboard", "description": "Settings category" },
-  "mouseDrag": { "message": "Mouse & Drag", "description": "Settings category" },
-  "searchTabs": { "message": "Search & Tabs", "description": "Settings category" },
-  "appearanceBehavior": { "message": "Appearance & Behavior", "description": "Settings category" },
-  "sitePrivacy": { "message": "Sites & Privacy", "description": "Settings category" },
-  "backupAbout": { "message": "Backup & About", "description": "Settings category" },
-  "tools": { "message": "Tools", "description": "Tools settings category" },
-  "documentFormatter": { "message": "Document formatter", "description": "Document formatter module" },
-  "actionTools": { "message": "Action popup tools", "description": "Action popup tool selection" },
+  "browsingEnhancement": {
+    "message": "Browsing enhancements",
+    "description": "Settings group"
+  },
+  "utilityTools": {
+    "message": "Utility tools",
+    "description": "Settings group"
+  },
+  "system": {
+    "message": "System",
+    "description": "Settings group"
+  },
+  "quickTools": {
+    "message": "Quick tools",
+    "description": "Action popup heading"
+  },
+  "running": {
+    "message": "Running",
+    "description": "Action popup status"
+  },
+  "active": {
+    "message": "Active",
+    "description": "Current site status"
+  },
+  "currentSiteDetails": {
+    "message": "Current site details",
+    "description": "Current site entry"
+  },
+  "actionFooter": {
+    "message": "Action links",
+    "description": "Action popup footer"
+  },
+  "commandCenter": {
+    "message": "Command center",
+    "description": "Command center entry"
+  },
+  "commandCenterTitle": {
+    "message": "Command center",
+    "description": "Command center title"
+  },
+  "commandCenterSubtitle": {
+    "message": "Search commands, tools, and settings.",
+    "description": "Command center subtitle"
+  },
+  "commandCenterContext": {
+    "message": "Target",
+    "description": "Command center target label"
+  },
+  "commandCenterNoTarget": {
+    "message": "No page selected",
+    "description": "Command center target state"
+  },
+  "commandCenterSearchLabel": {
+    "message": "Search",
+    "description": "Command center search label"
+  },
+  "commandCenterSearchHint": {
+    "message": "Search commands, tools, or settings…",
+    "description": "Command center search hint"
+  },
+  "commandCenterResults": {
+    "message": "Command center results",
+    "description": "Command center result label"
+  },
+  "commandCenterKeyboardHint": {
+    "message": "Use ↑ and ↓ to choose, Enter to run, and Escape to close.",
+    "description": "Command center keyboard hint"
+  },
+  "commandCenterCommands": {
+    "message": "Commands",
+    "description": "Command center category"
+  },
+  "commandCenterTools": {
+    "message": "Tools",
+    "description": "Command center category"
+  },
+  "commandCenterSettings": {
+    "message": "Settings",
+    "description": "Command center category"
+  },
+  "commandCenterResultCount": {
+    "message": "results",
+    "description": "Command center result count"
+  },
+  "commandCenterEmpty": {
+    "message": "No entries available.",
+    "description": "Command center empty state"
+  },
+  "commandCenterNoResults": {
+    "message": "No matching entries.",
+    "description": "Command center search empty state"
+  },
+  "commandCenterLoadFailed": {
+    "message": "Could not load command center entries.",
+    "description": "Command center load error"
+  },
+  "commandCenterExecuteFailed": {
+    "message": "The selected entry could not be run.",
+    "description": "Command center execution error"
+  },
+  "commandCenterDangerousConfirm": {
+    "message": "This action may close a tab or window. Continue?",
+    "description": "Command center confirmation"
+  },
+  "commandCenterMouseSettings": {
+    "message": "Mouse & gesture settings",
+    "description": "Command center setting entry"
+  },
+  "commandCenterMouseSettingsDescription": {
+    "message": "Tune gesture recognition and bindings.",
+    "description": "Command center setting entry"
+  },
+  "commandCenterSiteRules": {
+    "message": "Site profiles & rules",
+    "description": "Command center setting entry"
+  },
+  "commandCenterSiteRulesDescription": {
+    "message": "Configure behavior for individual sites.",
+    "description": "Command center setting entry"
+  },
+  "commandCenterToolSettings": {
+    "message": "Tool settings",
+    "description": "Command center setting entry"
+  },
+  "commandCenterToolSettingsDescription": {
+    "message": "Choose local tools and context-menu entries.",
+    "description": "Command center setting entry"
+  },
+  "actionKeyboardSummary": {
+    "message": "Vimium keyboard navigation",
+    "description": "Action popup module summary"
+  },
+  "actionMouseSummary": {
+    "message": "Hold right-click and draw a path",
+    "description": "Action popup module summary"
+  },
+  "actionSuperDragSummary": {
+    "message": "Drag links, images, or text to act",
+    "description": "Action popup module summary"
+  },
+  "actionWheelSummary": {
+    "message": "Switch tabs with wheel or rocker",
+    "description": "Action popup module summary"
+  },
+  "navigationKeyboard": {
+    "message": "Navigation & Keyboard",
+    "description": "Settings category"
+  },
+  "mouseDrag": {
+    "message": "Mouse & Drag",
+    "description": "Settings category"
+  },
+  "searchTabs": {
+    "message": "Search & Tabs",
+    "description": "Settings category"
+  },
+  "appearanceBehavior": {
+    "message": "Appearance & Behavior",
+    "description": "Settings category"
+  },
+  "sitePrivacy": {
+    "message": "Sites & Privacy",
+    "description": "Settings category"
+  },
+  "backupAbout": {
+    "message": "Backup & About",
+    "description": "Settings category"
+  },
+  "tools": {
+    "message": "Tools",
+    "description": "Tools settings category"
+  },
+  "documentFormatter": {
+    "message": "Document formatter",
+    "description": "Document formatter module"
+  },
+  "actionTools": {
+    "message": "Action popup tools",
+    "description": "Action popup tool selection"
+  },
   "actionToolsHint": {
     "message": "Choose tools to show in the action popup.",
     "description": "Action popup tool selection hint"
   },
-  "contextMenuTools": { "message": "Context-menu tools", "description": "Context menu tool selection" },
+  "contextMenuTools": {
+    "message": "Context-menu tools",
+    "description": "Context menu tool selection"
+  },
   "contextMenuToolsHint": {
     "message": "Choose tools for the native context menu. Selected text is passed in when available.",
     "description": "Context menu tool selection hint"
   },
-  "toolSelectionLimit": { "message": "Selection limit", "description": "Tool selection limit" },
+  "toolSelectionLimit": {
+    "message": "Selection limit",
+    "description": "Tool selection limit"
+  },
   "toolLocalOnly": {
     "message": "All tools run locally. Inputs use a short-lived, one-time session token.",
     "description": "Local tool privacy boundary"
   },
-  "allTools": { "message": "All tools", "description": "All tools context menu" },
-  "manageTools": { "message": "Manage tools", "description": "Manage tools context menu" },
-  "toolConfigConvert": {"message": "Properties ↔ YAML", "description": "配置互转工具文案"},
-  "toolConfigConvertDescription": {"message": "Convert local Properties and YAML configuration files in both directions.", "description": "配置互转工具文案"},
-  "toolKeywordProperties": {"message": "Properties", "description": "配置互转工具文案"},
-  "toolKeywordYaml": {"message": "YAML YML", "description": "配置互转工具文案"},
-  "toolKeywordConfig": {"message": "configuration Spring application", "description": "配置互转工具文案"},
-  "toolConfigDirection": {"message": "Conversion direction", "description": "配置互转工具文案"},
-  "toolConfigSwap": {"message": "Swap", "description": "配置互转工具文案"},
-  "toolConfigSwapHint": {"message": "Use the result as input and reverse the conversion direction", "description": "配置互转工具文案"},
-  "toolConfigCopy": {"message": "Copy", "description": "配置互转工具文案"},
-  "toolConfigPropertiesHint": {"message": "Paste Properties, for example: server.port=8080", "description": "配置互转工具文案"},
-  "toolConfigYamlHint": {"message": "Paste YAML configuration", "description": "配置互转工具文案"},
-  "toolConfigOutputHint": {"message": "The converted result appears here", "description": "配置互转工具文案"},
-  "toolConfigSemantics": {"message": "Dots create nesting; [0] denotes an array index. Values stay as strings; comments and YAML types are not retained.", "description": "配置互转工具文案"},
-  "toolConfigConverted": {"message": "Conversion complete", "description": "配置互转工具文案"},
-  "toolConfigLineSummary": {"message": "Input {input} lines · Output {output} lines", "description": "配置互转工具文案"},
-  "toolConfigErrorLocation": {"message": "Line {line}, column {column}: {message}", "description": "配置互转工具文案"},
-  "toolConfigUnicodeError": {"message": "Invalid Properties Unicode escape; use exactly four hexadecimal digits after \\u.", "description": "配置互转工具文案"},
-  "toolConfigInvalidPath": {"message": "Invalid key path. Use names separated by dots and non-negative array indices such as [0].", "description": "配置互转工具文案"},
-  "toolConfigConflict": {"message": "A key is used both as a value and a container, or mixes object and array paths.", "description": "配置互转工具文案"},
-  "toolConfigDuplicate": {"message": "Duplicate key. Resolve the duplicate before converting.", "description": "配置互转工具文案"},
-  "toolConfigSparseArray": {"message": "Array indices must start at 0 and be consecutive.", "description": "配置互转工具文案"},
-  "toolConfigYamlSyntax": {"message": "Invalid or unsupported YAML syntax. Check indentation, quotes, document separators, and tags.", "description": "配置互转工具文案"},
-  "toolConfigRoot": {"message": "YAML must contain one mapping or sequence document.", "description": "配置互转工具文案"},
-  "toolConfigEmptyCollection": {"message": "Empty YAML objects and arrays cannot be represented in Properties. Please handle them explicitly.", "description": "配置互转工具文案"},
-  "toolConfigNull": {"message": "Properties cannot represent YAML null. Use an empty quoted string if that is intended.", "description": "配置互转工具文案"},
-  "toolConfigAlias": {"message": "YAML aliases and merge keys must be expanded before conversion.", "description": "配置互转工具文案"},
-  "toolConfigAmbiguousKey": {"message": "YAML keys containing dots or brackets, or empty keys, are ambiguous as Properties paths.", "description": "配置互转工具文案"},
-  "toolConfigLimit": {"message": "Conversion limit exceeded: 1 MiB input, 5 MiB output, 20,000 nodes, or 64 nesting levels.", "description": "配置互转工具文案"},
-  "toolConfigTimeout": {"message": "Conversion took too long. Reduce the input or simplify its nesting.", "description": "配置互转工具文案"},
-  "toolConfigWorkerError": {"message": "The local converter could not start. Reload the tool and try again.", "description": "配置互转工具文案"},
-  "toolConfigEncoding": {"message": "Import a UTF-8 text file; use Unicode escapes for legacy Properties text.", "description": "配置互转工具文案"},
-  "yamlLicenseNotice": {"message": "yaml 2.9.1 parser: ISC license", "description": "配置互转工具文案"},
-  "toolJsonFormat": { "message": "JSON formatter", "description": "Tool title" },
-  "toolJsonInput": { "message": "Input JSON", "description": "JSON tool input heading" },
-  "toolJsonOutput": { "message": "Parsed result", "description": "JSON tool output heading" },
+  "allTools": {
+    "message": "All tools",
+    "description": "All tools context menu"
+  },
+  "manageTools": {
+    "message": "Manage tools",
+    "description": "Manage tools context menu"
+  },
+  "toolConfigConvert": {
+    "message": "Properties ↔ YAML",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigConvertDescription": {
+    "message": "Convert local Properties and YAML configuration files in both directions.",
+    "description": "配置互转工具文案"
+  },
+  "toolKeywordProperties": {
+    "message": "Properties",
+    "description": "配置互转工具文案"
+  },
+  "toolKeywordYaml": {
+    "message": "YAML YML",
+    "description": "配置互转工具文案"
+  },
+  "toolKeywordConfig": {
+    "message": "configuration Spring application",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigDirection": {
+    "message": "Conversion direction",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigSwap": {
+    "message": "Swap",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigSwapHint": {
+    "message": "Use the result as input and reverse the conversion direction",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigCopy": {
+    "message": "Copy",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigPropertiesHint": {
+    "message": "Paste Properties, for example: server.port=8080",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigYamlHint": {
+    "message": "Paste YAML configuration",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigOutputHint": {
+    "message": "The converted result appears here",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigSemantics": {
+    "message": "Dots create nesting; [0] denotes an array index. Values stay as strings; comments and YAML types are not retained.",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigConverted": {
+    "message": "Conversion complete",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigLineSummary": {
+    "message": "Input {input} lines · Output {output} lines",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigErrorLocation": {
+    "message": "Line {line}, column {column}: {message}",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigUnicodeError": {
+    "message": "Invalid Properties Unicode escape; use exactly four hexadecimal digits after \\u.",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigInvalidPath": {
+    "message": "Invalid key path. Use names separated by dots and non-negative array indices such as [0].",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigConflict": {
+    "message": "A key is used both as a value and a container, or mixes object and array paths.",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigDuplicate": {
+    "message": "Duplicate key. Resolve the duplicate before converting.",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigSparseArray": {
+    "message": "Array indices must start at 0 and be consecutive.",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigYamlSyntax": {
+    "message": "Invalid or unsupported YAML syntax. Check indentation, quotes, document separators, and tags.",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigRoot": {
+    "message": "YAML must contain one mapping or sequence document.",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigEmptyCollection": {
+    "message": "Empty YAML objects and arrays cannot be represented in Properties. Please handle them explicitly.",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigNull": {
+    "message": "Properties cannot represent YAML null. Use an empty quoted string if that is intended.",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigAlias": {
+    "message": "YAML aliases and merge keys must be expanded before conversion.",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigAmbiguousKey": {
+    "message": "YAML keys containing dots or brackets, or empty keys, are ambiguous as Properties paths.",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigLimit": {
+    "message": "Conversion limit exceeded: 1 MiB input, 5 MiB output, 20,000 nodes, or 64 nesting levels.",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigTimeout": {
+    "message": "Conversion took too long. Reduce the input or simplify its nesting.",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigWorkerError": {
+    "message": "The local converter could not start. Reload the tool and try again.",
+    "description": "配置互转工具文案"
+  },
+  "toolConfigEncoding": {
+    "message": "Import a UTF-8 text file; use Unicode escapes for legacy Properties text.",
+    "description": "配置互转工具文案"
+  },
+  "yamlLicenseNotice": {
+    "message": "yaml 2.9.1 parser: ISC license",
+    "description": "配置互转工具文案"
+  },
+  "toolJsonFormat": {
+    "message": "JSON formatter",
+    "description": "Tool title"
+  },
+  "toolJsonInput": {
+    "message": "Input JSON",
+    "description": "JSON tool input heading"
+  },
+  "toolJsonOutput": {
+    "message": "Parsed result",
+    "description": "JSON tool output heading"
+  },
   "toolJsonFormatDescription": {
     "message": "Format JSON while preserving duplicate keys and number text.",
     "description": "Tool description"
   },
-  "toolTextDiff": { "message": "Text diff", "description": "Tool title" },
-  "toolTextDiffDescription": { "message": "Compare two local text values.", "description": "Tool description" },
-  "toolCodecTransform": { "message": "Codec transform", "description": "Tool title" },
+  "toolTextDiff": {
+    "message": "Text diff",
+    "description": "Tool title"
+  },
+  "toolTextDiffDescription": {
+    "message": "Compare two local text values.",
+    "description": "Tool description"
+  },
+  "toolCodecTransform": {
+    "message": "Codec transform",
+    "description": "Tool title"
+  },
   "toolCodecTransformDescription": {
     "message": "Convert Base64, URL, Unicode, XML, byte values and Data URLs locally, or calculate MD5.",
     "description": "Tool description"
   },
-  "toolTimeConvert": { "message": "Time converter", "description": "Tool title" },
+  "toolTimeConvert": {
+    "message": "Time converter",
+    "description": "Tool title"
+  },
   "toolTimeConvertDescription": {
     "message": "Convert ISO dates and Unix timestamps locally.",
     "description": "Tool description"
   },
-  "toolTimeDefinition": { "message": "Unix timestamp definition", "description": "Time tool section title" },
-  "toolTimeCurrentLocal": { "message": "Current local time:", "description": "Time tool label" },
-  "toolTimeCurrentUnix": { "message": "Current Unix timestamp:", "description": "Time tool label" },
-  "toolTimePause": { "message": "Pause", "description": "Time tool action" },
-  "toolTimeResume": { "message": "Resume", "description": "Time tool action" },
-  "toolTimeUnixToLocal": { "message": "Unix timestamp to local time", "description": "Time tool section title" },
-  "toolTimeLocalToUnix": { "message": "Local time to Unix timestamp", "description": "Time tool section title" },
-  "toolTimeFiletime": { "message": "Windows FILETIME conversion", "description": "Time tool section title" },
-  "toolTimeWorldClock": { "message": "World clock", "description": "Time tool section title" },
-  "toolTimeTimestampPlaceholder": { "message": "Timestamp (eg:1388307215)", "description": "Time tool placeholder" },
-  "toolTimeDatePlaceholder": { "message": "Time (eg:2015-04-01 10:01:01.620)", "description": "Time tool placeholder" },
-  "toolTimeFiletimePlaceholder": { "message": "Windows FILETIME (eg:133574880000000000)", "description": "Time tool placeholder" },
-  "toolTimeSecondsShort": { "message": "seconds (s)", "description": "Time tool unit" },
-  "toolTimeMillisecondsShort": { "message": "milliseconds (ms)", "description": "Time tool unit" },
-  "toolTimeSecondsLabel": { "message": "seconds", "description": "Time tool unit label" },
-  "toolTimeMillisecondsLabel": { "message": "milliseconds", "description": "Time tool unit label" },
-  "toolTimeFiletimeToDate": { "message": "FileTime → date", "description": "Time tool action" },
-  "toolTimeCurrentToFiletime": { "message": "Current time → FileTime", "description": "Time tool action" },
-  "toolTimeRegion": { "message": "Region", "description": "World clock table heading" },
-  "toolTimeClockTime": { "message": "Time", "description": "World clock table heading" },
-  "toolTimeLocal": { "message": "Local time", "description": "World clock region" },
-  "toolTimeGmt": { "message": "Greenwich mean time (GMT)", "description": "World clock region" },
-  "toolTimeNewYork": { "message": "Eastern time (EST)", "description": "World clock region" },
-  "toolTimeLondon": { "message": "London time (GMT)", "description": "World clock region" },
-  "toolTimeTokyo": { "message": "Japan standard time (JST)", "description": "World clock region" },
-  "toolTimeBeijing": { "message": "China standard time (CST)", "description": "World clock region" },
-  "toolIdGenerate": { "message": "ID generator", "description": "Tool title" },
+  "toolTimeDefinition": {
+    "message": "Unix timestamp definition",
+    "description": "Time tool section title"
+  },
+  "toolTimeCurrentLocal": {
+    "message": "Current local time:",
+    "description": "Time tool label"
+  },
+  "toolTimeCurrentUnix": {
+    "message": "Current Unix timestamp:",
+    "description": "Time tool label"
+  },
+  "toolTimePause": {
+    "message": "Pause",
+    "description": "Time tool action"
+  },
+  "toolTimeResume": {
+    "message": "Resume",
+    "description": "Time tool action"
+  },
+  "toolTimeUnixToLocal": {
+    "message": "Unix timestamp to local time",
+    "description": "Time tool section title"
+  },
+  "toolTimeLocalToUnix": {
+    "message": "Local time to Unix timestamp",
+    "description": "Time tool section title"
+  },
+  "toolTimeFiletime": {
+    "message": "Windows FILETIME conversion",
+    "description": "Time tool section title"
+  },
+  "toolTimeWorldClock": {
+    "message": "World clock",
+    "description": "Time tool section title"
+  },
+  "toolTimeTimestampPlaceholder": {
+    "message": "Timestamp (eg:1388307215)",
+    "description": "Time tool placeholder"
+  },
+  "toolTimeDatePlaceholder": {
+    "message": "Time (eg:2015-04-01 10:01:01.620)",
+    "description": "Time tool placeholder"
+  },
+  "toolTimeFiletimePlaceholder": {
+    "message": "Windows FILETIME (eg:133574880000000000)",
+    "description": "Time tool placeholder"
+  },
+  "toolTimeSecondsShort": {
+    "message": "seconds (s)",
+    "description": "Time tool unit"
+  },
+  "toolTimeMillisecondsShort": {
+    "message": "milliseconds (ms)",
+    "description": "Time tool unit"
+  },
+  "toolTimeSecondsLabel": {
+    "message": "seconds",
+    "description": "Time tool unit label"
+  },
+  "toolTimeMillisecondsLabel": {
+    "message": "milliseconds",
+    "description": "Time tool unit label"
+  },
+  "toolTimeFiletimeToDate": {
+    "message": "FileTime → date",
+    "description": "Time tool action"
+  },
+  "toolTimeCurrentToFiletime": {
+    "message": "Current time → FileTime",
+    "description": "Time tool action"
+  },
+  "toolTimeRegion": {
+    "message": "Region",
+    "description": "World clock table heading"
+  },
+  "toolTimeClockTime": {
+    "message": "Time",
+    "description": "World clock table heading"
+  },
+  "toolTimeLocal": {
+    "message": "Local time",
+    "description": "World clock region"
+  },
+  "toolTimeGmt": {
+    "message": "Greenwich mean time (GMT)",
+    "description": "World clock region"
+  },
+  "toolTimeNewYork": {
+    "message": "Eastern time (EST)",
+    "description": "World clock region"
+  },
+  "toolTimeLondon": {
+    "message": "London time (GMT)",
+    "description": "World clock region"
+  },
+  "toolTimeTokyo": {
+    "message": "Japan standard time (JST)",
+    "description": "World clock region"
+  },
+  "toolTimeBeijing": {
+    "message": "China standard time (CST)",
+    "description": "World clock region"
+  },
+  "toolIdGenerate": {
+    "message": "ID generator",
+    "description": "Tool title"
+  },
   "toolIdGenerateDescription": {
     "message": "Generate UUID and sortable local identifiers.",
     "description": "Tool description"
   },
-  "toolPasswordGenerate": { "message": "Password generator", "description": "Tool title" },
+  "toolPasswordGenerate": {
+    "message": "Password generator",
+    "description": "Tool title"
+  },
   "toolPasswordGenerateDescription": {
     "message": "Generate a cryptographically random password locally.",
     "description": "Tool description"
   },
-  "toolTableConvert": { "message": "CSV / TSV converter", "description": "Tool title" },
+  "toolTableConvert": {
+    "message": "CSV / TSV converter",
+    "description": "Tool title"
+  },
   "toolTableConvertDescription": {
     "message": "Convert delimited text to a safe table or CSV.",
     "description": "Tool description"
   },
-  "toolCatalog": { "message": "Tool catalog", "description": "Tool catalog heading" },
-  "toolCatalogSearch": { "message": "Search tools", "description": "Tool catalog search" },
-  "toolCatalogSearchHint": { "message": "Search by name, description, keyword, or ID", "description": "Tool catalog search hint" },
-  "toolCatalogNoResults": { "message": "No matching tools.", "description": "Tool catalog empty result" },
-  "toolOpen": { "message": "Open tool", "description": "Open tool action" },
-  "toolsOverview": { "message": "Tool overview", "description": "Tool settings section" },
-  "jsonFormatter": { "message": "JSON formatter", "description": "JSON settings section" },
-  "textDiff": { "message": "Content diff", "description": "Text diff settings section" },
-  "codecTransform": { "message": "Encoding & conversion", "description": "Codec settings section" },
-  "timeAndId": { "message": "Time & IDs", "description": "Time and identifier settings section" },
-  "toolOverviewDescription": { "message": "Choose the local tools shown in the popup and native context menu. Selected text is passed in when available.", "description": "Tool overview description" },
-  "toolEnabledHint": { "message": "Keep tools available from extension pages.", "description": "Tool overview description" },
-  "contextMenuEnabledHint": { "message": "Show native tool entries when enabled; selected text is passed in when available.", "description": "Tool overview description" },
-  "toolDirectory": { "message": "Tool directory", "description": "Tool directory heading" },
-  "toolDirectoryHint": { "message": "Every local tool is listed here with its category and entry point.", "description": "Tool directory description" },
-  "toolDirectorySearch": { "message": "Search tool directory", "description": "Tool directory search" },
-  "toolDirectorySearchHint": { "message": "Search the local tool directory", "description": "Tool directory search hint" },
-  "jsonFormatterDescription": { "message": "Format JSON documents locally and keep the original page available.", "description": "JSON settings description" },
-  "documentFormatterEnabledHint": { "message": "Only matching document content is read; no page data is uploaded.", "description": "Document formatter setting hint" },
-  "documentFormatterJsonHint": { "message": "Structured data", "description": "Document formatter format hint" },
-  "documentFormatterXmlHint": { "message": "Markup documents", "description": "Document formatter format hint" },
-  "documentFormatterCssHint": { "message": "Stylesheets", "description": "Document formatter format hint" },
-  "documentFormatterJavascriptHint": { "message": "Scripts", "description": "Document formatter format hint" },
-  "documentFormatterJavaHint": { "message": "Source files", "description": "Document formatter format hint" },
-  "textDiffSettingsDescription": { "message": "Compare two local text values without sending content away.", "description": "Text diff settings description" },
-  "codecTransformSettingsDescription": { "message": "Encode, decode, and convert local text with explicit operations.", "description": "Codec settings description" },
-  "timeAndIdSettingsDescription": { "message": "Convert timestamps and generate identifiers locally.", "description": "Time and identifier settings description" },
-  "toolEnabled": { "message": "Enable local tools", "description": "Tool settings toggle" },
-  "contextMenuEnabled": { "message": "Enable native context-menu tools", "description": "Context menu settings toggle" },
-  "documentFormatterEnabled": { "message": "Enable document auto-formatting", "description": "Document formatter settings toggle" },
-  "documentFormatterAutoFormat": { "message": "Automatic formats", "description": "Document formatter format settings" },
-  "documentFormatterAutoJson": { "message": "JSON", "description": "Document formatter format" },
-  "documentFormatterAutoXml": { "message": "XML", "description": "Document formatter format" },
-  "documentFormatterAutoCss": { "message": "CSS", "description": "Document formatter format" },
-  "documentFormatterAutoJavascript": { "message": "JavaScript", "description": "Document formatter format" },
-  "documentFormatterAutoJava": { "message": "Java", "description": "Document formatter format" },
-  "documentFormatterMaxAutoBytes": { "message": "Automatic formatting limit (bytes)", "description": "Document formatter size setting" },
-  "documentFormatterJsonDefaults": { "message": "JSON defaults", "description": "Document formatter JSON settings" },
-  "toolFile": { "message": "Local file", "description": "Tool file input" },
-  "toolFileChoose": { "message": "Choose file", "description": "Tool file chooser button" },
-  "toolFileNone": { "message": "No file selected", "description": "Tool file chooser status" },
-  "toolChooseFile": { "message": "Import local text file", "description": "Tool file input" },
-  "toolFileLoaded": { "message": "Loaded local file", "description": "Tool file status" },
-  "toolFileTooLarge": { "message": "The selected file exceeds this tool's local input limit.", "description": "Tool file size error" },
-  "toolCategoryDeveloper": { "message": "Developer", "description": "Tool catalog category" },
-  "toolCategoryText": { "message": "Text", "description": "Tool catalog category" },
-  "toolCategoryGenerate": { "message": "Generate", "description": "Tool catalog category" },
-  "toolCategoryData": { "message": "Data", "description": "Tool catalog category" },
-  "toolCompact": { "message": "Compact output", "description": "Tool compact option" },
-  "toolExpandEscaped": { "message": "Expand escaped JSON", "description": "Tool nested JSON option" },
-  "toolJsonOperation": { "message": "JSON operation", "description": "JSON tool operation" },
-  "toolJsonFormatOperation": { "message": "Format", "description": "JSON tool operation" },
-  "toolJsonCompactOperation": { "message": "Compact", "description": "JSON tool operation" },
-  "toolJsonValidateOperation": { "message": "Validate", "description": "JSON tool operation" },
-  "toolJsonSortOperation": { "message": "Sort keys", "description": "JSON tool operation" },
-  "toolJsonMoreOptions": { "message": "More options", "description": "Additional JSON tool options" },
-  "toolDownloadShort": { "message": "Download", "description": "Compact tool download action" },
-  "toolJsonLine": { "message": "Line", "description": "JSON cursor line label" },
-  "toolJsonColumn": { "message": "Column", "description": "JSON cursor column label" },
-  "toolJsonCharacters": { "message": "Chars", "description": "JSON character count label" },
-  "toolJsonLength": { "message": "Length", "description": "JSON byte length label" },
-  "toolJsonObject": { "message": "JSON object", "description": "JSON root type label" },
-  "toolJsonArray": { "message": "JSON array", "description": "JSON root type label" },
-  "toolJsonValue": { "message": "JSON value", "description": "JSON root type label" },
-  "toolJsonDepth": { "message": "Depth", "description": "JSON depth label" },
+  "toolCatalog": {
+    "message": "Tool catalog",
+    "description": "Tool catalog heading"
+  },
+  "toolCatalogSearch": {
+    "message": "Search tools",
+    "description": "Tool catalog search"
+  },
+  "toolCatalogSearchHint": {
+    "message": "Search by name, description, keyword, or ID",
+    "description": "Tool catalog search hint"
+  },
+  "toolCatalogNoResults": {
+    "message": "No matching tools.",
+    "description": "Tool catalog empty result"
+  },
+  "toolOpen": {
+    "message": "Open tool",
+    "description": "Open tool action"
+  },
+  "toolsOverview": {
+    "message": "Tool overview",
+    "description": "Tool settings section"
+  },
+  "jsonFormatter": {
+    "message": "JSON formatter",
+    "description": "JSON settings section"
+  },
+  "textDiff": {
+    "message": "Content diff",
+    "description": "Text diff settings section"
+  },
+  "codecTransform": {
+    "message": "Encoding & conversion",
+    "description": "Codec settings section"
+  },
+  "timeAndId": {
+    "message": "Time & IDs",
+    "description": "Time and identifier settings section"
+  },
+  "toolOverviewDescription": {
+    "message": "Choose the local tools shown in the popup and native context menu. Selected text is passed in when available.",
+    "description": "Tool overview description"
+  },
+  "toolEnabledHint": {
+    "message": "Keep tools available from extension pages.",
+    "description": "Tool overview description"
+  },
+  "contextMenuEnabledHint": {
+    "message": "Show native tool entries when enabled; selected text is passed in when available.",
+    "description": "Tool overview description"
+  },
+  "toolDirectory": {
+    "message": "Tool directory",
+    "description": "Tool directory heading"
+  },
+  "toolDirectoryHint": {
+    "message": "Every local tool is listed here with its category and entry point.",
+    "description": "Tool directory description"
+  },
+  "toolDirectorySearch": {
+    "message": "Search tool directory",
+    "description": "Tool directory search"
+  },
+  "toolDirectorySearchHint": {
+    "message": "Search the local tool directory",
+    "description": "Tool directory search hint"
+  },
+  "jsonFormatterDescription": {
+    "message": "Format JSON documents locally and keep the original page available.",
+    "description": "JSON settings description"
+  },
+  "documentFormatterEnabledHint": {
+    "message": "Only matching document content is read; no page data is uploaded.",
+    "description": "Document formatter setting hint"
+  },
+  "documentFormatterJsonHint": {
+    "message": "Structured data",
+    "description": "Document formatter format hint"
+  },
+  "documentFormatterXmlHint": {
+    "message": "Markup documents",
+    "description": "Document formatter format hint"
+  },
+  "documentFormatterCssHint": {
+    "message": "Stylesheets",
+    "description": "Document formatter format hint"
+  },
+  "documentFormatterJavascriptHint": {
+    "message": "Scripts",
+    "description": "Document formatter format hint"
+  },
+  "documentFormatterJavaHint": {
+    "message": "Source files",
+    "description": "Document formatter format hint"
+  },
+  "textDiffSettingsDescription": {
+    "message": "Compare two local text values without sending content away.",
+    "description": "Text diff settings description"
+  },
+  "codecTransformSettingsDescription": {
+    "message": "Encode, decode, and convert local text with explicit operations.",
+    "description": "Codec settings description"
+  },
+  "timeAndIdSettingsDescription": {
+    "message": "Convert timestamps and generate identifiers locally.",
+    "description": "Time and identifier settings description"
+  },
+  "toolEnabled": {
+    "message": "Enable local tools",
+    "description": "Tool settings toggle"
+  },
+  "contextMenuEnabled": {
+    "message": "Enable native context-menu tools",
+    "description": "Context menu settings toggle"
+  },
+  "documentFormatterEnabled": {
+    "message": "Enable document auto-formatting",
+    "description": "Document formatter settings toggle"
+  },
+  "documentFormatterAutoFormat": {
+    "message": "Automatic formats",
+    "description": "Document formatter format settings"
+  },
+  "documentFormatterAutoJson": {
+    "message": "JSON",
+    "description": "Document formatter format"
+  },
+  "documentFormatterAutoXml": {
+    "message": "XML",
+    "description": "Document formatter format"
+  },
+  "documentFormatterAutoCss": {
+    "message": "CSS",
+    "description": "Document formatter format"
+  },
+  "documentFormatterAutoJavascript": {
+    "message": "JavaScript",
+    "description": "Document formatter format"
+  },
+  "documentFormatterAutoJava": {
+    "message": "Java",
+    "description": "Document formatter format"
+  },
+  "documentFormatterMaxAutoBytes": {
+    "message": "Automatic formatting limit (bytes)",
+    "description": "Document formatter size setting"
+  },
+  "documentFormatterJsonDefaults": {
+    "message": "JSON defaults",
+    "description": "Document formatter JSON settings"
+  },
+  "toolFile": {
+    "message": "Local file",
+    "description": "Tool file input"
+  },
+  "toolFileChoose": {
+    "message": "Choose file",
+    "description": "Tool file chooser button"
+  },
+  "toolFileNone": {
+    "message": "No file selected",
+    "description": "Tool file chooser status"
+  },
+  "toolChooseFile": {
+    "message": "Import local text file",
+    "description": "Tool file input"
+  },
+  "toolFileLoaded": {
+    "message": "Loaded local file",
+    "description": "Tool file status"
+  },
+  "toolFileTooLarge": {
+    "message": "The selected file exceeds this tool's local input limit.",
+    "description": "Tool file size error"
+  },
+  "toolCategoryDeveloper": {
+    "message": "Developer",
+    "description": "Tool catalog category"
+  },
+  "toolCategoryText": {
+    "message": "Text",
+    "description": "Tool catalog category"
+  },
+  "toolCategoryGenerate": {
+    "message": "Generate",
+    "description": "Tool catalog category"
+  },
+  "toolCategoryData": {
+    "message": "Data",
+    "description": "Tool catalog category"
+  },
+  "toolCompact": {
+    "message": "Compact output",
+    "description": "Tool compact option"
+  },
+  "toolExpandEscaped": {
+    "message": "Expand escaped JSON",
+    "description": "Tool nested JSON option"
+  },
+  "toolJsonOperation": {
+    "message": "JSON operation",
+    "description": "JSON tool operation"
+  },
+  "toolJsonFormatOperation": {
+    "message": "Format",
+    "description": "JSON tool operation"
+  },
+  "toolJsonCompactOperation": {
+    "message": "Compact",
+    "description": "JSON tool operation"
+  },
+  "toolJsonValidateOperation": {
+    "message": "Validate",
+    "description": "JSON tool operation"
+  },
+  "toolJsonSortOperation": {
+    "message": "Sort keys",
+    "description": "JSON tool operation"
+  },
+  "toolJsonMoreOptions": {
+    "message": "More options",
+    "description": "Additional JSON tool options"
+  },
+  "toolDownloadShort": {
+    "message": "Download",
+    "description": "Compact tool download action"
+  },
+  "toolJsonLine": {
+    "message": "Line",
+    "description": "JSON cursor line label"
+  },
+  "toolJsonColumn": {
+    "message": "Column",
+    "description": "JSON cursor column label"
+  },
+  "toolJsonCharacters": {
+    "message": "Chars",
+    "description": "JSON character count label"
+  },
+  "toolJsonLength": {
+    "message": "Length",
+    "description": "JSON byte length label"
+  },
+  "toolJsonObject": {
+    "message": "JSON object",
+    "description": "JSON root type label"
+  },
+  "toolJsonArray": {
+    "message": "JSON array",
+    "description": "JSON root type label"
+  },
+  "toolJsonValue": {
+    "message": "JSON value",
+    "description": "JSON root type label"
+  },
+  "toolJsonDepth": {
+    "message": "Depth",
+    "description": "JSON depth label"
+  },
   "toolJsonResponsiveHint": {
     "message": "On narrow screens, the title wraps and the toolbar scrolls horizontally",
     "description": "JSON responsive layout hint"
   },
-  "toolTimezone": { "message": "Timezone", "description": "Tool timezone option" },
-  "toolIndent2": { "message": "2 spaces", "description": "Tool indent option" },
-  "toolIndent4": { "message": "4 spaces", "description": "Tool indent option" },
-  "toolIndent8": { "message": "8 spaces", "description": "Tool indent option" },
-  "toolIndentTab": { "message": "Tab", "description": "Tool indent option" },
-  "toolSortDescending": { "message": "Descending", "description": "Tool sort option" },
-  "toolBase64Encode": { "message": "Base64 encode", "description": "Codec option" },
-  "toolBase64Decode": { "message": "Base64 decode", "description": "Codec option" },
-  "toolUnicodeEncode": { "message": "Unicode code points encode", "description": "Codec option" },
-  "toolUnicodeDecode": { "message": "Unicode code points decode", "description": "Codec option" },
-  "toolUtf8Encode": { "message": "UTF-8 encode", "description": "Codec option" },
-  "toolUtf8Decode": { "message": "UTF-8 decode", "description": "Codec option" },
-  "toolHexEncode": { "message": "Hex encode", "description": "Codec option" },
-  "toolHexDecode": { "message": "Hex decode", "description": "Codec option" },
-  "toolUtf16Encode": { "message": "UTF-16 encode", "description": "Codec option" },
-  "toolUtf16Decode": { "message": "UTF-16 decode", "description": "Codec option" },
-  "toolUrlEncode": { "message": "URL encode", "description": "Codec option" },
-  "toolUrlDecode": { "message": "URL decode", "description": "Codec option" },
-  "toolHtmlEncode": { "message": "HTML encode", "description": "Codec option" },
-  "toolHtmlDecode": { "message": "HTML decode", "description": "Codec option" },
-  "toolJwtDecode": { "message": "Decode JWT structure", "description": "Codec option" },
-  "toolCookieParse": { "message": "Parse Cookie header", "description": "Codec option" },
-  "toolGzipCompress": { "message": "Gzip compress", "description": "Codec option" },
-  "toolGzipDecompress": { "message": "Gzip decompress", "description": "Codec option" },
-  "toolMd5": { "message": "MD5 (legacy compatibility; not for security)", "description": "Legacy digest option" },
-  "toolSha1": { "message": "SHA-1 (legacy compatibility; not for security)", "description": "Legacy digest option" },
-  "toolIsoToUnixSeconds": { "message": "ISO to Unix seconds", "description": "Time option" },
-  "toolIsoToUnixMilliseconds": { "message": "ISO to Unix milliseconds", "description": "Time option" },
-  "toolUnixSecondsToIso": { "message": "Unix seconds to ISO", "description": "Time option" },
-  "toolUnixMillisecondsToIso": { "message": "Unix milliseconds to ISO", "description": "Time option" },
-  "toolIsoToTimezone": { "message": "ISO to timezone display", "description": "Time option" },
-  "toolUnixToFiletime": { "message": "Unix seconds to FILETIME", "description": "Time option" },
-  "toolFiletimeToUnix": { "message": "FILETIME to Unix seconds", "description": "Time option" },
-  "toolUuid": { "message": "UUID v4", "description": "ID option" },
-  "toolUlid": { "message": "ULID-style ID", "description": "ID option" },
-  "toolSnowflake": { "message": "Snowflake-style ID", "description": "ID option" },
-  "toolNanoid": { "message": "NanoID-style ID", "description": "ID option" },
-  "toolCount1": { "message": "1 value", "description": "ID count option" },
-  "toolCount5": { "message": "5 values", "description": "ID count option" },
-  "toolCount10": { "message": "10 values", "description": "ID count option" },
-  "toolLength12": { "message": "12 characters", "description": "Password length option" },
-  "toolLength20": { "message": "20 characters", "description": "Password length option" },
-  "toolLength32": { "message": "32 characters", "description": "Password length option" },
-  "toolLength64": { "message": "64 characters", "description": "Password length option" },
-  "toolCsvToMarkdown": { "message": "CSV to Markdown", "description": "Table option" },
-  "toolTsvToMarkdown": { "message": "TSV to Markdown", "description": "Table option" },
-  "toolCsvToTsv": { "message": "CSV to TSV", "description": "Table option" },
-  "toolTsvToCsv": { "message": "TSV to CSV", "description": "Table option" },
-  "toolCsvToJson": { "message": "CSV to JSON", "description": "Table option" },
-  "toolTsvToJson": { "message": "TSV to JSON", "description": "Table option" },
-  "toolCsvToXml": { "message": "CSV to XML", "description": "Table option" },
-  "toolTsvToXml": { "message": "TSV to XML", "description": "Table option" },
-  "toolCsvToMysql": { "message": "CSV to MySQL INSERT", "description": "Table option" },
-  "toolTsvToMysql": { "message": "TSV to MySQL INSERT", "description": "Table option" },
-  "toolCsvToPhp": { "message": "CSV to PHP array", "description": "Table option" },
-  "toolTsvToPhp": { "message": "TSV to PHP array", "description": "Table option" },
-  "toolKeywordJson": { "message": "JSON", "description": "Tool search keyword" },
-  "toolKeywordFormat": { "message": "format", "description": "Tool search keyword" },
-  "toolKeywordValidate": { "message": "validate", "description": "Tool search keyword" },
-  "toolKeywordDiff": { "message": "diff", "description": "Tool search keyword" },
-  "toolKeywordText": { "message": "text", "description": "Tool search keyword" },
-  "toolKeywordCodec": { "message": "codec", "description": "Tool search keyword" },
-  "toolKeywordBase64": { "message": "Base64", "description": "Tool search keyword" },
-  "toolKeywordJwt": { "message": "JWT", "description": "Tool search keyword" },
-  "toolKeywordTime": { "message": "time", "description": "Tool search keyword" },
-  "toolKeywordUnix": { "message": "Unix", "description": "Tool search keyword" },
-  "toolKeywordTimezone": { "message": "timezone", "description": "Tool search keyword" },
-  "toolKeywordId": { "message": "ID", "description": "Tool search keyword" },
-  "toolKeywordUuid": { "message": "UUID", "description": "Tool search keyword" },
-  "toolKeywordSnowflake": { "message": "Snowflake", "description": "Tool search keyword" },
-  "toolKeywordPassword": { "message": "password", "description": "Tool search keyword" },
-  "toolKeywordRandom": { "message": "random", "description": "Tool search keyword" },
-  "toolKeywordCsv": { "message": "CSV", "description": "Tool search keyword" },
-  "toolKeywordTsv": { "message": "TSV", "description": "Tool search keyword" },
-  "toolKeywordSql": { "message": "SQL", "description": "Tool search keyword" },
-  "toolBack": { "message": "Back to tools", "description": "Return from a standalone tool page" },
-  "toolSettings": { "message": "Open tool settings", "description": "Open global tool settings" },
-  "toolWorkspace": { "message": "Workspace", "description": "Standalone tool workspace label" },
-  "toolLocalBadge": { "message": "Local only", "description": "Local processing badge" },
-  "toolInputHint": { "message": "Paste or type local text here", "description": "Tool input hint" },
-  "toolInputLeft": { "message": "Left input", "description": "Left tool input label" },
-  "toolRawInput": { "message": "Raw input", "description": "Codec raw input label" },
-  "toolParsedOutput": { "message": "Parsed output", "description": "Codec parsed output label" },
-  "toolConvert": { "message": "Convert", "description": "Codec conversion action" },
-  "toolPicker": { "message": "Tool", "description": "Tool picker label" },
-  "toolInput": { "message": "Input", "description": "Tool input label" },
-  "toolInputRight": { "message": "Right input", "description": "Tool second input label" },
-  "toolRun": { "message": "Run", "description": "Run tool" },
-  "toolCopy": { "message": "Copy output", "description": "Copy tool output" },
-  "toolDownload": { "message": "Download output", "description": "Download tool output" },
-  "toolRestore": { "message": "Restore original", "description": "Restore tool input" },
-  "toolOutput": { "message": "Output", "description": "Tool output label" },
-  "toolIndent": { "message": "Indent", "description": "Formatter indent option" },
-  "toolSort": { "message": "Sort", "description": "Formatter sort option" },
-  "toolKeepOrder": { "message": "Original", "description": "Formatter order option" },
-  "toolSortAscending": { "message": "Ascending", "description": "Formatter order option" },
-  "toolCollapse": { "message": "Collapse", "description": "Formatter collapse option" },
-  "toolExpand": { "message": "Expand", "description": "Formatter expand option" },
-  "toolCopyNode": { "message": "Copy node", "description": "Copy JSON node" },
-  "toolDeleteNode": { "message": "Delete node", "description": "Delete JSON node" },
-  "toolCollapseNode": { "message": "Collapse node", "description": "Collapse JSON node" },
-  "toolExpandNode": { "message": "Expand node", "description": "Expand JSON node" },
-  "toolCollapseAll": { "message": "Collapse all nodes", "description": "Collapse all JSON nodes" },
-  "toolExpandAll": { "message": "Expand all nodes", "description": "Expand all JSON nodes" },
-  "toolJsonNoResult": { "message": "No formatted JSON result", "description": "Empty JSON result state" },
-  "toolJsonNodeDeleted": { "message": "JSON node deleted", "description": "JSON node deletion status" },
-  "toolCodecOperation": { "message": "Operation", "description": "Codec operation label" },
-  "toolCodecType": { "message": "Conversion type", "description": "Codec type label" },
-  "toolCodecAdvanced": { "message": "More local transformations", "description": "Additional codec operations" },
-  "toolEncode": { "message": "Encode", "description": "Codec encode operation" },
-  "toolDecode": { "message": "Decode", "description": "Codec decode operation" },
-  "toolCodecUnicode": { "message": "Unicode code points", "description": "Codec type" },
-  "toolCodecUrl": { "message": "URL parameter", "description": "Codec type" },
-  "toolCodecUtf8": { "message": "UTF-8", "description": "Codec type" },
-  "toolCodecBase64": { "message": "Base64", "description": "Codec type" },
-  "toolCodecHex": { "message": "Hex", "description": "Codec type" },
-  "toolCodecUtf16": { "message": "UTF-16", "description": "Codec type" },
-  "toolCodecHtml": { "message": "HTML", "description": "Codec type" },
-  "toolCodecUri": {"message": "Full URL", "description": "编码转换功能"},
-  "toolCodecUnicodeEscape": {"message": "Unicode escapes", "description": "编码转换功能"},
-  "toolCodecJsonString": {"message": "JSON string escapes", "description": "编码转换功能"},
-  "toolCodecXml": {"message": "XML entities", "description": "编码转换功能"},
-  "toolCodecBinary": {"message": "Binary bytes", "description": "编码转换功能"},
-  "toolCodecOctal": {"message": "Octal bytes", "description": "编码转换功能"},
-  "toolCodecDecimal": {"message": "Decimal bytes", "description": "编码转换功能"},
-  "toolCodecDataUrl": {"message": "Data URL", "description": "编码转换功能"},
-  "toolCodecAscii": {"message": "ASCII", "description": "编码转换功能"},
-  "toolCodecMd5": {"message": "MD5", "description": "编码转换功能"},
-  "toolCodecDigest": {"message": "Hash", "description": "编码转换功能"},
-  "toolCodecCopyShort": {"message": "Copy", "description": "编码转换功能"},
-  "toolCodecUseText": {"message": "Switch to text input", "description": "编码转换功能"},
-  "toolCodecByteUnit": {"message": "bytes", "description": "编码转换功能"},
-  "toolCodecAutoConverted": {"message": "Converted automatically", "description": "编码转换功能"},
-  "toolCodecConverted": {"message": "Conversion complete", "description": "编码转换功能"},
-  "toolCodecBinaryResult": {"message": "Binary data · hexadecimal preview. Download to restore the file.", "description": "编码转换功能"},
-  "toolCodecBase64Hint": {"message": "Convert UTF-8 text to Base64 and back.", "description": "编码转换功能"},
-  "toolCodecUrlHint": {"message": "Encode a parameter value. Spaces become %20; + remains a plus sign when decoded.", "description": "编码转换功能"},
-  "toolCodecUriHint": {"message": "Convert a full URL, preserving separators such as : / ? & = #.", "description": "编码转换功能"},
-  "toolCodecUnicodeHint": {"message": "Unicode code points separated by spaces, e.g. U+4F60 U+597D.", "description": "编码转换功能"},
-  "toolCodecUnicodeEscapeHint": {"message": "Encode as \\uXXXX; decode \\uXXXX or \\u{1F600}.", "description": "编码转换功能"},
-  "toolCodecJsonStringHint": {"message": "Encode or decode a complete JSON string, including the surrounding double quotes.", "description": "编码转换功能"},
-  "toolCodecXmlHint": {"message": "Escape the five XML entities. Decode named or decimal/hexadecimal numeric entities.", "description": "编码转换功能"},
-  "toolCodecBytesHint": {"message": "UTF-8 bytes separated by spaces. Decode accepts spaces, newlines, or commas.", "description": "编码转换功能"},
-  "toolCodecAsciiHint": {"message": "ASCII characters and decimal codes 0–127. For Chinese text, use decimal bytes.", "description": "编码转换功能"},
-  "toolCodecDataUrlHint": {"message": "Encode text or a local file. Decode to preview text or download the original bytes.", "description": "编码转换功能"},
-  "toolCodecMd5Hint": {"message": "MD5 is a one-way hash for legacy compatibility. It cannot be decoded and is not suitable for security.", "description": "编码转换功能"},
-  "toolCodecInvalidUtf8": {"message": "The byte sequence is not valid text in this encoding.", "description": "编码转换功能"},
-  "toolCodecInvalidBase64": {"message": "Invalid Base64 format.", "description": "编码转换功能"},
-  "toolCodecInvalidCodePoint": {"message": "Invalid Unicode code point. Use the U+4F60 format; values must not exceed U+10FFFF or be surrogates.", "description": "编码转换功能"},
-  "toolCodecInvalidEscape": {"message": "Invalid Unicode escape. Use \\u4f60 or \\u{1f600}.", "description": "编码转换功能"},
-  "toolCodecInvalidJsonString": {"message": "Enter a complete JSON string including its double quotes.", "description": "编码转换功能"},
-  "toolCodecInvalidXml": {"message": "Invalid XML entity or character. Only predefined and numeric XML entities are supported.", "description": "编码转换功能"},
-  "toolCodecInvalidAscii": {"message": "ASCII supports only characters and decimal codes from 0 to 127.", "description": "编码转换功能"},
-  "toolCodecInvalidByte": {"message": "Enter valid bytes separated by spaces, with each byte between 0 and 255.", "description": "编码转换功能"},
-  "toolCodecInvalidUrl": {"message": "Invalid URL escape. Check that percent escapes contain complete UTF-8 bytes.", "description": "编码转换功能"},
-  "toolCodecInvalidDataUrl": {"message": "Invalid Data URL. Check its media type, parameters, and encoded content.", "description": "编码转换功能"},
-  "toolCodecOutputTooLarge": {"message": "The output exceeds 10 MiB. Reduce the input and try again.", "description": "编码转换功能"},
-  "toolUriEncode": {"message": "Full URL encoding", "description": "编码转换功能"},
-  "toolUriDecode": {"message": "Full URL decoding", "description": "编码转换功能"},
-  "toolUnicodeEscapeEncode": {"message": "Unicode escapes encoding", "description": "编码转换功能"},
-  "toolUnicodeEscapeDecode": {"message": "Unicode escapes decoding", "description": "编码转换功能"},
-  "toolJsonStringEncode": {"message": "JSON string encoding", "description": "编码转换功能"},
-  "toolJsonStringDecode": {"message": "JSON string decoding", "description": "编码转换功能"},
-  "toolXmlEncode": {"message": "XML entities encoding", "description": "编码转换功能"},
-  "toolXmlDecode": {"message": "XML entities decoding", "description": "编码转换功能"},
-  "toolBinaryEncode": {"message": "Binary bytes encoding", "description": "编码转换功能"},
-  "toolBinaryDecode": {"message": "Binary bytes decoding", "description": "编码转换功能"},
-  "toolOctalEncode": {"message": "Octal bytes encoding", "description": "编码转换功能"},
-  "toolOctalDecode": {"message": "Octal bytes decoding", "description": "编码转换功能"},
-  "toolDecimalEncode": {"message": "Decimal bytes encoding", "description": "编码转换功能"},
-  "toolDecimalDecode": {"message": "Decimal bytes decoding", "description": "编码转换功能"},
-  "toolDataUrlEncode": {"message": "Data URL encoding", "description": "编码转换功能"},
-  "toolDataUrlDecode": {"message": "Data URL decoding", "description": "编码转换功能"},
-  "toolAsciiEncode": {"message": "ASCII encoding", "description": "编码转换功能"},
-  "toolAsciiDecode": {"message": "ASCII decoding", "description": "编码转换功能"},
-  "toolDiffPanel": { "message": "Differences", "description": "Diff result panel" },
-  "toolRepair": { "message": "Repair mojibake", "description": "Formatter repair option" },
-  "toolMode": { "message": "Mode", "description": "Tool mode option" },
-  "toolCount": { "message": "Count", "description": "Generator count option" },
-  "toolLength": { "message": "Length", "description": "Password length option" },
-  "toolSymbols": { "message": "Include symbols", "description": "Password symbols option" },
-  "toolRepairConfirm": { "message": "Preview and apply the reversible text repair?", "description": "Formatter repair confirmation" },
-  "toolReady": { "message": "Ready", "description": "Tool status" },
-  "toolAutoParsed": { "message": "Parsed automatically (updates when input changes)", "description": "Automatic tool parsing status" },
-  "toolInvalid": { "message": "Invalid input", "description": "Tool invalid input status" },
-  "toolCopied": { "message": "Copied locally", "description": "Tool copy status" },
-  "toolCopyUnavailable": { "message": "Clipboard unavailable; select the output to copy.", "description": "Tool copy fallback" },
-  "toolDownloaded": { "message": "Downloaded locally", "description": "Tool download status" },
-  "toolRestored": { "message": "Restored original", "description": "Tool restore status" },
-  "toolTokenInvalid": { "message": "The one-time input token is invalid or expired.", "description": "Tool token error" },
-  "toolEmptySelection": { "message": "No selection was transferred. Paste text or import a local file.", "description": "Tool empty selection notice" },
-  "toolSelectionTooLarge": { "message": "The selection was too large for a one-time handoff. Paste text or import a local file.", "description": "Tool selection size notice" },
-  "toolMetadataField": { "message": "Metadata", "description": "Tool metadata label" },
-  "toolMetadataMode": { "message": "Mode", "description": "Tool metadata label" },
-  "toolMetadataRepresentation": { "message": "Representation", "description": "Tool metadata label" },
-  "toolMetadataOutputEncoding": { "message": "Output encoding", "description": "Tool metadata label" },
-  "toolMetadataInputEncoding": { "message": "Input encoding", "description": "Tool metadata label" },
-  "toolMetadataMilliseconds": { "message": "Milliseconds", "description": "Tool metadata label" },
-  "toolMetadataTimezone": { "message": "Timezone", "description": "Tool metadata label" },
-  "toolMetadataUnit": { "message": "Unit", "description": "Tool metadata label" },
-  "toolMetadataCount": { "message": "Count", "description": "Tool metadata label" },
-  "toolMetadataLength": { "message": "Length", "description": "Tool metadata label" },
-  "toolMetadataSymbols": { "message": "Symbols", "description": "Tool metadata label" },
-  "toolMetadataValid": { "message": "Valid", "description": "Tool metadata label" },
-  "toolMetadataOperation": { "message": "Operation", "description": "Tool metadata label" },
-  "toolMetadataExpandedEscaped": { "message": "Expanded escaped JSON", "description": "Tool metadata label" },
-  "toolMetadataLeftLines": { "message": "Left lines", "description": "Tool metadata label" },
-  "toolMetadataRightLines": { "message": "Right lines", "description": "Tool metadata label" },
-  "toolMetadataRows": { "message": "Rows", "description": "Tool metadata label" },
-  "toolMetadataColumns": { "message": "Columns", "description": "Tool metadata label" },
-  "toolMetadataFormulaCells": { "message": "Formula-like cells", "description": "Tool metadata label" },
-  "toolMetadataFormulaWarning": { "message": "Formula warning", "description": "Tool metadata label" },
-  "toolMetadataWarning": { "message": "Warning", "description": "Tool metadata label" },
-  "toolMetadataBytes": { "message": "Bytes", "description": "Tool metadata label" },
-  "toolMetadataNodes": { "message": "Nodes", "description": "Tool metadata label" },
-  "toolMetadataStrings": { "message": "Strings", "description": "Tool metadata label" },
-  "toolMetadataNumbers": { "message": "Numbers", "description": "Tool metadata label" },
-  "toolMetadataBooleans": { "message": "Booleans", "description": "Tool metadata label" },
-  "toolMetadataNulls": { "message": "Null values", "description": "Tool metadata label" },
-  "toolMetadataUnsafeNumbers": { "message": "Unsafe integer literals", "description": "Tool metadata label" },
-  "toolMetadataStringCharacters": { "message": "String characters", "description": "Tool metadata label" },
-  "toolMetadataCharacters": { "message": "Characters", "description": "Tool metadata label" },
-  "toolMetadataObjects": { "message": "Objects", "description": "Tool metadata label" },
-  "toolMetadataArrays": { "message": "Arrays", "description": "Tool metadata label" },
-  "toolMetadataKeys": { "message": "Keys", "description": "Tool metadata label" },
-  "toolMetadataDuplicateKeys": { "message": "Duplicate keys", "description": "Tool metadata label" },
-  "toolMetadataDuplicateKeyPositions": { "message": "Duplicate key positions", "description": "Tool metadata label" },
-  "toolMetadataMaxDepth": { "message": "Maximum depth", "description": "Tool metadata label" },
-  "toolMetadataParseMs": { "message": "Parse time (ms)", "description": "Tool metadata label" },
-  "toolMetadataFormatMs": { "message": "Format time (ms)", "description": "Tool metadata label" },
-  "toolMetadataSortOrder": { "message": "Sort order", "description": "Tool metadata label" },
-  "toolMetadataCollapsed": { "message": "Collapsed", "description": "Tool metadata label" },
-  "toolMetadataLines": { "message": "Lines", "description": "Tool metadata label" },
-  "toolMetadataConservative": { "message": "Conservative formatter", "description": "Tool metadata label" },
-  "toolJwtWarning": { "message": "JWT is decoded structurally only; its signature and trust are not verified.", "description": "Tool security warning" },
-  "toolMd5Warning": { "message": "MD5 is for legacy compatibility only and is not suitable for security.", "description": "Tool security warning" },
-  "toolSha1Warning": { "message": "SHA-1 is for legacy compatibility only and is not suitable for security.", "description": "Tool security warning" },
-  "toolFormulaWarning": { "message": "May be interpreted as a spreadsheet formula; review before importing.", "description": "Tool spreadsheet warning" },
-  "toolSqlWarning": { "message": "SQL output is escaped text; use parameterized queries.", "description": "Tool SQL warning" },
-  "documentFormatterTitleSuffix": { "message": "Auto-format", "description": "Document formatter toolbar title" },
-  "documentFormatterToolbar": { "message": "Browser Toolbox document formatter", "description": "Document formatter toolbar" },
-  "documentFormatterIndent": { "message": "Indent size", "description": "Document formatter indent" },
-  "documentFormatterTab": { "message": "Tab", "description": "Document formatter tab indent" },
-  "documentFormatterSpaces": { "message": "spaces", "description": "Document formatter spaces" },
-  "documentFormatterSortAria": { "message": "Sort JSON keys", "description": "Document formatter sort label" },
-  "documentFormatterKeepOrder": { "message": "Keep key order", "description": "Document formatter order" },
-  "documentFormatterSort": { "message": "Sort keys", "description": "Document formatter sort" },
-  "documentFormatterSortAscending": { "message": "Sort keys ascending", "description": "Document formatter sort" },
-  "documentFormatterSortDescending": { "message": "Sort keys descending", "description": "Document formatter sort" },
-  "documentFormatterRepair": { "message": "Repair mojibake", "description": "Document formatter repair" },
-  "documentFormatterUndoRepair": { "message": "Undo repair", "description": "Document formatter undo" },
-  "documentFormatterCollapse": { "message": "Collapse", "description": "Document formatter collapse" },
-  "documentFormatterExpand": { "message": "Expand", "description": "Document formatter expand" },
-  "documentFormatterCopy": { "message": "Copy", "description": "Document formatter copy" },
-  "documentFormatterDownload": { "message": "Download", "description": "Document formatter download" },
-  "documentFormatterRestore": { "message": "Restore original", "description": "Document formatter restore" },
-  "documentFormatterViewOriginal": { "message": "View original", "description": "Document formatter action" },
-  "documentFormatterRestoreView": { "message": "Restore formatted view", "description": "Document formatter action" },
-  "documentFormatterShowingOriginal": { "message": "Showing original text", "description": "Document formatter status" },
-  "documentFormatterKeptOriginal": { "message": "Kept original", "description": "Document formatter fallback" },
-  "documentFormatterCopied": { "message": "Copied locally", "description": "Document formatter copy status" },
-  "documentFormatterCopyUnavailable": { "message": "Clipboard is unavailable; select the output to copy.", "description": "Document formatter copy fallback" },
-  "documentFormatterDownloaded": { "message": "Downloaded locally", "description": "Document formatter download status" },
-  "documentFormatterNoRepair": { "message": "No reversible mojibake candidate found.", "description": "Document formatter repair status" },
-  "documentFormatterRepairConfirm": { "message": "Preview and apply the reversible text repair?", "description": "Document formatter repair confirmation" },
-  "documentFormatterRepairPreviewCount": { "message": "Affected strings", "description": "Document formatter repair preview" },
-  "documentFormatterRepairPreviewBefore": { "message": "Before", "description": "Document formatter repair preview" },
-  "documentFormatterRepairPreviewAfter": { "message": "After", "description": "Document formatter repair preview" },
-  "documentFormatterLargeConfirm": { "message": "Format this large local document?", "description": "Document formatter size confirmation" },
-  "documentFormatterBytes": { "message": "bytes", "description": "Document formatter byte label" },
-  "documentFormatterKeys": { "message": "keys", "description": "Document formatter key label" },
-  "documentFormatterDuplicateKeys": { "message": "duplicate keys", "description": "Document formatter duplicate key label" },
-  "documentFormatterDuplicateKeyPositions": { "message": "duplicate key positions", "description": "Document formatter duplicate key positions" },
-  "documentFormatterTooLarge": { "message": "too large", "description": "Document formatter size status" },
-  "documentFormatterRepairApplied": { "message": "text repair applied", "description": "Document formatter repair status" },
-  "documentFormatterMetadata": { "message": "Document metadata", "description": "Document formatter metadata" },
-  "documentFormatterCharacters": { "message": "characters", "description": "Document formatter metadata" },
-  "documentFormatterRootType": { "message": "root type", "description": "Document formatter metadata" },
-  "documentFormatterObjects": { "message": "objects", "description": "Document formatter metadata" },
-  "documentFormatterArrays": { "message": "arrays", "description": "Document formatter metadata" },
-  "documentFormatterStrings": { "message": "strings", "description": "Document formatter metadata" },
-  "documentFormatterNumbers": { "message": "numbers", "description": "Document formatter metadata" },
-  "documentFormatterBooleans": { "message": "booleans", "description": "Document formatter metadata" },
-  "documentFormatterNulls": { "message": "null values", "description": "Document formatter metadata" },
-  "documentFormatterMaxDepth": { "message": "maximum depth", "description": "Document formatter metadata" },
-  "documentFormatterUnsafeNumbers": { "message": "unsafe integer literals", "description": "Document formatter metadata" },
-  "documentFormatterContentType": { "message": "content type", "description": "Document formatter metadata" },
-  "documentFormatterCharset": { "message": "charset", "description": "Document formatter metadata" },
-  "documentFormatterParseMs": { "message": "parse time (ms)", "description": "Document formatter metadata" },
-  "documentFormatterRenderMs": { "message": "render time (ms)", "description": "Document formatter metadata" },
-  "documentFormatterSortState": { "message": "sort state", "description": "Document formatter metadata" },
-  "documentFormatterCollapseState": { "message": "collapse state", "description": "Document formatter metadata" },
-  "documentFormatterDefaultCollapseDepth": { "message": "Default collapse depth", "description": "Document formatter setting" },
-  "documentFormatterRepairState": { "message": "text repair", "description": "Document formatter metadata" },
-  "documentFormatterExpanded": { "message": "expanded", "description": "Document formatter metadata" },
-  "documentFormatterApplied": { "message": "applied", "description": "Document formatter metadata" },
-  "documentFormatterNotApplied": { "message": "not applied", "description": "Document formatter metadata" },
-  "documentFormatterCollapseNode": { "message": "Collapse this JSON node", "description": "Document formatter node control" },
-  "documentFormatterExpandNode": { "message": "Expand this JSON node", "description": "Document formatter node control" },
-  "gestureEditor": { "message": "Gesture editor", "description": "Gesture editor label" },
+  "toolTimezone": {
+    "message": "Timezone",
+    "description": "Tool timezone option"
+  },
+  "toolIndent2": {
+    "message": "2 spaces",
+    "description": "Tool indent option"
+  },
+  "toolIndent4": {
+    "message": "4 spaces",
+    "description": "Tool indent option"
+  },
+  "toolIndent8": {
+    "message": "8 spaces",
+    "description": "Tool indent option"
+  },
+  "toolIndentTab": {
+    "message": "Tab",
+    "description": "Tool indent option"
+  },
+  "toolSortDescending": {
+    "message": "Descending",
+    "description": "Tool sort option"
+  },
+  "toolBase64Encode": {
+    "message": "Base64 encode",
+    "description": "Codec option"
+  },
+  "toolBase64Decode": {
+    "message": "Base64 decode",
+    "description": "Codec option"
+  },
+  "toolUnicodeEncode": {
+    "message": "Unicode code points encode",
+    "description": "Codec option"
+  },
+  "toolUnicodeDecode": {
+    "message": "Unicode code points decode",
+    "description": "Codec option"
+  },
+  "toolUtf8Encode": {
+    "message": "UTF-8 encode",
+    "description": "Codec option"
+  },
+  "toolUtf8Decode": {
+    "message": "UTF-8 decode",
+    "description": "Codec option"
+  },
+  "toolHexEncode": {
+    "message": "Hex encode",
+    "description": "Codec option"
+  },
+  "toolHexDecode": {
+    "message": "Hex decode",
+    "description": "Codec option"
+  },
+  "toolUtf16Encode": {
+    "message": "UTF-16 encode",
+    "description": "Codec option"
+  },
+  "toolUtf16Decode": {
+    "message": "UTF-16 decode",
+    "description": "Codec option"
+  },
+  "toolUrlEncode": {
+    "message": "URL encode",
+    "description": "Codec option"
+  },
+  "toolUrlDecode": {
+    "message": "URL decode",
+    "description": "Codec option"
+  },
+  "toolHtmlEncode": {
+    "message": "HTML encode",
+    "description": "Codec option"
+  },
+  "toolHtmlDecode": {
+    "message": "HTML decode",
+    "description": "Codec option"
+  },
+  "toolJwtDecode": {
+    "message": "Decode JWT structure",
+    "description": "Codec option"
+  },
+  "toolCookieParse": {
+    "message": "Parse Cookie header",
+    "description": "Codec option"
+  },
+  "toolGzipCompress": {
+    "message": "Gzip compress",
+    "description": "Codec option"
+  },
+  "toolGzipDecompress": {
+    "message": "Gzip decompress",
+    "description": "Codec option"
+  },
+  "toolMd5": {
+    "message": "MD5 (legacy compatibility; not for security)",
+    "description": "Legacy digest option"
+  },
+  "toolSha1": {
+    "message": "SHA-1 (legacy compatibility; not for security)",
+    "description": "Legacy digest option"
+  },
+  "toolIsoToUnixSeconds": {
+    "message": "ISO to Unix seconds",
+    "description": "Time option"
+  },
+  "toolIsoToUnixMilliseconds": {
+    "message": "ISO to Unix milliseconds",
+    "description": "Time option"
+  },
+  "toolUnixSecondsToIso": {
+    "message": "Unix seconds to ISO",
+    "description": "Time option"
+  },
+  "toolUnixMillisecondsToIso": {
+    "message": "Unix milliseconds to ISO",
+    "description": "Time option"
+  },
+  "toolIsoToTimezone": {
+    "message": "ISO to timezone display",
+    "description": "Time option"
+  },
+  "toolUnixToFiletime": {
+    "message": "Unix seconds to FILETIME",
+    "description": "Time option"
+  },
+  "toolFiletimeToUnix": {
+    "message": "FILETIME to Unix seconds",
+    "description": "Time option"
+  },
+  "toolUuid": {
+    "message": "UUID v4",
+    "description": "ID option"
+  },
+  "toolUlid": {
+    "message": "ULID-style ID",
+    "description": "ID option"
+  },
+  "toolSnowflake": {
+    "message": "Snowflake-style ID",
+    "description": "ID option"
+  },
+  "toolNanoid": {
+    "message": "NanoID-style ID",
+    "description": "ID option"
+  },
+  "toolCount1": {
+    "message": "1 value",
+    "description": "ID count option"
+  },
+  "toolCount5": {
+    "message": "5 values",
+    "description": "ID count option"
+  },
+  "toolCount10": {
+    "message": "10 values",
+    "description": "ID count option"
+  },
+  "toolLength12": {
+    "message": "12 characters",
+    "description": "Password length option"
+  },
+  "toolLength20": {
+    "message": "20 characters",
+    "description": "Password length option"
+  },
+  "toolLength32": {
+    "message": "32 characters",
+    "description": "Password length option"
+  },
+  "toolLength64": {
+    "message": "64 characters",
+    "description": "Password length option"
+  },
+  "toolCsvToMarkdown": {
+    "message": "CSV to Markdown",
+    "description": "Table option"
+  },
+  "toolTsvToMarkdown": {
+    "message": "TSV to Markdown",
+    "description": "Table option"
+  },
+  "toolCsvToTsv": {
+    "message": "CSV to TSV",
+    "description": "Table option"
+  },
+  "toolTsvToCsv": {
+    "message": "TSV to CSV",
+    "description": "Table option"
+  },
+  "toolCsvToJson": {
+    "message": "CSV to JSON",
+    "description": "Table option"
+  },
+  "toolTsvToJson": {
+    "message": "TSV to JSON",
+    "description": "Table option"
+  },
+  "toolCsvToXml": {
+    "message": "CSV to XML",
+    "description": "Table option"
+  },
+  "toolTsvToXml": {
+    "message": "TSV to XML",
+    "description": "Table option"
+  },
+  "toolCsvToMysql": {
+    "message": "CSV to MySQL INSERT",
+    "description": "Table option"
+  },
+  "toolTsvToMysql": {
+    "message": "TSV to MySQL INSERT",
+    "description": "Table option"
+  },
+  "toolCsvToPhp": {
+    "message": "CSV to PHP array",
+    "description": "Table option"
+  },
+  "toolTsvToPhp": {
+    "message": "TSV to PHP array",
+    "description": "Table option"
+  },
+  "toolKeywordJson": {
+    "message": "JSON",
+    "description": "Tool search keyword"
+  },
+  "toolKeywordFormat": {
+    "message": "format",
+    "description": "Tool search keyword"
+  },
+  "toolKeywordValidate": {
+    "message": "validate",
+    "description": "Tool search keyword"
+  },
+  "toolKeywordDiff": {
+    "message": "diff",
+    "description": "Tool search keyword"
+  },
+  "toolKeywordText": {
+    "message": "text",
+    "description": "Tool search keyword"
+  },
+  "toolKeywordCodec": {
+    "message": "codec",
+    "description": "Tool search keyword"
+  },
+  "toolKeywordBase64": {
+    "message": "Base64",
+    "description": "Tool search keyword"
+  },
+  "toolKeywordJwt": {
+    "message": "JWT",
+    "description": "Tool search keyword"
+  },
+  "toolKeywordTime": {
+    "message": "time",
+    "description": "Tool search keyword"
+  },
+  "toolKeywordUnix": {
+    "message": "Unix",
+    "description": "Tool search keyword"
+  },
+  "toolKeywordTimezone": {
+    "message": "timezone",
+    "description": "Tool search keyword"
+  },
+  "toolKeywordId": {
+    "message": "ID",
+    "description": "Tool search keyword"
+  },
+  "toolKeywordUuid": {
+    "message": "UUID",
+    "description": "Tool search keyword"
+  },
+  "toolKeywordSnowflake": {
+    "message": "Snowflake",
+    "description": "Tool search keyword"
+  },
+  "toolKeywordPassword": {
+    "message": "password",
+    "description": "Tool search keyword"
+  },
+  "toolKeywordRandom": {
+    "message": "random",
+    "description": "Tool search keyword"
+  },
+  "toolKeywordCsv": {
+    "message": "CSV",
+    "description": "Tool search keyword"
+  },
+  "toolKeywordTsv": {
+    "message": "TSV",
+    "description": "Tool search keyword"
+  },
+  "toolKeywordSql": {
+    "message": "SQL",
+    "description": "Tool search keyword"
+  },
+  "toolBack": {
+    "message": "Back to tools",
+    "description": "Return from a standalone tool page"
+  },
+  "toolSettings": {
+    "message": "Open tool settings",
+    "description": "Open global tool settings"
+  },
+  "toolWorkspace": {
+    "message": "Workspace",
+    "description": "Standalone tool workspace label"
+  },
+  "toolLocalBadge": {
+    "message": "Local only",
+    "description": "Local processing badge"
+  },
+  "toolInputHint": {
+    "message": "Paste or type local text here",
+    "description": "Tool input hint"
+  },
+  "toolInputLeft": {
+    "message": "Left input",
+    "description": "Left tool input label"
+  },
+  "toolRawInput": {
+    "message": "Raw input",
+    "description": "Codec raw input label"
+  },
+  "toolParsedOutput": {
+    "message": "Parsed output",
+    "description": "Codec parsed output label"
+  },
+  "toolConvert": {
+    "message": "Convert",
+    "description": "Codec conversion action"
+  },
+  "toolPicker": {
+    "message": "Tool",
+    "description": "Tool picker label"
+  },
+  "toolInput": {
+    "message": "Input",
+    "description": "Tool input label"
+  },
+  "toolInputRight": {
+    "message": "Right input",
+    "description": "Tool second input label"
+  },
+  "toolRun": {
+    "message": "Run",
+    "description": "Run tool"
+  },
+  "toolCopy": {
+    "message": "Copy output",
+    "description": "Copy tool output"
+  },
+  "toolDownload": {
+    "message": "Download output",
+    "description": "Download tool output"
+  },
+  "toolRestore": {
+    "message": "Restore original",
+    "description": "Restore tool input"
+  },
+  "toolOutput": {
+    "message": "Output",
+    "description": "Tool output label"
+  },
+  "toolIndent": {
+    "message": "Indent",
+    "description": "Formatter indent option"
+  },
+  "toolSort": {
+    "message": "Sort",
+    "description": "Formatter sort option"
+  },
+  "toolKeepOrder": {
+    "message": "Original",
+    "description": "Formatter order option"
+  },
+  "toolSortAscending": {
+    "message": "Ascending",
+    "description": "Formatter order option"
+  },
+  "toolCollapse": {
+    "message": "Collapse",
+    "description": "Formatter collapse option"
+  },
+  "toolExpand": {
+    "message": "Expand",
+    "description": "Formatter expand option"
+  },
+  "toolCopyNode": {
+    "message": "Copy node",
+    "description": "Copy JSON node"
+  },
+  "toolDeleteNode": {
+    "message": "Delete node",
+    "description": "Delete JSON node"
+  },
+  "toolCollapseNode": {
+    "message": "Collapse node",
+    "description": "Collapse JSON node"
+  },
+  "toolExpandNode": {
+    "message": "Expand node",
+    "description": "Expand JSON node"
+  },
+  "toolCollapseAll": {
+    "message": "Collapse all nodes",
+    "description": "Collapse all JSON nodes"
+  },
+  "toolExpandAll": {
+    "message": "Expand all nodes",
+    "description": "Expand all JSON nodes"
+  },
+  "toolJsonNoResult": {
+    "message": "No formatted JSON result",
+    "description": "Empty JSON result state"
+  },
+  "toolJsonNodeDeleted": {
+    "message": "JSON node deleted",
+    "description": "JSON node deletion status"
+  },
+  "toolCodecOperation": {
+    "message": "Operation",
+    "description": "Codec operation label"
+  },
+  "toolCodecType": {
+    "message": "Conversion type",
+    "description": "Codec type label"
+  },
+  "toolCodecAdvanced": {
+    "message": "More local transformations",
+    "description": "Additional codec operations"
+  },
+  "toolEncode": {
+    "message": "Encode",
+    "description": "Codec encode operation"
+  },
+  "toolDecode": {
+    "message": "Decode",
+    "description": "Codec decode operation"
+  },
+  "toolCodecUnicode": {
+    "message": "Unicode code points",
+    "description": "Codec type"
+  },
+  "toolCodecUrl": {
+    "message": "URL parameter",
+    "description": "Codec type"
+  },
+  "toolCodecUtf8": {
+    "message": "UTF-8",
+    "description": "Codec type"
+  },
+  "toolCodecBase64": {
+    "message": "Base64",
+    "description": "Codec type"
+  },
+  "toolCodecHex": {
+    "message": "Hex",
+    "description": "Codec type"
+  },
+  "toolCodecUtf16": {
+    "message": "UTF-16",
+    "description": "Codec type"
+  },
+  "toolCodecHtml": {
+    "message": "HTML",
+    "description": "Codec type"
+  },
+  "toolCodecUri": {
+    "message": "Full URL",
+    "description": "编码转换功能"
+  },
+  "toolCodecUnicodeEscape": {
+    "message": "Unicode escapes",
+    "description": "编码转换功能"
+  },
+  "toolCodecJsonString": {
+    "message": "JSON string escapes",
+    "description": "编码转换功能"
+  },
+  "toolCodecXml": {
+    "message": "XML entities",
+    "description": "编码转换功能"
+  },
+  "toolCodecBinary": {
+    "message": "Binary bytes",
+    "description": "编码转换功能"
+  },
+  "toolCodecOctal": {
+    "message": "Octal bytes",
+    "description": "编码转换功能"
+  },
+  "toolCodecDecimal": {
+    "message": "Decimal bytes",
+    "description": "编码转换功能"
+  },
+  "toolCodecDataUrl": {
+    "message": "Data URL",
+    "description": "编码转换功能"
+  },
+  "toolCodecAscii": {
+    "message": "ASCII",
+    "description": "编码转换功能"
+  },
+  "toolCodecMd5": {
+    "message": "MD5",
+    "description": "编码转换功能"
+  },
+  "toolCodecDigest": {
+    "message": "Hash",
+    "description": "编码转换功能"
+  },
+  "toolCodecCopyShort": {
+    "message": "Copy",
+    "description": "编码转换功能"
+  },
+  "toolCodecUseText": {
+    "message": "Switch to text input",
+    "description": "编码转换功能"
+  },
+  "toolCodecByteUnit": {
+    "message": "bytes",
+    "description": "编码转换功能"
+  },
+  "toolCodecAutoConverted": {
+    "message": "Converted automatically",
+    "description": "编码转换功能"
+  },
+  "toolCodecConverted": {
+    "message": "Conversion complete",
+    "description": "编码转换功能"
+  },
+  "toolCodecBinaryResult": {
+    "message": "Binary data · hexadecimal preview. Download to restore the file.",
+    "description": "编码转换功能"
+  },
+  "toolCodecBase64Hint": {
+    "message": "Convert UTF-8 text to Base64 and back.",
+    "description": "编码转换功能"
+  },
+  "toolCodecUrlHint": {
+    "message": "Encode a parameter value. Spaces become %20; + remains a plus sign when decoded.",
+    "description": "编码转换功能"
+  },
+  "toolCodecUriHint": {
+    "message": "Convert a full URL, preserving separators such as : / ? & = #.",
+    "description": "编码转换功能"
+  },
+  "toolCodecUnicodeHint": {
+    "message": "Unicode code points separated by spaces, e.g. U+4F60 U+597D.",
+    "description": "编码转换功能"
+  },
+  "toolCodecUnicodeEscapeHint": {
+    "message": "Encode as \\uXXXX; decode \\uXXXX or \\u{1F600}.",
+    "description": "编码转换功能"
+  },
+  "toolCodecJsonStringHint": {
+    "message": "Encode or decode a complete JSON string, including the surrounding double quotes.",
+    "description": "编码转换功能"
+  },
+  "toolCodecXmlHint": {
+    "message": "Escape the five XML entities. Decode named or decimal/hexadecimal numeric entities.",
+    "description": "编码转换功能"
+  },
+  "toolCodecBytesHint": {
+    "message": "UTF-8 bytes separated by spaces. Decode accepts spaces, newlines, or commas.",
+    "description": "编码转换功能"
+  },
+  "toolCodecAsciiHint": {
+    "message": "ASCII characters and decimal codes 0–127. For Chinese text, use decimal bytes.",
+    "description": "编码转换功能"
+  },
+  "toolCodecDataUrlHint": {
+    "message": "Encode text or a local file. Decode to preview text or download the original bytes.",
+    "description": "编码转换功能"
+  },
+  "toolCodecMd5Hint": {
+    "message": "MD5 is a one-way hash for legacy compatibility. It cannot be decoded and is not suitable for security.",
+    "description": "编码转换功能"
+  },
+  "toolCodecInvalidUtf8": {
+    "message": "The byte sequence is not valid text in this encoding.",
+    "description": "编码转换功能"
+  },
+  "toolCodecInvalidBase64": {
+    "message": "Invalid Base64 format.",
+    "description": "编码转换功能"
+  },
+  "toolCodecInvalidCodePoint": {
+    "message": "Invalid Unicode code point. Use the U+4F60 format; values must not exceed U+10FFFF or be surrogates.",
+    "description": "编码转换功能"
+  },
+  "toolCodecInvalidEscape": {
+    "message": "Invalid Unicode escape. Use \\u4f60 or \\u{1f600}.",
+    "description": "编码转换功能"
+  },
+  "toolCodecInvalidJsonString": {
+    "message": "Enter a complete JSON string including its double quotes.",
+    "description": "编码转换功能"
+  },
+  "toolCodecInvalidXml": {
+    "message": "Invalid XML entity or character. Only predefined and numeric XML entities are supported.",
+    "description": "编码转换功能"
+  },
+  "toolCodecInvalidAscii": {
+    "message": "ASCII supports only characters and decimal codes from 0 to 127.",
+    "description": "编码转换功能"
+  },
+  "toolCodecInvalidByte": {
+    "message": "Enter valid bytes separated by spaces, with each byte between 0 and 255.",
+    "description": "编码转换功能"
+  },
+  "toolCodecInvalidUrl": {
+    "message": "Invalid URL escape. Check that percent escapes contain complete UTF-8 bytes.",
+    "description": "编码转换功能"
+  },
+  "toolCodecInvalidDataUrl": {
+    "message": "Invalid Data URL. Check its media type, parameters, and encoded content.",
+    "description": "编码转换功能"
+  },
+  "toolCodecOutputTooLarge": {
+    "message": "The output exceeds 10 MiB. Reduce the input and try again.",
+    "description": "编码转换功能"
+  },
+  "toolUriEncode": {
+    "message": "Full URL encoding",
+    "description": "编码转换功能"
+  },
+  "toolUriDecode": {
+    "message": "Full URL decoding",
+    "description": "编码转换功能"
+  },
+  "toolUnicodeEscapeEncode": {
+    "message": "Unicode escapes encoding",
+    "description": "编码转换功能"
+  },
+  "toolUnicodeEscapeDecode": {
+    "message": "Unicode escapes decoding",
+    "description": "编码转换功能"
+  },
+  "toolJsonStringEncode": {
+    "message": "JSON string encoding",
+    "description": "编码转换功能"
+  },
+  "toolJsonStringDecode": {
+    "message": "JSON string decoding",
+    "description": "编码转换功能"
+  },
+  "toolXmlEncode": {
+    "message": "XML entities encoding",
+    "description": "编码转换功能"
+  },
+  "toolXmlDecode": {
+    "message": "XML entities decoding",
+    "description": "编码转换功能"
+  },
+  "toolBinaryEncode": {
+    "message": "Binary bytes encoding",
+    "description": "编码转换功能"
+  },
+  "toolBinaryDecode": {
+    "message": "Binary bytes decoding",
+    "description": "编码转换功能"
+  },
+  "toolOctalEncode": {
+    "message": "Octal bytes encoding",
+    "description": "编码转换功能"
+  },
+  "toolOctalDecode": {
+    "message": "Octal bytes decoding",
+    "description": "编码转换功能"
+  },
+  "toolDecimalEncode": {
+    "message": "Decimal bytes encoding",
+    "description": "编码转换功能"
+  },
+  "toolDecimalDecode": {
+    "message": "Decimal bytes decoding",
+    "description": "编码转换功能"
+  },
+  "toolDataUrlEncode": {
+    "message": "Data URL encoding",
+    "description": "编码转换功能"
+  },
+  "toolDataUrlDecode": {
+    "message": "Data URL decoding",
+    "description": "编码转换功能"
+  },
+  "toolAsciiEncode": {
+    "message": "ASCII encoding",
+    "description": "编码转换功能"
+  },
+  "toolAsciiDecode": {
+    "message": "ASCII decoding",
+    "description": "编码转换功能"
+  },
+  "toolDiffPanel": {
+    "message": "Differences",
+    "description": "Diff result panel"
+  },
+  "toolRepair": {
+    "message": "Repair mojibake",
+    "description": "Formatter repair option"
+  },
+  "toolMode": {
+    "message": "Mode",
+    "description": "Tool mode option"
+  },
+  "toolCount": {
+    "message": "Count",
+    "description": "Generator count option"
+  },
+  "toolLength": {
+    "message": "Length",
+    "description": "Password length option"
+  },
+  "toolSymbols": {
+    "message": "Include symbols",
+    "description": "Password symbols option"
+  },
+  "toolRepairConfirm": {
+    "message": "Preview and apply the reversible text repair?",
+    "description": "Formatter repair confirmation"
+  },
+  "toolReady": {
+    "message": "Ready",
+    "description": "Tool status"
+  },
+  "toolAutoParsed": {
+    "message": "Parsed automatically (updates when input changes)",
+    "description": "Automatic tool parsing status"
+  },
+  "toolInvalid": {
+    "message": "Invalid input",
+    "description": "Tool invalid input status"
+  },
+  "toolCopied": {
+    "message": "Copied locally",
+    "description": "Tool copy status"
+  },
+  "toolCopyUnavailable": {
+    "message": "Clipboard unavailable; select the output to copy.",
+    "description": "Tool copy fallback"
+  },
+  "toolDownloaded": {
+    "message": "Downloaded locally",
+    "description": "Tool download status"
+  },
+  "toolRestored": {
+    "message": "Restored original",
+    "description": "Tool restore status"
+  },
+  "toolTokenInvalid": {
+    "message": "The one-time input token is invalid or expired.",
+    "description": "Tool token error"
+  },
+  "toolEmptySelection": {
+    "message": "No selection was transferred. Paste text or import a local file.",
+    "description": "Tool empty selection notice"
+  },
+  "toolSelectionTooLarge": {
+    "message": "The selection was too large for a one-time handoff. Paste text or import a local file.",
+    "description": "Tool selection size notice"
+  },
+  "toolMetadataField": {
+    "message": "Metadata",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataMode": {
+    "message": "Mode",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataRepresentation": {
+    "message": "Representation",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataOutputEncoding": {
+    "message": "Output encoding",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataInputEncoding": {
+    "message": "Input encoding",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataMilliseconds": {
+    "message": "Milliseconds",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataTimezone": {
+    "message": "Timezone",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataUnit": {
+    "message": "Unit",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataCount": {
+    "message": "Count",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataLength": {
+    "message": "Length",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataSymbols": {
+    "message": "Symbols",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataValid": {
+    "message": "Valid",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataOperation": {
+    "message": "Operation",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataExpandedEscaped": {
+    "message": "Expanded escaped JSON",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataLeftLines": {
+    "message": "Left lines",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataRightLines": {
+    "message": "Right lines",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataRows": {
+    "message": "Rows",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataColumns": {
+    "message": "Columns",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataFormulaCells": {
+    "message": "Formula-like cells",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataFormulaWarning": {
+    "message": "Formula warning",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataWarning": {
+    "message": "Warning",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataBytes": {
+    "message": "Bytes",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataNodes": {
+    "message": "Nodes",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataStrings": {
+    "message": "Strings",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataNumbers": {
+    "message": "Numbers",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataBooleans": {
+    "message": "Booleans",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataNulls": {
+    "message": "Null values",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataUnsafeNumbers": {
+    "message": "Unsafe integer literals",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataStringCharacters": {
+    "message": "String characters",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataCharacters": {
+    "message": "Characters",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataObjects": {
+    "message": "Objects",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataArrays": {
+    "message": "Arrays",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataKeys": {
+    "message": "Keys",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataDuplicateKeys": {
+    "message": "Duplicate keys",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataDuplicateKeyPositions": {
+    "message": "Duplicate key positions",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataMaxDepth": {
+    "message": "Maximum depth",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataParseMs": {
+    "message": "Parse time (ms)",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataFormatMs": {
+    "message": "Format time (ms)",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataSortOrder": {
+    "message": "Sort order",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataCollapsed": {
+    "message": "Collapsed",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataLines": {
+    "message": "Lines",
+    "description": "Tool metadata label"
+  },
+  "toolMetadataConservative": {
+    "message": "Conservative formatter",
+    "description": "Tool metadata label"
+  },
+  "toolJwtWarning": {
+    "message": "JWT is decoded structurally only; its signature and trust are not verified.",
+    "description": "Tool security warning"
+  },
+  "toolMd5Warning": {
+    "message": "MD5 is for legacy compatibility only and is not suitable for security.",
+    "description": "Tool security warning"
+  },
+  "toolSha1Warning": {
+    "message": "SHA-1 is for legacy compatibility only and is not suitable for security.",
+    "description": "Tool security warning"
+  },
+  "toolFormulaWarning": {
+    "message": "May be interpreted as a spreadsheet formula; review before importing.",
+    "description": "Tool spreadsheet warning"
+  },
+  "toolSqlWarning": {
+    "message": "SQL output is escaped text; use parameterized queries.",
+    "description": "Tool SQL warning"
+  },
+  "documentFormatterTitleSuffix": {
+    "message": "Auto-format",
+    "description": "Document formatter toolbar title"
+  },
+  "documentFormatterToolbar": {
+    "message": "Browser Toolbox document formatter",
+    "description": "Document formatter toolbar"
+  },
+  "documentFormatterIndent": {
+    "message": "Indent size",
+    "description": "Document formatter indent"
+  },
+  "documentFormatterTab": {
+    "message": "Tab",
+    "description": "Document formatter tab indent"
+  },
+  "documentFormatterSpaces": {
+    "message": "spaces",
+    "description": "Document formatter spaces"
+  },
+  "documentFormatterSortAria": {
+    "message": "Sort JSON keys",
+    "description": "Document formatter sort label"
+  },
+  "documentFormatterKeepOrder": {
+    "message": "Keep key order",
+    "description": "Document formatter order"
+  },
+  "documentFormatterSort": {
+    "message": "Sort keys",
+    "description": "Document formatter sort"
+  },
+  "documentFormatterSortAscending": {
+    "message": "Sort keys ascending",
+    "description": "Document formatter sort"
+  },
+  "documentFormatterSortDescending": {
+    "message": "Sort keys descending",
+    "description": "Document formatter sort"
+  },
+  "documentFormatterRepair": {
+    "message": "Repair mojibake",
+    "description": "Document formatter repair"
+  },
+  "documentFormatterUndoRepair": {
+    "message": "Undo repair",
+    "description": "Document formatter undo"
+  },
+  "documentFormatterCollapse": {
+    "message": "Collapse",
+    "description": "Document formatter collapse"
+  },
+  "documentFormatterExpand": {
+    "message": "Expand",
+    "description": "Document formatter expand"
+  },
+  "documentFormatterCopy": {
+    "message": "Copy",
+    "description": "Document formatter copy"
+  },
+  "documentFormatterDownload": {
+    "message": "Download",
+    "description": "Document formatter download"
+  },
+  "documentFormatterRestore": {
+    "message": "Restore original",
+    "description": "Document formatter restore"
+  },
+  "documentFormatterViewOriginal": {
+    "message": "View original",
+    "description": "Document formatter action"
+  },
+  "documentFormatterRestoreView": {
+    "message": "Restore formatted view",
+    "description": "Document formatter action"
+  },
+  "documentFormatterShowingOriginal": {
+    "message": "Showing original text",
+    "description": "Document formatter status"
+  },
+  "documentFormatterKeptOriginal": {
+    "message": "Kept original",
+    "description": "Document formatter fallback"
+  },
+  "documentFormatterCopied": {
+    "message": "Copied locally",
+    "description": "Document formatter copy status"
+  },
+  "documentFormatterCopyUnavailable": {
+    "message": "Clipboard is unavailable; select the output to copy.",
+    "description": "Document formatter copy fallback"
+  },
+  "documentFormatterDownloaded": {
+    "message": "Downloaded locally",
+    "description": "Document formatter download status"
+  },
+  "documentFormatterNoRepair": {
+    "message": "No reversible mojibake candidate found.",
+    "description": "Document formatter repair status"
+  },
+  "documentFormatterRepairConfirm": {
+    "message": "Preview and apply the reversible text repair?",
+    "description": "Document formatter repair confirmation"
+  },
+  "documentFormatterRepairPreviewCount": {
+    "message": "Affected strings",
+    "description": "Document formatter repair preview"
+  },
+  "documentFormatterRepairPreviewBefore": {
+    "message": "Before",
+    "description": "Document formatter repair preview"
+  },
+  "documentFormatterRepairPreviewAfter": {
+    "message": "After",
+    "description": "Document formatter repair preview"
+  },
+  "documentFormatterLargeConfirm": {
+    "message": "Format this large local document?",
+    "description": "Document formatter size confirmation"
+  },
+  "documentFormatterBytes": {
+    "message": "bytes",
+    "description": "Document formatter byte label"
+  },
+  "documentFormatterKeys": {
+    "message": "keys",
+    "description": "Document formatter key label"
+  },
+  "documentFormatterDuplicateKeys": {
+    "message": "duplicate keys",
+    "description": "Document formatter duplicate key label"
+  },
+  "documentFormatterDuplicateKeyPositions": {
+    "message": "duplicate key positions",
+    "description": "Document formatter duplicate key positions"
+  },
+  "documentFormatterTooLarge": {
+    "message": "too large",
+    "description": "Document formatter size status"
+  },
+  "documentFormatterRepairApplied": {
+    "message": "text repair applied",
+    "description": "Document formatter repair status"
+  },
+  "documentFormatterMetadata": {
+    "message": "Document metadata",
+    "description": "Document formatter metadata"
+  },
+  "documentFormatterCharacters": {
+    "message": "characters",
+    "description": "Document formatter metadata"
+  },
+  "documentFormatterRootType": {
+    "message": "root type",
+    "description": "Document formatter metadata"
+  },
+  "documentFormatterObjects": {
+    "message": "objects",
+    "description": "Document formatter metadata"
+  },
+  "documentFormatterArrays": {
+    "message": "arrays",
+    "description": "Document formatter metadata"
+  },
+  "documentFormatterStrings": {
+    "message": "strings",
+    "description": "Document formatter metadata"
+  },
+  "documentFormatterNumbers": {
+    "message": "numbers",
+    "description": "Document formatter metadata"
+  },
+  "documentFormatterBooleans": {
+    "message": "booleans",
+    "description": "Document formatter metadata"
+  },
+  "documentFormatterNulls": {
+    "message": "null values",
+    "description": "Document formatter metadata"
+  },
+  "documentFormatterMaxDepth": {
+    "message": "maximum depth",
+    "description": "Document formatter metadata"
+  },
+  "documentFormatterUnsafeNumbers": {
+    "message": "unsafe integer literals",
+    "description": "Document formatter metadata"
+  },
+  "documentFormatterContentType": {
+    "message": "content type",
+    "description": "Document formatter metadata"
+  },
+  "documentFormatterCharset": {
+    "message": "charset",
+    "description": "Document formatter metadata"
+  },
+  "documentFormatterParseMs": {
+    "message": "parse time (ms)",
+    "description": "Document formatter metadata"
+  },
+  "documentFormatterRenderMs": {
+    "message": "render time (ms)",
+    "description": "Document formatter metadata"
+  },
+  "documentFormatterSortState": {
+    "message": "sort state",
+    "description": "Document formatter metadata"
+  },
+  "documentFormatterCollapseState": {
+    "message": "collapse state",
+    "description": "Document formatter metadata"
+  },
+  "documentFormatterDefaultCollapseDepth": {
+    "message": "Default collapse depth",
+    "description": "Document formatter setting"
+  },
+  "documentFormatterRepairState": {
+    "message": "text repair",
+    "description": "Document formatter metadata"
+  },
+  "documentFormatterExpanded": {
+    "message": "expanded",
+    "description": "Document formatter metadata"
+  },
+  "documentFormatterApplied": {
+    "message": "applied",
+    "description": "Document formatter metadata"
+  },
+  "documentFormatterNotApplied": {
+    "message": "not applied",
+    "description": "Document formatter metadata"
+  },
+  "documentFormatterCollapseNode": {
+    "message": "Collapse this JSON node",
+    "description": "Document formatter node control"
+  },
+  "documentFormatterExpandNode": {
+    "message": "Expand this JSON node",
+    "description": "Document formatter node control"
+  },
+  "gestureEditor": {
+    "message": "Gesture editor",
+    "description": "Gesture editor label"
+  },
   "superDragSafety": {
     "message": "The selected bypass modifier always keeps native dragging. File uploads, editors, password fields, custom draggable widgets, and invalid URLs are not intercepted.",
     "description": "Super drag safety"
@@ -1188,40 +3096,118 @@
     "message": "Native drag bypass modifier",
     "description": "Super drag bypass modifier"
   },
-  "modifierAlt": { "message": "Alt", "description": "Modifier option" },
-  "modifierControl": { "message": "Control", "description": "Modifier option" },
-  "modifierMeta": { "message": "Command / Meta", "description": "Modifier option" },
-  "modifierShift": { "message": "Shift", "description": "Modifier option" },
+  "modifierAlt": {
+    "message": "Alt",
+    "description": "Modifier option"
+  },
+  "modifierControl": {
+    "message": "Control",
+    "description": "Modifier option"
+  },
+  "modifierMeta": {
+    "message": "Command / Meta",
+    "description": "Modifier option"
+  },
+  "modifierShift": {
+    "message": "Shift",
+    "description": "Modifier option"
+  },
   "siteRuleSpecificity": {
     "message": "Glob rules with the most specific pattern win; for equal priority, the later rule wins. Regular expressions are supported explicitly. The top-level page URL controls all frames.",
     "description": "Site rule behavior"
   },
-  "siteRuleProfile": { "message": "Site profile", "description": "Per-site profile label" },
+  "siteRuleProfile": {
+    "message": "Site profile",
+    "description": "Per-site profile label"
+  },
   "siteRuleProfileHint": {
     "message": "Override input behavior for this site. Empty fields inherit global settings.",
     "description": "Per-site profile hint"
   },
-  "siteRuleProfileInherit": { "message": "Inherit global settings", "description": "Per-site profile preset" },
-  "siteRuleProfileCustom": { "message": "Custom profile", "description": "Per-site profile preset" },
-  "siteProfileBalanced": { "message": "Balanced", "description": "Per-site profile preset" },
-  "siteProfileBalancedDescription": { "message": "Normal browsing with the standard thresholds.", "description": "Per-site profile description" },
-  "siteProfileEditor": { "message": "Editor safe", "description": "Per-site profile preset" },
-  "siteProfileEditorDescription": { "message": "Avoid accidental gestures in editors and design tools.", "description": "Per-site profile description" },
-  "siteProfileReading": { "message": "Reading", "description": "Per-site profile preset" },
-  "siteProfileReadingDescription": { "message": "Quiet input feedback for long reading sessions.", "description": "Per-site profile description" },
-  "siteProfileName": { "message": "Profile name", "description": "Per-site profile name" },
-  "siteProfileMouse": { "message": "Mouse gestures", "description": "Per-site profile section" },
-  "siteProfileSuperDrag": { "message": "Super drag", "description": "Per-site profile section" },
-  "siteProfileWheel": { "message": "Wheel", "description": "Per-site profile section" },
-  "siteProfileTriggerButton": { "message": "Trigger button", "description": "Per-site profile field" },
-  "siteProfileActivationDistance": { "message": "Activation distance (px)", "description": "Per-site profile field" },
-  "siteProfileMinimumSegmentDistance": { "message": "Minimum segment (px)", "description": "Per-site profile field" },
-  "siteProfileShowTrail": { "message": "Show gesture trail", "description": "Per-site profile field" },
-  "siteProfileShowHud": { "message": "Show command HUD", "description": "Per-site profile field" },
-  "siteProfileEnabled": { "message": "Enabled", "description": "Per-site profile field" },
-  "siteProfileBypassModifier": { "message": "Native drag bypass", "description": "Per-site profile field" },
-  "siteProfileWheelThreshold": { "message": "Wheel threshold", "description": "Per-site profile field" },
-  "siteProfileCooldown": { "message": "Cooldown (ms)", "description": "Per-site profile field" },
+  "siteRuleProfileInherit": {
+    "message": "Inherit global settings",
+    "description": "Per-site profile preset"
+  },
+  "siteRuleProfileCustom": {
+    "message": "Custom profile",
+    "description": "Per-site profile preset"
+  },
+  "siteProfileBalanced": {
+    "message": "Balanced",
+    "description": "Per-site profile preset"
+  },
+  "siteProfileBalancedDescription": {
+    "message": "Normal browsing with the standard thresholds.",
+    "description": "Per-site profile description"
+  },
+  "siteProfileEditor": {
+    "message": "Editor safe",
+    "description": "Per-site profile preset"
+  },
+  "siteProfileEditorDescription": {
+    "message": "Avoid accidental gestures in editors and design tools.",
+    "description": "Per-site profile description"
+  },
+  "siteProfileReading": {
+    "message": "Reading",
+    "description": "Per-site profile preset"
+  },
+  "siteProfileReadingDescription": {
+    "message": "Quiet input feedback for long reading sessions.",
+    "description": "Per-site profile description"
+  },
+  "siteProfileName": {
+    "message": "Profile name",
+    "description": "Per-site profile name"
+  },
+  "siteProfileMouse": {
+    "message": "Mouse gestures",
+    "description": "Per-site profile section"
+  },
+  "siteProfileSuperDrag": {
+    "message": "Super drag",
+    "description": "Per-site profile section"
+  },
+  "siteProfileWheel": {
+    "message": "Wheel",
+    "description": "Per-site profile section"
+  },
+  "siteProfileTriggerButton": {
+    "message": "Trigger button",
+    "description": "Per-site profile field"
+  },
+  "siteProfileActivationDistance": {
+    "message": "Activation distance (px)",
+    "description": "Per-site profile field"
+  },
+  "siteProfileMinimumSegmentDistance": {
+    "message": "Minimum segment (px)",
+    "description": "Per-site profile field"
+  },
+  "siteProfileShowTrail": {
+    "message": "Show gesture trail",
+    "description": "Per-site profile field"
+  },
+  "siteProfileShowHud": {
+    "message": "Show command HUD",
+    "description": "Per-site profile field"
+  },
+  "siteProfileEnabled": {
+    "message": "Enabled",
+    "description": "Per-site profile field"
+  },
+  "siteProfileBypassModifier": {
+    "message": "Native drag bypass",
+    "description": "Per-site profile field"
+  },
+  "siteProfileWheelThreshold": {
+    "message": "Wheel threshold",
+    "description": "Per-site profile field"
+  },
+  "siteProfileCooldown": {
+    "message": "Cooldown (ms)",
+    "description": "Per-site profile field"
+  },
   "backupContents": {
     "message": "Exports contain settings only. Page content, history, bookmarks, temporary gestures, and remote assets are never exported.",
     "description": "Backup scope"
@@ -1230,7 +3216,10 @@
     "message": "Only user-initiated navigation, search, and local extension pages may cause network activity. No project server is contacted.",
     "description": "Network privacy"
   },
-  "licenseGpl": { "message": "GPL-3.0-or-later", "description": "License name" },
+  "licenseGpl": {
+    "message": "GPL-3.0-or-later",
+    "description": "License name"
+  },
   "aboutText": {
     "message": "Browser Toolbox uses Vimium v2.4.2 as its keyboard baseline and remains free and open source.",
     "description": "About text"
@@ -1239,17 +3228,26 @@
     "message": "Vimium and shoulda.js notices are preserved in the repository. Mouse features are an independent clean-room implementation based only on public behavior descriptions.",
     "description": "Clean-room statement"
   },
-  "dataHandling": { "message": "Data handling", "description": "Privacy section" },
+  "dataHandling": {
+    "message": "Data handling",
+    "description": "Privacy section"
+  },
   "privacyData": {
     "message": "Browser Toolbox does not send URLs, history, bookmarks, page content, selected text, search terms, keystrokes, mouse paths, pointer images, configuration, device identifiers, installation identifiers, or crash reports to a project server or third-party analytics service.",
     "description": "Privacy data statement"
   },
-  "localStorage": { "message": "Local storage", "description": "Storage section" },
+  "localStorage": {
+    "message": "Local storage",
+    "description": "Storage section"
+  },
   "privacyStorage": {
     "message": "Settings are stored in browser storage. Custom pointer assets, if enabled, remain in local storage and are not synchronized or uploaded.",
     "description": "Storage privacy"
   },
-  "security": { "message": "Security", "description": "Security link" },
+  "security": {
+    "message": "Security",
+    "description": "Security link"
+  },
   "charterFree": {
     "message": "Browser Toolbox is free, open source, and provides the same complete feature set to every user.",
     "description": "Project charter availability"
@@ -1294,8 +3292,14 @@
     "message": "Every action is routed through a validated command invocation.",
     "description": "Onboarding invocation"
   },
-  "search": { "message": "Search", "description": "Search label" },
-  "searchSettings": { "message": "Search", "description": "Search settings section" },
+  "search": {
+    "message": "Search",
+    "description": "Search label"
+  },
+  "searchSettings": {
+    "message": "Search",
+    "description": "Search settings section"
+  },
   "vomnibarSearchOrOpen": {
     "message": "Search or open",
     "description": "Vomnibar omni mode title"
@@ -1304,7 +3308,10 @@
     "message": "Search bookmarks",
     "description": "Vomnibar bookmarks mode title"
   },
-  "vomnibarSearchTabs": { "message": "Search tabs", "description": "Vomnibar tabs mode title" },
+  "vomnibarSearchTabs": {
+    "message": "Search tabs",
+    "description": "Vomnibar tabs mode title"
+  },
   "vomnibarPlaceholderOmni": {
     "message": "Enter a search term or URL",
     "description": "Vomnibar omni input placeholder"
@@ -1317,13 +3324,58 @@
     "message": "Enter a tab title or URL",
     "description": "Vomnibar tab input placeholder"
   },
-  "vomnibarNewTab": { "message": "New tab", "description": "Vomnibar new tab indicator" },
-  "vomnibarHintSelect": { "message": "Select", "description": "Vomnibar keyboard hint" },
-  "vomnibarHintOpen": { "message": "Open", "description": "Vomnibar keyboard hint" },
-  "vomnibarHintClose": { "message": "Close", "description": "Vomnibar keyboard hint" },
-  "appearance": { "message": "Appearance", "description": "Appearance section" },
-  "keyMappings": { "message": "Keyboard mappings", "description": "Keyboard mappings" },
-  "searchEngines": { "message": "Search engines", "description": "Search engines" },
+  "vomnibarNewTab": {
+    "message": "New tab",
+    "description": "Vomnibar new tab indicator"
+  },
+  "vomnibarHintSelect": {
+    "message": "Select",
+    "description": "Vomnibar keyboard hint"
+  },
+  "vomnibarHintOpen": {
+    "message": "Open",
+    "description": "Vomnibar keyboard hint"
+  },
+  "vomnibarHintClose": {
+    "message": "Close",
+    "description": "Vomnibar keyboard hint"
+  },
+  "vomnibarHintOpenNewTab": {
+    "message": "Open in new tab",
+    "description": "Vomnibar keyboard hint for Shift+Enter"
+  },
+  "generalTheme": {
+    "message": "Theme",
+    "description": "Theme preset selector label"
+  },
+  "themeSageMist": {
+    "message": "Sage Mist (Default)",
+    "description": "Sage Mist theme preset"
+  },
+  "themeCobalt": {
+    "message": "Cobalt Blue",
+    "description": "Cobalt Blue theme preset"
+  },
+  "themePaperInk": {
+    "message": "Warm Paper Ink",
+    "description": "Warm Paper Ink theme preset"
+  },
+  "themeSlate": {
+    "message": "Minimalist Slate",
+    "description": "Minimalist Slate monochrome theme preset"
+  },
+  "appearance": {
+    "message": "Appearance",
+    "description": "Appearance section"
+  },
+  "keyMappings": {
+    "message": "Keyboard mappings",
+    "description": "Keyboard mappings"
+  },
+  "searchEngines": {
+    "message": "Search engines",
+    "description": "Search engines"
+  },
   "keyboardMappingNote": {
     "message": "Vimium-compatible mappings are imported into the existing keyboard settings.",
     "description": "Keyboard import note"
@@ -1336,9 +3388,18 @@
     "message": "You can also import a Vimium JSON backup. Recognized fields are copied to the compatible Vimium settings and Browser Toolbox settings; unknown fields are reported, preserved when possible, and otherwise ignored.",
     "description": "Vimium import note"
   },
-  "importSummary": { "message": "Import these settings", "description": "Import confirmation" },
-  "changedSettings": { "message": "Changed settings", "description": "Changed settings summary" },
-  "ignoredFields": { "message": "Ignored fields", "description": "Ignored fields summary" },
+  "importSummary": {
+    "message": "Import these settings",
+    "description": "Import confirmation"
+  },
+  "changedSettings": {
+    "message": "Changed settings",
+    "description": "Changed settings summary"
+  },
+  "ignoredFields": {
+    "message": "Ignored fields",
+    "description": "Ignored fields summary"
+  },
   "unrecognizedFields": {
     "message": "Unrecognized settings (preserved)",
     "description": "Unrecognized settings fields preserved during import"
@@ -1351,7 +3412,10 @@
     "message": "Review the changes before anything is written.",
     "description": "Import preview description"
   },
-  "importPreviewAdded": { "message": "Added", "description": "Import preview added settings" },
+  "importPreviewAdded": {
+    "message": "Added",
+    "description": "Import preview added settings"
+  },
   "importPreviewChanged": {
     "message": "Changed",
     "description": "Import preview changed settings"
@@ -1376,54 +3440,971 @@
     "message": "Some detailed changes are omitted from this preview.",
     "description": "Import preview truncation notice"
   },
-  "none": { "message": "None", "description": "Empty summary" },
-  "saveSettings": { "message": "Save settings" },
-  "saveOnlyOnSave": { "message": "Changes take effect after saving." },
-  "mouseSettingsSubtitle": { "message": "Hold the right button and drag to run an action." },
-  "mouseRightClickHow": { "message": "How the right button works" },
-  "mouseRightClick": { "message": "Right-click" },
-  "mouseOpenBrowserMenu": { "message": "Open the browser menu" },
-  "mouseHoldAndDrag": { "message": "Hold and drag" },
-  "mouseRunGesture": { "message": "Run a mouse gesture" },
-  "mouseGestureActions": { "message": "Gestures & actions" },
-  "mouseRecognitionSettings": { "message": "Recognition settings" },
-  "mouseRecognitionHint": { "message": "A longer distance prevents accidental gestures while a shorter distance feels faster." },
-  "mouseContextMenuSettings": { "message": "Right-click menu" },
-  "mouseNativeMenuHint": { "message": "A normal click that does not cross the activation distance always keeps the browser menu." },
-  "mouseAdvancedSettings": { "message": "Advanced recognition and bindings" },
-  "mouseEnabledStatus": { "message": "Enabled" },
-  "mouseDisabledStatus": { "message": "Disabled" },
-  "mouseTriggerDistance": { "message": "Trigger distance" },
-  "mouseTrailHint": { "message": "Trail hint" },
-  "mouseTrailDescription": { "message": "Show the trail while dragging to learn and debug gestures." },
-  "mouseNormalClickMenu": { "message": "Keep the browser menu for normal clicks" },
-  "manageToolMenu": { "message": "Manage tool menu" },
-  "searchAndTabs": { "message": "Search & tabs" },
-  "unassigned": { "message": "Not assigned" },
-  "toolJsonInputHint": { "message": "Paste JSON to format" },
-  "toolJsonEmptyTitle": { "message": "Paste JSON to format automatically" },
-  "toolJsonEmptyHint": { "message": "Format, compact, sort, and browse JSON locally." },
-  "documentFormatterAutoFormatted": { "message": "Auto-formatted" },
-  "documentFormatterKeyCount": { "message": "keys" },
-  "languageChineseTraditional": { "message": "繁體中文" },
-  "languageJapanese": { "message": "日本語" },
-  "languageSpanish": { "message": "Español" },
-  "syncQuotaItemExceeded": {"message": "Toolbox settings exceed the 8 KiB per-item sync limit. Turn off “Sync toolbox settings” to save on this device, or export a backup first.", "description": "项目体验完善文案"},
-  "syncQuotaTotalExceeded": {"message": "Browser sync storage is full. Turn off “Sync toolbox settings” to save on this device, or export a backup first.", "description": "项目体验完善文案"},
-  "toolTimeUnit": {"message": "Timestamp unit", "description": "项目体验完善文案"},
-  "toolTimeLocalOutput": {"message": "Local time output", "description": "项目体验完善文案"},
-  "toolTimeUnixOutput": {"message": "Unix timestamp output", "description": "项目体验完善文案"},
-  "toolTimeFiletimeOutput": {"message": "FILETIME output", "description": "项目体验完善文案"},
-  "onboardingTools": {"message": "Open JSON formatting, text comparison, or configuration conversion from the extension popup. Every tool processes input locally.", "description": "项目体验完善文案"},
-  "onboardingPauseTitle": {"message": "When webpage controls conflict", "description": "项目体验完善文案"},
-  "onboardingPause": {"message": "Pause keyboard and mouse enhancements on all websites from the popup, then resume when ready. To adjust one website, choose “Manage this website”, review the rule, and save it.", "description": "项目体验完善文案"},
-  "sessionAllSites": {"message": "All sites · This session", "description": "会话与站点入口文案"},
-  "sessionScopeHint": {"message": "Temporary switches affect all sites. Restore to use saved settings.", "description": "会话与站点入口文案"},
-  "restoreSession": {"message": "Restore this session", "description": "会话与站点入口文案"},
-  "sessionUpdating": {"message": "Updating…", "description": "会话与站点入口文案"},
-  "sessionUpdateFailed": {"message": "Could not update this session. Please try again.", "description": "会话与站点入口文案"},
-  "manageCurrentSite": {"message": "Manage this site", "description": "会话与站点入口文案"},
-  "siteRuleShortcutInvalid": {"message": "Invalid site parameter. Open this shortcut from the extension popup on a regular web page.", "description": "会话与站点入口文案"},
-  "siteRuleShortcutDraft": {"message": "A rule draft for this site is ready. Adjust it and save when ready.", "description": "会话与站点入口文案"},
-  "siteRuleShortcutExisting": {"message": "The existing rule for this site is selected. Save after making changes.", "description": "会话与站点入口文案"}
+  "none": {
+    "message": "None",
+    "description": "Empty summary"
+  },
+  "saveSettings": {
+    "message": "Save settings"
+  },
+  "saveOnlyOnSave": {
+    "message": "Changes take effect after saving."
+  },
+  "mouseSettingsSubtitle": {
+    "message": "Hold the right button and drag to run an action."
+  },
+  "mouseRightClickHow": {
+    "message": "How the right button works"
+  },
+  "mouseRightClick": {
+    "message": "Right-click"
+  },
+  "mouseOpenBrowserMenu": {
+    "message": "Open the browser menu"
+  },
+  "mouseHoldAndDrag": {
+    "message": "Hold and drag"
+  },
+  "mouseRunGesture": {
+    "message": "Run a mouse gesture"
+  },
+  "mouseGestureActions": {
+    "message": "Gestures & actions"
+  },
+  "mouseRecognitionSettings": {
+    "message": "Recognition settings"
+  },
+  "mouseRecognitionHint": {
+    "message": "A longer distance prevents accidental gestures while a shorter distance feels faster."
+  },
+  "mouseContextMenuSettings": {
+    "message": "Right-click menu"
+  },
+  "mouseNativeMenuHint": {
+    "message": "A normal click that does not cross the activation distance always keeps the browser menu."
+  },
+  "mouseAdvancedSettings": {
+    "message": "Advanced recognition and bindings"
+  },
+  "mouseEnabledStatus": {
+    "message": "Enabled"
+  },
+  "mouseDisabledStatus": {
+    "message": "Disabled"
+  },
+  "mouseTriggerDistance": {
+    "message": "Trigger distance"
+  },
+  "mouseTrailHint": {
+    "message": "Trail hint"
+  },
+  "mouseTrailDescription": {
+    "message": "Show the trail while dragging to learn and debug gestures."
+  },
+  "mouseNormalClickMenu": {
+    "message": "Keep the browser menu for normal clicks"
+  },
+  "manageToolMenu": {
+    "message": "Manage tool menu"
+  },
+  "searchAndTabs": {
+    "message": "Search & tabs"
+  },
+  "unassigned": {
+    "message": "Not assigned"
+  },
+  "toolJsonInputHint": {
+    "message": "Paste JSON to format"
+  },
+  "toolJsonEmptyTitle": {
+    "message": "Paste JSON to format automatically"
+  },
+  "toolJsonEmptyHint": {
+    "message": "Format, compact, sort, and browse JSON locally."
+  },
+  "documentFormatterAutoFormatted": {
+    "message": "Auto-formatted"
+  },
+  "documentFormatterKeyCount": {
+    "message": "keys"
+  },
+  "languageChineseTraditional": {
+    "message": "繁體中文"
+  },
+  "languageJapanese": {
+    "message": "日本語"
+  },
+  "languageSpanish": {
+    "message": "Español"
+  },
+  "syncQuotaItemExceeded": {
+    "message": "Toolbox settings exceed the 8 KiB per-item sync limit. Turn off “Sync toolbox settings” to save on this device, or export a backup first.",
+    "description": "项目体验完善文案"
+  },
+  "syncQuotaTotalExceeded": {
+    "message": "Browser sync storage is full. Turn off “Sync toolbox settings” to save on this device, or export a backup first.",
+    "description": "项目体验完善文案"
+  },
+  "toolTimeUnit": {
+    "message": "Timestamp unit",
+    "description": "项目体验完善文案"
+  },
+  "toolTimeLocalOutput": {
+    "message": "Local time output",
+    "description": "项目体验完善文案"
+  },
+  "toolTimeUnixOutput": {
+    "message": "Unix timestamp output",
+    "description": "项目体验完善文案"
+  },
+  "toolTimeFiletimeOutput": {
+    "message": "FILETIME output",
+    "description": "项目体验完善文案"
+  },
+  "onboardingTools": {
+    "message": "Open JSON formatting, text comparison, or configuration conversion from the extension popup. Every tool processes input locally.",
+    "description": "项目体验完善文案"
+  },
+  "onboardingPauseTitle": {
+    "message": "When webpage controls conflict",
+    "description": "项目体验完善文案"
+  },
+  "onboardingPause": {
+    "message": "Pause keyboard and mouse enhancements on all websites from the popup, then resume when ready. To adjust one website, choose “Manage this website”, review the rule, and save it.",
+    "description": "项目体验完善文案"
+  },
+  "sessionAllSites": {
+    "message": "All sites · This session",
+    "description": "会话与站点入口文案"
+  },
+  "sessionScopeHint": {
+    "message": "Temporary switches affect all sites. Restore to use saved settings.",
+    "description": "会话与站点入口文案"
+  },
+  "restoreSession": {
+    "message": "Restore this session",
+    "description": "会话与站点入口文案"
+  },
+  "sessionUpdating": {
+    "message": "Updating…",
+    "description": "会话与站点入口文案"
+  },
+  "sessionUpdateFailed": {
+    "message": "Could not update this session. Please try again.",
+    "description": "会话与站点入口文案"
+  },
+  "manageCurrentSite": {
+    "message": "Manage this site",
+    "description": "会话与站点入口文案"
+  },
+  "siteRuleShortcutInvalid": {
+    "message": "Invalid site parameter. Open this shortcut from the extension popup on a regular web page.",
+    "description": "会话与站点入口文案"
+  },
+  "siteRuleShortcutDraft": {
+    "message": "A rule draft for this site is ready. Adjust it and save when ready.",
+    "description": "会话与站点入口文案"
+  },
+  "siteRuleShortcutExisting": {
+    "message": "The existing rule for this site is selected. Save after making changes.",
+    "description": "会话与站点入口文案"
+  },
+  "runtimeMaintenance": {
+    "message": "Runtime maintenance",
+    "description": "兼容运行时维护入口"
+  },
+  "runtimeMaintenanceNote": {
+    "message": "If keyboard navigation stops working, restore the compatibility engine. Save your input before manually refreshing older pages.",
+    "description": "兼容运行时维护入口"
+  },
+  "runtimeInspect": {
+    "message": "Check runtime status",
+    "description": "兼容运行时维护入口"
+  },
+  "runtimeRestore": {
+    "message": "Restore compatibility engine",
+    "description": "兼容运行时维护入口"
+  },
+  "runtimeStatus": {
+    "message": "Compatibility engine · plan $1 · active frames $2 · failed frames $3 · frames requiring refresh $4",
+    "description": "兼容运行时维护入口"
+  },
+  "runtimePending": {
+    "message": "Recovery is still pending for $1 frame(s). Check again shortly, then retry recovery if needed.",
+    "description": "运行时维护仍在处理的提示"
+  },
+  "runtimeUnavailable": {
+    "message": "The background service is unavailable. Save your input, reload the extension, then refresh affected pages.",
+    "description": "兼容运行时维护入口"
+  },
+  "configurationInspect": {
+    "message": "Check configuration"
+  },
+  "configurationRollback": {
+    "message": "Prepare compatible rollback"
+  },
+  "configurationIncoming": {
+    "message": "Use external changes"
+  },
+  "configurationCommitted": {
+    "message": "Keep committed configuration"
+  },
+  "configurationSaveFirst": {
+    "message": "Save or discard your page edits before resolving configuration."
+  },
+  "configurationConflict": {
+    "message": "External configuration changes were detected. The last valid configuration remains active. Conflict choices are temporarily unavailable to protect the data."
+  },
+  "configurationExportConflict": {
+    "message": "Export conflict observation"
+  },
+  "configurationConflictExportNote": {
+    "message": "The file contains configuration contents, but excludes separate local cursor assets and unknown top-level keys. It cannot be imported as a settings backup."
+  },
+  "configurationConflictExported": {
+    "message": "Conflict observation exported. The existing data and conflict record remain in place."
+  },
+  "conflictObservationList": {
+    "message": "Local conflict observations"
+  },
+  "conflictObservationNote": {
+    "message": "Saved observations contain supported settings, but exclude separate pointer assets and unsaved drafts. They cannot be imported directly. Local times are approximate; unknown fields are only marked and original data may change during sync."
+  },
+  "conflictObservationRefresh": {
+    "message": "Refresh observations"
+  },
+  "conflictObservationCapture": {
+    "message": "Save current observation"
+  },
+  "conflictObservationExport": {
+    "message": "Export selected observation"
+  },
+  "conflictObservationSaved": {
+    "message": "Saved configuration observation"
+  },
+  "conflictObservationUnsupported": {
+    "message": "Marker only; contents not saved"
+  },
+  "conflictObservationQuotaMarker": {
+    "message": "Marker only: insufficient space for contents"
+  },
+  "conflictObservationInvalid": {
+    "message": "Observation is invalid or damaged. It still blocks writes; keep the original record."
+  },
+  "conflictObservationListed": {
+    "message": "Listed $1 local observations."
+  },
+  "conflictObservationEmpty": {
+    "message": "No local conflict observations."
+  },
+  "conflictObservationCaptured": {
+    "message": "Local observation saved. It does not prove source or an atomic point in time; the conflict remains unresolved."
+  },
+  "conflictObservationOnlyMarker": {
+    "message": "Some fields cannot be verified, so only a marker was saved. Original data may change during sync; export the current observation now if needed."
+  },
+  "conflictObservationQuota": {
+    "message": "Local space or the retention limit is insufficient to save configuration contents; only a blocking marker may have been retained. Export the current observation now because it may later be unavailable."
+  },
+  "conflictObservationFailed": {
+    "message": "Saving the local observation could not be verified. Export the current observation now because it may later be unavailable."
+  },
+  "conflictObservationNotCaptured": {
+    "message": "No local observation has been saved. You can save or export the current observation."
+  },
+  "conflictObservationExported": {
+    "message": "Selected observation exported. The original record is retained."
+  },
+  "conflictReviewOpen": {
+    "message": "Review observation"
+  },
+  "conflictReviewTitle": {
+    "message": "Review saved observation"
+  },
+  "conflictReviewNote": {
+    "message": "These are locally saved observations and may omit newer sync changes, unknown fields, or unsaved drafts. There is no trusted common baseline: choose every difference; arrays are selected as a whole. The candidate backup excludes local pointer assets and disables the pointer on import. Exporting it does not write settings or release conflict protection."
+  },
+  "conflictReviewExport": {
+    "message": "Export candidate backup"
+  },
+  "conflictReviewCommitted": {
+    "message": "Saved committed value"
+  },
+  "conflictReviewObserved": {
+    "message": "Saved observed value"
+  },
+  "conflictReviewMissing": {
+    "message": "Not present"
+  },
+  "conflictReviewChoose": {
+    "message": "Choose one value for every difference before exporting."
+  },
+  "conflictReviewNoChanges": {
+    "message": "The saved observations have no differences to choose."
+  },
+  "conflictReviewTooLarge": {
+    "message": "This observation is too large to review here. Export the observation instead; the original data remains protected."
+  },
+  "conflictReviewChanged": {
+    "message": "The saved observation changed or cannot be verified. Refresh the list and review it again."
+  },
+  "conflictReviewInvalid": {
+    "message": "The choices could not form a valid candidate. Review them again; existing data was not changed."
+  },
+  "conflictReviewExported": {
+    "message": "Candidate backup exported. Original observations and conflict protection remain in place."
+  },
+  "configurationUnavailable": {
+    "message": "Configuration cannot be committed right now. Keep existing data, export a backup and try again later."
+  },
+  "configurationStatus": {
+    "message": "Configuration saved (revision $1). Current settings are available for compatible rollback."
+  },
+  "configurationExport": {
+    "message": "Export recovery configuration"
+  },
+  "configurationBaselineExported": {
+    "message": "Only the pre-migration baseline was exported. Later edits are not included."
+  },
+  "runtimeStatusCanary": {
+    "message": "Input Canary · plan $1 · active frames $2 · failed frames $3 · frames requiring reload $4",
+    "description": "输入试用运行时的脱敏状态"
+  },
+  "markUnavailable": {
+    "message": "Unable to access mark.",
+    "description": "标记存储失败或运行时不可用时的提示"
+  },
+  "recoveryPageLink": {
+    "message": "Recovery status and diagnostics",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryPageTitle": {
+    "message": "Recovery status",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryPageIntro": {
+    "message": "Check local recovery records even when the extension background is unavailable.",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryPagePrivacy": {
+    "message": "The recovery status summary does not verify integrity. The downloaded diagnostic contains only the extension version and record states, never settings or page content.",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryRecordCompatibilityConflicts": {
+    "message": "Local conflict observations"
+  },
+  "recoveryCompatibilityConflictCount": {
+    "message": "$1 records found; integrity has not been checked."
+  },
+  "recoveryRecordConfiguration": {
+    "message": "Configuration save",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryRecordRollback": {
+    "message": "Compatibility rollback",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryRecordSync": {
+    "message": "Keyboard sync preparation",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryNotChecked": {
+    "message": "Not checked",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryStateAbsent": {
+    "message": "No record",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryStatePending": {
+    "message": "In progress or awaiting recovery",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryStateCommitted": {
+    "message": "Record says completed",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryStateAborted": {
+    "message": "Record says stopped",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryStateInvalid": {
+    "message": "Record format is not recognized",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryStateUnsupported": {
+    "message": "Record version is not supported",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryConflictLabel": {
+    "message": "Conflict marked",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryBlocked": {
+    "message": "A migration record is present and may prevent settings from being saved. Keep the existing records and backups.",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryNoBlock": {
+    "message": "No separate sync-publish or rollback record was found. This does not verify configuration integrity.",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryReadUnavailable": {
+    "message": "Local recovery records could not be read. This page made no changes.",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryInspect": {
+    "message": "Check again",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryExport": {
+    "message": "Export redacted diagnostics",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryExported": {
+    "message": "The diagnostic is ready to download.",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryExportFailed": {
+    "message": "The diagnostic could not be downloaded.",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryBack": {
+    "message": "Back to settings",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "legacyBackupUnknownFields": {
+    "message": "This backup contains unrecognized fields that will not be imported. The original file will not be changed. Import the recognized settings?",
+    "description": "旧键盘备份的未知字段提示"
+  },
+  "legacyBackupUnsupportedRules": {
+    "message": "Some exclusion rule fields cannot be safely preserved. No settings were imported; keep the original backup.",
+    "description": "旧键盘备份的排除规则字段提示"
+  },
+  "legacyBackupPreview": {
+    "message": "Review the backup fields before importing. The original file will not be changed. Continue?",
+    "description": "旧键盘备份导入预览"
+  },
+  "legacyBackupRecognizedFields": {
+    "message": "Fields to import",
+    "description": "旧键盘备份识别字段"
+  },
+  "legacyBackupConvertedFields": {
+    "message": "Converted fields",
+    "description": "旧键盘备份转换字段"
+  },
+  "legacyBackupErrorFields": {
+    "message": "Invalid fields",
+    "description": "旧键盘备份错误字段"
+  },
+  "legacyBackupInvalidFields": {
+    "message": "Some backup fields are invalid. No settings were imported; keep the original backup.",
+    "description": "旧键盘备份无效字段提示"
+  },
+  "beforeImportBackups": {
+    "message": "Local backups before import",
+    "description": "导入前本机备份"
+  },
+  "beforeImportBackupsNote": {
+    "message": "Before each import, saved settings and any available local pointer image are kept on this device. You can add a backup image to the draft or export it separately. Settings exports do not include images. Previous pointer images use local storage; safe cleanup is not yet available.",
+    "description": "导入前本机备份"
+  },
+  "refreshBackupList": {
+    "message": "Refresh backups",
+    "description": "导入前本机备份"
+  },
+  "exportSelectedBackup": {
+    "message": "Export selected backup",
+    "description": "导入前本机备份"
+  },
+  "importBackupInvalid": {
+    "message": "Backup is damaged or uses an unsupported format",
+    "description": "导入前本机备份"
+  },
+  "importBackupExported": {
+    "message": "Backup exported. A local pointer image is not included.",
+    "description": "导入前本机备份"
+  },
+  "importBackupAssetMissing": {
+    "message": "The original local pointer image is missing",
+    "description": "导入前本机备份"
+  },
+  "configurationBackupQuota": {
+    "message": "There is not enough space reserved for configuration backups, so the operation stopped. Export any backups you need to keep; this version cannot yet remove backups.",
+    "description": "导入前本机备份"
+  },
+  "configurationLocalQuota": {
+    "message": "There is not enough extension storage on this device, so the operation stopped. Existing settings and backups were not deleted.",
+    "description": "导入前本机备份"
+  },
+  "importBackupUnsupported": {
+    "message": "This backup contains fields that this version cannot import; keep the exported file",
+    "description": "导入前备份兼容限制"
+  },
+  "beforeImportBackupSelect": {
+    "message": "Choose a backup",
+    "description": "导入前备份选择"
+  },
+  "importBackupAssetInvalid": {
+    "message": "The original local pointer image is invalid or cannot be checked",
+    "description": "导入前备份指针资源提示"
+  },
+  "previewImportBackup": {
+    "message": "Review restore differences",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "useBackupCursor": {
+    "message": "Use backup pointer image"
+  },
+  "importBackupCursorLoading": {
+    "message": "Reading the backup image…"
+  },
+  "importBackupCursorUseInvalid": {
+    "message": "The backup image cannot be previewed and cannot be added to the draft. The original backup remains unchanged."
+  },
+  "importBackupCursorUseFailed": {
+    "message": "The backup image could not be read. The original backup remains unchanged."
+  },
+  "exportBackupCursor": {
+    "message": "Export pointer image",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupPreviewIntro": {
+    "message": "This preview does not restore settings or prove their cross-device origin.",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupPreviewKeyboard": {
+    "message": "Different keyboard fields",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupToolboxChanged": {
+    "message": "Toolbox settings differ.",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupToolboxSame": {
+    "message": "Toolbox settings match.",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupPreviewCursor": {
+    "message": "Pointer in the backup",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorNone": {
+    "message": "No local pointer image is referenced.",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorMissing": {
+    "message": "The original local image is missing.",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorInvalid": {
+    "message": "The PNG signature or dimensions failed validation.",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorUnchecked": {
+    "message": "The pointer image could not be checked.",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorHeaderValid": {
+    "message": "The PNG signature and dimensions passed; full decoding has not been verified.",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorChanged": {
+    "message": "The current pointer configuration or image differs.",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorDecodeFailed": {
+    "message": "The image data is not valid Base64. Nothing was downloaded; the original backup remains.",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorExported": {
+    "message": "Pointer image exported. If it opens correctly, select it again under Appearance and save.",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorExportedInvalid": {
+    "message": "Original data exported. It did not pass the PNG signature or dimension check and may not work as a pointer.",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "recoveryConflictDetails": {
+    "message": "Read-only conflict details",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictDetailsIntro": {
+    "message": "Requires the background. Field states reflect this read only; no choices are applied, writes stay locked, and cross-device origin is not proven.",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryInspectRollbackConflict": {
+    "message": "Inspect rollback fields",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryInspectSyncConflict": {
+    "message": "Inspect sync fields",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictSelect": {
+    "message": "A completed or stopped transaction can be inspected here.",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictLoading": {
+    "message": "Checking transaction details…",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictUnavailable": {
+    "message": "Could not inspect. The background may be unavailable, or records, backups, or current data may be invalid or changed. This check makes no changes.",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictUnchanged": {
+    "message": "Fields unchanged before and after",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictBefore": {
+    "message": "Matches the value before",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictAfter": {
+    "message": "Matches the value after",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictOther": {
+    "message": "Different from both values",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictAbsent": {
+    "message": "Missing",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictMatching": {
+    "message": "Matches the record",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictDifferent": {
+    "message": "Different from the record",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictIndex": {
+    "message": "Sync index",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictChunks": {
+    "message": "Chunks matching / missing / different",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryOtherSyncChanged": {
+    "message": "Other sync data differs from the record.",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryOtherSyncSame": {
+    "message": "Other sync data matches the record in this read.",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryLocalChanged": {
+    "message": "Local toolbox data differs from the record.",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryLocalSame": {
+    "message": "Local toolbox data matches the record in this read.",
+    "description": "事务冲突只读分类"
+  },
+  "exclusionRulePreserved": {
+    "message": "This rule has fields this version cannot edit. It is preserved as read-only. Restore a backup containing these fields with a version that supports them.",
+    "description": "排除规则附加字段的保留提示"
+  },
+  "configurationExistingRulesProtected": {
+    "message": "Import stopped: existing exclusion rules contain fields this version cannot safely replace. The current settings and backup file are preserved; use a version that supports those fields.",
+    "description": "导入保护现有排除规则附加字段"
+  },
+  "importSavedWithDraft": {
+    "message": "Import completed. Your unsaved form edits are still present; saving them will check for conflicts with the imported settings.",
+    "description": "导入成功后保留未保存表单草稿"
+  },
+  "thirdPartyFeatureBreakdownTitle": {
+    "message": "Components and feature scope",
+    "description": "第三方声明页面功能对照标题"
+  },
+  "thirdPartyVimiumHeading": {
+    "message": "Vimium v2.4.2 (MIT)",
+    "description": "Vimium 第三方声明条目标题"
+  },
+  "thirdPartyVimiumFeatures": {
+    "message": "Powers keyboard navigation and input modes (normal, insert, visual), Link Hints, keyboard scrolling, in-page find (/), Marks, Vomnibar search with bookmark/history/tab completion, the keyboard HUD, URL exclusion rules, and the legacy options, help dialog, and command listing pages.",
+    "description": "Vimium 所承载的功能清单"
+  },
+  "thirdPartyYamlHeading": {
+    "message": "yaml 2.9.1 (ISC)",
+    "description": "yaml 解析器第三方声明条目标题"
+  },
+  "thirdPartyYamlFeatures": {
+    "message": "Powers local YAML parsing and serialization in the Properties / YAML converter tool.",
+    "description": "yaml 解析器所承载的功能"
+  },
+  "thirdPartyShouldaHeading": {
+    "message": "shoulda.js (MIT, test only)",
+    "description": "shoulda.js 第三方声明条目标题"
+  },
+  "thirdPartyShouldaFeatures": {
+    "message": "Provides the unit-test framework during development and build verification; it is not part of the extension's runtime features.",
+    "description": "shoulda.js 的使用范围"
+  },
+  "thirdPartySelfHeading": {
+    "message": "Browser Toolbox modules (GPL-3.0-or-later)",
+    "description": "本项目自研模块标题"
+  },
+  "thirdPartySelfFeatures": {
+    "message": "Independently implemented features: mouse gestures (trail HUD, cancel target, right-click guard, cross-frame bridge), super drag, wheel gestures, rocker gestures, custom pointer cursor, unified command dispatcher and command center, tab list popup, automatic JSON page formatter, 8 offline developer/text/generator/table tools, per-site module rules, configuration schema migration and import recovery, localization, and the unified settings UI.",
+    "description": "浏览器工具箱自研功能清单"
+  },
+  "command_scrollDown": {
+    "message": "Scroll down"
+  },
+  "command_scrollUp": {
+    "message": "Scroll up"
+  },
+  "command_scrollPageDown": {
+    "message": "Scroll a half page down"
+  },
+  "command_scrollPageUp": {
+    "message": "Scroll a half page up"
+  },
+  "command_scrollLeft": {
+    "message": "Scroll left"
+  },
+  "command_scrollRight": {
+    "message": "Scroll right"
+  },
+  "command_scrollToLeft": {
+    "message": "Scroll all the way to the left"
+  },
+  "command_scrollToRight": {
+    "message": "Scroll all the way to the right"
+  },
+  "command_copyCurrentUrl": {
+    "message": "Copy the current URL to the clipboard"
+  },
+  "command_openCopiedUrlInCurrentTab": {
+    "message": "Open the clipboard's URL in the current tab"
+  },
+  "command_openCopiedUrlInNewTab": {
+    "message": "Open the clipboard's URL in a new tab"
+  },
+  "command_goUp": {
+    "message": "Go up the URL hierarchy"
+  },
+  "command_goToRoot": {
+    "message": "Go to the root of current URL hierarchy"
+  },
+  "command_enterInsertMode": {
+    "message": "Enter insert mode"
+  },
+  "command_enterVisualMode": {
+    "message": "Enter visual mode"
+  },
+  "command_enterVisualLineMode": {
+    "message": "Enter visual line mode"
+  },
+  "command_passNextKey": {
+    "message": "Pass the next key to the page"
+  },
+  "command_focusInput": {
+    "message": "Focus the first text input on the page"
+  },
+  "command_LinkHints_activateMode": {
+    "message": "Open a link in the current tab"
+  },
+  "command_LinkHints_activateModeToOpenInNewTab": {
+    "message": "Open a link in a new tab"
+  },
+  "command_LinkHints_activateModeToOpenInNewForegroundTab": {
+    "message": "Open a link in a new tab & switch to it"
+  },
+  "command_LinkHints_activateModeWithQueue": {
+    "message": "Open multiple links in a new tab"
+  },
+  "command_LinkHints_activateModeToDownloadLink": {
+    "message": "Download link url"
+  },
+  "command_LinkHints_activateModeToOpenIncognito": {
+    "message": "Open a link in incognito window"
+  },
+  "command_LinkHints_activateModeToCopyLinkUrl": {
+    "message": "Copy a link URL to the clipboard"
+  },
+  "command_goPrevious": {
+    "message": "Follow the link labeled previous or <"
+  },
+  "command_goNext": {
+    "message": "Follow the link labeled next or >"
+  },
+  "command_nextFrame": {
+    "message": "Select the next frame on the page"
+  },
+  "command_mainFrame": {
+    "message": "Select the page's main/top frame"
+  },
+  "command_Marks_activateCreateMode": {
+    "message": "Create a new mark"
+  },
+  "command_Marks_activateGotoMode": {
+    "message": "Jump to a mark"
+  },
+  "command_Vomnibar_activate": {
+    "message": "Open URL, bookmark or history entry"
+  },
+  "command_Vomnibar_activateInNewTab": {
+    "message": "Open URL, bookmark or history entry in a new tab"
+  },
+  "command_Vomnibar_activateBookmarks": {
+    "message": "Open a bookmark"
+  },
+  "command_Vomnibar_activateBookmarksInNewTab": {
+    "message": "Open a bookmark in a new tab"
+  },
+  "command_Vomnibar_activateTabSelection": {
+    "message": "Search through your open tabs"
+  },
+  "command_Vomnibar_activateEditUrl": {
+    "message": "Edit the current URL"
+  },
+  "command_Vomnibar_activateEditUrlInNewTab": {
+    "message": "Edit the current URL and open in a new tab"
+  },
+  "command_enterFindMode": {
+    "message": "Enter find mode."
+  },
+  "command_performFind": {
+    "message": "Cycle forward to the next find match"
+  },
+  "command_performBackwardsFind": {
+    "message": "Cycle backward to the previous find match"
+  },
+  "command_findSelected": {
+    "message": "Find the selected text"
+  },
+  "command_findSelectedBackwards": {
+    "message": "Find the selected text, searching backwards"
+  },
+  "command_createTab": {
+    "message": "Create new tab"
+  },
+  "command_visitPreviousTab": {
+    "message": "Go to previously-visited tab"
+  },
+  "command_firstTab": {
+    "message": "Go to the first tab"
+  },
+  "command_lastTab": {
+    "message": "Go to the last tab"
+  },
+  "command_duplicateTab": {
+    "message": "Duplicate current tab"
+  },
+  "command_togglePinTab": {
+    "message": "Pin or unpin current tab"
+  },
+  "command_toggleMuteTab": {
+    "message": "Mute or unmute current tab"
+  },
+  "command_moveTabToNewWindow": {
+    "message": "Move tab to new window"
+  },
+  "command_closeTabsOnLeft": {
+    "message": "Close tabs on the left"
+  },
+  "command_closeTabsOnRight": {
+    "message": "Close tabs on the right"
+  },
+  "command_closeOtherTabs": {
+    "message": "Close all other tabs"
+  },
+  "command_moveTabLeft": {
+    "message": "Move tab to the left"
+  },
+  "command_moveTabRight": {
+    "message": "Move tab to the right"
+  },
+  "command_setZoom": {
+    "message": "Set zoom"
+  },
+  "command_zoomIn": {
+    "message": "Zoom in"
+  },
+  "command_zoomOut": {
+    "message": "Zoom out"
+  },
+  "command_zoomReset": {
+    "message": "Reset zoom"
+  },
+  "command_toggleViewSource": {
+    "message": "View page source"
+  },
+  "command_showHelp": {
+    "message": "Show help"
+  },
+  "navBasicPreferences": {
+    "message": "Basic preferences"
+  },
+  "navInteractionEnhancement": {
+    "message": "Interactions"
+  },
+  "navToolsAndRendering": {
+    "message": "Tools & rendering"
+  },
+  "navRulesAndData": {
+    "message": "Rules & data"
+  },
+  "generalAndTheme": {
+    "message": "General & theme"
+  },
+  "shortcutToolsConfig": {
+    "message": "Quick tools"
+  },
+  "pageAutoFormatter": {
+    "message": "Auto-formatting"
+  },
+  "privacyStatement": {
+    "message": "Privacy notice"
+  },
+  "searchEnginesDescription": {
+    "message": "Bind search engines to short keywords and trigger them directly from the quick launcher (Vomnibar)."
+  },
+  "searchStep1Kicker": {
+    "message": "Step 1 · Configure & save"
+  },
+  "searchStep1Title": {
+    "message": "Edit keyword rules below"
+  },
+  "searchStep1Desc": {
+    "message": "One entry per line as \"keyword: search_url [name]\" (e.g. bd: https://www.baidu.com/s?wd=%s Baidu), then click Save settings."
+  },
+  "searchStep2Kicker": {
+    "message": "Step 2 · Open on any page"
+  },
+  "searchStep2Title": {
+    "message": "Press o (current tab) or O (new tab)"
+  },
+  "searchStep2Desc": {
+    "message": "Opens the quick launcher (requires Keyboard navigation enabled, or open via gesture/command center)."
+  },
+  "searchStep3Kicker": {
+    "message": "Step 3 · Search with keyword"
+  },
+  "searchStep3Title": {
+    "message": "Type bd query and press Enter"
+  },
+  "searchStep3Desc": {
+    "message": "Type the keyword plus a space to select Baidu, then enter your terms and hit Enter to open results."
+  },
+  "searchRulesLabel": {
+    "message": "Custom search rules"
+  },
+  "searchSyntaxFormatLabel": {
+    "message": "Line syntax"
+  },
+  "searchSyntaxFormatDesc": {
+    "message": "Format: keyword: URL [display name] (e.g. bd: https://www.baidu.com/s?wd=%s Baidu). %s is replaced with the URL-encoded query, %S keeps the raw query, or it is appended if omitted."
+  },
+  "searchSyntaxCommentLabel": {
+    "message": "Comments & saving"
+  },
+  "searchSyntaxCommentDesc": {
+    "message": "Lines starting with # or \" are treated as comments and ignored; click Save settings to apply changes."
+  }
 }

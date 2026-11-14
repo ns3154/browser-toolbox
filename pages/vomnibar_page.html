@@ -6,22 +6,16 @@
     <meta charset="UTF-8">
     <script type="module" src="vomnibar_page.js"></script>
     <link rel="stylesheet" type="text/css" href="../content_scripts/vimium.css" />
+    <link rel="stylesheet" type="text/css" href="theme_tokens.css" />
     <link rel="stylesheet" type="text/css" href="vomnibar_page.css" />
   </head>
   <body>
     <div id="vomnibar">
-      <div id="vomnibar-header">
+      <div id="vomnibar-search-area">
         <div id="vomnibar-mode">
           <span id="vomnibar-mode-label">Search or open</span>
           <span id="vomnibar-disposition" data-i18n="vomnibarNewTab" hidden>New tab</span>
         </div>
-        <kbd aria-label="Escape">Esc</kbd>
-      </div>
-      <div id="vomnibar-search-area">
-        <svg id="vomnibar-search-icon" viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="10.75" cy="10.75" r="6.25"></circle>
-          <path d="m15.5 15.5 4 4"></path>
-        </svg>
         <label class="browser-toolbox-visually-hidden" for="vomnibar-search"
           data-i18n="vomnibarSearchOrOpen">Search or open</label>
         <input id="vomnibar-search" type="text" autocomplete="off" role="combobox"
@@ -30,9 +24,12 @@
       </div>
       <ul id="vomnibar-completions" role="listbox"></ul>
       <div id="vomnibar-footer" aria-hidden="true">
-        <span><kbd>↑</kbd><kbd>↓</kbd> <span data-i18n="vomnibarHintSelect">Select</span></span>
-        <span><kbd>Enter</kbd> <span data-i18n="vomnibarHintOpen">Open</span></span>
-        <span><kbd>Esc</kbd> <span data-i18n="vomnibarHintClose">Close</span></span>
+        <div class="vomnibar-hints">
+          <span><kbd>↑↓</kbd> <span data-i18n="vomnibarHintSelect">Select</span></span>
+          <span><kbd>Enter</kbd> <span data-i18n="vomnibarHintOpen">Open</span></span>
+          <span><kbd>Shift+Enter</kbd> <span data-i18n="vomnibarHintOpenNewTab">Open in new tab</span></span>
+        </div>
+        <span class="vomnibar-hint-close"><kbd>Esc</kbd> <span data-i18n="vomnibarHintClose">Close</span></span>
       </div>
     </div>
   </body>

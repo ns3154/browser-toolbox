@@ -7,25 +7,103 @@
 import "../lib/types.js";
 import "../lib/utils.js";
 import "../lib/url_utils.js";
+import "../lib/browser_toolbox/configuration_client.js";
 import "../lib/settings.js";
 import "../lib/i18n.js";
+import "../lib/browser_toolbox/theme.js";
 import "../lib/keyboard_utils.js";
 import "../lib/dom_utils.js";
 import "../lib/handler_stack.js";
+import "../lib/browser_toolbox/runtime_plan.js";
 import * as UIComponentMessenger from "./ui_component_messenger.js";
 import * as userSearchEngines from "../background_scripts/user_search_engines.js";
 
 export let ui; // An instance of VomnibarUI.
+let activationRevision = 0;
+let pendingActivation = null;
+let pendingOwnPreparation = null;
+let ownCssInjected = false;
+function prepareOwnUi() {
+  if (!pendingOwnPreparation) {
+    // 初次DOM就绪和activate会同时到达；共享在途准备，独立读语言与模块不必排在设置读取之后。
+    const preparation = Promise.all([
+      Settings.onLoaded(),
+      BrowserToolboxI18n.applyStoredLocale(document),
+      BrowserToolboxTheme?.applyStoredTheme?.(document),
+      import("./browser_toolbox/vomnibar_controller.js"),
+    ]).then(([, , , module]) => {
+      if (!ownCssInjected) {
+        DomUtils.injectUserCss();
+        ownCssInjected = true;
+      }
+      return module;
+    }).finally(() => {
+      if (pendingOwnPreparation === preparation) pendingOwnPreparation = null;
+    });
+    pendingOwnPreparation = preparation;
+  }
+  return pendingOwnPreparation;
+}
+function cancelPendingActivation(message = {}) {
+  const pending = pendingActivation;
+  if (!pending || message.interactionId && message.interactionId !== pending.interactionId) return false;
+  activationRevision++;
+  pendingActivation = null;
+  document.removeEventListener("keydown", pendingEscape, true);
+  return true;
+}
+function pendingEscape(event) {
+  if (!pendingActivation || event.isComposing || event.keyCode === 229 || !KeyboardUtils.isEscape(event)) return;
+  const interactionId = pendingActivation.interactionId;
+  cancelPendingActivation({ interactionId });
+  ui?.hide();
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  UIComponentMessenger.postMessage({ name: "hide", interactionId });
+}
 
 // Used for tests.
 export function reset() {
+  cancelPendingActivation();
+  activationRevision++;
+  ui?.destroy?.();
   ui = null;
+  pendingOwnPreparation = null;
+  ownCssInjected = false;
+}
+
+export function onHidden(message) {
+  cancelPendingActivation(message);
+  ui?.onHidden(message);
+  // 准备中的Esc或读取失败可能早于控制器创建；父组件仍需要自然退出确认以释放iframe。
+  if (message.interactionId && message.interactionId !== ui?.interactionId) {
+    UIComponentMessenger.postMessage({ name: "vomnibarInteractionFinished", interactionId: message.interactionId });
+  }
 }
 
 export async function activate(options) {
+  const authorization = await BrowserToolboxUIAuthorization.ready;
+  const ownPlan = BrowserToolboxRuntimePlans.allowed.find((plan) => plan.planVersion === authorization?.planVersion);
+  if (ownPlan?.moduleImplementations.vomnibar === "browser-toolbox") {
+    const { interactionId, ...showOptions } = options || {};
+    Utils.assertType(VomnibarShowOptions, showOptions);
+    ui?.deactivate();
+    const revision = ++activationRevision;
+    pendingActivation = { revision, interactionId };
+    document.addEventListener("keydown", pendingEscape, true);
+    const { VomnibarController } = await prepareOwnUi();
+    // 资源准备期间的 Esc、hidden 或后来一次 activate 必须使这次准备失效。
+    if (revision !== activationRevision || pendingActivation?.revision !== revision) return;
+    pendingActivation = null;
+    document.removeEventListener("keydown", pendingEscape, true);
+    ui ||= new VomnibarController({ messenger: UIComponentMessenger });
+    await ui.activate({ ...showOptions, interactionId });
+    return;
+  }
   Utils.assertType(VomnibarShowOptions, options || {});
   await Settings.onLoaded();
   await BrowserToolboxI18n.applyStoredLocale(document);
+  await BrowserToolboxTheme?.applyStoredTheme?.(document);
   userSearchEngines.set(Settings.get("searchEngines"));
 
   const defaults = {
@@ -477,15 +555,22 @@ function init() {
   UIComponentMessenger.registerHandler(function (event) {
     switch (event.data.name) {
       case "hide":
+        if (pendingActivation) cancelPendingActivation(event.data);
+        if (ui?.implementation === "browser-toolbox" && event.data.interactionId && event.data.interactionId !== ui.interactionId) break;
         ui?.hide();
         break;
       case "hidden":
-        ui?.onHidden();
+        onHidden(event.data);
         break;
       case "activate":
         const options = Object.assign({}, event.data);
         delete options.name;
-        activate(options);
+        activate(options).catch(() => {
+          if (pendingActivation?.interactionId !== options.interactionId) return;
+          cancelPendingActivation(options);
+          BrowserToolboxUIAuthorization.lastErrorCode = "VOMNIBAR_UNAVAILABLE";
+          UIComponentMessenger.postMessage({ name: "hide", interactionId: options.interactionId });
+        });
         break;
       default:
         Utils.assert(false, "Unrecognized message type.", event.data);
@@ -496,9 +581,20 @@ function init() {
 const testEnv = globalThis.window == null ||
   globalThis.window.location.search.includes("dom_tests=true");
 if (!testEnv) {
+  BrowserToolboxTheme?.watchTheme?.(document);
   document.addEventListener("DOMContentLoaded", async () => {
+    void BrowserToolboxTheme?.applyStoredTheme?.(document);
+    const authorization = await BrowserToolboxUIAuthorization.ready;
+    const ownPlan = BrowserToolboxRuntimePlans.allowed.find((plan) => plan.planVersion === authorization?.planVersion);
+    if (ownPlan?.moduleImplementations.vomnibar === "browser-toolbox") {
+      await prepareOwnUi().catch(() => {
+        BrowserToolboxUIAuthorization.lastErrorCode = "VOMNIBAR_UNAVAILABLE";
+      });
+      return;
+    }
     await Settings.onLoaded();
     await BrowserToolboxI18n.applyStoredLocale(document);
+    await BrowserToolboxTheme?.applyStoredTheme?.(document);
     DomUtils.injectUserCss(); // Manually inject custom user styles.
   });
   init();

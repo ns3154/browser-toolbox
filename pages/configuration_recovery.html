@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <title data-i18n="recoveryPageTitle">Recovery status</title>
+    <link rel="stylesheet" href="theme_tokens.css">
+    <link rel="stylesheet" href="configuration_recovery.css">
+    <script src="../lib/i18n.js"></script>
+    <script src="../lib/browser_toolbox/theme.js"></script>
+    <script src="../background_scripts/browser_toolbox/configuration_writer.js"></script>
+    <script src="../lib/browser_toolbox/recovery_diagnostics.js"></script>
+    <script src="configuration_recovery.js" defer></script>
+  </head>
+  <body>
+    <main class="recovery-page">
+      <p class="recovery-brand" data-i18n="browserToolbox">Browser Toolbox</p>
+      <h1 data-i18n="recoveryPageTitle">Recovery status</h1>
+      <p
+        data-i18n="recoveryPageIntro">Check local recovery records even when the extension background is unavailable.</p>
+      <section class="recovery-card" aria-labelledby="recovery-records-title">
+        <h2 id="recovery-records-title" data-i18n="recoveryPageTitle">Recovery status</h2>
+        <dl>
+          <div>
+            <dt data-i18n="recoveryRecordConfiguration">Configuration save</dt>
+            <dd id="recovery-configuration" data-i18n="recoveryNotChecked">Not checked</dd>
+          </div>
+          <div>
+            <dt data-i18n="recoveryRecordRollback">Compatibility rollback</dt>
+            <dd id="recovery-rollback" data-i18n="recoveryNotChecked">Not checked</dd>
+          </div>
+          <div>
+            <dt data-i18n="recoveryRecordSync">Keyboard sync preparation</dt>
+            <dd id="recovery-sync" data-i18n="recoveryNotChecked">Not checked</dd>
+          </div>
+          <div>
+            <dt data-i18n="recoveryRecordCompatibilityConflicts">Local conflict observations</dt>
+            <dd id="recovery-compatibility-conflicts" data-i18n="recoveryNotChecked">Not checked</dd>
+          </div>
+        </dl>
+        <p id="recovery-summary" role="status" aria-live="polite"></p>
+        <div class="recovery-actions">
+          <button id="recovery-inspect" type="button"
+            data-i18n="recoveryInspect">Check again</button>
+          <button id="recovery-export" type="button"
+            data-i18n="recoveryExport">Export redacted diagnostics</button>
+        </div>
+        <p id="recovery-export-status" role="status" aria-live="polite"></p>
+      </section>
+      <section class="recovery-card" aria-labelledby="recovery-conflict-title">
+        <h2 id="recovery-conflict-title"
+          data-i18n="recoveryConflictDetails">Read-only conflict details</h2>
+        <p class="recovery-note"
+          data-i18n="recoveryConflictDetailsIntro">Requires the background to be available. This checks the observed field state without applying choices or unlocking writes, and does not prove cross-device origin.</p>
+        <div class="recovery-actions">
+          <button id="recovery-inspect-rollback-conflict" type="button"
+            data-i18n="recoveryInspectRollbackConflict" disabled>Inspect rollback fields</button>
+          <button id="recovery-inspect-sync-conflict" type="button"
+            data-i18n="recoveryInspectSyncConflict" disabled>Inspect sync fields</button>
+        </div>
+        <p id="recovery-conflict-result" role="status" aria-live="polite"
+          data-i18n="recoveryConflictSelect">Select a completed or stopped transaction to inspect.</p>
+      </section>
+      <p class="recovery-note"
+        data-i18n="recoveryPagePrivacy">The recovery status summary does not verify integrity. The diagnostic contains only the extension version and record states, never settings or page content.</p>
+      <a href="mouse_options.html" data-i18n="recoveryBack">Back to settings</a>
+    </main>
+  </body>
+</html>

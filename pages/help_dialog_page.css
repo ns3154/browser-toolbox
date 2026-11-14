@@ -1,28 +1,37 @@
 body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+  background: var(--bt-bg);
+  color: var(--bt-text);
 }
 
 #container {
-  background-color: white;
-  border: 2px solid #b3b3b3;
-  border-radius: 6px;
-  width: 840px;
-  max-width: calc(100% - 100px);
-  max-height: calc(100% - 100px);
-  margin: 50px auto;
+  background-color: var(--bt-surface-card);
+  border: 1px solid var(--bt-border-subtle);
+  border-radius: 16px;
+  box-shadow: 0 18px 44px color-mix(in srgb, var(--bt-text) 14%, transparent);
+  width: 860px;
+  max-width: calc(100% - 48px);
+  max-height: calc(100% - 48px);
+  margin: 24px auto;
   overflow-y: auto;
   overflow-x: auto;
 }
 
 #dialog {
   min-width: 600px;
-  padding: 8px 12px;
+  padding: 16px 22px;
 }
 
 a {
-  text-decoration: underline;
-  color: #2f508e;
+  text-decoration: none;
+  color: var(--bt-accent);
   cursor: pointer;
+}
+
+a:hover {
+  text-decoration: underline;
 }
 
 header {
@@ -32,19 +41,19 @@ header {
 }
 
 a#close {
-  font-family: "courier new", monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-weight: bold;
-  color: #555;
+  color: var(--bt-muted);
   text-decoration: none;
-  font-size: 24px;
+  font-size: 22px;
   position: relative;
-  top: 3px;
-  padding-left: 5px;
+  top: 1px;
+  padding-left: 8px;
   cursor: pointer;
 }
 
 a#close:hover {
-  color: black;
+  color: var(--bt-text);
   -webkit-user-select: none;
 }
 
@@ -52,12 +61,13 @@ h1 {
   font-size: 20px;
   white-space: nowrap;
   flex-grow: 1;
-  font-weight: normal;
+  font-weight: 700;
   margin: 4px 0;
+  color: var(--bt-text);
 }
 
 .browser-toolbox-help-brand {
-  color: #2f508e;
+  color: var(--bt-accent);
 }
 
 header a {
@@ -104,8 +114,8 @@ div[data-group] {
 div.divider {
   height: 1px;
   width: 100%;
-  margin: 10px auto;
-  background-color: #9a9a9a;
+  margin: 12px auto;
+  background-color: var(--bt-border-subtle);
 }
 
 /* Advanced commands are hidden by default until "show advanced" is clicked. */
@@ -118,7 +128,7 @@ div.divider {
 }
 
 footer {
-  font-size: 10px;
+  font-size: 12px;
   display: flex;
   justify-content: space-between;
 }
@@ -129,7 +139,7 @@ footer {
 
 #toggle-advanced {
   text-align: right;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 #browser-toolbox-help {
@@ -148,8 +158,9 @@ footer {
 }
 
 .browser-toolbox-help-status {
-  border-left: 3px solid #2f508e;
-  padding-left: 8px;
+  border-left: 3px solid var(--bt-accent);
+  padding-left: 10px;
+  color: var(--bt-muted);
 }
 
 #browser-toolbox-help-status {
@@ -180,38 +191,29 @@ footer {
   }
 }
 
-/* Dark Mode CSS for Help Dialog */
+/* 深色模式下主题令牌已自动切换，仅同步弹窗容器色彩。 */
 @media (prefers-color-scheme: dark) {
+  body {
+    background: var(--bt-bg);
+    color: var(--bt-text);
+  }
+
   #container {
-    border-color: rgba(255, 255, 255, 0.1);
-    background-color: #202124;
+    border-color: var(--bt-border-subtle);
+    background-color: var(--bt-surface-card);
   }
 
   #dialog {
-    background-color: var(--vimium-background-color);
-    color: var(--vimium-background-text-color);
-  }
-
-  a {
-    color: var(--vimium-link-color);
+    background-color: var(--bt-surface-card);
+    color: var(--bt-text);
   }
 
   h1,
   h2 {
-    color: white;
-  }
-
-  .browser-toolbox-help-brand {
-    color: var(--vimium-link-color);
-  }
-
-  div.divider {
-    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--bt-text);
   }
 
   .help-description {
-    /* Use a fainter color than --vimium-background-text-color, so the dialog text doesn't get
-       overwhelming. */
-    color: #c9cccf;
+    color: var(--bt-muted);
   }
 }

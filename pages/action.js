@@ -1,5 +1,6 @@
 import "../lib/utils.js";
 import "../lib/dom_utils.js";
+import "../lib/browser_toolbox/configuration_client.js";
 import "../lib/settings.js";
 import "../lib/i18n.js";
 import "../lib/browser_toolbox/value_utils.js";
@@ -10,6 +11,7 @@ import "../lib/browser_toolbox/tools/tool_icons.js";
 import "../lib/browser_toolbox/command_invocation.js";
 import "../lib/browser_toolbox/message_protocol.js";
 import "../lib/browser_toolbox/settings_schema.js";
+import "../lib/browser_toolbox/theme.js";
 import "../lib/browser_toolbox/regex_safety.js";
 import "../lib/browser_toolbox/module_registry.js";
 import "../lib/browser_toolbox/settings_validator.js";
@@ -29,6 +31,8 @@ const toolRegistry = globalThis.BrowserToolboxToolRegistry;
 export const ActionPage = {
   async init() {
     await this.loadLocalePreference();
+    await globalThis.BrowserToolboxTheme?.applyStoredTheme?.(document);
+    globalThis.BrowserToolboxTheme?.watchTheme?.(document);
     BrowserToolboxI18n.apply(document);
     this.renderIcons();
     // Is it possible for the current tab's URL to change while this action popup is open?
@@ -151,6 +155,7 @@ export const ActionPage = {
       const paused = repository.sessionOverrides?.enabled === false;
       const overridden = Object.keys(repository.sessionOverrides || {}).length > 0;
       const busy = button.dataset.busy === "true";
+      panel.classList.toggle("is-session-paused", paused);
       status.textContent = statusError || BrowserToolboxI18n.message(
         paused ? "sessionDisabled" : "sessionScopeHint",
       );
@@ -184,16 +189,25 @@ export const ActionPage = {
 
   initSiteShortcut(activeTab) {
     const button = document.querySelector("#browser-toolbox-manage-site");
+    const siteTitle = document.querySelector("#browser-toolbox-current-site-title");
     if (!button) return;
     let origin;
+    let hostname = "";
     try {
       const url = new URL(activeTab?.url || "");
       if (
         !["http:", "https:"].includes(url.protocol) || !url.hostname || url.hostname.includes("*")
       ) return;
       origin = url.origin;
+      hostname = url.hostname;
     } catch (_) {
       return;
+    }
+    if (siteTitle && hostname) {
+      // 仅展示主机名以直观标识当前规则作用站点，不带入路径、参数或凭证。
+      siteTitle.removeAttribute("data-i18n");
+      siteTitle.textContent = hostname;
+      siteTitle.title = hostname;
     }
     button.hidden = false;
     button.addEventListener("click", async () => {
@@ -213,6 +227,7 @@ export const ActionPage = {
     await repository.ensureLoaded();
     const settings = repository.getEffectiveSettings(activeTab.url || "");
     BrowserToolboxI18n.setLocale(settings.general.language);
+    globalThis.BrowserToolboxTheme?.applyTheme?.(document, settings?.general?.theme);
     BrowserToolboxI18n.apply(document);
     container.style.display = "block";
     document.querySelector("#browser-toolbox-enhancement-summary").style.display = "block";
@@ -222,16 +237,10 @@ export const ActionPage = {
       "click",
       async () => {
         try {
-          // 复用现有的顶层 showHelp 路由，让帮助页在当前网页中正确建立 UIComponent 通道。
-          await chrome.tabs.sendMessage(
-            activeTab.id,
-            {
-              handler: "runInTopFrame",
-              sourceFrameId: 0,
-              registryEntry: { command: "showHelp", options: {} },
-            },
-            { frameId: 0 },
-          );
+          const invocation = BrowserToolboxCommandInvocation.createInvocation("showHelp", {}, {
+            type: "ui",
+          }, { tabId: activeTab.id, sourceFrameId: 0 });
+          await chrome.runtime.sendMessage({ handler: "browserToolbox.invoke", invocation });
         } finally {
           globalThis.close();
         }
@@ -259,6 +268,12 @@ export const ActionPage = {
       if (siteBadge) {
         siteBadge.textContent = BrowserToolboxI18n.message(pageEnabled ? "active" : "inactive");
         siteBadge.classList.toggle("is-disabled", !pageEnabled);
+      }
+      const enhancementSummary = document.querySelector("#browser-toolbox-enhancement-summary");
+      if (enhancementSummary) {
+        // 站点停用或会话暂停时置灰模块开关区，提示作用范围已接管
+        const pausedByScope = repository.sessionOverrides?.enabled === false || !pageEnabled;
+        enhancementSummary.classList.toggle("is-paused-by-scope", pausedByScope);
       }
       for (const [selector, moduleName] of controls) {
         const input = document.querySelector(selector);

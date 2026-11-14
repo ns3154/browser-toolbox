@@ -9,6 +9,8 @@ const LEGACY_MARKERS = Object.freeze([
 const ALLOWED_FILES = new Set([
   "background_scripts/browser_toolbox/settings_migrations.js",
   "background_scripts/browser_toolbox/settings_storage.js",
+  "background_scripts/browser_toolbox/configuration_writer.js",
+  "tests/unit_tests/browser_toolbox/configuration_writer_test.js",
   "lib/browser_toolbox/settings_validator.js",
   "scripts/audit_technical_rename.js",
   "scripts/e2e_browser_toolbox.js",
@@ -17,6 +19,7 @@ const ALLOWED_FILES = new Set([
   "tests/unit_tests/browser_toolbox/settings_migrations_test.js",
   "tests/unit_tests/browser_toolbox/settings_repository_test.js",
   "tests/unit_tests/browser_toolbox/settings_storage_test.js",
+  "tests/fixtures/runtime_compat_contracts.json",
 ]);
 
 function isAllowed(file) {

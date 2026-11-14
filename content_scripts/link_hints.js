@@ -163,6 +163,13 @@ const HintCoordinator = {
   onExit: [],
   localHints: null,
   cacheAllKeydownEvents: null,
+  pendingHintCollection: null,
+  hintCollectionGeneration: 0,
+
+  cancelPendingHintCollection() {
+    this.hintCollectionGeneration++;
+    this.pendingHintCollection?.cancel();
+  },
 
   // A WeakRef to the last clicked element. We track this so that we can mouse of it if the user
   // types ESC after clicking on it. See #3073.
@@ -181,10 +188,26 @@ const HintCoordinator = {
   sendMessage(messageType, request) {
     if (request == null) request = {};
     request = Object.assign(request, { messageType, handler: "broadcastLinkHintsMessage" });
-    chrome.runtime.sendMessage(request);
+    const bridge = globalThis.BrowserToolboxFrameRuntimeBridgeInstance;
+    if (bridge?.useV2()) {
+      bridge.hints("broadcast", { ...request, interactionId: this.runtimeInteractionId }).catch(
+        () => {},
+      );
+    } else chrome.runtime.sendMessage(request);
   },
 
   prepareToActivateMode(mode, onExit) {
+    this.cancelPendingHintCollection();
+    // 上一轮退出广播回声尚未到达时若立即开启新会话，必须先清理本地残留提示与拦截模式，避免新会话编号覆盖后旧标记漏拆。
+    if (this.linkHintsMode != null) {
+      this.linkHintsMode.deactivateMode();
+      this.linkHintsMode = null;
+    }
+    if (this.cacheAllKeydownEvents?.modeIsActive) {
+      this.cacheAllKeydownEvents.exit();
+    }
+    this.cacheAllKeydownEvents = this.localHints = this.localHintDescriptors = null;
+
     // We need to communicate with the background page (and other frames) to initiate link-hints
     // mode. To prevent other Vimium commands from being triggered before link-hints mode is
     // launched, we install a temporary mode to block (and cache) keyboard events.
@@ -199,29 +222,124 @@ const HintCoordinator = {
     // left in place, then Vimium blocks. As a temporary measure, we install a timer to remove it.
     // TODO(philc): I believe link hints is sufficiently reliable after the manifest V3 port
     // that this safeguard can now be removed.
-    Utils.setTimeout(1000, function () {
-      if (cacheAllKeydownEvents && cacheAllKeydownEvents.modeIsActive) {
-        cacheAllKeydownEvents.exit();
-      }
+    // 后台收集所有 frame 提示的超时窗口为 3000ms；本地兜底晚于后台窗口并在收集模式退出时同步从 engineResources 注销，防止循环激活残留 timer 计数。
+    const engineScope = globalThis.BrowserToolboxRuntimeHostInstance?.engineResources;
+    let removeCollectTimer;
+    if (engineScope) {
+      const collectTimer = setTimeout(() => {
+        removeCollectTimer?.();
+        if (!engineScope.closed && cacheAllKeydownEvents?.modeIsActive) {
+          cacheAllKeydownEvents.exit();
+        }
+      }, 3500);
+      removeCollectTimer = engineScope.add(() => clearTimeout(collectTimer), "timer");
+    } else {
+      const collectTimer = Utils.setTimeout(3500, function () {
+        if (cacheAllKeydownEvents && cacheAllKeydownEvents.modeIsActive) {
+          cacheAllKeydownEvents.exit();
+        }
+      });
+      removeCollectTimer = () => clearTimeout(collectTimer);
+    }
+    cacheAllKeydownEvents.onExit(() => removeCollectTimer());
+    cacheAllKeydownEvents.onExit(() => {
+      if (!this.activatingHints) this.cancelPendingHintCollection();
     });
     this.onExit = [onExit];
+    const bridge = globalThis.BrowserToolboxFrameRuntimeBridgeInstance;
+    if (bridge?.useV2()) {
+      this.runtimeInteractionId = crypto.randomUUID();
+      const interactionId = this.runtimeInteractionId;
+      cacheAllKeydownEvents.onExit(() => {
+        if (!this.activatingHints && this.runtimeInteractionId === interactionId) {
+          this.runtimeInteractionId = null;
+          this.localHints = this.localHintDescriptors = null;
+          bridge.hints("broadcast", { messageType: "exit", isSuccess: false, interactionId }).catch(
+            () => {},
+          );
+        }
+      });
+    }
     const protocol = window.location.protocol;
     // chrome-extension, moz-extension (Firefox), extension (Edge).
     const isExtensionPage = protocol.endsWith("extension:");
-    chrome.runtime.sendMessage({
-      handler: "prepareToActivateLinkHintsMode",
+    const request = {
       modeIndex: availableModes.indexOf(mode),
       isExtensionPage,
       requestedByHelpDialog: globalThis.isVimiumHelpDialog,
-    });
+      interactionId: this.runtimeInteractionId,
+    };
+    if (bridge?.useV2()) {
+      const interactionId = this.runtimeInteractionId;
+      bridge.hints("prepare", request).then((reply) => {
+        if (
+          !reply?.ok && this.runtimeInteractionId === interactionId &&
+          cacheAllKeydownEvents.modeIsActive
+        ) {
+          cacheAllKeydownEvents.exit();
+        }
+      }).catch(() => {
+        if (this.runtimeInteractionId === interactionId && cacheAllKeydownEvents.modeIsActive) {
+          cacheAllKeydownEvents.exit();
+        }
+      });
+    } else chrome.runtime.sendMessage({ ...request, handler: "prepareToActivateLinkHintsMode" });
   },
 
   // Returns a list of HintDescriptors. Hint descriptors are global. They include all of the
   // information necessary for each frame to determine whether and when a hint from *any* frame is
   // selected.
-  getHintDescriptors({ modeIndex, requestedByHelpDialog }, _sender) {
+  getHintDescriptors(
+    { modeIndex, requestedByHelpDialog, interactionId, originatingFrameId },
+    _sender,
+  ) {
+    if (interactionId) {
+      if (
+        originatingFrameId === frameId &&
+        (!this.cacheAllKeydownEvents?.modeIsActive || this.runtimeInteractionId !== interactionId)
+      ) return [];
+      if (this.runtimeInteractionId && this.runtimeInteractionId !== interactionId) {
+        if (this.linkHintsMode != null) {
+          this.linkHintsMode.deactivateMode();
+          this.linkHintsMode = null;
+        }
+        this.localHints = this.localHintDescriptors = null;
+      }
+      this.runtimeInteractionId = interactionId;
+    }
+    this.cancelPendingHintCollection();
     if (!DomUtils.isReady() || DomUtils.windowIsTooSmall()) return [];
 
+    const scroller = globalThis.Scroller;
+    if (scroller?.isAnimating?.()) {
+      const generation = this.hintCollectionGeneration;
+      let pending;
+      return new Promise((resolve) => {
+        let settled = false;
+        let unsubscribe = () => {};
+        const finish = (success) => {
+          if (settled) return;
+          settled = true;
+          unsubscribe();
+          if (this.pendingHintCollection === pending) this.pendingHintCollection = null;
+          resolve(success);
+        };
+        pending = { cancel: () => finish(false) };
+        this.pendingHintCollection = pending;
+        unsubscribe = scroller.onIdle(finish);
+        if (settled) unsubscribe();
+      }).then((success) => {
+        if (
+          !success || this.hintCollectionGeneration !== generation ||
+          interactionId && this.runtimeInteractionId !== interactionId
+        ) return [];
+        return this.collectHintDescriptors(modeIndex, requestedByHelpDialog);
+      });
+    }
+    return this.collectHintDescriptors(modeIndex, requestedByHelpDialog);
+  },
+
+  collectHintDescriptors(modeIndex, requestedByHelpDialog) {
     const requireHref = [COPY_LINK_URL, OPEN_INCOGNITO].includes(availableModes[modeIndex]);
     // If link hints is launched within the help dialog, then we only offer hints from that frame.
     // This improves the usability of the help dialog on the options page (particularly for
@@ -245,7 +363,14 @@ const HintCoordinator = {
   // descriptors. We also propagate the key state between frames. Therefore, the hint-selection
   // process proceeds in lock step in every frame, and this.linkHintsMode is in the same state in
   // every frame.
-  activateMode({ frameId, frameIdToHintDescriptors, modeIndex, originatingFrameId }) {
+  activateMode(
+    { frameId, frameIdToHintDescriptors, modeIndex, originatingFrameId, interactionId },
+  ) {
+    if (
+      interactionId &&
+      (this.runtimeInteractionId !== interactionId ||
+        frameId === originatingFrameId && !this.cacheAllKeydownEvents?.modeIsActive)
+    ) return;
     // We do not receive the frame's own hint descritors back from the background page. Instead, we
     // merge them with the hint descriptors from other frames here. Note that
     // this.localHintDescriptors can be null if "getHintDescriptors" failed in this frame when it
@@ -258,7 +383,9 @@ const HintCoordinator = {
       .flatMap((frame) => frameIdToHintDescriptors[frame]);
 
     if (this.cacheAllKeydownEvents?.modeIsActive) {
+      this.activatingHints = true;
       this.cacheAllKeydownEvents.exit();
+      this.activatingHints = false;
     }
     if (frameId !== originatingFrameId) {
       this.onExit = [];
@@ -289,6 +416,8 @@ const HintCoordinator = {
   },
 
   exit({ isSuccess }) {
+    this.cancelPendingHintCollection();
+    this.runtimeInteractionId = null;
     if (this.linkHintsMode != null) {
       this.linkHintsMode.deactivateMode();
     }
@@ -401,6 +530,7 @@ class LinkHintsMode {
         ((event?.type === "keydown") &&
           (KeyboardUtils.isEscape(event) || KeyboardUtils.isBackspace(event)));
       if (hintsWereCancelled) {
+        this.removeHintMarkers();
         HintCoordinator.sendMessage("exit", { isSuccess: false });
       }
     });
@@ -709,9 +839,7 @@ class LinkHintsMode {
             return Utils.nextTick(() => focusThisFrame({ highlight: true }));
           } else if (localHint.reason === "Scroll.") {
             // Tell the scroller that this is the activated element.
-            return handlerStack.bubbleEvent(Utils.isFirefox() ? "click" : "DOMActivate", {
-              target: clickEl,
-            });
+            return Scroller.activateElement(clickEl);
           } else if (localHint.reason === "Open.") {
             return clickEl.open = !clickEl.open;
           } else if (DomUtils.isSelectable(clickEl)) {
@@ -1496,6 +1624,10 @@ const LocalHints = {
 class TypingProtector extends Mode {
   constructor(delay, callback) {
     super();
+    const resetExitTimer = () => {
+      clearTimeout(this.timer);
+      this.timer = Utils.setTimeout(delay, () => this.exit());
+    };
     this.init({
       name: "hint/typing-protector",
       suppressAllKeyboardEvents: true,
@@ -1504,11 +1636,6 @@ class TypingProtector extends Mode {
     });
 
     this.timer = Utils.setTimeout(delay, () => this.exit());
-
-    const resetExitTimer = () => {
-      clearTimeout(this.timer);
-      this.timer = Utils.setTimeout(delay, () => this.exit());
-    };
 
     this.onExit(() => callback(true)); // true -> isSuccess.
   }
@@ -1557,3 +1684,34 @@ Object.assign(globalThis, {
   FilterHints,
   WaitForEnter,
 });
+
+// 独立方案仅复用公共路由与诊断字段；兼容方案仍运行上方原有实现。
+const compatibleHintEntry = LinkHints.activateMode;
+LinkHints.activateMode = function (count, options = {}) {
+  const controller = globalThis.BrowserToolboxHintsControllerInstance;
+  if (!controller) return compatibleHintEntry.call(this, count, options);
+  const action = options.registryEntry?.options?.action;
+  const modeIndex = ({ "copy-text": 7, hover: 8, focus: 9 })[action] ??
+    (options.mode ? availableModes.indexOf(options.mode) : 0);
+  return controller.activate(count, modeIndex);
+};
+for (const name of ["prepareToActivateMode", "getHintDescriptors", "activateMode", "willHandleMessage",
+  "updateKeyState", "rotateHints", "setOpenLinkMode", "activateActiveHintMarker", "getLocalHint",
+  "exit", "mouseOutOfLastClickedElement"]) {
+  const compatible = HintCoordinator[name];
+  HintCoordinator[name] = function (...args) {
+    const controller = globalThis.BrowserToolboxHintsControllerInstance;
+    return controller ? controller[name](...args) : compatible.apply(this, args);
+  };
+}
+for (const name of ["localHints", "linkHintsMode", "runtimeInteractionId", "lastClickedElementRef", "cacheAllKeydownEvents"]) {
+  let compatible = HintCoordinator[name];
+  Object.defineProperty(HintCoordinator, name, {
+    configurable: true,
+    get() {
+      const controller = globalThis.BrowserToolboxHintsControllerInstance;
+      return controller ? controller[name] : compatible;
+    },
+    set(value) { compatible = value; },
+  });
+}

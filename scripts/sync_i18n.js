@@ -36,13 +36,21 @@ export async function synchronizeCatalogs({ check = false } = {}) {
       }
     }
   }
-  const lines = [startMarker, "  // deno-fmt-ignore", "  const catalogs = {"];
+  const lines = [
+    startMarker,
+    "  // 未用到的语言不构造完整目录；第一次读取仍同步完成，切换后缓存保持不变。",
+    "  const catalogCache = Object.create(null);",
+    "  // deno-fmt-ignore",
+    "  const catalogs = {",
+  ];
   for (const [locale, catalog] of Object.entries(catalogs)) {
-    lines.push(`    ${JSON.stringify(locale)}: {`);
+    lines.push(
+      `    get ${JSON.stringify(locale)}() { return catalogCache[${JSON.stringify(locale)}] ||= {`,
+    );
     for (const [key, value] of Object.entries(catalog)) {
       lines.push(`      ${JSON.stringify(key)}: ${JSON.stringify(value)},`);
     }
-    lines.push("    },");
+    lines.push("    }; },");
   }
   lines.push("  };", endMarker);
   const source = await Deno.readTextFile(runtimeFile);

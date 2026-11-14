@@ -4,6 +4,32 @@ import "../../../lib/browser_toolbox/command_invocation.js";
 import "../../../lib/browser_toolbox/message_protocol.js";
 
 context("Message protocol", () => {
+  should("查找栏提交只接受四种有限数据动作，拒绝额外命令和目标覆盖", () => {
+    const validate = BrowserToolboxMessageProtocol.validateVomnibarSubmission;
+    for (
+      const value of [
+        { handler: "openUrlInCurrentTab", url: "javascript:void(0)" },
+        { handler: "openUrlInNewTab", url: "https://synthetic.invalid/" },
+        { handler: "launchSearchQuery", query: "中文目标", openInNewTab: false },
+        { handler: "selectSpecificTab", id: 23 },
+      ]
+    ) {
+      assert.isTrue(validate(value));
+      assert.isFalse(validate({ ...value, tabId: 999 }));
+    }
+    for (
+      const value of [
+        null,
+        {},
+        { handler: "removeTab" },
+        { handler: "selectSpecificTab", id: -1 },
+        { handler: "openUrlInNewTab", url: "" },
+        { handler: "launchSearchQuery", query: "text", openInNewTab: 1 },
+      ]
+    ) {
+      assert.isFalse(validate(value));
+    }
+  });
   should("accept only known message types and plain data", () => {
     const message = BrowserToolboxMessageProtocol.create("browserToolbox.gestureUpdate", {
       requestId: "request-1234",

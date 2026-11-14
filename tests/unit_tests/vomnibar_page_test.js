@@ -1,4 +1,5 @@
 import * as testHelper from "./test_helper.js";
+import "../../lib/settings.js";
 import "../../tests/unit_tests/test_chrome_stubs.js";
 import { Suggestion } from "../../background_scripts/completion/completers.js";
 import * as vomnibarPage from "../../pages/vomnibar_page.js";
@@ -108,5 +109,57 @@ context("vomnibar page", () => {
     ui.onInput();
     // The query should not be treated as a user search engine.
     assert.equal("constructor ", ui.input.value);
+  });
+});
+
+context("独立查找栏初次准备", () => {
+  let settingsReady, localeReady, counts;
+  const deferred = () => {
+    let resolve;
+    const promise = new Promise((done) => resolve = done);
+    return { promise, resolve };
+  };
+  setup(async () => {
+    await testHelper.jsdomStub("pages/vomnibar_page.html");
+    // 延迟onLoaded只模拟准备时序；配置本身必须显式加载，不能依赖前一个测试的残留。
+    await Settings.onLoaded();
+    vomnibarPage.reset();
+    counts = { settings: 0, locale: 0, css: 0 };
+    settingsReady = deferred(); localeReady = deferred();
+    stub(globalThis, "BrowserToolboxUIAuthorization", { ready: Promise.resolve({ planVersion: 6 }) });
+    stub(globalThis, "BrowserToolboxRuntimePlans", {
+      allowed: [{ planVersion: 6, moduleImplementations: { vomnibar: "browser-toolbox" } }],
+    });
+    stub(Settings, "onLoaded", () => { counts.settings++; return settingsReady.promise; });
+    stub(globalThis, "BrowserToolboxI18n", {
+      ...BrowserToolboxI18n,
+      applyStoredLocale() { counts.locale++; return localeReady.promise; },
+    });
+    stub(DomUtils, "injectUserCss", () => { counts.css++; });
+    stub(chrome.runtime, "sendMessage", async (message) => message.handler === "filterCompletions" ? [] : undefined);
+  });
+  teardown(() => vomnibarPage.reset());
+  should("并发激活只读取一次设置和语言，两者均就绪后才注入CSS并激活最新交互", async () => {
+    const first = vomnibarPage.activate({ interactionId: "first" });
+    const second = vomnibarPage.activate({ interactionId: "second" });
+    await Promise.resolve();
+    assert.equal({ settings: 1, locale: 1, css: 0 }, counts);
+    settingsReady.resolve();
+    await Promise.resolve();
+    assert.equal(null, vomnibarPage.ui);
+    localeReady.resolve();
+    await Promise.all([first, second]);
+    assert.equal({ settings: 1, locale: 1, css: 1 }, counts);
+    assert.equal("second", vomnibarPage.ui.interactionId);
+    assert.isTrue(vomnibarPage.ui.active);
+  });
+  should("控制器创建前收到hidden，准备完成后也不会激活或夺回焦点", async () => {
+    const opening = vomnibarPage.activate({ interactionId: "cancelled" });
+    await Promise.resolve();
+    vomnibarPage.onHidden({ interactionId: "cancelled" });
+    settingsReady.resolve(); localeReady.resolve();
+    await opening;
+    assert.equal(null, vomnibarPage.ui);
+    assert.isFalse(document.activeElement?.tagName === "INPUT");
   });
 });

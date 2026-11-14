@@ -2,6 +2,22 @@ import "../test_helper.js";
 import "../../../background_scripts/browser_toolbox/command_registry_adapter.js";
 
 context("Command registry adapter", () => {
+  should("95 个执行契约独立声明，旧隐式标记不能改变执行位置", () => {
+    assert.equal(95, BrowserToolboxCommandDefinitions.listCommands().length);
+    const [command] = BrowserToolboxCreateCommandRegistry([
+      { name: "scrollDown", background: true, noRepeat: true, repeatLimit: 1 },
+    ]);
+    assert.equal("page", command.execution);
+    assert.isFalse(command.countPolicy.noRepeat);
+    assert.equal(null, command.countPolicy.confirmationThreshold);
+    for (const item of BrowserToolboxCommandDefinitions.listCommands()) {
+      assert.isTrue(["page", "topFrame", "background"].includes(item.execution));
+      assert.isTrue(Array.isArray(item.aliases));
+      assert.isTrue(Array.isArray(item.supportedInputs));
+      assert.isTrue(Array.isArray(item.requiredPermissions));
+      assert.isTrue(Object.isFrozen(item.countPolicy));
+    }
+  });
   should("expose upstream and BrowserToolbox command metadata", () => {
     const registry = BrowserToolboxCommandRegistry;
     const commands = registry.listCommands();

@@ -1,16 +1,16 @@
-/* 独立工具页视觉令牌：浅色工作台是默认，暗色模式只在系统偏好下切换。 */
+/* 独立工具页视觉令牌：统一继承多主题语义变量。 */
 body.browser-toolbox-tools-document {
-  --toolbox-bg: #f3f6fb;
-  --toolbox-surface: #ffffff;
-  --toolbox-surface-muted: #f7f9fd;
-  --toolbox-ink: #172033;
-  --toolbox-muted: #718096;
-  --toolbox-line: #dfe7f2;
-  --toolbox-line-strong: #c9d7e9;
-  --toolbox-blue: #2563eb;
-  --toolbox-blue-soft: #edf4ff;
-  --toolbox-green: #16835e;
-  --toolbox-red: #c2415d;
+  --toolbox-bg: var(--bt-bg);
+  --toolbox-surface: var(--bt-surface-card);
+  --toolbox-surface-muted: var(--bt-surface-subtle);
+  --toolbox-ink: var(--bt-text);
+  --toolbox-muted: var(--bt-muted);
+  --toolbox-line: var(--bt-border-subtle);
+  --toolbox-line-strong: var(--bt-border-strong);
+  --toolbox-blue: var(--bt-accent);
+  --toolbox-blue-soft: var(--bt-accent-soft);
+  --toolbox-green: var(--bt-success);
+  --toolbox-red: var(--bt-danger);
   --toolbox-radius-sm: 10px;
   --toolbox-radius-md: 14px;
   --toolbox-radius-lg: 22px;
@@ -20,7 +20,7 @@ body.browser-toolbox-tools-document {
   overflow-x: hidden;
   background: var(--toolbox-bg);
   color: var(--toolbox-ink);
-  font: 14px/1.5 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font: 14px/1.55 -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
 }
 
 .browser-toolbox-tools-document * {
@@ -387,10 +387,10 @@ body.browser-toolbox-tools-document {
 
 .browser-toolbox-tools-document .browser-toolbox-tool-actions button.primary:hover,
 .browser-toolbox-tools-document .browser-toolbox-tool-actions button.primary:focus-visible {
-  border-color: #1d4ed8;
-  background: #1d4ed8;
+  border-color: var(--bt-accent-strong);
+  background: var(--bt-accent-strong);
   outline: none;
-  box-shadow: 0 0 0 3px rgb(37 99 235 / 17%);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bt-accent) 20%, transparent);
 }
 
 .browser-toolbox-tools-document .browser-toolbox-tool-actions button:disabled {
@@ -900,21 +900,21 @@ body.browser-toolbox-tools-document {
 
 @media (prefers-color-scheme: dark) {
   body.browser-toolbox-tools-document {
-    --toolbox-bg: #101827;
-    --toolbox-surface: #172235;
-    --toolbox-surface-muted: #1e2c42;
-    --toolbox-ink: #e7eef9;
-    --toolbox-muted: #9eafc5;
-    --toolbox-line: #344661;
-    --toolbox-line-strong: #49617f;
-    --toolbox-blue: #82aaff;
-    --toolbox-blue-soft: #213b66;
-    --toolbox-green: #66c49f;
-    --toolbox-red: #ff9eb1;
+    --toolbox-bg: var(--bt-bg);
+    --toolbox-surface: var(--bt-surface-card);
+    --toolbox-surface-muted: var(--bt-surface-subtle);
+    --toolbox-ink: var(--bt-text);
+    --toolbox-muted: var(--bt-muted);
+    --toolbox-line: var(--bt-border-subtle);
+    --toolbox-line-strong: var(--bt-border-strong);
+    --toolbox-blue: var(--bt-accent);
+    --toolbox-blue-soft: var(--bt-accent-soft);
+    --toolbox-green: var(--bt-success);
+    --toolbox-red: var(--bt-danger);
   }
 
   .browser-toolbox-tools-document .browser-toolbox-local-badge {
-    background: #173d35;
+    background: var(--bt-success-soft);
   }
 
   .browser-toolbox-tools-document :is(input, select, textarea),
@@ -1039,17 +1039,17 @@ body.browser-toolbox-tools-document {
 
 /* 独立工具页的视觉收敛：让内容成为主角，减少大面积空白与重复卡片边界。 */
 body.browser-toolbox-tools-document {
-  --toolbox-bg: #f1f5fa;
-  --toolbox-surface: #ffffff;
-  --toolbox-surface-muted: #f8faff;
-  --toolbox-ink: #17233a;
-  --toolbox-muted: #6d7f99;
-  --toolbox-line: #d8e2ef;
-  --toolbox-line-strong: #c2d0e1;
-  --toolbox-blue: #1f5fe7;
-  --toolbox-blue-soft: #edf4ff;
-  --toolbox-green: #14845d;
-  --toolbox-red: #c2415d;
+  --toolbox-bg: var(--bt-bg);
+  --toolbox-surface: var(--bt-surface-card);
+  --toolbox-surface-muted: var(--bt-surface-subtle);
+  --toolbox-ink: var(--bt-text);
+  --toolbox-muted: var(--bt-muted);
+  --toolbox-line: var(--bt-border-subtle);
+  --toolbox-line-strong: var(--bt-border-strong);
+  --toolbox-blue: var(--bt-accent);
+  --toolbox-blue-soft: var(--bt-accent-soft);
+  --toolbox-green: var(--bt-success);
+  --toolbox-red: var(--bt-danger);
   --toolbox-radius-sm: 9px;
   --toolbox-radius-md: 12px;
   --toolbox-radius-lg: 17px;
@@ -1274,23 +1274,23 @@ body.browser-toolbox-tools-document {
 
 @media (prefers-color-scheme: dark) {
   body.browser-toolbox-tools-document {
-    --toolbox-bg: #0f1726;
-    --toolbox-surface: #172235;
-    --toolbox-surface-muted: #202e44;
-    --toolbox-ink: #e8eef8;
-    --toolbox-muted: #a6b5c9;
-    --toolbox-line: #354862;
-    --toolbox-line-strong: #4b607c;
-    --toolbox-blue: #82aaff;
-    --toolbox-blue-soft: #203a66;
-    --toolbox-green: #70d8ab;
+    --toolbox-bg: var(--bt-bg);
+    --toolbox-surface: var(--bt-surface-card);
+    --toolbox-surface-muted: var(--bt-surface-subtle);
+    --toolbox-ink: var(--bt-text);
+    --toolbox-muted: var(--bt-muted);
+    --toolbox-line: var(--bt-border-subtle);
+    --toolbox-line-strong: var(--bt-border-strong);
+    --toolbox-blue: var(--bt-accent);
+    --toolbox-blue-soft: var(--bt-accent-soft);
+    --toolbox-green: var(--bt-success);
   }
 
   .browser-toolbox-tools-document .browser-toolbox-tool-output,
   .browser-toolbox-tools-document .browser-toolbox-codec-output,
   .browser-toolbox-tools-document .browser-toolbox-json-tree,
   .browser-toolbox-tools-document .browser-toolbox-diff-list {
-    background: #121c2d;
+    background: var(--bt-surface-subtle);
   }
 }
 
@@ -2940,20 +2940,19 @@ body.browser-toolbox-tools-document {
 }
 
 .browser-toolbox-tools-document.browser-toolbox-tool-is-json {
-  --toolbox-bg: #f7f9fc;
-  --toolbox-surface: #ffffff;
-  --toolbox-surface-muted: #fbfdff;
-  --toolbox-ink: #172033;
-  --toolbox-muted: #7a8799;
-  --toolbox-line: #dce5ef;
-  --toolbox-line-strong: #c8d5e5;
-  --toolbox-blue: #2563eb;
-  --toolbox-blue-soft: #edf4ff;
-  --toolbox-green: #14845d;
+  --toolbox-bg: var(--bt-bg);
+  --toolbox-surface: var(--bt-surface-card);
+  --toolbox-surface-muted: var(--bt-surface-subtle);
+  --toolbox-ink: var(--bt-text);
+  --toolbox-muted: var(--bt-muted);
+  --toolbox-line: var(--bt-border-subtle);
+  --toolbox-line-strong: var(--bt-border-strong);
+  --toolbox-blue: var(--bt-accent);
+  --toolbox-blue-soft: var(--bt-accent-soft);
+  --toolbox-green: var(--bt-success);
   height: 100vh;
   min-height: 0;
   overflow: hidden;
-  color-scheme: light;
   background: var(--toolbox-bg);
 }
 
@@ -3133,7 +3132,7 @@ body.browser-toolbox-tools-document {
 
 .browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-controls #tool-run:hover,
 .browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-controls #tool-run:focus-visible {
-  background: #1d4ed8;
+  background: var(--bt-accent-strong);
   outline: none;
 }
 
@@ -4078,10 +4077,10 @@ body.browser-toolbox-tools-document {
 
 .browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-button:hover,
 .browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-button:focus-visible {
-  border-color: #1d4ed8;
-  background: #1d4ed8;
+  border-color: var(--bt-accent-strong);
+  background: var(--bt-accent-strong);
   outline: none;
-  box-shadow: 0 0 0 3px rgb(45 103 232 / 18%);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bt-accent) 22%, transparent);
 }
 
 .browser-toolbox-tools-document.browser-toolbox-tool-is-time .browser-toolbox-time-button:active {
@@ -4172,11 +4171,11 @@ body.browser-toolbox-tools-document {
   left: 50%;
   max-width: min(360px, calc(100vw - 32px));
   padding: 12px 18px;
-  border: 1px solid #1d4ed8;
+  border: 1px solid var(--bt-accent-strong);
   border-radius: 12px;
-  background: #2563eb;
-  box-shadow: 0 12px 30px rgb(30 64 175 / 24%);
-  color: #fff;
+  background: var(--bt-accent);
+  box-shadow: 0 12px 30px color-mix(in srgb, var(--bt-text) 20%, transparent);
+  color: var(--bt-accent-contrast);
   font-size: 14px;
   font-weight: 700;
   line-height: 1.35;

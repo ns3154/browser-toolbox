@@ -44,6 +44,7 @@ const newPostFindMode = function () {
 
 class PostFindMode extends SuppressPrintable {
   constructor() {
+    if (globalThis.BrowserToolboxFindControllerInstance) return new BrowserToolboxFindRuntime.PostFindMode();
     const element = document.activeElement;
     super({
       name: "post-find",
@@ -82,6 +83,7 @@ class PostFindMode extends SuppressPrintable {
 
 class FindMode extends Mode {
   constructor(options) {
+    if (globalThis.BrowserToolboxFindControllerInstance) return new BrowserToolboxFindRuntime.FindMode(BrowserToolboxFindControllerInstance, options);
     super();
 
     if (options == null) {
@@ -154,6 +156,7 @@ class FindMode extends Mode {
   }
 
   static updateQuery(query) {
+    if (globalThis.BrowserToolboxFindControllerInstance) return BrowserToolboxFindControllerInstance.updateQuery(query);
     let pattern;
     if (!this.query) {
       this.query = {};
@@ -213,6 +216,7 @@ class FindMode extends Mode {
 
   // set activeRegexIndices near the latest selection
   static updateActiveRegexIndices() {
+    if (globalThis.BrowserToolboxFindControllerInstance) return BrowserToolboxFindControllerInstance.updateActiveRegexIndices();
     let activeNodeIndex = -1;
     const matchedNodes = this.query.regexMatchedNodes;
     const selection = globalThis.getSelection();
@@ -237,6 +241,7 @@ class FindMode extends Mode {
   }
 
   static getQueryFromRegexMatches() {
+    if (globalThis.BrowserToolboxFindControllerInstance) return BrowserToolboxFindControllerInstance.getQueryFromRegexMatches();
     // find()ing an empty query always returns false
     if (!this.query.regexMatches?.length) {
       return "";
@@ -246,6 +251,7 @@ class FindMode extends Mode {
   }
 
   static getNextQueryFromRegexMatches(backwards) {
+    if (globalThis.BrowserToolboxFindControllerInstance) return BrowserToolboxFindControllerInstance.getNextQueryFromRegexMatches(backwards);
     // find()ing an empty query always returns false
     if (!this.query.regexMatches?.length) {
       return "";
@@ -273,6 +279,7 @@ class FindMode extends Mode {
 
   // Returns null if no search has been performed yet.
   static getQuery(backwards) {
+    if (globalThis.BrowserToolboxFindControllerInstance) return BrowserToolboxFindControllerInstance.getQuery(backwards);
     if (!this.query) return;
     // check if the query has been changed by a script in another frame
     const mostRecentQuery = FindModeHistory.getQuery();
@@ -284,11 +291,13 @@ class FindMode extends Mode {
   }
 
   static saveQuery() {
+    if (globalThis.BrowserToolboxFindControllerInstance) return BrowserToolboxFindControllerInstance.saveQuery();
     FindModeHistory.saveQuery(this.query.rawQuery);
   }
 
   // :options is an optional dict. valid parameters are 'caseSensitive' and 'backwards'.
   static execute(query, options) {
+    if (globalThis.BrowserToolboxFindControllerInstance) return BrowserToolboxFindControllerInstance.execute(query, options);
     let result = null;
     options = Object.assign({
       backwards: false,
@@ -345,6 +354,7 @@ class FindMode extends Mode {
   // The user has found what they're looking for and is finished searching. We enter insert mode, if
   // possible.
   static handleEscape() {
+    if (globalThis.BrowserToolboxFindControllerInstance) return BrowserToolboxFindControllerInstance.handleEscape();
     document.body.classList.remove("vimium-find-mode");
     // Removing the class does not re-color existing selections. we recreate the current selection
     // so it reverts back to the default color.
@@ -359,12 +369,14 @@ class FindMode extends Mode {
 
   // Save the query so the user can do further searches with it.
   static handleEnter() {
+    if (globalThis.BrowserToolboxFindControllerInstance) return BrowserToolboxFindControllerInstance.handleEnter();
     focusFoundLink();
     document.body.classList.add("vimium-find-mode");
     return FindMode.saveQuery();
   }
 
   static findNext(backwards) {
+    if (globalThis.BrowserToolboxFindControllerInstance) return BrowserToolboxFindControllerInstance.findNext(backwards);
     // Bail out if we don't have any query text.
     const nextQuery = FindMode.getQuery(backwards);
     if (!nextQuery) {

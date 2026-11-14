@@ -79,11 +79,21 @@
     installListener(registry) {
       if (this.listenerInstalled || !chrome.storage?.onChanged?.addListener) return;
       this.listenerInstalled = true;
-      chrome.storage.onChanged.addListener(async (changes, area) => {
+      const listener = async (changes, area) => {
+        if (
+          globalThis.BrowserToolboxConfigurationClientInstance?.enabled && area === "local" &&
+          changes.browserToolboxKeyboardMigrationState?.newValue?.phase === "COMMITTED"
+        ) {
+          this.scheduleReload(registry);
+        }
         if (
           (area === "sync" || area === "local") &&
           (changes[SETTINGS_KEY] || changes[LEGACY_SETTINGS_KEY])
         ) {
+          if (globalThis.BrowserToolboxConfigurationClientInstance?.enabled) {
+            this.scheduleReload(registry);
+            return;
+          }
           const canonicalChange = changes[SETTINGS_KEY];
           const legacyChange = changes[LEGACY_SETTINGS_KEY];
           const change = canonicalChange || legacyChange;
@@ -117,6 +127,11 @@
             this.lastError = error;
           }
         }
+      };
+      chrome.storage.onChanged.addListener(listener);
+      globalThis.BrowserToolboxDocumentResources?.add(() => {
+        chrome.storage.onChanged.removeListener(listener);
+        this.listenerInstalled = false;
       });
     }
 
@@ -158,9 +173,13 @@
       return this.settings;
     }
 
-    // 页面只需要读取语言偏好时，由仓库统一处理规范键和旧键的兼容优先级。
+    // 页面只需要读取语言或主题偏好时，由仓库统一处理规范键和旧键的兼容优先级。
     async getStoredLocale() {
       return this.storage.getStoredLocale();
+    }
+
+    async getStoredTheme() {
+      return this.storage.getStoredTheme();
     }
 
     async readLocalAsset(id) {
@@ -229,6 +248,17 @@
       if (!validation.ok) throw new Error(validation.errors.join("\n"));
       const previous = this.settings;
       try {
+        const configuration = globalThis.BrowserToolboxConfigurationClientInstance;
+        if (this.storage.sync === globalThis.chrome?.storage?.sync && configuration?.enabled) {
+          const result = await configuration.commit({
+            toolbox: validation.value,
+            baseline: { toolbox: previous },
+          });
+          this.settings = result.toolboxSource.value;
+          this.storageArea = result.toolboxSource.area;
+          this.emit();
+          return this.getSettings();
+        }
         await this.storage.writeSettings(validation.value);
       } catch (error) {
         this.settings = previous;

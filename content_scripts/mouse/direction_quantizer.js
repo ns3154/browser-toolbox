@@ -15,9 +15,20 @@
       ]),
     ),
   );
-  function quantize(dx, dy, _mode = "4-way", previous = null) {
+  function quantize(dx, dy, _mode = "4-way", previous = null, turnHysteresisDegrees = 0) {
     if (dx === 0 && dy === 0) return DIRECTIONS.includes(previous) ? previous : null;
-    // 保留 mode 参数以兼容旧调用方，但所有新轨迹统一按主轴归入四个直线方向。
+    // 保留 mode 参数以兼容旧调用方，所有新轨迹按四向主轴量化，并在同向 45° 附近施加角度迟滞以抑制抖动。
+    const hysteresis = Number.isFinite(turnHysteresisDegrees)
+      ? Math.max(0, Math.min(44, turnHysteresisDegrees))
+      : 0;
+    if (hysteresis > 0 && DIRECTIONS.includes(previous)) {
+      const ratio = Math.tan(((45 + hysteresis / 2) * Math.PI) / 180);
+      if ((previous === "R" && dx > 0) || (previous === "L" && dx < 0)) {
+        if (Math.abs(dy) <= Math.abs(dx) * ratio) return previous;
+      } else if ((previous === "D" && dy > 0) || (previous === "U" && dy < 0)) {
+        if (Math.abs(dx) <= Math.abs(dy) * ratio) return previous;
+      }
+    }
     return Math.abs(dx) >= Math.abs(dy) ? (dx < 0 ? "L" : "R") : (dy < 0 ? "U" : "D");
   }
 

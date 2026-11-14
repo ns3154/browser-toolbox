@@ -185,6 +185,43 @@ const checkVisibility = function (element) {
 // CoreScroller contains the core function (scroll) and logic for relative scrolls. All scrolls are
 // ultimately translated to relative scrolls. CoreScroller is not exported.
 const CoreScroller = {
+  animationFrames: new Set(),
+  cancelListeners: new Set(),
+  activeAnimations: new Set(),
+  idleListeners: new Set(),
+  onIdle(callback) {
+    if (!this.activeAnimations.size) {
+      callback(true);
+      return () => {};
+    }
+    this.idleListeners.add(callback);
+    return () => this.idleListeners.delete(callback);
+  },
+  notifyIdle(success) {
+    for (const callback of [...this.idleListeners]) {
+      this.idleListeners.delete(callback);
+      callback(success);
+    }
+  },
+  scheduleAnimation(callback) {
+    const id = requestAnimationFrame((timestamp) => {
+      this.animationFrames.delete(id);
+      callback(timestamp);
+    });
+    this.animationFrames.add(id);
+    return id;
+  },
+
+  destroy() {
+    for (const id of this.animationFrames) cancelAnimationFrame(id);
+    this.animationFrames.clear();
+    this.activeAnimations.clear();
+    this.notifyIdle(false);
+    for (const id of this.cancelListeners) handlerStack.remove(id);
+    this.cancelListeners.clear();
+    this.keyDownKey = this.lastEvent = null;
+    this.time++;
+  },
   init() {
     this.time = 0;
     this.lastEvent = this.keyDownKey = null;
@@ -197,7 +234,7 @@ const CoreScroller = {
     // event for every keydown, in which case tapping "j" scrolls indefinitely. This appears to be a
     // Chrome/OS/XOrg bug of some kind. See #1549.
     // TODO(philc): I believe some of these returns are unnecessary.
-    return handlerStack.push({
+    const id = handlerStack.push({
       _name: "scroller/track-key-status",
       keydown: (event) => {
         return handlerStack.alwaysContinueBubbling(() => {
@@ -220,6 +257,8 @@ const CoreScroller = {
         });
       },
     });
+    this.cancelListeners.add(id);
+    return id;
   },
 
   // Return true if CoreScroller would not initiate a new scroll right now.
@@ -275,13 +314,21 @@ const CoreScroller = {
     let calibration = 1.0;
     let previousTimestamp = null;
     const cancelEventListener = this.installCancelEventListener();
+    const animation = {};
+    this.activeAnimations.add(animation);
+    const finish = (success) => {
+      handlerStack.remove(cancelEventListener);
+      this.cancelListeners.delete(cancelEventListener);
+      if (!this.activeAnimations.delete(animation)) return;
+      if (!success || !this.activeAnimations.size) this.notifyIdle(success);
+    };
 
-    const animate = (timestamp) => {
+    const animateFrame = (timestamp) => {
       if (previousTimestamp == null) {
         previousTimestamp = timestamp;
       }
       if (timestamp === previousTimestamp) {
-        return requestAnimationFrame(animate);
+        return this.scheduleAnimation(animate);
       }
 
       // The elapsed time is typically about 16ms.
@@ -313,11 +360,21 @@ const CoreScroller = {
 
       if (delta && performScroll(element, direction, sign * delta)) {
         totalDelta += delta;
-        return requestAnimationFrame(animate);
+        return this.scheduleAnimation(animate);
       } else {
         // We're done.
-        handlerStack.remove(cancelEventListener);
-        return checkVisibility(element);
+        const result = checkVisibility(element);
+        finish(true);
+        return result;
+      }
+    };
+    const animate = (timestamp) => {
+      if (!this.activeAnimations.has(animation)) return;
+      try {
+        return animateFrame(timestamp);
+      } catch (failure) {
+        finish(false);
+        throw failure;
       }
     };
 
@@ -328,13 +385,36 @@ const CoreScroller = {
     }
 
     // Start scrolling.
-    requestAnimationFrame(animate);
+    this.scheduleAnimation(animate);
   },
 };
 
 // Scroller contains the two main scroll functions which are used by clients.
 const Scroller = {
+  // 等待兼容滚动的所有动画结束，不改变原有滚动或按键行为。
+  isAnimating() {
+    return CoreScroller.activeAnimations.size > 0;
+  },
+  onIdle(callback) {
+    return CoreScroller.onIdle(callback);
+  },
+  // 提示选择滚动区属于模块间交接，不产生第二个全局事件监听器。
+  activateElement(element) {
+    const controller = globalThis.BrowserToolboxScrollControllerInstance;
+    return controller
+      ? controller.track(Utils.isFirefox() ? "click" : "DOMActivate", { target: element })
+      : handlerStack.bubbleEvent(Utils.isFirefox() ? "click" : "DOMActivate", { target: element });
+  },
+  destroy() {
+    if (globalThis.BrowserToolboxScrollControllerInstance) return BrowserToolboxScrollControllerInstance.destroy();
+    CoreScroller.destroy();
+    if (this.activeElementHandler) handlerStack.remove(this.activeElementHandler);
+    this.activeElementHandler = null;
+    this.reset();
+  },
   init() {
+    if (globalThis.BrowserToolboxScrollControllerInstance) return BrowserToolboxScrollControllerInstance.init();
+    this.destroy();
     const handler = { _name: "scroller/active-element" };
     // Only Chrome has a DOMActivate event. On Firefox, we must listen for click. See #3287.
     const eventName = Utils.isFirefox() ? "click" : "DOMActivate";
@@ -347,12 +427,13 @@ const Scroller = {
         const path = event.deepPath || event.path;
         return activatedElement = path ? path[0] : event.target;
       });
-    handlerStack.push(handler);
+    this.activeElementHandler = handlerStack.push(handler);
     CoreScroller.init();
     this.reset();
   },
 
   reset() {
+    if (globalThis.BrowserToolboxScrollControllerInstance) return BrowserToolboxScrollControllerInstance.reset();
     activatedElement = null;
   },
 
@@ -360,6 +441,7 @@ const Scroller = {
   // :factor is needed because :amount can take on string values, which scrollBy converts to element
   // dimensions.
   scrollBy(direction, amount, factor, continuous) {
+    if (globalThis.BrowserToolboxScrollControllerInstance) return BrowserToolboxScrollControllerInstance.scrollBy(direction, amount, factor, continuous);
     // if this is called before domReady, just use the window scroll function
     if (factor == null) {
       factor = 1;
@@ -394,6 +476,7 @@ const Scroller = {
   },
 
   scrollTo(direction, pos) {
+    if (globalThis.BrowserToolboxScrollControllerInstance) return BrowserToolboxScrollControllerInstance.scrollTo(direction, pos);
     if (!activatedElement) {
       activatedElement = (getScrollingElement() && firstScrollableElement()) ||
         getScrollingElement();
@@ -410,6 +493,7 @@ const Scroller = {
 
   // Is element scrollable and not the activated element?
   isScrollableElement(element) {
+    if (globalThis.BrowserToolboxScrollControllerInstance) return BrowserToolboxScrollControllerInstance.isScrollableElement(element);
     if (!activatedElement) {
       activatedElement = (getScrollingElement() && firstScrollableElement()) ||
         getScrollingElement();
@@ -420,6 +504,7 @@ const Scroller = {
   // Scroll the top, bottom, left and right of element into view. The is used by visual mode to
   // ensure the focus remains visible.
   scrollIntoView(element) {
+    if (globalThis.BrowserToolboxScrollControllerInstance) return BrowserToolboxScrollControllerInstance.scrollIntoView(element);
     if (!activatedElement) {
       activatedElement = getScrollingElement() && firstScrollableElement();
     }

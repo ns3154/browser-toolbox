@@ -17,6 +17,29 @@
   const LEGACY_EXPORT_FORMAT = "open-key-mouse-settings";
   const CURRENT_EXPORT_FORMAT_VERSION = 1;
   const EXPORT_FORMATS = Object.freeze([EXPORT_FORMAT, LEGACY_EXPORT_FORMAT]);
+  const KEYBOARD_EXPORT_FIELDS = Object.freeze([
+    "scrollStepSize",
+    "smoothScroll",
+    "keyMappings",
+    "linkHintCharacters",
+    "linkHintNumbers",
+    "filterLinkHints",
+    "hideHud",
+    "userDefinedLinkHintCss",
+    "exclusionRules",
+    "previousPatterns",
+    "nextPatterns",
+    "searchUrl",
+    "searchEngines",
+    "newTabDestination",
+    "newTabCustomUrl",
+    "openVomnibarOnNewTabPage",
+    "grabBackFocus",
+    "regexFindMode",
+    "waitForEnterForFilteredHints",
+    "helpDialog_showAdvancedCommands",
+    "ignoreKeyboardLayout",
+  ]);
   const MAX_UNKNOWN_FIELDS = 100;
   const CARDINAL_DIRECTIONS = new Set(["U", "D", "L", "R"]);
 
@@ -40,7 +63,7 @@
     "gestureBindings",
   ]);
   const SECTION_KEYS = Object.freeze({
-    general: new Set(["enabled", "showHud", "language", "browserSyncEnabled"]),
+    general: new Set(["enabled", "showHud", "language", "theme", "browserSyncEnabled"]),
     keyboard: new Set(["enabled", "keyMappings"]),
     mouse: new Set([
       "enabled",
@@ -143,6 +166,7 @@
   ]);
   const EXCLUSION_RULE_KEYS = new Set(["pattern", "passKeys"]);
   const EXPORT_WRAPPER_KEYS = new Set([
+    "keyboardSettings",
     "format",
     "formatVersion",
     "exportedAt",
@@ -268,11 +292,26 @@
   function normalizeToolIds(ids, defaults, max, source, surface) {
     const registry = globalThis.BrowserToolboxToolRegistry;
     const fallbackSources = new Map([
-      ["json.format", { sources: ["action", "selection", "page", "command"], surfaces: ["popup", "contextMenu"] }],
-      ["config.convert", { sources: ["action", "selection", "command"], surfaces: ["popup", "contextMenu"] }],
-      ["text.diff", { sources: ["action", "selection", "command"], surfaces: ["popup", "contextMenu"] }],
-      ["codec.transform", { sources: ["action", "selection", "command"], surfaces: ["popup", "contextMenu"] }],
-      ["time.convert", { sources: ["action", "selection", "command"], surfaces: ["popup", "contextMenu"] }],
+      ["json.format", {
+        sources: ["action", "selection", "page", "command"],
+        surfaces: ["popup", "contextMenu"],
+      }],
+      ["config.convert", {
+        sources: ["action", "selection", "command"],
+        surfaces: ["popup", "contextMenu"],
+      }],
+      ["text.diff", {
+        sources: ["action", "selection", "command"],
+        surfaces: ["popup", "contextMenu"],
+      }],
+      ["codec.transform", {
+        sources: ["action", "selection", "command"],
+        surfaces: ["popup", "contextMenu"],
+      }],
+      ["time.convert", {
+        sources: ["action", "selection", "command"],
+        surfaces: ["popup", "contextMenu"],
+      }],
       ["id.generate", { sources: ["action", "command"], surfaces: ["popup"] }],
       ["password.generate", { sources: ["action", "command"], surfaces: ["popup"] }],
       ["table.convert", { sources: ["action", "selection", "command"], surfaces: ["contextMenu"] }],
@@ -300,7 +339,9 @@
       ? inputTools
       : {};
     const legacyPinned = Array.isArray(source.actionToolIds) ? source.actionToolIds : null;
-    const legacyContext = Array.isArray(source.contextMenuToolIds) ? source.contextMenuToolIds : null;
+    const legacyContext = Array.isArray(source.contextMenuToolIds)
+      ? source.contextMenuToolIds
+      : null;
     const contextSource = source.contextMenu && typeof source.contextMenu === "object" &&
         !Array.isArray(source.contextMenu)
       ? source.contextMenu
@@ -318,8 +359,10 @@
       "action",
       "popup",
     );
-    if (!next.tools.contextMenu || typeof next.tools.contextMenu !== "object" ||
-      Array.isArray(next.tools.contextMenu)) {
+    if (
+      !next.tools.contextMenu || typeof next.tools.contextMenu !== "object" ||
+      Array.isArray(next.tools.contextMenu)
+    ) {
       next.tools.contextMenu = schema.clone(defaults.contextMenu);
     }
     next.tools.contextMenu.enabled = typeof contextSource.enabled === "boolean"
@@ -333,20 +376,31 @@
       "contextMenu",
     );
     const documentFormatter = source.documentFormatter;
-    if (!next.tools.documentFormatter || typeof next.tools.documentFormatter !== "object" ||
-      Array.isArray(next.tools.documentFormatter)) {
+    if (
+      !next.tools.documentFormatter || typeof next.tools.documentFormatter !== "object" ||
+      Array.isArray(next.tools.documentFormatter)
+    ) {
       next.tools.documentFormatter = schema.clone(defaults.documentFormatter);
     }
-    if (documentFormatter && typeof documentFormatter === "object" && !Array.isArray(documentFormatter)) {
+    if (
+      documentFormatter && typeof documentFormatter === "object" &&
+      !Array.isArray(documentFormatter)
+    ) {
       if (typeof documentFormatter.enabled === "boolean") {
         next.tools.documentFormatter.enabled = documentFormatter.enabled;
       }
-      if (documentFormatter.autoFormat && typeof documentFormatter.autoFormat === "object" &&
-        !Array.isArray(documentFormatter.autoFormat)) {
-        if (!next.tools.documentFormatter.autoFormat ||
+      if (
+        documentFormatter.autoFormat && typeof documentFormatter.autoFormat === "object" &&
+        !Array.isArray(documentFormatter.autoFormat)
+      ) {
+        if (
+          !next.tools.documentFormatter.autoFormat ||
           typeof next.tools.documentFormatter.autoFormat !== "object" ||
-          Array.isArray(next.tools.documentFormatter.autoFormat)) {
-          next.tools.documentFormatter.autoFormat = schema.clone(defaults.documentFormatter.autoFormat);
+          Array.isArray(next.tools.documentFormatter.autoFormat)
+        ) {
+          next.tools.documentFormatter.autoFormat = schema.clone(
+            defaults.documentFormatter.autoFormat,
+          );
         }
         for (const format of Object.keys(next.tools.documentFormatter.autoFormat)) {
           if (typeof documentFormatter.autoFormat[format] === "boolean") {
@@ -358,13 +412,18 @@
         Number.isInteger(documentFormatter.maxAutoBytes) &&
         documentFormatter.maxAutoBytes >= 0 &&
         documentFormatter.maxAutoBytes <= 10 * 1024 * 1024
-        ) {
+      ) {
         next.tools.documentFormatter.maxAutoBytes = documentFormatter.maxAutoBytes;
       }
-      if (documentFormatter.json && typeof documentFormatter.json === "object" &&
-        !Array.isArray(documentFormatter.json)) {
-        if (!next.tools.documentFormatter.json || typeof next.tools.documentFormatter.json !== "object" ||
-          Array.isArray(next.tools.documentFormatter.json)) {
+      if (
+        documentFormatter.json && typeof documentFormatter.json === "object" &&
+        !Array.isArray(documentFormatter.json)
+      ) {
+        if (
+          !next.tools.documentFormatter.json ||
+          typeof next.tools.documentFormatter.json !== "object" ||
+          Array.isArray(next.tools.documentFormatter.json)
+        ) {
           next.tools.documentFormatter.json = schema.clone(defaults.documentFormatter.json);
         }
         if (["original", "ascending", "descending"].includes(documentFormatter.json.defaultSort)) {
@@ -375,7 +434,10 @@
           (Number.isInteger(documentFormatter.json.defaultCollapseDepth) &&
             documentFormatter.json.defaultCollapseDepth >= 0 &&
             documentFormatter.json.defaultCollapseDepth <= 96)
-        ) next.tools.documentFormatter.json.defaultCollapseDepth = documentFormatter.json.defaultCollapseDepth;
+        ) {
+          next.tools.documentFormatter.json.defaultCollapseDepth =
+            documentFormatter.json.defaultCollapseDepth;
+        }
       }
     }
     delete next.tools.actionToolIds;
@@ -534,8 +596,11 @@
    * @param {Object} [options] 导出元数据。
    * @returns {Object} 导出对象。
    */
-  function createExportPayload(settings, { extensionVersion = "", exportedAt } = {}) {
-    return {
+  function createExportPayload(
+    settings,
+    { extensionVersion = "", exportedAt, keyboardSettings } = {},
+  ) {
+    const payload = {
       format: EXPORT_FORMAT,
       formatVersion: CURRENT_EXPORT_FORMAT_VERSION,
       exportedAt: exportedAt || new Date().toISOString(),
@@ -545,6 +610,17 @@
       // 本地指针二进制资源不进入导出文件，避免悬空引用和意外跨设备传播。
       localAssets: [],
     };
+    if (keyboardSettings) {
+      // 逻辑字段跨版本导出；索引、分片、迁移记录、Mark 和 session 均不进入文件。
+      payload.keyboardSettings = {
+        formatVersion: 1,
+        values: Object.fromEntries(
+          KEYBOARD_EXPORT_FIELDS.filter((key) => Object.hasOwn(keyboardSettings, key))
+            .map((key) => [key, schema.clone(keyboardSettings[key])]),
+        ),
+      };
+    }
+    return payload;
   }
 
   /**
@@ -559,12 +635,31 @@
     if (formatVersion !== CURRENT_EXPORT_FORMAT_VERSION) {
       return { ok: false, code: "unsupported-format-version" };
     }
+    if (
+      payload.keyboardSettings !== undefined &&
+      (payload.keyboardSettings?.formatVersion !== 1 || !isRecord(payload.keyboardSettings.values))
+    ) {
+      return { ok: false, code: "unsupported-keyboard-format" };
+    }
+    const report = collectExportUnknownFields(payload);
+    const keyboardSettings = payload.keyboardSettings
+      ? Object.fromEntries(
+        KEYBOARD_EXPORT_FIELDS.filter((key) => Object.hasOwn(payload.keyboardSettings.values, key))
+          .map((key) => [key, schema.clone(payload.keyboardSettings.values[key])]),
+      )
+      : undefined;
+    for (const key of Object.keys(payload.keyboardSettings?.values || {})) {
+      if (!KEYBOARD_EXPORT_FIELDS.includes(key)) {
+        report.ignored.push(`keyboardSettings.values.${key}`);
+      }
+    }
     return {
       ok: true,
       format: payload.format,
       formatVersion,
       settings: schema.clone(payload.settings),
-      ...collectExportUnknownFields(payload),
+      ...report,
+      keyboardSettings,
     };
   }
 
@@ -590,6 +685,11 @@
       else throw new Error(`Unsupported settings schema: ${version}`);
       version = current.schemaVersion;
     }
+    // 主题字段属于新增外观预设；迁移旧版本或同版本备份时补齐默认值，不触发额外版本号升级。
+    if (!isRecord(current.general)) current.general = {};
+    if (current.general.theme == null) {
+      current.general.theme = schema.DEFAULT_SETTINGS.general.theme;
+    }
     normalizeToolSettings(current, current.tools);
     return migrateCommandNamespaces(current);
   }
@@ -612,6 +712,7 @@
     LEGACY_EXPORT_FORMAT,
     CURRENT_EXPORT_FORMAT_VERSION,
     EXPORT_FORMATS,
+    KEYBOARD_EXPORT_FIELDS,
     migrate0To1,
     migrate1To2,
     migrate2To3,

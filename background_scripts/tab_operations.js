@@ -9,6 +9,7 @@ import "../lib/url_utils.js";
 // search engine. If the URL is a javascript: snippet, execute it in the current tab.
 export async function openUrlInCurrentTab(request) {
   const urlStr = await UrlUtils.convertToUrl(request.url);
+  if (request.executionGuard) await request.executionGuard();
   if (urlStr == null) {
     // The requested destination is not a URL, so treat it like a search query.
     chrome.search.query({ text: request.url });
@@ -87,8 +88,10 @@ export async function openUrlInNewTab(request) {
     // which we don't want. To work around that, first create an empty page. This is not needed in
     // Firefox. And in fact, firefox doesn't support a data:text URL to the chrome.tab.create API.
     tabConfig.url = bgUtils.isFirefox() ? null : "data:text/html,<html></html>";
+    if (request.executionGuard) await request.executionGuard();
     newTab = await chrome.tabs.create(tabConfig);
     const query = request.url;
+    if (request.executionGuard) await request.executionGuard();
     await chrome.search.query({ text: query, tabId: newTab.id });
   } else {
     // The requested destination is a regular URL.
@@ -96,6 +99,7 @@ export async function openUrlInNewTab(request) {
     if (urlStr != UrlUtils.chromeNewTabUrl) {
       tabConfig.url = urlStr;
     }
+    if (request.executionGuard) await request.executionGuard();
     newTab = await chrome.tabs.create(tabConfig);
   }
   return newTab;

@@ -1,0 +1,1138 @@
+{
+  "formatVersion": 1,
+  "upstreamCommit": "eb737abd",
+  "baselineCommit": "6b9508f40341671f7fcff5055893aa446a6eb91b",
+  "defaultKeyMappings": {
+    "j": "scrollDown",
+    "k": "scrollUp",
+    "h": "scrollLeft",
+    "l": "scrollRight",
+    "gg": "scrollToTop",
+    "G": "scrollToBottom",
+    "zH": "scrollToLeft",
+    "zL": "scrollToRight",
+    "<c-e>": "scrollDown",
+    "<c-y>": "scrollUp",
+    "d": "scrollPageDown",
+    "u": "scrollPageUp",
+    "r": "reload",
+    "R": "reload hard",
+    "yy": "copyCurrentUrl",
+    "p": "openCopiedUrlInCurrentTab",
+    "P": "openCopiedUrlInNewTab",
+    "gi": "focusInput",
+    "[[": "goPrevious",
+    "]]": "goNext",
+    "gf": "nextFrame",
+    "gF": "mainFrame",
+    "gu": "goUp",
+    "gU": "goToRoot",
+    "i": "enterInsertMode",
+    "v": "enterVisualMode",
+    "V": "enterVisualLineMode",
+    "f": "LinkHints.activateMode",
+    "F": "LinkHints.activateModeToOpenInNewTab",
+    "<a-f>": "LinkHints.activateModeWithQueue",
+    "yf": "LinkHints.activateModeToCopyLinkUrl",
+    "/": "enterFindMode",
+    "n": "performFind",
+    "N": "performBackwardsFind",
+    "*": "findSelected",
+    "#": "findSelectedBackwards",
+    "o": "Vomnibar.activate",
+    "O": "Vomnibar.activateInNewTab",
+    "T": "Vomnibar.activateTabSelection",
+    "b": "Vomnibar.activateBookmarks",
+    "B": "Vomnibar.activateBookmarksInNewTab",
+    "ge": "Vomnibar.activateEditUrl",
+    "gE": "Vomnibar.activateEditUrlInNewTab",
+    ":": "BrowserToolbox.openCommandCenter",
+    "H": "goBack",
+    "L": "goForward",
+    "K": "nextTab",
+    "J": "previousTab",
+    "gt": "nextTab",
+    "gT": "previousTab",
+    "^": "visitPreviousTab",
+    "<<": "moveTabLeft",
+    ">>": "moveTabRight",
+    "g0": "firstTab",
+    "g$": "lastTab",
+    "W": "moveTabToNewWindow",
+    "t": "createTab",
+    "yt": "duplicateTab",
+    "x": "removeTab",
+    "X": "restoreTab",
+    "<a-p>": "togglePinTab",
+    "<a-m>": "toggleMuteTab",
+    "zi": "zoomIn",
+    "zo": "zoomOut",
+    "z0": "zoomReset",
+    "m": "Marks.activateCreateMode",
+    "`": "Marks.activateGotoMode",
+    "?": "showHelp",
+    "gs": "toggleViewSource"
+  },
+  "commands": [
+    {
+      "name": "scrollDown",
+      "desc": "Scroll down",
+      "group": "navigation"
+    },
+    {
+      "name": "scrollUp",
+      "desc": "Scroll up",
+      "group": "navigation"
+    },
+    {
+      "name": "scrollToTop",
+      "desc": "Scroll to the top of the page",
+      "group": "navigation"
+    },
+    {
+      "name": "scrollToBottom",
+      "desc": "Scroll to the bottom of the page",
+      "group": "navigation"
+    },
+    {
+      "name": "scrollPageDown",
+      "desc": "Scroll a half page down",
+      "group": "navigation"
+    },
+    {
+      "name": "scrollPageUp",
+      "desc": "Scroll a half page up",
+      "group": "navigation"
+    },
+    {
+      "name": "scrollFullPageDown",
+      "desc": "Scroll a full page down",
+      "group": "navigation"
+    },
+    {
+      "name": "scrollFullPageUp",
+      "desc": "Scroll a full page up",
+      "group": "navigation"
+    },
+    {
+      "name": "scrollLeft",
+      "desc": "Scroll left",
+      "group": "navigation"
+    },
+    {
+      "name": "scrollRight",
+      "desc": "Scroll right",
+      "group": "navigation",
+      "advanced": true
+    },
+    {
+      "name": "scrollToLeft",
+      "desc": "Scroll all the way to the left",
+      "group": "navigation",
+      "advanced": true
+    },
+    {
+      "name": "scrollToRight",
+      "desc": "Scroll all the way to the right",
+      "group": "navigation"
+    },
+    {
+      "name": "reload",
+      "desc": "Reload the page",
+      "group": "navigation",
+      "background": true,
+      "options": {
+        "hard": "Perform a hard reload, forcing the browser to bypass its cache."
+      },
+      "optionSchema": {
+        "hard": {
+          "type": "boolean"
+        }
+      }
+    },
+    {
+      "name": "copyCurrentUrl",
+      "desc": "Copy the current URL to the clipboard",
+      "group": "navigation",
+      "noRepeat": true
+    },
+    {
+      "name": "openCopiedUrlInCurrentTab",
+      "desc": "Open the clipboard's URL in the current tab",
+      "group": "navigation",
+      "noRepeat": true
+    },
+    {
+      "name": "openCopiedUrlInNewTab",
+      "desc": "Open the clipboard's URL in a new tab",
+      "group": "navigation",
+      "noRepeat": true,
+      "options": {
+        "position": "Where to place the tab in the tab bar. One of `start`, `before`, `after`, `end`. `after` is the default."
+      }
+    },
+    {
+      "name": "goUp",
+      "desc": "Go up the URL hierarchy",
+      "group": "navigation",
+      "advanced": true
+    },
+    {
+      "name": "goToRoot",
+      "desc": "Go to the root of current URL hierarchy",
+      "group": "navigation",
+      "advanced": true
+    },
+    {
+      "name": "enterInsertMode",
+      "desc": "Enter insert mode",
+      "group": "navigation",
+      "noRepeat": true
+    },
+    {
+      "name": "enterVisualMode",
+      "desc": "Enter visual mode",
+      "group": "navigation",
+      "noRepeat": true
+    },
+    {
+      "name": "enterVisualLineMode",
+      "desc": "Enter visual line mode",
+      "group": "navigation",
+      "advanced": true,
+      "noRepeat": true
+    },
+    {
+      "name": "passNextKey",
+      "desc": "Pass the next key to the page",
+      "options": {
+        "normal": "Optional. Enter Vimium's normal mode, and ignore any defined pass keys."
+      },
+      "group": "navigation",
+      "advanced": true
+    },
+    {
+      "name": "focusInput",
+      "desc": "Focus the first text input on the page",
+      "group": "navigation"
+    },
+    {
+      "name": "LinkHints.activateMode",
+      "desc": "Open a link in the current tab",
+      "options": {
+        "action": "one of `hover`, `focus`, `copy-text`. When a link is selected, instead of clicking on the link, perform the specified action."
+      },
+      "group": "navigation",
+      "advanced": true
+    },
+    {
+      "name": "LinkHints.activateModeToOpenInNewTab",
+      "desc": "Open a link in a new tab",
+      "group": "navigation"
+    },
+    {
+      "name": "LinkHints.activateModeToOpenInNewForegroundTab",
+      "desc": "Open a link in a new tab & switch to it",
+      "group": "navigation"
+    },
+    {
+      "name": "LinkHints.activateModeWithQueue",
+      "desc": "Open multiple links in a new tab",
+      "group": "navigation",
+      "advanced": true,
+      "noRepeat": true
+    },
+    {
+      "name": "LinkHints.activateModeToDownloadLink",
+      "desc": "Download link url",
+      "group": "navigation",
+      "advanced": true
+    },
+    {
+      "name": "LinkHints.activateModeToOpenIncognito",
+      "desc": "Open a link in incognito window",
+      "group": "navigation",
+      "advanced": true
+    },
+    {
+      "name": "LinkHints.activateModeToCopyLinkUrl",
+      "desc": "Copy a link URL to the clipboard",
+      "group": "navigation",
+      "advanced": true
+    },
+    {
+      "name": "goPrevious",
+      "desc": "Follow the link labeled previous or <",
+      "group": "navigation",
+      "advanced": true,
+      "noRepeat": true
+    },
+    {
+      "name": "goNext",
+      "desc": "Follow the link labeled next or >",
+      "group": "navigation",
+      "advanced": true,
+      "noRepeat": true
+    },
+    {
+      "name": "nextFrame",
+      "desc": "Select the next frame on the page",
+      "group": "navigation",
+      "background": true
+    },
+    {
+      "name": "mainFrame",
+      "desc": "Select the page's main/top frame",
+      "group": "navigation",
+      "topFrame": true,
+      "noRepeat": true
+    },
+    {
+      "name": "Marks.activateCreateMode",
+      "desc": "Create a new mark",
+      "details": "Do this by typing the key bound to this command, and then a letter. This will set a mark bound to that letter. Lowercase letters are local marks and uppercase letters are global marks.",
+      "options": {
+        "swap": "Swap global and local marks. This option exists because in a browser, global marks are generally more useful than local marks, and so it may be desirable to make lowercase letters represent global marks rather than local marks."
+      },
+      "group": "navigation",
+      "advanced": true,
+      "noRepeat": true
+    },
+    {
+      "name": "Marks.activateGotoMode",
+      "desc": "Jump to a mark",
+      "options": {
+        "swap": "Swap global and local marks. This option exists because in a browser, global marks are generally more useful than local marks, and so it may be desirable to make lowercase letters represent global marks rather than local marks."
+      },
+      "group": "navigation",
+      "advanced": true,
+      "noRepeat": true
+    },
+    {
+      "name": "Vomnibar.activate",
+      "desc": "Open URL, bookmark or history entry",
+      "options": {
+        "query": "The text to prefill the Vomnibar with.",
+        "keyword": "The keyword of a search engine defined in the \"Custom search engines\" section of the Vimium Options page. The Vomnibar will be scoped to use that search engine."
+      },
+      "group": "vomnibar",
+      "topFrame": true
+    },
+    {
+      "name": "Vomnibar.activateInNewTab",
+      "desc": "Open URL, bookmark or history entry in a new tab",
+      "group": "vomnibar",
+      "options": {
+        "query": "The text to prefill the Vomnibar with.",
+        "keyword": "The keyword of a search engine defined in the \"Custom search engines\" section of the Vimium Options page. The Vomnibar will be scoped to use that search engine."
+      },
+      "topFrame": true
+    },
+    {
+      "name": "Vomnibar.activateBookmarks",
+      "desc": "Open a bookmark",
+      "group": "vomnibar",
+      "options": {
+        "query": "The text to prefill the Vomnibar with."
+      },
+      "topFrame": true
+    },
+    {
+      "name": "Vomnibar.activateBookmarksInNewTab",
+      "desc": "Open a bookmark in a new tab",
+      "group": "vomnibar",
+      "options": {
+        "query": "The text to prefill the Vomnibar with."
+      },
+      "topFrame": true
+    },
+    {
+      "name": "Vomnibar.activateTabSelection",
+      "desc": "Search through your open tabs",
+      "group": "vomnibar",
+      "topFrame": true
+    },
+    {
+      "name": "Vomnibar.activateEditUrl",
+      "desc": "Edit the current URL",
+      "group": "vomnibar",
+      "topFrame": true
+    },
+    {
+      "name": "Vomnibar.activateEditUrlInNewTab",
+      "desc": "Edit the current URL and open in a new tab",
+      "group": "vomnibar",
+      "topFrame": true
+    },
+    {
+      "name": "enterFindMode",
+      "desc": "Enter find mode.",
+      "group": "find",
+      "noRepeat": true
+    },
+    {
+      "name": "performFind",
+      "desc": "Cycle forward to the next find match",
+      "group": "find"
+    },
+    {
+      "name": "performBackwardsFind",
+      "desc": "Cycle backward to the previous find match",
+      "group": "find"
+    },
+    {
+      "name": "findSelected",
+      "desc": "Find the selected text",
+      "group": "find",
+      "advanced": true
+    },
+    {
+      "name": "findSelectedBackwards",
+      "desc": "Find the selected text, searching backwards",
+      "group": "find",
+      "advanced": true
+    },
+    {
+      "name": "goBack",
+      "desc": "Go back in history",
+      "group": "history"
+    },
+    {
+      "name": "goForward",
+      "desc": "Go forward in history",
+      "group": "history"
+    },
+    {
+      "name": "createTab",
+      "desc": "Create new tab",
+      "options": {
+        "(any url)": "Open this URL, rather than the browser's new tab page. E.g.: `map X createTab https://example.com`",
+        "window": "Create the tab in a new window",
+        "incognito": "Create the tab in an incognito window",
+        "position": "Where to place the tab in the tab bar. One of `start`, `before`, `after`, `end`. `after` is the default."
+      },
+      "group": "tabs",
+      "background": true,
+      "repeatLimit": 20
+    },
+    {
+      "name": "previousTab",
+      "desc": "Go one tab left",
+      "group": "tabs",
+      "background": true
+    },
+    {
+      "name": "nextTab",
+      "desc": "Go one tab right",
+      "group": "tabs",
+      "background": true
+    },
+    {
+      "name": "visitPreviousTab",
+      "desc": "Go to previously-visited tab",
+      "group": "tabs",
+      "background": true
+    },
+    {
+      "name": "firstTab",
+      "desc": "Go to the first tab",
+      "group": "tabs",
+      "background": true
+    },
+    {
+      "name": "lastTab",
+      "desc": "Go to the last tab",
+      "group": "tabs",
+      "background": true
+    },
+    {
+      "name": "duplicateTab",
+      "desc": "Duplicate current tab",
+      "group": "tabs",
+      "background": true,
+      "repeatLimit": 20
+    },
+    {
+      "name": "togglePinTab",
+      "desc": "Pin or unpin current tab",
+      "group": "tabs",
+      "background": true
+    },
+    {
+      "name": "toggleMuteTab",
+      "desc": "Mute or unmute current tab",
+      "options": {
+        "all": "Mute all tabs.",
+        "other": "Mute every tab except the current one."
+      },
+      "group": "tabs",
+      "background": true,
+      "noRepeat": true
+    },
+    {
+      "name": "removeTab",
+      "desc": "Close current tab",
+      "group": "tabs",
+      "background": true,
+      "repeatLimit": 25
+    },
+    {
+      "name": "restoreTab",
+      "desc": "Restore closed tab",
+      "group": "tabs",
+      "background": true,
+      "repeatLimit": 20
+    },
+    {
+      "name": "moveTabToNewWindow",
+      "desc": "Move tab to new window",
+      "group": "tabs",
+      "advanced": true,
+      "background": true
+    },
+    {
+      "name": "closeTabsOnLeft",
+      "desc": "Close tabs on the left",
+      "group": "tabs",
+      "advanced": true,
+      "background": true
+    },
+    {
+      "name": "closeTabsOnRight",
+      "desc": "Close tabs on the right",
+      "group": "tabs",
+      "advanced": true,
+      "background": true
+    },
+    {
+      "name": "closeOtherTabs",
+      "desc": "Close all other tabs",
+      "group": "tabs",
+      "advanced": true,
+      "background": true,
+      "noRepeat": true
+    },
+    {
+      "name": "moveTabLeft",
+      "desc": "Move tab to the left",
+      "group": "tabs",
+      "advanced": true,
+      "background": true
+    },
+    {
+      "name": "moveTabRight",
+      "desc": "Move tab to the right",
+      "group": "tabs",
+      "advanced": true,
+      "background": true
+    },
+    {
+      "name": "setZoom",
+      "desc": "Set zoom",
+      "group": "tabs",
+      "advanced": true,
+      "background": true,
+      "options": {
+        "level": "The zoom level. This can be a range of [0.25, 5.0]. 1.0 is the default."
+      }
+    },
+    {
+      "name": "zoomIn",
+      "desc": "Zoom in",
+      "group": "tabs",
+      "advanced": true,
+      "background": true
+    },
+    {
+      "name": "zoomOut",
+      "desc": "Zoom out",
+      "group": "tabs",
+      "advanced": true,
+      "background": true
+    },
+    {
+      "name": "zoomReset",
+      "desc": "Reset zoom",
+      "group": "tabs",
+      "advanced": true,
+      "background": true
+    },
+    {
+      "name": "BrowserToolbox.closeWindow",
+      "desc": "Close current window",
+      "group": "windows",
+      "background": true,
+      "repeatLimit": 1
+    },
+    {
+      "name": "BrowserToolbox.newWindow",
+      "desc": "Open a new window",
+      "group": "windows",
+      "background": true,
+      "noRepeat": true
+    },
+    {
+      "name": "BrowserToolbox.toggleFullscreen",
+      "desc": "Toggle fullscreen",
+      "group": "windows",
+      "background": true,
+      "noRepeat": true
+    },
+    {
+      "name": "BrowserToolbox.minimizeWindow",
+      "desc": "Minimize current window",
+      "group": "windows",
+      "background": true,
+      "repeatLimit": 1
+    },
+    {
+      "name": "BrowserToolbox.maximizeWindow",
+      "desc": "Maximize current window",
+      "group": "windows",
+      "background": true,
+      "noRepeat": true
+    },
+    {
+      "name": "BrowserToolbox.showTabList",
+      "desc": "Show tab list",
+      "group": "tabs",
+      "background": true,
+      "noRepeat": true
+    },
+    {
+      "name": "BrowserToolbox.openSettings",
+      "desc": "Open Browser Toolbox settings",
+      "group": "settings",
+      "background": true,
+      "noRepeat": true
+    },
+    {
+      "name": "BrowserToolbox.openCommandCenter",
+      "desc": "Open Browser Toolbox command center",
+      "group": "settings",
+      "background": true,
+      "noRepeat": true,
+      "supportedInputs": [
+        "keyboard",
+        "ui"
+      ]
+    },
+    {
+      "name": "BrowserToolbox.openTool",
+      "desc": "Open a Browser Toolbox utility",
+      "group": "tools",
+      "background": true,
+      "noRepeat": true,
+      "supportedInputs": [
+        "ui"
+      ],
+      "optionSchema": {
+        "toolId": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "inputToken": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "source": {
+          "type": "enum",
+          "values": [
+            "action",
+            "selection",
+            "page",
+            "link",
+            "image",
+            "command"
+          ]
+        }
+      }
+    },
+    {
+      "name": "BrowserToolbox.toggleKeyboard",
+      "desc": "Toggle keyboard navigation",
+      "group": "settings",
+      "background": true,
+      "noRepeat": true
+    },
+    {
+      "name": "BrowserToolbox.toggleMouseGestures",
+      "desc": "Toggle mouse gestures",
+      "group": "settings",
+      "background": true,
+      "noRepeat": true
+    },
+    {
+      "name": "BrowserToolbox.toggleSuperDrag",
+      "desc": "Toggle super drag",
+      "group": "settings",
+      "background": true,
+      "noRepeat": true
+    },
+    {
+      "name": "BrowserToolbox.copySelection",
+      "desc": "Copy selected text",
+      "group": "links",
+      "noRepeat": true,
+      "supportedInputs": [
+        "superDrag"
+      ],
+      "requiredContext": [
+        "selection"
+      ]
+    },
+    {
+      "name": "BrowserToolbox.copyLinkText",
+      "desc": "Copy link text",
+      "group": "links",
+      "noRepeat": true,
+      "supportedInputs": [
+        "superDrag"
+      ],
+      "requiredContext": [
+        "link"
+      ]
+    },
+    {
+      "name": "BrowserToolbox.copyLinkUrl",
+      "desc": "Copy link URL",
+      "group": "links",
+      "noRepeat": true,
+      "supportedInputs": [
+        "superDrag"
+      ],
+      "requiredContext": [
+        "link"
+      ]
+    },
+    {
+      "name": "BrowserToolbox.copyImageUrl",
+      "desc": "Copy image URL",
+      "group": "links",
+      "noRepeat": true,
+      "supportedInputs": [
+        "superDrag"
+      ],
+      "requiredContext": [
+        "image"
+      ]
+    },
+    {
+      "name": "BrowserToolbox.searchSelection",
+      "desc": "Search selected text",
+      "group": "links",
+      "background": true,
+      "noRepeat": true,
+      "supportedInputs": [
+        "superDrag"
+      ],
+      "requiredContext": [
+        "selection"
+      ],
+      "optionSchema": {
+        "disposition": {
+          "type": "enum",
+          "values": [
+            "foreground",
+            "background"
+          ]
+        },
+        "keyword": {
+          "type": "string",
+          "maxLength": 64
+        }
+      }
+    },
+    {
+      "name": "BrowserToolbox.openLinkForeground",
+      "desc": "Open link in foreground",
+      "group": "links",
+      "background": true,
+      "noRepeat": true,
+      "supportedInputs": [
+        "superDrag"
+      ],
+      "requiredContext": [
+        "link"
+      ]
+    },
+    {
+      "name": "BrowserToolbox.openLinkBackground",
+      "desc": "Open link in background",
+      "group": "links",
+      "background": true,
+      "noRepeat": true,
+      "supportedInputs": [
+        "superDrag"
+      ],
+      "requiredContext": [
+        "link"
+      ]
+    },
+    {
+      "name": "BrowserToolbox.openImageForeground",
+      "desc": "Open image in foreground",
+      "group": "links",
+      "background": true,
+      "noRepeat": true,
+      "supportedInputs": [
+        "superDrag"
+      ],
+      "requiredContext": [
+        "image"
+      ]
+    },
+    {
+      "name": "BrowserToolbox.openImageBackground",
+      "desc": "Open image in background",
+      "group": "links",
+      "background": true,
+      "noRepeat": true,
+      "supportedInputs": [
+        "superDrag"
+      ],
+      "requiredContext": [
+        "image"
+      ]
+    },
+    {
+      "name": "BrowserToolbox.downloadImage",
+      "desc": "Download image",
+      "group": "links",
+      "noRepeat": true,
+      "supportedInputs": [
+        "superDrag"
+      ],
+      "requiredContext": [
+        "image"
+      ]
+    },
+    {
+      "name": "toggleViewSource",
+      "desc": "View page source",
+      "group": "misc",
+      "advanced": true,
+      "noRepeat": true
+    },
+    {
+      "name": "showHelp",
+      "desc": "Show help",
+      "group": "misc",
+      "noRepeat": true,
+      "topFrame": true
+    }
+  ],
+  "parserCases": [
+    {
+      "input": "map a scrollDown",
+      "result": {
+        "keyToRegistryEntry": {
+          "a": {
+            "keySequence": [
+              "a"
+            ],
+            "command": "scrollDown",
+            "options": {}
+          }
+        },
+        "keyToMappedKey": {},
+        "validationErrors": []
+      }
+    },
+    {
+      "input": "MAP <c-a> scrollUp count=3",
+      "result": {
+        "keyToRegistryEntry": {
+          "<c-a>": {
+            "keySequence": [
+              "<c-a>"
+            ],
+            "command": "scrollUp",
+            "options": {
+              "count": 3
+            }
+          }
+        },
+        "keyToMappedKey": {},
+        "validationErrors": []
+      }
+    },
+    {
+      "input": "map gg scrollToTop\nunmap gg",
+      "result": {
+        "keyToRegistryEntry": {},
+        "keyToMappedKey": {},
+        "validationErrors": []
+      }
+    },
+    {
+      "input": "unmapAll\nmap j scrollDown\nmapkey a b",
+      "result": {
+        "keyToRegistryEntry": {
+          "j": {
+            "keySequence": [
+              "j"
+            ],
+            "command": "scrollDown",
+            "options": {}
+          }
+        },
+        "keyToMappedKey": {
+          "a": "b"
+        },
+        "validationErrors": []
+      }
+    },
+    {
+      "input": "mapkey ab c",
+      "result": {
+        "keyToRegistryEntry": {},
+        "keyToMappedKey": {},
+        "validationErrors": [
+          "mapkey only supports mapping keys which are single characters. Line: mapkey ab c"
+        ]
+      }
+    },
+    {
+      "input": "map j unknownCommand",
+      "result": {
+        "keyToRegistryEntry": {},
+        "keyToMappedKey": {},
+        "validationErrors": [
+          "\"unknownCommand\" is not a valid command in the line: map j unknownCommand"
+        ]
+      }
+    },
+    {
+      "input": "map j scrollDown count=0",
+      "result": {
+        "keyToRegistryEntry": {
+          "j": {
+            "keySequence": [
+              "j"
+            ],
+            "command": "scrollDown",
+            "options": {
+              "count": 0
+            }
+          }
+        },
+        "keyToMappedKey": {},
+        "validationErrors": []
+      }
+    },
+    {
+      "input": "map j scrollDown count=-2",
+      "result": {
+        "keyToRegistryEntry": {
+          "j": {
+            "keySequence": [
+              "j"
+            ],
+            "command": "scrollDown",
+            "options": {
+              "count": -2
+            }
+          }
+        },
+        "keyToMappedKey": {},
+        "validationErrors": []
+      }
+    },
+    {
+      "input": "map j scrollDown count=abc",
+      "result": {
+        "keyToRegistryEntry": {
+          "j": {
+            "keySequence": [
+              "j"
+            ],
+            "command": "scrollDown",
+            "options": {}
+          }
+        },
+        "keyToMappedKey": {},
+        "validationErrors": []
+      }
+    },
+    {
+      "input": "map j scrollDown count=2\nmap j scrollUp",
+      "result": {
+        "keyToRegistryEntry": {
+          "j": {
+            "keySequence": [
+              "j"
+            ],
+            "command": "scrollUp",
+            "options": {}
+          }
+        },
+        "keyToMappedKey": {},
+        "validationErrors": []
+      }
+    },
+    {
+      "input": "map v Vomnibar.activate query=\"a b\"",
+      "result": {
+        "keyToRegistryEntry": {
+          "v": {
+            "keySequence": [
+              "v"
+            ],
+            "command": "Vomnibar.activate",
+            "topFrame": true,
+            "options": {
+              "query": "a b"
+            }
+          }
+        },
+        "keyToMappedKey": {},
+        "validationErrors": []
+      }
+    },
+    {
+      "input": "# 注释\n\" 注释\nmap <s-a> scrollDown",
+      "result": {
+        "keyToRegistryEntry": {
+          "<s-a>": {
+            "keySequence": [
+              "<s-a>"
+            ],
+            "command": "scrollDown",
+            "options": {}
+          }
+        },
+        "keyToMappedKey": {},
+        "validationErrors": []
+      }
+    },
+    {
+      "input": "map j scrollDown invalid=true",
+      "result": {
+        "keyToRegistryEntry": {},
+        "keyToMappedKey": {},
+        "validationErrors": [
+          "Command scrollDown does not support option invalid"
+        ]
+      }
+    },
+    {
+      "input": "map x createTab https://example.invalid/?a=b position=\"end\"",
+      "result": {
+        "keyToRegistryEntry": {
+          "x": {
+            "keySequence": [
+              "x"
+            ],
+            "command": "createTab",
+            "repeatLimit": 20,
+            "background": true,
+            "options": {
+              "https://example.invalid/?a=b": true,
+              "position": "end"
+            }
+          }
+        },
+        "keyToMappedKey": {},
+        "validationErrors": []
+      }
+    }
+  ],
+  "keyboardDefaults": {
+    "scrollStepSize": 60,
+    "smoothScroll": true,
+    "keyMappings": "# Insert your preferred key mappings here.",
+    "linkHintCharacters": "sadfjklewcmpgh",
+    "linkHintNumbers": "0123456789",
+    "filterLinkHints": false,
+    "hideHud": false,
+    "userDefinedLinkHintCss": "div > .vimiumHintMarker {\n/* linkhint boxes */\nbackground: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#FFF785),\n  color-stop(100%,#FFC542));\nborder: 1px solid #E3BE23;\n}\n\ndiv > .vimiumHintMarker span {\n/* linkhint text */\ncolor: black;\nfont-weight: bold;\nfont-size: 12px;\n}\n\ndiv > .vimiumHintMarker > .matchingCharacter {\n}",
+    "exclusionRules": [
+      {
+        "passKeys": "",
+        "pattern": "https?://mail.google.com/*"
+      }
+    ],
+    "previousPatterns": "prev,previous,back,older,<,‹,←,«,≪,<<",
+    "nextPatterns": "next,more,newer,>,›,→,»,≫,>>",
+    "searchUrl": "https://www.google.com/search?q=",
+    "searchEngines": "w: https://www.wikipedia.org/w/index.php?title=Special:Search&search=%s Wikipedia\n\n# More examples.\n#\n# (Vimium supports search completion Wikipedia, as\n# above, and for these.)\n#\n# g: https://www.google.com/search?q=%s Google\n# l: https://www.google.com/search?q=%s&btnI I'm feeling lucky...\n# y: https://www.youtube.com/results?search_query=%s Youtube\n# gm: https://www.google.com/maps?q=%s Google maps\n# b: https://www.bing.com/search?q=%s Bing\n# d: https://duckduckgo.com/?q=%s DuckDuckGo\n# az: https://www.amazon.com/s/?field-keywords=%s\n# qw: https://www.qwant.com/?q=%s Qwant",
+    "newTabDestination": "vimiumNewTabPage",
+    "newTabCustomUrl": "",
+    "openVomnibarOnNewTabPage": true,
+    "grabBackFocus": false,
+    "regexFindMode": false,
+    "waitForEnterForFilteredHints": true,
+    "helpDialog_showAdvancedCommands": false,
+    "ignoreKeyboardLayout": false
+  },
+  "syntheticProfiles": [
+    {
+      "name": "显式空值与副本冲突",
+      "sync": {
+        "settingsVersion": "2.4.2",
+        "keyMappings": "",
+        "searchEngines": "",
+        "exclusionRules": [],
+        "browserToolboxSettings": {
+          "schemaVersion": 9,
+          "keyboard": {
+            "keyMappings": "map j scrollUp"
+          },
+          "searchEngines": "stale",
+          "exclusionRules": [
+            {
+              "pattern": "*",
+              "passKeys": ""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "旧标识仅本地",
+      "local": {
+        "openKeyMouseSettings": {
+          "schemaVersion": 0,
+          "gestureBindings": [
+            {
+              "pattern": [
+                "L"
+              ],
+              "commandName": "goBack"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "sync与local冲突",
+      "sync": {
+        "browserToolboxSettings": {
+          "schemaVersion": 9,
+          "general": {
+            "browserSyncEnabled": true
+          }
+        }
+      },
+      "local": {
+        "browserToolboxSettings": {
+          "schemaVersion": 9,
+          "general": {
+            "browserSyncEnabled": false
+          }
+        }
+      }
+    },
+    {
+      "name": "仅旧Vimium备份",
+      "backup": {
+        "settingsVersion": "2.4.2",
+        "keyMappings": "map x scrollDown count=3",
+        "searchEngines": "l: https://example.invalid/?q=%s 合成搜索",
+        "exclusionRules": [],
+        "unknownField": "合成未知字段"
+      }
+    }
+  ]
+}

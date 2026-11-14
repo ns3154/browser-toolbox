@@ -227,6 +227,11 @@ class Movement {
 }
 
 class VisualMode extends KeyHandlerMode {
+  constructor() {
+    super();
+    const controller = globalThis.BrowserToolboxVisualControllerInstance;
+    if (new.target === VisualMode && controller?.live()) return controller.create("visual");
+  }
   init(options) {
     let movement;
     if (options == null) {
@@ -495,6 +500,11 @@ VisualMode.prototype.movements = {
 };
 
 class VisualLineMode extends VisualMode {
+  constructor() {
+    super();
+    const controller = globalThis.BrowserToolboxVisualControllerInstance;
+    if (controller?.live()) return controller.create("visual/line");
+  }
   init(options) {
     if (options == null) {
       options = {};
@@ -549,6 +559,11 @@ class VisualLineMode extends VisualMode {
 }
 
 class CaretMode extends VisualMode {
+  constructor() {
+    super();
+    const controller = globalThis.BrowserToolboxVisualControllerInstance;
+    if (controller?.live()) return controller.create("caret");
+  }
   init(options) {
     if (options == null) {
       options = {};

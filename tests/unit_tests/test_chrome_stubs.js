@@ -202,6 +202,10 @@ globalThis.chrome = {
         this.func = func;
       },
 
+      removeListener(func) {
+        if (this.func === func) this.func = null;
+      },
+
       // Fake a callback from a storage area.
       call(key, value, area) {
         chrome.runtime.lastError = undefined;

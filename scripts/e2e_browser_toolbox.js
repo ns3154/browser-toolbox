@@ -65,19 +65,46 @@ async function runStage(browser, name, task, timeout = 120000) {
   } catch (error) {
     console.error(`E2E 阶段失败：${name}（${Date.now() - started} 毫秒）`);
     // 诊断本身也设上限，页面或协议无响应时仍能退出并清理独立浏览器。
-    const diagnostics = await withTimeout((async () => {
-      const pages = await browser.pages();
-      return await Promise.all(pages.map(async (page) => ({
-        url: page.url(),
-        state: await withTimeout(page.evaluate(() => ({
-          ready: document.readyState,
-          visibility: document.visibilityState,
-          focus: document.activeElement?.id || document.activeElement?.tagName,
-          selectedSection: document.querySelector("[role=tab][aria-selected=true]")?.dataset.section,
-          settingsReady: document.querySelector("[data-settings-ready]")?.dataset.settingsReady,
-        })), 2000, "页面诊断超时").catch((failure) => ({ error: failure.message })),
-      })));
-    })(), 3000, "浏览器诊断超时").catch((failure) => ({ error: failure.message }));
+    const diagnostics = await withTimeout(
+      (async () => {
+        const pages = await browser.pages();
+        return await Promise.all(pages.map(async (page) => ({
+          url: page.url(),
+          state: await withTimeout(
+            page.evaluate(() => ({
+              ready: document.readyState,
+              visibility: document.visibilityState,
+              focus: document.activeElement?.id || document.activeElement?.tagName,
+              selectedSection: document.querySelector("[role=tab][aria-selected=true]")?.dataset
+                .section,
+              settingsReady: document.querySelector("[data-settings-ready]")?.dataset.settingsReady,
+            })),
+            2000,
+            "页面诊断超时",
+          ).catch((failure) => ({ error: failure.message })),
+          frames: await Promise.all(
+            page.frames().filter((frame) => frame.url().includes("/pages/vomnibar_page.html")).map(
+              async (frame) =>
+                await withTimeout(
+                  frame.evaluate(() => ({
+                    title: document.querySelector("#vomnibar-mode-label")?.textContent.trim(),
+                    focus: document.activeElement?.id || document.activeElement?.tagName,
+                    width: innerWidth,
+                    locale: globalThis.BrowserToolboxI18n?.locale(),
+                    settingsLoaded: globalThis.Settings?.isLoaded(),
+                    revision: globalThis.Settings?.configurationRevision,
+                    errorCode: globalThis.Settings?.lastSettingsErrorCode,
+                  })),
+                  2000,
+                  "浮层诊断超时",
+                ).catch((failure) => ({ error: failure.message })),
+            ),
+          ),
+        })));
+      })(),
+      3000,
+      "浏览器诊断超时",
+    ).catch((failure) => ({ error: failure.message }));
     console.error(`E2E 阶段诊断：${JSON.stringify(diagnostics)}`);
     throw error;
   }
@@ -85,7 +112,9 @@ async function runStage(browser, name, task, timeout = 120000) {
 
 async function waitFor(predicate, timeout = 8000, interval = 50) {
   const end = Date.now() + timeout;
-  const failure = new Error(`等待 E2E 条件超时：${String(predicate).replace(/\s+/g, " ").slice(0, 240)}`);
+  const failure = new Error(
+    `等待 E2E 条件超时：${String(predicate).replace(/\s+/g, " ").slice(0, 240)}`,
+  );
   while (Date.now() < end) {
     const value = await withTimeout(predicate(), Math.max(1, end - Date.now()), failure.message);
     if (value) return value;
@@ -1001,6 +1030,9 @@ async function isolatedControllerState(options, pageUrl) {
               controller.guard.nativeMenuRetryUntil >= Date.now(),
           ),
           commandCallCount: globalThis.__browserToolboxE2eCommandCalls?.scrollToTop || 0,
+          commandCalls: globalThis.__browserToolboxE2eCommandCalls || {},
+          runtime: globalThis.BrowserToolboxRuntimeHostInstance?.getDiagnostics(),
+          mouseSettingsReady: controller?.settingsReady,
         };
       },
     });
@@ -1433,7 +1465,8 @@ async function testActionControls(browser, id, fixture, errors) {
         buttonText: document.querySelector("#browser-toolbox-disable-session")?.textContent,
         buttonDisabled: document.querySelector("#browser-toolbox-disable-session")?.disabled,
         status: document.querySelector("#browser-toolbox-site-status")?.textContent.trim(),
-        sessionStatus: document.querySelector("#browser-toolbox-session-status")?.textContent.trim(),
+        sessionStatus: document.querySelector("#browser-toolbox-session-status")?.textContent
+          .trim(),
         disabledStatusColors: [...document.querySelectorAll(
           ".browser-toolbox-module-status.is-disabled",
         )].map((element) => getComputedStyle(element).color),
@@ -1444,26 +1477,34 @@ async function testActionControls(browser, id, fixture, errors) {
         /Inactive|已停用/.test(state.badge) &&
         state.badgeDisabled === true &&
         /Restore this session|恢复本次会话/.test(state.buttonText || "") &&
-        state.buttonDisabled === false && state.toggles.every((toggle) => !toggle.checked && toggle.disabled) &&
+        state.buttonDisabled === false && state.toggles.every((toggle) =>
+          !toggle.checked && toggle.disabled
+        ) &&
         state.disabledStatusColors.length > 0 &&
         state.disabledStatusColors.every((color) =>
           color === "rgb(190, 18, 60)" || color === "rgb(251, 113, 133)"
         ) &&
         /Disabled modules|当前页面停用的模块/.test(state.status || "") &&
-        /All sites paused for this session|本次会话已暂停全部网站的浏览增强/.test(state.sessionStatus || "");
+        /All sites paused for this session|本次会话已暂停全部网站的浏览增强/.test(
+          state.sessionStatus || "",
+        );
     });
 
     await action.$eval("#browser-toolbox-disable-session", (element) => element.click());
-    await waitFor(() => action.evaluate(async () => {
-      const stored = await chrome.storage.session.get("browserToolboxSessionOverrides");
-      const button = document.querySelector("#browser-toolbox-disable-session");
-      const toggles = [...document.querySelectorAll("#browser-toolbox-enhancement-summary input")];
-      return !Object.hasOwn(stored, "browserToolboxSessionOverrides") &&
-        Object.keys(BrowserToolboxSettingsRepositoryInstance.sessionOverrides).length === 0 &&
-        /Pause all sites|暂停所有网站/.test(button?.textContent || "") && !button?.disabled &&
-        toggles.every((toggle) => !toggle.disabled) &&
-        document.querySelector("#browser-toolbox-toggle-wheel").checked;
-    }));
+    await waitFor(() =>
+      action.evaluate(async () => {
+        const stored = await chrome.storage.session.get("browserToolboxSessionOverrides");
+        const button = document.querySelector("#browser-toolbox-disable-session");
+        const toggles = [
+          ...document.querySelectorAll("#browser-toolbox-enhancement-summary input"),
+        ];
+        return !Object.hasOwn(stored, "browserToolboxSessionOverrides") &&
+          Object.keys(BrowserToolboxSettingsRepositoryInstance.sessionOverrides).length === 0 &&
+          /Pause all sites|暂停所有网站/.test(button?.textContent || "") && !button?.disabled &&
+          toggles.every((toggle) => !toggle.disabled) &&
+          document.querySelector("#browser-toolbox-toggle-wheel").checked;
+      })
+    );
     await action.evaluate(async (pattern) => {
       const key = "browserToolboxSettings";
       const values = await chrome.storage.sync.get(key);
@@ -1476,7 +1517,9 @@ async function testActionControls(browser, id, fixture, errors) {
           modules: { rocker: false },
         }],
       });
-      await chrome.storage.sync.set({ [key]: settings });
+      if (globalThis.BrowserToolboxConfigurationClientInstance?.enabled) {
+        await BrowserToolboxConfigurationClientInstance.commit({ toolbox: settings });
+      } else await chrome.storage.sync.set({ [key]: settings });
     }, originRegexPattern(fixture.url()));
     await waitFor(async () => {
       const state = await action.evaluate(() => ({
@@ -1488,7 +1531,10 @@ async function testActionControls(browser, id, fixture, errors) {
   } finally {
     if (originalSettings) {
       await action.evaluate(
-        (settings) => chrome.storage.sync.set({ browserToolboxSettings: settings }),
+        (settings) =>
+          globalThis.BrowserToolboxConfigurationClientInstance?.enabled
+            ? BrowserToolboxConfigurationClientInstance.commit({ toolbox: settings })
+            : chrome.storage.sync.set({ browserToolboxSettings: settings }),
         originalSettings,
       ).catch(() => {});
     }
@@ -1551,6 +1597,9 @@ async function resetSettings(options) {
     await chrome.storage.local.clear();
     await chrome.storage.session.clear();
     await chrome.storage.sync.remove(key);
+    if (globalThis.BrowserToolboxConfigurationClientInstance?.enabled) {
+      await BrowserToolboxConfigurationClientInstance.request("resolve", { choice: "incoming" });
+    }
   }, settingsKey);
   await options.$eval("#discard-changes", (element) => {
     if (!element.disabled) element.click();
@@ -1563,14 +1612,19 @@ async function patchSettings(options, patch) {
   await options.evaluate(async ({ key, patch }) => {
     const stored = (await chrome.storage.sync.get(key))[key] || {};
     const next = BrowserToolboxSettingsSchema.mergeSettings(stored, patch);
-    await chrome.storage.sync.set({ [key]: next });
+    if (globalThis.BrowserToolboxConfigurationClientInstance?.enabled) {
+      await BrowserToolboxConfigurationClientInstance.commit({ toolbox: next });
+    } else await chrome.storage.sync.set({ [key]: next });
   }, { key: settingsKey, patch });
   await sleep(300);
 }
 
 async function readSettings(options) {
   return await options.evaluate(
-    async (key) => (await chrome.storage.sync.get(key))[key],
+    async (key) =>
+      globalThis.BrowserToolboxConfigurationClientInstance?.enabled
+        ? (await BrowserToolboxConfigurationClientInstance.read()).toolboxSource.value
+        : (await chrome.storage.sync.get(key))[key],
     settingsKey,
   );
 }
@@ -1636,6 +1690,14 @@ async function importSettingsFile(
     (element) => element.click(),
   );
   await waitFor(() => options.$eval("#import-preview-dialog", (element) => !element.open));
+  // 对话框关闭仅表示作出选择；持久化、语言刷新和结果提示仍在异步进行。
+  // 等待表单退出忙碌状态后再读取导入结果，避免把上一条空提示误判为数据丢失。
+  await waitFor(() =>
+    options.$eval(
+      ".browser-toolbox-main",
+      (element) => element.getAttribute("aria-busy") !== "true",
+    )
+  );
   if (checkFocus) {
     try {
       await waitFor(() =>
@@ -1711,19 +1773,19 @@ async function testOptionsAccessibility(options) {
     };
   });
   assert(
-    semantics.tablists === 3 && semantics.verticalTablists,
+    semantics.tablists === 4 && semantics.verticalTablists,
     `设置页二级导航应声明垂直标签组：${JSON.stringify(semantics)}`,
   );
   assert(
-    semantics.categories === 3 && semantics.validCategories,
+    semantics.categories === 4 && semantics.validCategories,
     `设置页一级导航应具备展开语义：${JSON.stringify(semantics)}`,
   );
   assert(
-    semantics.tabs === 15 && semantics.validTabs,
+    semantics.tabs === 12 && semantics.validTabs,
     `设置页导航按钮应具备完整 tab 语义：${JSON.stringify(semantics)}`,
   );
   assert(
-    semantics.panels === 15 && semantics.validPanels,
+    semantics.panels === 12 && semantics.validPanels,
     `设置页面板应具备完整 tabpanel 语义：${JSON.stringify(semantics)}`,
   );
   assertEqual(
@@ -1777,7 +1839,7 @@ async function testOptionsAccessibility(options) {
     options.$eval(
       ".browser-toolbox-nav-item:not([hidden])",
       (element) =>
-        [...document.querySelectorAll(".browser-toolbox-nav-item:not([hidden])")].length === 15,
+        [...document.querySelectorAll(".browser-toolbox-nav-item:not([hidden])")].length === 12,
     )
   );
   await options.focus("#settings-section-search");
@@ -1805,7 +1867,7 @@ async function testOptionsAccessibility(options) {
   await waitFor(() =>
     options.$$eval(
       ".browser-toolbox-nav-item:not([hidden])",
-      (elements) => elements.length === 15,
+      (elements) => elements.length === 12,
     )
   );
 
@@ -1824,6 +1886,8 @@ async function testOptionsAccessibility(options) {
       (element) => element.getAttribute("aria-selected") === "true",
     )
   );
+  await options.click("button[data-section='mouse']");
+  await options.focus("button[data-section='mouse']");
   await waitFor(() =>
     options.$eval(
       "button[data-section='mouse']",
@@ -1839,10 +1903,10 @@ async function testOptionsAccessibility(options) {
   );
   assert(
     await options.$eval(
-      "#browser-toolbox-subnav-system",
+      "#browser-toolbox-subnav-rulesAndData",
       (element) => !element.hidden,
     ),
-    "设置页应同时展示三个稳定的一级分类",
+    "设置页应同时展示四个稳定的一级分类",
   );
   await options.keyboard.press("ArrowDown");
   await waitFor(() =>
@@ -1875,7 +1939,7 @@ async function testOptionsAccessibility(options) {
   );
   assert(
     await options.$eval(
-      "[data-nav-category='system']",
+      "[data-nav-category='rulesAndData']",
       (element) => element.getAttribute("aria-expanded") === "true",
     ),
     "点击一级分类时应展开该分类并选中第一个二级页面",
@@ -2135,10 +2199,14 @@ async function testOptionsAndBackup(
     "放弃修改应恢复已保存草稿",
   );
 
-  // 模拟另一个页面/设备在 storage.onChanged 通知尚未到达前修改 Vimium 的无关字段；
+  // 模拟另一个设置页面在 storage.onChanged 通知尚未到达前修改 Vimium 的无关字段；
   // 本页保存 BrowserToolbox 设置时不得把该字段覆盖回旧快照。
   await options.evaluate(async () => {
-    await chrome.storage.sync.set({ scrollStepSize: 123 });
+    if (globalThis.BrowserToolboxConfigurationClientInstance?.enabled) {
+      await BrowserToolboxConfigurationClientInstance.commit({
+        legacyPatch: { scrollStepSize: 123 },
+      });
+    } else await chrome.storage.sync.set({ scrollStepSize: 123 });
   });
   await options.$eval("#activation-distance", (element) => {
     element.value = "38";
@@ -2334,7 +2402,9 @@ async function testOptionsAndBackup(
     }),
   );
   await importSettingsFile(options, legacyExportPath);
-  const currentSchemaVersion = await options.evaluate(() => BrowserToolboxSettingsSchema.CURRENT_SCHEMA_VERSION);
+  const currentSchemaVersion = await options.evaluate(() =>
+    BrowserToolboxSettingsSchema.CURRENT_SCHEMA_VERSION
+  );
   await waitFor(async () => {
     const migrated = await readSettings(options);
     return migrated?.schemaVersion === currentSchemaVersion &&
@@ -2368,6 +2438,10 @@ async function testOptionsAndBackup(
     // 先写入旧键再移除规范键，避免清空事件触发默认配置迁移并与旧键写入竞态。
     await chrome.storage.sync.remove("browserToolboxSettings");
     await chrome.storage.session.set({ openKeyMouseSessionOverrides: { mouse: false } });
+    if (globalThis.BrowserToolboxConfigurationClientInstance?.enabled) {
+      // 这是明确加载旧 fixture 的测试动作；未知设备的外部变化另有保留/选择用例。
+      await BrowserToolboxConfigurationClientInstance.request("resolve", { choice: "incoming" });
+    }
   }, {
     assetId: legacyCursorAssetId,
     asset: `data:image/png;base64,${btoa(String.fromCharCode(...pngBytes))}`,
@@ -2589,14 +2663,19 @@ async function testOptionsAndBackup(
     await chrome.storage.sync.set({
       [key]: { schemaVersion: 0, gestureBindings: [{ pattern: ["L"], commandName: "goBack" }] },
     });
+    if (globalThis.BrowserToolboxConfigurationClientInstance?.enabled) {
+      await chrome.storage.local.remove("browserToolboxSettingsMigrationBackup");
+      await BrowserToolboxConfigurationClientInstance.request("resolve", { choice: "incoming" });
+    }
   }, settingsKey);
   await options.reload({ waitUntil: "load" });
   await waitForOptionsReady(options);
   await waitFor(() =>
     options.evaluate(
-      (key) => chrome.storage.sync.get(key).then((items) =>
-        items[key]?.schemaVersion === BrowserToolboxSettingsSchema.CURRENT_SCHEMA_VERSION
-      ),
+      (key) =>
+        chrome.storage.sync.get(key).then((items) =>
+          items[key]?.schemaVersion === BrowserToolboxSettingsSchema.CURRENT_SCHEMA_VERSION
+        ),
       settingsKey,
     )
   );
@@ -2941,7 +3020,9 @@ async function testMouseGestures(page, base127, browser, options) {
   );
   await waitFor(() => page.url().endsWith("/one.html"));
   await waitForController(options, page.url());
+  await installIsolatedCommandCounter(options, page.url(), "goForward");
   await sendDrag(page, await pointsFor(page, "#target", 140, 0), "left");
+  console.log("E2E: 历史前进诊断", await isolatedControllerState(options, page.url()));
   await waitFor(() => page.url().endsWith("/two.html"));
 
   await page.goto(`${base127}/fixture.html`, { waitUntil: "load" });
@@ -3477,7 +3558,7 @@ async function testNativeSafety(page, base127, options) {
       .join(" -> "),
   );
   assertEqual(activeRun.pending?.gestureState, "PENDING", "右键刚按下时应保持手势候选状态");
-  assertEqual(activeRun.pending?.gestureCancelVisible, true, "第一次右键按下应只显示取消目标");
+  assertEqual(activeRun.pending?.gestureCancelVisible, false, "候选阶段不应提前闪现取消目标");
   assertEqual(activeRun.pending?.gestureHudVisible, false, "尚未形成方向时不应显示 HUD");
   assertEqual(activeRun.pending?.gestureDirectionCount, 0, "候选阶段不应提前生成方向图标");
   assertEqual(
@@ -3671,11 +3752,12 @@ async function testNativeSafety(page, base127, options) {
   await options.evaluate(async () => {
     const key = "browserToolboxSettings";
     const current = (await chrome.storage.sync.get(key))[key];
-    await chrome.storage.sync.set({
-      [key]: BrowserToolboxSettingsSchema.mergeSettings(current, {
-        mouse: { triggerButton: 2, suppressContextMenuAfterActivation: false },
-      }),
+    const toolbox = BrowserToolboxSettingsSchema.mergeSettings(current, {
+      mouse: { triggerButton: 2, suppressContextMenuAfterActivation: false },
     });
+    if (globalThis.BrowserToolboxConfigurationClientInstance?.enabled) {
+      await BrowserToolboxConfigurationClientInstance.commit({ toolbox });
+    } else await chrome.storage.sync.set({ [key]: toolbox });
   });
   await page.reload({ waitUntil: "load" });
   await sleep(1000);
@@ -3689,11 +3771,12 @@ async function testNativeSafety(page, base127, options) {
   await options.evaluate(async () => {
     const key = "browserToolboxSettings";
     const current = (await chrome.storage.sync.get(key))[key];
-    await chrome.storage.sync.set({
-      [key]: BrowserToolboxSettingsSchema.mergeSettings(current, {
-        mouse: { suppressContextMenuAfterActivation: true },
-      }),
+    const toolbox = BrowserToolboxSettingsSchema.mergeSettings(current, {
+      mouse: { suppressContextMenuAfterActivation: true },
     });
+    if (globalThis.BrowserToolboxConfigurationClientInstance?.enabled) {
+      await BrowserToolboxConfigurationClientInstance.commit({ toolbox });
+    } else await chrome.storage.sync.set({ [key]: toolbox });
   });
 
   await page.evaluate(() =>
@@ -3849,20 +3932,33 @@ async function main() {
   let options;
   let fixture;
   let cleanupPromise;
-  const cleanup = () => cleanupPromise ||= (async () => {
-    await withTimeout(Promise.resolve(browser?.disconnect()), 2000, "断开浏览器超时").catch(() => {});
-    if (chromeProcess) {
-      try { chromeProcess.kill("SIGTERM"); } catch (_) { /* 浏览器可能已自行退出。 */ }
-      await withTimeout(chromeProcess.status, 2000, "浏览器退出超时").catch(async () => {
-        try { chromeProcess.kill("SIGKILL"); } catch (_) { /* 仅结束本次测试创建的进程。 */ }
-        await chromeProcess.status.catch(() => {});
-      });
-    }
-    await server.shutdown();
-    if (chromeUserDataDir) await Deno.remove(chromeUserDataDir, { recursive: true }).catch(() => {});
-    await Deno.remove(tempDir, { recursive: true }).catch(() => {});
-  })();
-  const onTerminate = () => { cleanup().finally(() => Deno.exit(143)); };
+  const cleanup = () =>
+    cleanupPromise ||= (async () => {
+      await withTimeout(Promise.resolve(browser?.disconnect()), 2000, "断开浏览器超时").catch(
+        () => {},
+      );
+      if (chromeProcess) {
+        try {
+          chromeProcess.kill("SIGTERM");
+        } catch (_) { /* 浏览器可能已自行退出。 */ }
+        await withTimeout(chromeProcess.status, 2000, "浏览器退出超时").catch(async () => {
+          try {
+            chromeProcess.kill("SIGKILL");
+          } catch (_) { /* 仅结束本次测试创建的进程。 */ }
+          await chromeProcess.status.catch(() => {});
+        });
+      }
+      await server.shutdown();
+      if (chromeUserDataDir) {
+        await Deno.remove(chromeUserDataDir, { recursive: true }).catch(
+          () => {},
+        );
+      }
+      await Deno.remove(tempDir, { recursive: true }).catch(() => {});
+    })();
+  const onTerminate = () => {
+    cleanup().finally(() => Deno.exit(143));
+  };
   if (Deno.build.os !== "windows") Deno.addSignalListener("SIGTERM", onTerminate);
   try {
     ({ browser, process: chromeProcess, userDataDir: chromeUserDataDir } = await startChrome());
@@ -3906,10 +4002,11 @@ async function main() {
     await stage("B 键书签搜索浮层", () => testVomnibar(fixture, base127, options));
     await stage("鼠标轨迹", () => testMouseGestures(fixture, base127, browser, options));
     await stage("动作页会话开关", () => testActionControls(browser, id, fixture, errors));
-    await stage("超级拖拽", () => testSuperDrag(fixture, base127, browser, tempDir, options, {
-      clipboardAvailable,
-      remoteDownloadPath: Deno.env.get("BROWSER_TOOLBOX_E2E_REMOTE_DOWNLOAD_PATH") || "",
-    }));
+    await stage("超级拖拽", () =>
+      testSuperDrag(fixture, base127, browser, tempDir, options, {
+        clipboardAvailable,
+        remoteDownloadPath: Deno.env.get("BROWSER_TOOLBOX_E2E_REMOTE_DOWNLOAD_PATH") || "",
+      }));
     await stage("滚轮摇杆跨 frame", () => testWheelRockerAndFrames(fixture, base127, options));
     await stage("右键菜单与原生输入保护", () => testNativeSafety(fixture, base127, options));
     await stage("运行时站点规则", () => testSiteRule(fixture, options, base127));
@@ -3917,16 +4014,20 @@ async function main() {
     // 前面的场景通过另一个页面修改了设置；重载后再继续编辑，符合并发冲突保护的真实使用方式。
     await options.reload({ waitUntil: "load" });
     await waitForOptionsReady(options);
-    await stage("设置与备份闭环", () => testOptionsAndBackup(
-      options,
-      base127,
-      tempDir,
-      fixture,
-      browser,
-      Deno.env.get("BROWSER_TOOLBOX_E2E_REMOTE_DOWNLOAD_PATH") || "",
-    ));
+    await stage("设置与备份闭环", () =>
+      testOptionsAndBackup(
+        options,
+        base127,
+        tempDir,
+        fixture,
+        browser,
+        Deno.env.get("BROWSER_TOOLBOX_E2E_REMOTE_DOWNLOAD_PATH") || "",
+      ));
     console.log("E2E: 设置闭环完成");
-    await stage("Service Worker 重启", () => testServiceWorkerRestart(browser, id, fixture, options));
+    await stage(
+      "Service Worker 重启",
+      () => testServiceWorkerRestart(browser, id, fixture, options),
+    );
     await stage("设计文档 fixtures", () => testDesignFixtures(fixture, options, base127));
     assert(errors.length === 0, `E2E 页面错误：${errors.join("；")}`);
     console.log(

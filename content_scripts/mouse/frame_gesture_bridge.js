@@ -12,8 +12,8 @@
       this.readyPromise = Promise.resolve(true);
       this.resolveReady = null;
       this.readyTimer = null;
-      this.messageListener = (message) => this.handleMessage(message);
-      this.disconnectListener = () => this.handleDisconnect();
+      this.messageListener = null;
+      this.disconnectListener = null;
     }
 
     start(requestId) {
@@ -33,6 +33,13 @@
           !port.onDisconnect?.addListener
         ) throw new Error("Gesture Port is unavailable.");
         this.port = port;
+        // 已关闭通道的迟到消息/断开回调不能清除下一次手势的新通道。
+        this.messageListener = (message) => {
+          if (this.port === port) this.handleMessage(message);
+        };
+        this.disconnectListener = () => {
+          if (this.port === port) this.handleDisconnect();
+        };
         port.onMessage.addListener(this.messageListener);
         port.onDisconnect.addListener(this.disconnectListener);
         port.postMessage({
@@ -95,6 +102,9 @@
       this.port = null;
       this.requestId = null;
       this.lastDirection = null;
+      port?.onMessage?.removeListener?.(this.messageListener);
+      port?.onDisconnect?.removeListener?.(this.disconnectListener);
+      this.messageListener = this.disconnectListener = null;
       try {
         port?.disconnect?.();
       } catch (_) {
@@ -108,10 +118,7 @@
     }
 
     handleDisconnect() {
-      this.port = null;
-      this.finishReady(false);
-      this.requestId = null;
-      this.lastDirection = null;
+      this.close();
     }
 
     finishReady(accepted) {

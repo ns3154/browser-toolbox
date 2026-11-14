@@ -4,8 +4,8 @@
 
 let isEnabledForUrl = true;
 let vimiumEnabledForUrl = true;
-let browserToolboxKeyboardListenerInstalled = false;
 let normalMode = null;
+let runtimeMaintenancePaused = false;
 
 // This is set by initializeFrame. We can only get this frame's ID from the background page.
 globalThis.frameId = null;
@@ -13,31 +13,13 @@ globalThis.frameId = null;
 // We track whther the current window has the focus or not.
 let windowHasFocus = null;
 function windowIsFocused() {
+  const controller = globalThis.BrowserToolboxUIControllerInstance;
+  if (controller?.valid()) return controller.focus.focused;
   return windowHasFocus;
 }
 
 function initWindowIsFocused() {
   DomUtils.documentReady().then(() => windowHasFocus = document.hasFocus());
-  globalThis.addEventListener(
-    "focus",
-    forTrusted(function (event) {
-      if (event.target === window) {
-        windowHasFocus = true;
-      }
-      return true;
-    }),
-    true,
-  );
-  globalThis.addEventListener(
-    "blur",
-    forTrusted(function (event) {
-      if (event.target === window) {
-        windowHasFocus = false;
-      }
-      return true;
-    }),
-    true,
-  );
 }
 
 // True if this window should be focusable by various Vim commands (e.g. "nextFrame").
@@ -55,10 +37,9 @@ class GrabBackFocus extends Mode {
     const exitEventHandler = () => {
       return this.alwaysContinueBubbling(() => {
         this.exit();
-        chrome.runtime.sendMessage({
-          handler: "sendMessageToFrames",
-          message: { handler: "userIsInteractingWithThePage" },
-        });
+        BrowserToolboxFrameRuntimeBridgeInstance.broadcastToTab({
+          handler: "userIsInteractingWithThePage",
+        }).catch(() => {});
       });
     };
 
@@ -94,18 +75,22 @@ class GrabBackFocus extends Mode {
     // This mode is active in all frames. A user might have begun interacting with one frame without
     // other frames detecting this. When one GrabBackFocus mode exits, we broadcast a message to
     // inform all GrabBackFocus modes that they should exit; see #2296.
-    chrome.runtime.onMessage.addListener(
-      listener = ({ name }) => {
-        if (name === "userIsInteractingWithThePage") {
-          chrome.runtime.onMessage.removeListener(listener);
-          if (this.modeIsActive) {
-            this.exit();
+    // 关闭抢回焦点时模式已经退出，不能再注册一个失去退出清理机会的监听器。
+    if (this.modeIsActive) {
+      chrome.runtime.onMessage.addListener(
+        listener = ({ name }) => {
+          if (name === "userIsInteractingWithThePage") {
+            chrome.runtime.onMessage.removeListener(listener);
+            if (this.modeIsActive) {
+              this.exit();
+            }
           }
-        }
-        // We will not be calling sendResponse.
-        return false;
-      },
-    );
+          // We will not be calling sendResponse.
+          return false;
+        },
+      );
+      this.onExit(() => chrome.runtime.onMessage.removeListener(listener));
+    }
   }
 
   grabBackFocus(element) {
@@ -127,47 +112,54 @@ class GrabBackFocus extends Mode {
 // Pages can load new content dynamically and change the displayed URL using history.pushState.
 // Since this can often be indistinguishable from an actual new page load for the user, we should
 // also re-start GrabBackFocus for these as well. This fixes issue #1622.
-handlerStack.push({
-  _name: "GrabBackFocus-pushState-monitor",
-  click(event) {
-    // If a focusable element is focused, the user must have clicked on it. Retain focus and bail.
-    if (DomUtils.isFocusable(document.activeElement)) {
-      return true;
-    }
-
-    let target = event.target;
-
-    while (target) {
-      // Often, a link which triggers a content load and url change with javascript will also have
-      // the new url as it's href attribute.
-      if (
-        (target.tagName === "A") &&
-        (target.origin === document.location.origin) &&
-        // Clicking the link will change the url of this frame.
-        ((target.pathName !== document.location.pathName) ||
-          (target.search !== document.location.search)) &&
-        (["", "_self"].includes(target.target) ||
-          ((target.target === "_parent") && (globalThis.parent === window)) ||
-          ((target.target === "_top") && (globalThis.top === window)))
-      ) {
-        return new GrabBackFocus();
-      } else {
-        target = target.parentElement;
+function installPushStateMonitor() {
+  handlerStack.push({
+    _name: "GrabBackFocus-pushState-monitor",
+    click(event) {
+      // If a focusable element is focused, the user must have clicked on it. Retain focus and bail.
+      if (DomUtils.isFocusable(document.activeElement)) {
+        return true;
       }
-    }
-    return true;
-  },
-});
 
-function installModes() {
+      let target = event.target;
+
+      while (target) {
+        // Often, a link which triggers a content load and url change with javascript will also have
+        // the new url as it's href attribute.
+        if (
+          (target.tagName === "A") &&
+          (target.origin === document.location.origin) &&
+          // Clicking the link will change the url of this frame.
+          ((target.pathName !== document.location.pathName) ||
+            (target.search !== document.location.search)) &&
+          (["", "_self"].includes(target.target) ||
+            ((target.target === "_parent") && (globalThis.parent === window)) ||
+            ((target.target === "_top") && (globalThis.top === window)))
+        ) {
+          return new GrabBackFocus();
+        } else {
+          target = target.parentElement;
+        }
+      }
+      return true;
+    },
+  });
+}
+
+function installModes(plan = BrowserToolboxRuntime.COMPAT_PLAN, inputSettings = {}) {
+  if (normalMode?.modeIsActive) return normalMode;
+  installPushStateMonitor();
   // Install the permanent modes. The permanently-installed insert mode tracks focus/blur events,
   // and activates/deactivates itself accordingly.
-  normalMode = new NormalMode();
-  normalMode.init();
+  const independentInput = plan.moduleImplementations.input === "browser-toolbox";
+  const input = independentInput ? BrowserToolboxInputRuntime : { NormalMode, InsertMode };
+  normalMode = new input.NormalMode();
+  normalMode.init(independentInput ? { keyMapping: inputSettings.normalModeKeyStateMapping } : undefined);
+  normalMode.setPassKeys(globalThis.BrowserToolboxFrameRuntimeBridgeInstance?.session?.passKeys);
   // Initialize components upon which normal mode depends.
   Scroller.init();
-  FindModeHistory.init();
-  new InsertMode({ permanent: true });
+  if (plan.moduleImplementations.find !== "browser-toolbox") FindModeHistory.init();
+  new input.InsertMode({ permanent: true, ...(independentInput ? { passNextKeyKeys: inputSettings.passNextKeyKeys } : {}) });
   if (isEnabledForUrl) {
     new GrabBackFocus();
   }
@@ -202,59 +194,18 @@ const checkEnabledAfterURLChange = forTrusted(function (_request) {
 // time a keystroke is pressed before we act on that keystroke. https://stackoverflow.com/a/64407849
 const extensionHasBeenUnloaded = () => chrome.runtime?.id == null;
 
-// Wrapper to install event listeners.  Syntactic sugar.
-function installListener(element, event, callback) {
-  element.addEventListener(
-    event,
-    forTrusted(function () {
-      if (extensionHasBeenUnloaded()) {
-        console.log("Vimium extension has been unloaded. Unloading content script.");
-        onUnload();
-        return;
-      }
-      if (isEnabledForUrl) {
-        return callback.apply(this, arguments);
-      } else {
-        return true;
-      }
-    }),
-    true,
-  );
-}
-
-// Installing or uninstalling listeners is error prone. Instead we elect to check isEnabledForUrl
-// each time so we know whether the listener should run or not.
-// Note: We install the listeners even if Vimium is disabled. See comment in commit
-// 6446cf04c7b44c3d419dc450a73b60bcaf5cdf02.
-const installListeners = Utils.makeIdempotent(function () {
-  // Key event handlers fire on window before they do on document. Prefer window for key events so
-  // the page can't set handlers to grab the keys before us.
-  const events = ["keydown", "keypress", "keyup", "click", "focus", "blur", "mousedown", "scroll"];
-  for (const type of events) {
-    installListener(globalThis, type, (event) => handlerStack.bubbleEvent(type, event));
-  }
-  installListener(
-    document,
-    "DOMActivate",
-    (event) => handlerStack.bubbleEvent("DOMActivate", event),
-  );
-});
-
-// Whenever we get the focus, check if we should be enabled.
-const onFocus = forTrusted(function (event) {
-  if (event.target === window) {
-    checkIfEnabledForUrl();
-  }
-});
-
-// We install these listeners directly (that is, we don't use installListener) because we still need
-// to receive events when Vimium is not enabled.
-globalThis.addEventListener("focus", onFocus, true);
-globalThis.addEventListener("hashchange", checkEnabledAfterURLChange, true);
-
 async function initializeOnDomReady() {
+  const host = BrowserToolboxRuntimeHostInstance;
+  const epoch = host.runtimeEpoch;
+  const ownNewTab = host.plan.moduleImplementations.newTab === "browser-toolbox";
   // Tell the background page we're in the domReady state.
-  await chrome.runtime.sendMessage({ handler: "domReady" });
+  const ready = await BrowserToolboxFrameRuntimeBridgeInstance.ready();
+  if (ownNewTab) {
+    if (ready?.ok !== false && host.runtimeEpoch === epoch) {
+      await BrowserToolboxNewTabRuntime.openOnReady(host, epoch);
+    }
+    return;
+  }
 
   const isVimiumNewTabPage = document.location.href == Settings.vimiumNewTabPageUrl;
   if (!isVimiumNewTabPage) return;
@@ -268,15 +219,35 @@ async function initializeOnDomReady() {
   }
 }
 
-const onUnload = Utils.makeIdempotent(() => {
-  HintCoordinator.exit({ isSuccess: false });
-  handlerStack.reset();
+function onUnload() {
   isEnabledForUrl = false;
-  globalThis.removeEventListener("focus", onFocus, true);
-  globalThis.removeEventListener("hashchange", checkEnabledAfterURLChange, true);
-});
+  globalThis.BrowserToolboxRuntimeHostInstance?.dispose("context-lost");
+}
+
+function cleanupCompatRuntime() {
+  HintCoordinator.exit({ isSuccess: false });
+  for (const mode of [...Mode.modes].reverse()) mode.exit();
+  // 某些旧模式退出时会生成保护模式；失去执行权后这些模式也必须退出。
+  for (const mode of [...Mode.modes].reverse()) mode.exit();
+  Mode.modes = [];
+  Mode.singletons = {};
+  handlerStack.reset();
+  normalMode = null;
+  Scroller.destroy();
+  FindModeHistory.destroy();
+  document.removeEventListener("selectionchange", FindMode.restoreDefaultSelectionHighlight, true);
+  FindMode.restoreDefaultSelectionHighlight({ isTrusted: true });
+  HUD.destroy();
+  UIComponent.destroyAll();
+  Vomnibar.vomnibarUI = null;
+  HelpDialog.helpUI = null;
+  HelpDialog.hiding = null;
+  InsertMode.permanentInstance = null;
+}
 
 function setScrollPosition({ scrollX, scrollY }) {
+  const controller = globalThis.BrowserToolboxMarksControllerInstance;
+  if (controller?.valid()) return controller.restorePosition({ scrollX, scrollY });
   DomUtils.documentReady().then(() => {
     if (!DomUtils.isTopFrame()) return;
     Utils.nextTick(function () {
@@ -319,49 +290,73 @@ const flashFrame = (() => {
 // Called from the backend in order to change frame focus.
 //
 function focusThisFrame(request) {
+  const controller = globalThis.BrowserToolboxUIControllerInstance;
+  if (controller?.valid()) return controller.focus.focus(request);
   // It should never be the case that we get a forceFocusThisFrame request on a window that isn't
   // focusable, because the background script checks that the window is focusable before sending the
   // focusFrame message.
   if (!request.forceFocusThisFrame && !isWindowFocusable()) return;
 
-  Utils.nextTick(function () {
-    globalThis.focus();
-    // On Firefox, window.focus doesn't always draw focus back from a child frame (bug 554039). We
-    // blur the active element if it is an iframe, which gives the window back focus as intended.
-    if (document.activeElement.tagName.toLowerCase() === "iframe") {
-      document.activeElement.blur();
-    }
-    if (request.highlight) {
-      flashFrame();
-    }
+  const host = globalThis.BrowserToolboxRuntimeHostInstance;
+  const epoch = host?.runtimeEpoch;
+  return new Promise((resolve) => {
+    // 引擎撤销会清除nextTick计时器，取消分支也必须结束Native消息回执的等待。
+    const removeCancellation = host?.engineResources?.add(resolve);
+    Utils.nextTick(function () {
+      try {
+        if (host && (host.disposed || host.suspended || host.runtimeEpoch !== epoch || host.state !== "active")) return;
+        globalThis.focus();
+        // On Firefox, window.focus doesn't always draw focus back from a child frame (bug 554039). We
+        // blur the active element if it is an iframe, which gives the window back focus as intended.
+        if (document.activeElement.tagName.toLowerCase() === "iframe") {
+          document.activeElement.blur();
+        }
+        if (request.highlight) flashFrame();
+      } finally {
+        removeCancellation?.();
+        resolve();
+      }
+    });
   });
 }
 
 // Used by the focusInput command.
-globalThis.lastFocusedInput = (function () {
-  // Track the most recently focused input element.
-  let recentlyFocusedElement = null;
-  globalThis.addEventListener(
-    "focus",
-    forTrusted(function (event) {
-      if (DomUtils.isEditable(event.target)) {
-        recentlyFocusedElement = event.target;
-      }
-    }),
-    true,
-  );
-  return () => recentlyFocusedElement;
-})();
+let recentlyFocusedElement = null;
+globalThis.lastFocusedInput = () => recentlyFocusedElement;
 
 const messageHandlers = {
+  "browserToolbox.runtimeDiagnostics"() {
+    return globalThis.BrowserToolboxRuntimeHostInstance?.getDiagnostics();
+  },
+  async "browserToolbox.restoreCompatibleRuntime"() {
+    const host = globalThis.BrowserToolboxRuntimeHostInstance;
+    if (!host || host.disposed) return { initializationState: "refresh-required" };
+    await host.deactivate("maintenance-restore");
+    runtimeMaintenancePaused = false;
+    host.maintenancePaused = false;
+    await checkIfEnabledForUrl();
+    return host.getDiagnostics();
+  },
+  async "browserToolbox.pauseRuntime"() {
+    runtimeMaintenancePaused = true;
+    BrowserToolboxRuntimeHostInstance.maintenancePaused = true;
+    globalThis.BrowserToolboxMouseControllerInstance?.cancelAll("runtime-plan-change");
+    frameInitializationGeneration++;
+    frameInitialization = null;
+    BrowserToolboxFrameRuntimeBridgeInstance.invalidateSession();
+    await BrowserToolboxRuntimeHostInstance.deactivate("maintenance-pause");
+    return BrowserToolboxRuntimeHostInstance.getDiagnostics();
+  },
   getFocusStatus(_request, _sender) {
+    const controller = globalThis.BrowserToolboxUIControllerInstance;
+    if (controller?.valid()) return controller.focus.status();
     return {
       focused: windowIsFocused(),
       focusable: isWindowFocusable(),
     };
   },
-  focusFrame(request) {
-    focusThisFrame(request);
+  async focusFrame(request) {
+    await focusThisFrame(request);
   },
   getScrollPosition(_ignoredA, _ignoredB) {
     if (DomUtils.isTopFrame()) {
@@ -374,10 +369,18 @@ const messageHandlers = {
     // TODO(philc): it seems to me that we should be able to get rid of this runInTopFrame
     // command, and instead use chrome.tabs.sendMessage with a frameId 0 from the background page.
     if (DomUtils.isTopFrame()) {
-      return NormalModeCommands[registryEntry.command](sourceFrameId, registryEntry);
+      return BrowserToolboxPageCommandExecutorInstance.executeCompatibilityTopFrame(
+        registryEntry,
+        sourceFrameId,
+      );
     }
   },
   linkHintsMessage(request, sender) {
+    if (
+      request.interactionId &&
+      !["getHintDescriptors", "activateMode"].includes(request.messageType) &&
+      request.interactionId !== HintCoordinator.runtimeInteractionId
+    ) return;
     if (HintCoordinator.willHandleMessage(request.messageType)) {
       return HintCoordinator[request.messageType](request, sender);
     }
@@ -388,6 +391,12 @@ const messageHandlers = {
 };
 
 async function handleMessage(request, sender) {
+  if (
+    !Utils.isFirefox() &&
+    (!BrowserToolboxMessageProtocol.isTrustedSender(sender, chrome.runtime.id) ||
+      sender.documentId != null ||
+      sender.url && sender.url !== chrome.runtime.getURL("background_scripts/main.js"))
+  ) return;
   // Some requests are so frequent and noisy (like checkEnabledAfterURLChange on
   // docs.google.com) that we silence debug logging for just those requests so the rest remain
   // useful.
@@ -403,7 +412,13 @@ async function handleMessage(request, sender) {
   // Some request are handled elsewhere in the code base; ignore them here.
   const shouldHandleMessage = request.handler !== "userIsInteractingWithThePage" &&
     (isEnabledForUrl ||
-      ["checkEnabledAfterURLChange", "runInTopFrame"].includes(request.handler));
+      [
+        "checkEnabledAfterURLChange",
+        "runInTopFrame",
+        "browserToolbox.runtimeDiagnostics",
+        "browserToolbox.restoreCompatibleRuntime",
+        "browserToolbox.pauseRuntime",
+      ].includes(request.handler));
   if (shouldHandleMessage) {
     const result = await messageHandlers[request.handler](request, sender);
     return result;
@@ -414,68 +429,280 @@ async function handleMessage(request, sender) {
 // Complete initialization work that should be done prior to DOMReady.
 //
 async function initializePreDomReady() {
-  // Run this as early as possible, so the page can't register any event handlers before us.
-  installListeners();
-  // NOTE(philc): I'm blocking further Vimium initialization on this, for simplicity. If necessary
-  // we could allow other tasks to run concurrently.
-  await checkIfEnabledForUrl();
-
-  Utils.addChromeRuntimeOnMessageListener(
+  BrowserToolboxRuntimeHostInstance.markInitializationStage("ui-authorization");
+  await globalThis.BrowserToolboxUIAuthorization?.ready;
+  BrowserToolboxRuntimeHostInstance.markInitializationStage("register-listeners");
+  const remove = Utils.addChromeRuntimeOnMessageListener(
     Object.keys(messageHandlers),
     handleMessage,
   );
+  BrowserToolboxDocumentResources.add(remove);
+  // 页面命令入口属于文档承载层，与鼠标识别器的创建、销毁相互独立。
+  const pageCommandListener = (message, sender, sendResponse) => {
+    const protocol = globalThis.BrowserToolboxMessageProtocol;
+    const v2 = message?.handler === "browserToolbox.message" && message.kind === "command" &&
+      message.action === "execute" && protocol?.validateEnvelope(message);
+    const lifecycle = message?.handler === "browserToolbox.message" &&
+      message.kind === "lifecycle" &&
+      ["relay", "hints"].includes(message.action) && protocol?.validateEnvelope(message);
+    if (
+      (!v2 && !lifecycle &&
+        (message?.type !== "browserToolbox.executePageCommand" || !protocol?.validate(message))) ||
+      !protocol.isTrustedSender(sender, chrome.runtime.id) ||
+      !Utils.isFirefox() &&
+        (sender.documentId != null ||
+          sender.url && sender.url !== chrome.runtime.getURL("background_scripts/main.js"))
+    ) return false;
+    if (lifecycle) {
+      const host = globalThis.BrowserToolboxRuntimeHostInstance;
+      if (
+        host?.state !== "active" || host.suspended ||
+        message.identity?.documentId !== host.context.documentId ||
+        message.identity.runtimeEpoch !== host.runtimeEpoch
+      ) {
+        sendResponse({ ok: false, code: "STALE_RUNTIME" });
+        return false;
+      }
+      const request = message.payload.message;
+      const handler = message.action === "hints"
+        ? messageHandlers.linkHintsMessage
+        : messageHandlers[request?.handler];
+      if (request?.handler === "userIsInteractingWithThePage" && message.action === "relay") {
+        Mode.modes.filter((mode) => mode.name === "grab-back-focus").forEach((mode) => mode.exit());
+        sendResponse({ ok: true });
+      } else if (
+        handler &&
+        !["runInTopFrame", "browserToolbox.restoreCompatibleRuntime"].includes(request?.handler)
+      ) {
+        // 同步动作在当前收件调用内回复；只有真正的异步动作才持有消息通道。
+        // 无返回值表示已收件，不能当作命令成功；同步抛错也必须有明确失败结果。
+        const deliver = (value) => sendResponse(value === undefined
+          ? { ok: true, code: "LIFECYCLE_DELIVERED" } : value);
+        try {
+          const value = handler({ ...request, isTrusted: true }, sender);
+          if (value && typeof value.then === "function") {
+            Promise.resolve(value).then(deliver).catch(() =>
+              sendResponse({ ok: false, code: "INTERACTION_UNAVAILABLE" }));
+            return true;
+          }
+          deliver(value);
+        } catch (_) {
+          sendResponse({ ok: false, code: "INTERACTION_UNAVAILABLE" });
+        }
+      } else sendResponse({ ok: false, code: "INVALID_MESSAGE_ACTION" });
+      return false;
+    }
+    const invocation = v2
+      ? {
+        ...message.payload.invocation,
+        identity: message.identity,
+        context: {
+          ...message.payload.invocation.context,
+          sourceDocumentId: message.payload.invocation.identity.documentId,
+        },
+      }
+      : message.invocation;
+    BrowserToolboxPageCommandExecutorInstance.execute(invocation).then(sendResponse).catch(
+      () => {
+        sendResponse(
+          BrowserToolboxCommandInvocation.createResult(
+            false,
+            v2 ? "RESULT_UNKNOWN" : "COMMAND_FAILED",
+          ),
+        );
+      },
+    );
+    return true;
+  };
+  chrome.runtime.onMessage.addListener(pageCommandListener);
+  BrowserToolboxDocumentResources.add(() =>
+    chrome.runtime.onMessage.removeListener(pageCommandListener)
+  );
+  await checkIfEnabledForUrl();
 }
 
-// Check if Vimium should be enabled or not based on the top frame's URL.
+let frameInitialization = null;
+let frameInitializationGeneration = 0;
+let initialFrameContext = null;
 async function checkIfEnabledForUrl() {
-  const promises = [];
-  promises.push(chrome.runtime.sendMessage({ handler: "initializeFrame" }));
-  if (!Settings.isLoaded()) {
-    promises.push(Settings.onLoaded());
-  }
-  const [response, ...unused] = await Promise.all(promises);
-
-  vimiumEnabledForUrl = response.isEnabledForUrl;
-  const browserToolboxRepository = globalThis.BrowserToolboxSettingsRepositoryInstance;
-  const browserToolboxRuntimeSettings = globalThis.BrowserToolboxSettingsRuntimeClientInstance;
-  let effective;
-  const updateBrowserToolboxKeyboardState = (settings) => {
-    effective = settings;
-    isEnabledForUrl = vimiumEnabledForUrl && effective?.effectiveModules?.keyboard !== false;
-    if (!isEnabledForUrl) HUD.hide(true, false);
-  };
-  if (browserToolboxRuntimeSettings) {
-    effective = await browserToolboxRuntimeSettings.ensureLoaded(document.location.href);
-    if (!browserToolboxKeyboardListenerInstalled) {
-      browserToolboxKeyboardListenerInstalled = true;
-      browserToolboxRuntimeSettings.addEventListener(updateBrowserToolboxKeyboardState);
-    }
-  } else if (browserToolboxRepository) {
-    await browserToolboxRepository.ensureLoaded();
-    effective = browserToolboxRepository.getEffectiveSettings(document.location.href);
-    if (!browserToolboxKeyboardListenerInstalled) {
-      browserToolboxKeyboardListenerInstalled = true;
-      browserToolboxRepository.addEventListener(() => {
-        updateBrowserToolboxKeyboardState(
-          browserToolboxRepository.getEffectiveSettings(document.location.href),
+  const host = globalThis.BrowserToolboxRuntimeHostInstance;
+  if (!host || host.disposed || host.suspended || runtimeMaintenancePaused) return;
+  if (frameInitialization) return frameInitialization;
+  const generation = frameInitializationGeneration;
+  const current = () =>
+    generation === frameInitializationGeneration && !host.disposed && !host.suspended;
+  const loading = (async () => {
+    let stage = "read-context";
+    host.markInitializationStage(stage);
+    try {
+      let loaded;
+      // 后台刚终止时首个读取可能被拒绝；只重试幂等握手/设置读取，不重放任何用户命令。
+      for (let attempt = 0; attempt < 3; attempt++) {
+        if (!current()) return;
+        try {
+          const initial = initialFrameContext;
+          initialFrameContext = null;
+          loaded = await Promise.all([
+            initial?.ready || BrowserToolboxFrameRuntimeBridgeInstance.initializeFrame(),
+            initial ? initial.readSettings() : BrowserToolboxSettingsProviderInstance.load(),
+          ]);
+          break;
+        } catch (error) {
+          if (attempt === 2 || extensionHasBeenUnloaded()) throw error;
+          await new Promise((resolve) => {
+            let finish;
+            const timer = setTimeout(() => finish(), 100 * (attempt + 1));
+            finish = host.documentResources.add(() => {
+              clearTimeout(timer);
+              resolve();
+            }, "timer");
+          });
+        }
+      }
+      const [response, snapshot] = loaded;
+      if (!current()) return;
+      vimiumEnabledForUrl = response.isEnabledForUrl;
+      Utils._isFirefox = response.isFirefox;
+      Utils._firefoxVersion = response.firefoxVersion;
+      Utils._browserInfoLoaded = true;
+      globalThis.frameId = response.frameId;
+      if (!host.engine) {
+        stage = "prepare-engine";
+        host.markInitializationStage(stage);
+        const prepared = await host.prepare(
+          globalThis.BrowserToolboxRuntimePlans?.allowed.find((plan) =>
+            plan.planVersion === (response.planVersion || 1)) || BrowserToolboxRuntime.COMPAT_PLAN,
+          snapshot.revision,
+          response,
         );
-      });
+        stage = "activate-engine";
+        host.markInitializationStage(stage);
+        await host.activate(prepared);
+      }
+      stage = "apply-settings";
+      host.markInitializationStage(stage);
+      normalMode.setPassKeys(response.passKeys);
+      await host.setEffectiveSettings(snapshot, "frame-handshake");
+      host.lastFailureStage = null;
+      host.markInitializationStage("ready");
+    } catch (_) {
+      if (!current()) return;
+      await host.deactivate("initialization-failed");
+      host.state = "failed";
+      host.lastErrorCode = "FRAME_INITIALIZATION_FAILED";
+      host.lastFailureStage = stage;
+      isEnabledForUrl = false;
     }
+  })();
+  frameInitialization = loading;
+  try {
+    await loading;
+  } finally {
+    if (frameInitialization === loading) frameInitialization = null;
   }
-  isEnabledForUrl = vimiumEnabledForUrl && effective?.effectiveModules?.keyboard !== false;
+}
 
-  // This browser info is used by other content scripts, but can only be determinted by the
-  // background page.
-  Utils._isFirefox = response.isFirefox;
-  Utils._firefoxVersion = response.firefoxVersion;
-  Utils._browserInfoLoaded = true;
-  // This is the first time we learn what this frame's ID is.
-  globalThis.frameId = response.frameId;
-
-  if (normalMode == null) installModes();
-  normalMode.setPassKeys(response.passKeys);
-  // Hide the HUD if we're not enabled.
-  if (!isEnabledForUrl) HUD.hide(true, false);
+function createCompatRuntimeHost() {
+  if (globalThis.BrowserToolboxRuntimeHostInstance) {
+    return globalThis.BrowserToolboxRuntimeHostInstance;
+  }
+  const compat = globalThis.BrowserToolboxCompatRuntime;
+  const initial = globalThis.BrowserToolboxInitialRuntimeContext?.claim();
+  globalThis.BrowserToolboxInitialRuntimeContext = null;
+  initialFrameContext = initial?.ready ? initial : null;
+  const provider = initial?.provider || new compat.SettingsProvider({
+    legacy: globalThis.BrowserToolboxVimiumSettingsAdapterInstance,
+    runtimeSettings: globalThis.BrowserToolboxSettingsRuntimeClientInstance,
+    repository: globalThis.BrowserToolboxSettingsRepositoryInstance,
+    url: () => document.location.href,
+  });
+  const bridge = initial?.bridge || new compat.FrameRuntimeBridge(chrome.runtime);
+  // 只在隔离输入包预读既有 session 数据，默认兼容包不创建额外读取或订阅。
+  const inputSnapshot = globalThis.BrowserToolboxRuntimePlans?.COMPILED_CANARY
+    ? new BrowserToolboxInputRuntime.SessionSnapshotReader(chrome, BrowserToolboxDocumentResources)
+    : null;
+  inputSnapshot?.read().catch(() => {});
+  globalThis.BrowserToolboxSettingsProviderInstance = provider;
+  globalThis.BrowserToolboxFrameRuntimeBridgeInstance = bridge;
+  const host = new BrowserToolboxRuntime.RuntimeHost({
+    eventTarget: globalThis,
+    documentTarget: document,
+    documentResources: BrowserToolboxDocumentResources,
+    allowedPlans: globalThis.BrowserToolboxRuntimePlans?.allowed || [BrowserToolboxRuntime.COMPAT_PLAN],
+    authorizeContext: (context, epoch) => bridge.registerSession(context, epoch),
+    isContextValid: () => !extensionHasBeenUnloaded(),
+    applyDecision: (type, event, decision) =>
+      handlerStack.applyEventDecision(type, event, decision),
+    beforeEvent: (type, event) => {
+      if (type === "focus") {
+        if (event.target === window) {
+          windowHasFocus = true;
+          checkIfEnabledForUrl();
+        }
+        if (DomUtils.isEditable(event.target)) recentlyFocusedElement = event.target;
+      } else if (type === "blur" && event.target === window) windowHasFocus = false;
+    },
+    onLifecycle: (type, event) => {
+      if (type === "pagehide") {
+        // 导航冻结尚未返回的握手；恢复必须新读身份，旧 Promise 不能占用新初始化入口。
+        frameInitializationGeneration++;
+        frameInitialization = null;
+        initialFrameContext = null;
+        bridge.invalidateSession();
+        provider.invalidate();
+        inputSnapshot?.invalidate();
+        if (host.context.documentId) {
+          chrome.runtime.sendMessage(
+            BrowserToolboxMessageProtocol.envelope("lifecycle", "unregister", {}, {
+              documentId: host.context.documentId,
+              runtimeEpoch: host.runtimeEpoch,
+              incognito: host.context.incognito === true,
+            }),
+          ).catch(() => {});
+        }
+        host.deactivate("pagehide");
+      } else if (type === "hashchange") checkEnabledAfterURLChange({ isTrusted: true });
+      else {
+        if (type === "pageshow" && !event.persisted) return;
+        host.suspended = false;
+        globalThis.BrowserToolboxSettingsRuntimeClientInstance?.invalidate();
+        checkIfEnabledForUrl().then(() => {
+          if (DomUtils.isReady() && host.state === "active") return bridge.ready();
+        }).catch(() => {});
+      }
+    },
+    engineFactory: (plan) => {
+      const Engine = plan.moduleImplementations.input === "browser-toolbox" ? BrowserToolboxInputRuntime.KeyboardEngine : compat.KeyboardEngine;
+      return new Engine({
+        handlerStack: {
+          decideEvent: (type, event) =>
+            isEnabledForUrl ? handlerStack.decideEvent(type, event) : BrowserToolboxRuntime.PASS,
+        },
+        installModes: (inputSettings) => installModes(plan, inputSettings),
+        enabled: () => isEnabledForUrl,
+        cleanup: cleanupCompatRuntime,
+        applySettings: (snapshot) => {
+          isEnabledForUrl = vimiumEnabledForUrl &&
+            snapshot.effective?.effectiveModules?.keyboard !== false;
+          if (!isEnabledForUrl) HUD.hide(true, false);
+        },
+        pageExecutor: BrowserToolboxPageCommandExecutorInstance,
+        plan,
+        inputSnapshot,
+      });
+    },
+  });
+  globalThis.BrowserToolboxRuntimeHostInstance = host;
+  // 初次load的返回值会在引擎就绪后应用；避免为尚无引擎的空操作克隆整份配置。
+  BrowserToolboxDocumentResources.add(provider.subscribe((snapshot) => {
+    host.setEffectiveSettings(snapshot, "settings-change").catch(() => {});
+  }, { when: () => Boolean(host.engine) }));
+  BrowserToolboxDocumentResources.add(() => provider.destroy());
+  BrowserToolboxDocumentResources.add(() => bridge.destroy());
+  BrowserToolboxDocumentResources.add(() =>
+    globalThis.BrowserToolboxSettingsRuntimeClientInstance?.destroy()
+  );
+  return host;
 }
 
 // 帮助页需要知道当前页面的有效模块状态，但不应自行读取或修改设置；这里沿用内容脚本
@@ -533,16 +760,21 @@ async function getBrowserToolboxHelpContext() {
 // methods to control the dialog. Otherwise, load the help dialog in a UIComponent iframe.
 const HelpDialog = {
   helpUI: null,
+  hiding: null,
 
   isShowing() {
     if (globalThis.isVimiumHelpDialogPage) return true;
+    const help = globalThis.BrowserToolboxUIControllerInstance?.help;
+    if (help) return help.showing;
     return this.helpUI && this.helpUI.showing;
   },
 
   abort() {
     if (globalThis.isVimiumHelpDialogPage) throw new Error("This should be impossible.");
+    const help = globalThis.BrowserToolboxUIControllerInstance?.help;
+    if (help) return help.abort(false);
     if (this.isShowing()) {
-      return this.helpUI.hide(false);
+      return this.hiding = this.helpUI.hide(false);
     }
   },
 
@@ -551,15 +783,34 @@ const HelpDialog = {
     // dialog, then we should hide it.
     if (globalThis.isVimiumHelpDialogPage) return HelpDialogPage.hide();
 
+    const ui = globalThis.BrowserToolboxUIControllerInstance;
+    if (ui?.valid() && (
+      ui.host.plan.moduleImplementations.help === "browser-toolbox" ||
+      ui.host.plan === BrowserToolboxRuntimePlans.UI_CANARY_PLAN
+    )) {
+      ui.help ||= new BrowserToolboxHelpRuntime.Controller(ui, getBrowserToolboxHelpContext);
+      return ui.help.toggle(request);
+    }
+
+    const host = globalThis.BrowserToolboxRuntimeHostInstance;
+    const epoch = host?.runtimeEpoch;
+    const stillActive = () =>
+      !host || !host.disposed && !host.suspended &&
+        host.runtimeEpoch === epoch && !["disabled", "deactivating", "failed"].includes(host.state);
+
     if (this.helpUI == null) {
       await DomUtils.documentComplete();
+      if (!stillActive()) return;
       this.helpUI = new UIComponent();
       this.helpUI.load("pages/help_dialog_page.html", "vimium-help-dialog-frame");
     }
     if (this.isShowing()) {
-      this.helpUI.hide();
+      return this.hiding = this.helpUI.hide();
     } else {
+      await this.hiding;
+      if (!stillActive()) return;
       const browserToolbox = await getBrowserToolboxHelpContext();
+      if (!stillActive()) return;
       return this.helpUI.show(
         { name: "show", browserToolbox },
         { focus: true, sourceFrameId: request.sourceFrameId },
@@ -570,9 +821,13 @@ const HelpDialog = {
 
 const testEnv = globalThis.window == null;
 if (!testEnv) {
+  createCompatRuntimeHost();
   initWindowIsFocused();
-  initializePreDomReady();
-  DomUtils.documentReady().then(initializeOnDomReady);
+  const initialization = initializePreDomReady().catch(onUnload);
+  DomUtils.documentReady().then(async () => {
+    await initialization;
+    if (BrowserToolboxRuntimeHostInstance.state === "active") await initializeOnDomReady();
+  }).catch(() => {});
 }
 
 Object.assign(globalThis, {
@@ -585,4 +840,6 @@ Object.assign(globalThis, {
   focusThisFrame,
   // Exported only for tests.
   installModes,
+  createCompatRuntimeHost,
+  checkIfEnabledForUrl,
 });

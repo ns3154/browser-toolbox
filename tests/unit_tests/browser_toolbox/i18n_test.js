@@ -1,5 +1,6 @@
 import "../test_helper.js";
 import "../../../background_scripts/browser_toolbox/settings_storage.js";
+import "../../../lib/browser_toolbox/command_definitions.js";
 import "../../../lib/i18n.js";
 import { synchronizeCatalogs } from "../../../scripts/sync_i18n.js";
 
@@ -160,6 +161,20 @@ context("BrowserToolbox internationalization", () => {
       assert.equal("保存", BrowserToolboxI18n.message("save"));
     } finally {
       chrome.storage.sync.store = previousStore;
+    }
+  });
+
+  should("provide localized i18n labels for every registered command across all locales", () => {
+    const commands = BrowserToolboxCommandDefinitions.listCommands();
+    assert.isTrue(commands.length >= 95);
+    for (const locale of ["en", "zh_CN", "zh_TW", "ja", "es"]) {
+      BrowserToolboxI18n.setLocale(locale);
+      for (const command of commands) {
+        assert.isTrue(
+          BrowserToolboxI18n.hasMessage(command.i18nKey),
+          `${locale} missing ${command.i18nKey}`,
+        );
+      }
     }
   });
 });

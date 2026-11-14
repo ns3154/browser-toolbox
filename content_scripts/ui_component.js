@@ -9,9 +9,54 @@
 // this class. Since the iframe's page can receive messages from untrusted javascript, secure
 // message passing is achieved using ports from MessageChannel() and a vimiumSecret handshake.
 class UIComponent {
+  static instances = new Set();
+  constructor() {
+    const controller = globalThis.BrowserToolboxUIControllerInstance;
+    if (controller?.valid(true)) return controller.createComponent();
+    this.disposed = false;
+    this.resources = globalThis.BrowserToolboxRuntime
+      ? new BrowserToolboxRuntime.ResourceScope()
+      : null;
+    UIComponent.instances.add(this);
+  }
+
+  static destroyAll() {
+    for (const component of [...this.instances]) component.destroy();
+  }
+
+  destroy() {
+    if (this.disposed) return;
+    this.disposed = true;
+    this.revision++;
+    this.releaseAuthorization();
+    this.showing = false;
+    this.resources?.dispose();
+    this.removeFocusListener?.();
+    this.observer?.disconnect();
+    for (const port of this.messageChannelPorts || []) {
+      port.onmessage = null;
+      port.close();
+    }
+    this.resolvePort?.(null);
+    this.shadowDOM?.host.remove();
+    this.iframeElement?.remove();
+    this.messageHandler = null;
+    UIComponent.instances.delete(this);
+  }
+
+  releaseAuthorization() {
+    const authorization = this.authorization;
+    if (authorization) {
+      this.authorization = null;
+      chrome.runtime.sendMessage(BrowserToolboxMessageProtocol.envelope("ui", "release", {
+        componentId: authorization.componentId,
+      }, this.ownerIdentity)).catch(() => {});
+    }
+  }
   iframeElement;
   iframePort;
   showing = false;
+  revision = 0;
   // An optional message handler for handling messages from the iFrame.
   messageHandler;
   iframeFrameId;
@@ -49,7 +94,7 @@ class UIComponent {
 
     // Fetch "content_scripts/vimium.css" from chrome.storage.session; the background page caches
     // it there.
-    chrome.storage.session.get("vimiumCSSInChromeStorage")
+    this.cssReady = chrome.storage.session.get("vimiumCSSInChromeStorage")
       .then(async (items) => {
         let cssText = items.vimiumCSSInChromeStorage;
         if (!cssText) {
@@ -57,7 +102,7 @@ class UIComponent {
           const response = await fetch(chrome.runtime.getURL("content_scripts/vimium.css"));
           if (response.ok) cssText = await response.text();
         }
-        if (cssText) styleSheet.textContent = cssText;
+        if (cssText && !this.disposed) styleSheet.textContent = cssText;
       })
       .catch(() => {});
 
@@ -75,24 +120,54 @@ class UIComponent {
     // block until it's ready. See #1679.
     let resolveFn;
     this.iframePort = new Promise((resolve, _reject) => {
-      resolveFn = resolve;
+      this.resolvePort = resolveFn = resolve;
     });
 
     this.setIframeVisible(false);
-    this.iframeElement.src = chrome.runtime.getURL(iframeUrl);
     await DomUtils.documentReady();
+    if (this.disposed) return;
     this.handleDarkReaderFilter();
-    document.documentElement.appendChild(shadowWrapper);
 
-    const secret = (await chrome.storage.session.get("vimiumSecret")).vimiumSecret;
+    let authorization;
+    const host = globalThis.BrowserToolboxRuntimeHostInstance;
+    if (host?.context.documentId && !isDomTests && !Utils.isFirefox()) {
+      const component = {
+        "pages/hud_page.html": "hud",
+        "pages/vomnibar_page.html": "vomnibar",
+        "pages/help_dialog_page.html": "help",
+      }[iframeUrl.split(/[?#]/)[0]];
+      this.ownerIdentity = {
+        documentId: host.context.documentId,
+        runtimeEpoch: host.runtimeEpoch,
+        incognito: host.context.incognito === true,
+      };
+      const response = await chrome.runtime.sendMessage(BrowserToolboxMessageProtocol.envelope(
+        "ui",
+        "authorize",
+        { component, componentId: crypto.randomUUID() },
+        this.ownerIdentity,
+      ));
+      if (!response?.ok) throw new Error(response?.code || "UI_AUTHORIZATION_FAILED");
+      authorization = response.grant;
+      this.authorization = {
+        componentId: response.grant.componentId,
+        grantId: response.grant.grantId,
+      };
+    } else authorization = (await chrome.storage.session.get("vimiumSecret")).vimiumSecret;
+    if (this.disposed) {
+      // 授权可能在销毁后才返回；不能留下无人持有的一次性组件授权。
+      this.releaseAuthorization();
+      return;
+    }
     const { port1, port2 } = new MessageChannel();
     this.messageChannelPorts = [port1, port2];
-    this.iframeElement.addEventListener("load", () => {
+    const onLoad = () => {
+      if (this.disposed) return;
       // Get vimiumSecret so the iframe can determine that our message isn't the page
       // impersonating us.
       // Outside of tests, target origin starts with chrome-extension://{vimium's-id}
       const targetOrigin = isDomTests ? "*" : chrome.runtime.getURL("");
-      this.iframeElement.contentWindow.postMessage(secret, targetOrigin, [port2]);
+      this.iframeElement.contentWindow.postMessage(authorization, targetOrigin, [port2]);
       port1.onmessage = (event) => {
         let eventName = null;
         // TODO(philc): Why are we using both data and data.name as the name? Pick one.
@@ -101,19 +176,44 @@ class UIComponent {
         }
 
         switch (eventName) {
+          case "uiAuthorizationProof": {
+            const proof = event.data.proof;
+            if (
+              !this.authorization || proof.grantId !== this.authorization.grantId ||
+              proof.componentId !== this.authorization.componentId
+            ) return;
+            chrome.runtime.sendMessage(
+              BrowserToolboxMessageProtocol.envelope("ui", "attest", proof, this.ownerIdentity),
+            ).then((result) => {
+              if (!this.disposed) {
+                port1.postMessage({
+                  name: "uiAuthorizationComplete",
+                  proofId: proof.proofId,
+                  ok: result?.ok === true,
+                });
+              }
+            }).catch(() => {});
+            break;
+          }
           case "uiComponentIsReady":
             // If this frame receives the focus, then hide the UI component.
-            globalThis.addEventListener(
-              "focus",
-              forTrusted((event) => {
-                if ((event.target === window) && this.focusOptions.focus) {
-                  this.hide(false);
-                }
-                // Continue propagating the event.
-                return true;
-              }),
-              true,
-            );
+            this.removeFocusListener?.();
+            const onFocus = forTrusted((event) => {
+              if ((event.target === window) && this.focusOptions.focus) {
+                // 从子frame激活本组件会先聚焦所属window，不能把这次焦点转移当作用户退出。
+                if (this.focusingIframe || this.shadowDOM.activeElement === this.iframeElement) return true;
+                this.hide(false);
+              }
+              // Continue propagating the event.
+              return true;
+            });
+            const host = globalThis.BrowserToolboxRuntimeHostInstance;
+            if (host) this.removeFocusListener = host.observe("focus", onFocus);
+            else {
+              globalThis.addEventListener("focus", onFocus, true);
+              this.removeFocusListener = () =>
+                globalThis.removeEventListener("focus", onFocus, true);
+            }
             // Set the iframe's port, thereby rendering the UI component ready.
             resolveFn(port1);
             break;
@@ -121,12 +221,17 @@ class UIComponent {
             this.iframeFrameId = event.data.iframeFrameId;
             break;
           case "hide":
-            return this.hide();
+            return this.hide(undefined, event.data?.interactionId);
           default:
             this.messageHandler?.(event);
         }
       };
-    });
+    };
+    this.iframeElement.addEventListener("load", onLoad);
+    this.resources?.add(() => this.iframeElement.removeEventListener("load", onLoad), "listener");
+    // 握手监听和一次性授权先就绪，再开始导航，避免 iframe 已加载而尚未安装 load 监听。
+    this.iframeElement.src = chrome.runtime.getURL(iframeUrl);
+    document.documentElement.appendChild(shadowWrapper);
   }
 
   // This ensures that Vimium's UI elements (HUD, Vomnibar) honor the browser's light/dark theme
@@ -146,8 +251,10 @@ class UIComponent {
 
     reverseFilterIfExists();
 
-    const observer = new MutationObserver(reverseFilterIfExists);
-    observer.observe(document.head, { characterData: true, subtree: true, childList: true });
+    this.observer = new MutationObserver(reverseFilterIfExists);
+    if (document.head) {
+      this.observer.observe(document.head, { characterData: true, subtree: true, childList: true });
+    }
   }
 
   setIframeVisible(visible) {
@@ -164,7 +271,8 @@ class UIComponent {
   // Send a message to this UIComponent's iframe's page.
   // - data: an object with at least a `name` field.
   async postMessage(data) {
-    (await this.iframePort).postMessage(data);
+    const port = await this.iframePort;
+    if (!this.disposed && port) port.postMessage(data);
   }
 
   // Show the UIComponent.
@@ -174,44 +282,78 @@ class UIComponent {
   //     sourceFrameId: which frame should the focus when this component is dismissed.
   //   }
   async show(messageData = {}, focusOptions = {}) {
+    const revision = ++this.revision;
+    await this.refocusing;
+    const host = globalThis.BrowserToolboxRuntimeHostInstance;
+    const runtimeEpoch = host?.runtimeEpoch;
+    const interactionEpoch = host?.interactionEpoch;
     if (focusOptions) {
       Utils.assertType({ focus: "boolean", sourceFrameId: "number" }, focusOptions);
     }
     this.focusOptions = focusOptions;
-    await this.postMessage(messageData);
+    // 外层仍为 display:none 时聚焦会被浏览器忽略；样式就绪后再激活，避免冷启动丢失输入焦点。
+    const [_, port] = await Promise.all([this.cssReady, this.iframePort]);
+    if (
+      this.disposed || !port || revision !== this.revision ||
+      host &&
+        (host.state !== "active" || host.runtimeEpoch !== runtimeEpoch ||
+          host.interactionEpoch !== interactionEpoch)
+    ) return false;
+    this.interactionId = messageData.interactionId || null;
+    port.postMessage(messageData);
     this.setIframeVisible(true);
     if (this.focusOptions.focus) {
-      this.iframeElement.focus();
+      this.focusingIframe = true;
+      try { this.iframeElement.focus(); }
+      finally { this.focusingIframe = false; }
     }
     this.showing = true;
+    return true;
   }
 
-  async hide(shouldRefocusOriginalFrame) {
+  async hide(shouldRefocusOriginalFrame, interactionId) {
     if (shouldRefocusOriginalFrame == null) shouldRefocusOriginalFrame = true;
 
     await this.iframePort;
+    if (this.disposed) return;
+    // 独立组件的迟到hide不能关闭较新的激活；旧组件仍使用原无编号握手。
+    if (interactionId && interactionId !== this.interactionId) return;
+    this.revision++;
     if (!this.showing) return;
     this.showing = false;
     this.setIframeVisible(false);
+    let refocusing;
     if (this.focusOptions.focus) {
       this.iframeElement.blur();
       if (shouldRefocusOriginalFrame) {
         if (this.focusOptions.sourceFrameId != null) {
-          chrome.runtime.sendMessage({
-            handler: "sendMessageToFrames",
-            frameId: this.focusOptions.sourceFrameId,
-            message: {
+          refocusing = BrowserToolboxFrameRuntimeBridgeInstance.sendToFrame(
+            this.focusOptions.sourceFrameId,
+            {
               handler: "focusFrame",
               forceFocusThisFrame: true,
             },
-          });
+          ).catch(() => {});
         } else {
-          Utils.nextTick(() => globalThis.focus());
+          refocusing = new Promise((resolve) => {
+            const removeCancellation = this.resources?.add(resolve);
+            Utils.nextTick(() => {
+              try {
+                if (!this.disposed) globalThis.focus();
+              } finally {
+                removeCancellation?.();
+                resolve();
+              }
+            });
+          });
         }
       }
     }
     this.focusOptions = {};
-    this.postMessage({ name: "hidden" }); // Inform the UI component that it is hidden.
+    this.refocusing = refocusing;
+    this.postMessage({ name: "hidden", ...(this.interactionId ? { interactionId: this.interactionId } : {}) });
+    // 关闭的完成回执包含原有归焦任务，帮助重开不再越过仍在途的旧任务。
+    await refocusing;
   }
 }
 

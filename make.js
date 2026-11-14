@@ -97,6 +97,7 @@ async function runPuppeteerTest(page, url) {
   page.goto(url);
   await page.waitForNavigation({ waitUntil: "load" });
   const success = await page.evaluate(async () => {
+    await globalThis.domTestInitialization;
     return await shoulda.run();
   });
   return success;

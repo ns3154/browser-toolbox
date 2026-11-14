@@ -14,38 +14,78 @@ class NormalMode extends KeyHandlerMode {
 
     chrome.storage.session.get(
       "normalModeKeyStateMapping",
-      (items) => this.setKeyMapping(items.normalModeKeyStateMapping),
+      (items) => {
+        if (this.modeIsActive) this.setKeyMapping(items.normalModeKeyStateMapping || {});
+      },
     );
 
-    chrome.storage.onChanged.addListener((changes, area) => {
+    const storageListener = (changes, area) => {
       if (area === "session" && changes.normalModeKeyStateMapping?.newValue) {
         this.setKeyMapping(changes.normalModeKeyStateMapping.newValue);
       }
-    });
+    };
+    chrome.storage.onChanged.addListener(storageListener);
+    this.onExit(() => chrome.storage.onChanged.removeListener(storageListener));
   }
 
   commandHandler({ command: registryEntry, count }) {
-    if (registryEntry.options.count) {
-      count = (count ?? 1) * registryEntry.options.count;
+    let countProvided = count != null || Boolean(registryEntry.options.count);
+    const host = globalThis.BrowserToolboxRuntimeHostInstance;
+    const descriptor = host?.state === "active" && host.context.documentId && !Utils.isFirefox()
+      ? globalThis.BrowserToolboxCommandDefinitions?.getCommand(registryEntry.command)
+      : null;
+    if (descriptor) {
+      ({ count, countProvided } = BrowserToolboxCommandInvocation.keyboardCount(
+        descriptor,
+        registryEntry.options,
+        count,
+      ));
+    } else {
+      if (registryEntry.options.count) {
+        count = (count ?? 1) * registryEntry.options.count;
+      }
+
+      // closeTabsOnLeft and closeTabsOnRight interpret a null count as "close all tabs in
+      // {direction}", so don't default the count to 1 for those commands. See #4296.
+      const allowNullCount = ["closeTabsOnLeft", "closeTabsOnRight"].includes(
+        registryEntry.command,
+      );
+      if (!allowNullCount && count == null) {
+        count = 1;
+      }
+
+      if ((descriptor?.countPolicy.noRepeat ?? registryEntry.noRepeat) && count) {
+        count = 1;
+      }
     }
 
-    // closeTabsOnLeft and closeTabsOnRight interpret a null count as "close all tabs in
-    // {direction}", so don't default the count to 1 for those commands. See #4296.
-    const allowNullCount = ["closeTabsOnLeft", "closeTabsOnRight"].includes(registryEntry.command);
-    if (!allowNullCount && count == null) {
-      count = 1;
-    }
-
-    if (registryEntry.noRepeat && count) {
-      count = 1;
-    }
-
-    if ((registryEntry.repeatLimit != null) && (registryEntry.repeatLimit < count)) {
+    const threshold = descriptor?.countPolicy.confirmationThreshold ?? registryEntry.repeatLimit;
+    if ((threshold != null) && (threshold < count)) {
       const result = confirm(
         `You have asked Vimium to perform ${count} repetitions of the ` +
           `command "${registryEntry.command}". Are you sure you want to continue?`,
       );
       if (!result) return;
+    }
+
+    if (descriptor) {
+      const identity = {
+        documentId: host.context.documentId,
+        runtimeEpoch: host.runtimeEpoch,
+        incognito: host.context.incognito === true,
+      };
+      const invocation = BrowserToolboxCommandInvocation.createV2(
+        registryEntry.command,
+        registryEntry.options || {},
+        { type: "keyboard" },
+        {
+          sourceFrameId: globalThis.isVimiumUIComponent ? 0 : frameId,
+          interactionEpoch: host.interactionEpoch,
+        },
+        count,
+        { countProvided, identity, confirmationGranted: threshold != null && count > threshold },
+      );
+      return BrowserToolboxPageCommandExecutorInstance.invoke(invocation);
     }
 
     // BrowserToolbox 新命令仍走统一 Dispatcher，键盘输入与鼠标输入共享同一执行入口。
@@ -72,8 +112,7 @@ class NormalMode extends KeyHandlerMode {
     } else if (registryEntry.background) {
       chrome.runtime.sendMessage({ handler: "runBackgroundCommand", registryEntry, count });
     } else {
-      const commandFn = NormalModeCommands[registryEntry.command];
-      commandFn(count, { registryEntry });
+      BrowserToolboxPageCommandExecutorInstance.executeCompatibility(registryEntry, count);
     }
   }
 }
@@ -231,14 +270,20 @@ const NormalModeCommands = {
   },
 
   // Find.
-  performFind(count) {
+  performFind(count, { executionDeadline } = {}) {
     for (let i = 0, end = count; i < end; i++) {
+      if (executionDeadline && Date.now() >= executionDeadline) {
+        throw new Error("EXECUTION_BUDGET_EXCEEDED");
+      }
       FindMode.findNext(false);
     }
   },
 
-  performBackwardsFind(count) {
+  performBackwardsFind(count, { executionDeadline } = {}) {
     for (let i = 0, end = count; i < end; i++) {
+      if (executionDeadline && Date.now() >= executionDeadline) {
+        throw new Error("EXECUTION_BUDGET_EXCEEDED");
+      }
       FindMode.findNext(true);
     }
   },

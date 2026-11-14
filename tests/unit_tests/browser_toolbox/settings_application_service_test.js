@@ -70,6 +70,50 @@ context("Settings application service", () => {
     assert.equal("vimium-copy", snapshot.vimium.keyMappings);
   });
 
+  should("导入要求备份时必须使用后台导入入口，后台不可用不能回退为双域直写", async () => {
+    const { service, writes } = createHarness();
+    const loaded = await service.load({});
+    let submitted;
+    stub(globalThis, "BrowserToolboxConfigurationClientInstance", {
+      enabled: true,
+      async importConfiguration(input) {
+        submitted = input;
+        throw Object.assign(new Error("合成停止"), { code: "TEST_STOP" });
+      },
+      async commit() {
+        throw new Error("导入不得调用无备份的普通提交");
+      },
+    });
+    let caught;
+    try {
+      await service.commit(loaded.settings, {
+        registry: {},
+        vimiumPatch: { exclusionRules: [] },
+        beforeImport: true,
+      });
+    } catch (failure) {
+      caught = failure;
+    }
+    assert.equal("TEST_STOP", caught?.code);
+    assert.equal([], submitted.legacyPatch.exclusionRules);
+    assert.equal([], writes);
+  });
+
+  should("导入备份时后台不可用不会绕过队列直接写入", async () => {
+    const { service, repository, writes } = createHarness();
+    const loaded = await service.load({});
+    stub(globalThis, "BrowserToolboxConfigurationClientInstance", { enabled: false });
+    stub(repository, "load", async () => writes.push("unexpected-reload"));
+    let caught;
+    try {
+      await service.commit(loaded.settings, { registry: {}, beforeImport: true });
+    } catch (failure) {
+      caught = failure;
+    }
+    assert.equal("CONFIGURATION_UNAVAILABLE", caught?.code);
+    assert.equal([], writes);
+  });
+
   should("commit both domains while preserving unrelated external Vimium fields", async () => {
     const { service, repository, vimiumSettings, writes } = createHarness();
     const loaded = await service.load({});

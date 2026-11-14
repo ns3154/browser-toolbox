@@ -88,4 +88,19 @@ context("Direction quantizer", () => {
     assert.equal(["R"], BrowserToolboxDirectionQuantizer.normalizePattern(["R", "bad"]));
     assert.equal([], BrowserToolboxDirectionQuantizer.normalizePattern(42));
   });
+
+  should("apply turn hysteresis near 45-degree diagonals without blocking real turns", () => {
+    assert.equal(
+      "R",
+      BrowserToolboxDirectionQuantizer.quantize(18, 20, "4-way", "R", 18),
+    );
+    assert.equal(
+      "D",
+      BrowserToolboxDirectionQuantizer.quantize(10, 20, "4-way", "R", 18),
+    );
+    assert.equal(
+      "L",
+      BrowserToolboxDirectionQuantizer.quantize(-20, 4, "4-way", "R", 18),
+    );
+  });
 });

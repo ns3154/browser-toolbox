@@ -7,6 +7,7 @@
       this.pending = false;
       this.pendingUntil = 0;
       this.contextMenuSeen = false;
+      this.earlyContextMenuSuppressed = false;
       this.nativeMenuRetryUntil = 0;
       this.nativeMenuRetryPoint = null;
     }
@@ -19,6 +20,7 @@
       this.pending = false;
       this.pendingUntil = 0;
       this.contextMenuSeen = false;
+      this.earlyContextMenuSuppressed = false;
       this.clearNativeMenuRetry();
     }
 
@@ -54,6 +56,8 @@
     }
 
     consume() {
+      // 区分候选期拦下的提前菜单（macOS）和激活后拦下的菜单，避免误把单次右键当成双击候选。
+      if (this.provisional) this.earlyContextMenuSuppressed = true;
       if (this.active) this.contextMenuSeen = true;
       this.pending = false;
       this.pendingUntil = 0;
@@ -91,6 +95,7 @@
     reset() {
       this.active = false;
       this.provisional = false;
+      this.earlyContextMenuSuppressed = false;
       this.clearPending();
       this.clearNativeMenuRetry();
     }

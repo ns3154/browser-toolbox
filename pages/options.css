@@ -289,6 +289,18 @@ textarea:focus {
   margin-left: 2px;
 }
 
+#exclusion-rules .exclusion-preserved-warning {
+  color: var(--vimium-foreground-text-color, #303942);
+  font-size: 12px;
+  line-height: 1.4;
+  margin: 4px 2px 6px;
+}
+
+#exclusion-rules .remove:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+
 #exclusion-rules .remove {
   border: none;
   color: #979ca0;
@@ -436,4 +448,133 @@ input#upload-backup {
     border-color: #75747a;
     background-color: #222127;
   }
+}
+
+/* Browser Toolbox 统一多主题外观（仅作用于独立键盘设置页） */
+body.vimium-body:has(#wrapper) {
+  background: var(--bt-bg);
+  color: var(--bt-text);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+body.vimium-body:has(#wrapper) div#wrapper,
+body.vimium-body:has(#wrapper) #footer-content {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding-left: 28px;
+  padding-right: 28px;
+  box-sizing: border-box;
+}
+
+body.vimium-body:has(#wrapper) header {
+  margin: 0 0 10px;
+  padding: 28px 0 14px;
+  border-bottom: 1px solid var(--bt-border-subtle);
+  color: var(--bt-text);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+body.vimium-body:has(#wrapper) a,
+body.vimium-body:has(#wrapper) a:visited {
+  color: var(--bt-accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+body.vimium-body:has(#wrapper) a:hover {
+  text-decoration: underline;
+}
+
+body.vimium-body:has(#wrapper) #settings-grid-container {
+  gap: 14px 24px;
+  padding: 20px 24px 24px;
+  margin-top: 14px;
+  margin-bottom: 108px;
+  border: 1px solid var(--bt-border-subtle);
+  border-radius: 16px;
+  background: var(--bt-surface-card);
+}
+
+body.vimium-body:has(#wrapper) #settings-grid-container h2 {
+  margin: 8px 0 2px;
+  color: var(--bt-text);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+body.vimium-body:has(#wrapper) input[type="text"],
+body.vimium-body:has(#wrapper) input[type="number"],
+body.vimium-body:has(#wrapper) textarea,
+body.vimium-body:has(#wrapper) #exclusion-scroll-box {
+  border: 1px solid var(--bt-border-strong);
+  border-radius: 10px;
+  background: var(--bt-surface-card);
+  color: var(--bt-text);
+}
+
+body.vimium-body:has(#wrapper) textarea {
+  padding: 10px 12px;
+}
+
+body.vimium-body:has(#wrapper) input[type="text"],
+body.vimium-body:has(#wrapper) input[type="number"] {
+  min-height: 34px;
+  padding: 5px 10px;
+}
+
+body.vimium-body:has(#wrapper) #exclusion-scroll-box {
+  padding: 10px;
+  background: var(--bt-surface-subtle);
+  border-color: var(--bt-border-subtle);
+}
+
+body.vimium-body:has(#wrapper) button {
+  min-height: 34px;
+  padding: 6px 14px;
+  border: 1px solid var(--bt-border-strong);
+  border-radius: 9px;
+  background: var(--bt-surface-card);
+  background-image: none;
+  box-shadow: none;
+  text-shadow: none;
+  color: var(--bt-text);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+body.vimium-body:has(#wrapper) button:hover:not(:disabled) {
+  border-color: var(--bt-accent);
+  background: var(--bt-accent-soft);
+  background-image: none;
+  box-shadow: none;
+  color: var(--bt-accent-strong);
+}
+
+body.vimium-body:has(#wrapper) #save {
+  border-color: var(--bt-accent);
+  background: var(--bt-accent);
+  color: var(--bt-accent-contrast);
+}
+
+body.vimium-body:has(#wrapper) #save:disabled {
+  opacity: 0.45;
+  border-color: var(--bt-border-strong);
+  background: var(--bt-surface-subtle);
+  color: var(--bt-subtle);
+}
+
+body.vimium-body:has(#wrapper) .example {
+  color: var(--bt-muted);
+  margin-left: 0;
+}
+
+body.vimium-body:has(#wrapper) footer {
+  border-top: 1px solid var(--bt-border-subtle);
+  background: color-mix(in srgb, var(--bt-bg) 92%, transparent);
+  backdrop-filter: blur(10px);
+  color: var(--bt-muted);
 }

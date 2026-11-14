@@ -4,7 +4,9 @@
   padding: 28px;
   background: var(--toolbox-surface);
   border: 1px solid var(--toolbox-border);
-  border-radius: var(--toolbox-radius);
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 .browser-toolbox-onboarding h1 { margin-top: 0; }

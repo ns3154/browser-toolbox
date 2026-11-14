@@ -20,6 +20,17 @@ context("BrowserToolbox settings validator", () => {
     assert.isFalse(BrowserToolboxSettingsValidator.validate(invalid, registry).ok);
   });
 
+  should("accept every supported theme in saved or imported settings", () => {
+    for (const theme of ["sage-mist", "cobalt", "paper-ink", "slate"]) {
+      const settings = BrowserToolboxSettingsSchema.mergeSettings({ general: { theme } });
+      const result = BrowserToolboxSettingsValidator.validate(settings, registry);
+      assert.isTrue(result.ok);
+      assert.equal(theme, result.value.general.theme);
+    }
+    const invalid = BrowserToolboxSettingsSchema.mergeSettings({ general: { theme: "neon" } });
+    assert.isFalse(BrowserToolboxSettingsValidator.validate(invalid, registry).ok);
+  });
+
   should("validate browser startup settings and reject unsafe URLs", () => {
     const valid = BrowserToolboxSettingsSchema.mergeSettings({
       browserStartup: { enabled: true, url: "https://example.com/start" },

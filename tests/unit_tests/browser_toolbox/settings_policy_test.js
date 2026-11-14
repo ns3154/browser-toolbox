@@ -101,4 +101,32 @@ context("Settings policy", () => {
     assert.equal("reading", effective.effectiveSiteProfile.preset);
     assert.equal(false, effective.effectiveSiteProfile.mouse.enabled);
   });
+
+  should("冻结输入的站点覆盖只读，返回配置的嵌套绑定仍独立", () => {
+    const schema = BrowserToolboxSettingsSchema;
+    const policy = BrowserToolboxSettingsPolicy;
+    const settings = schema.mergeSettings({
+      siteRules: [{
+        pattern: "https://example.com/*",
+        profile: { mouse: {
+          enabled: false,
+          bindings: [{ pattern: ["U"], commandName: "reload", options: { hard: false } }],
+        } },
+      }],
+    });
+    const before = JSON.stringify(settings);
+    const freeze = (value) => {
+      if (!value || typeof value !== "object") return;
+      Object.values(value).forEach(freeze);
+      Object.freeze(value);
+    };
+    freeze(settings);
+    const modules = policy.resolveEffectiveModules(settings, "https://example.com/page");
+    const effective = policy.withEffectiveSettings(settings, "https://example.com/page");
+    assert.isFalse(modules.mouse);
+    assert.equal(modules, effective.effectiveModules);
+    effective.mouse.bindings[0].options.hard = true;
+    effective.siteRules[0].profile.mouse.bindings[0].pattern.push("D");
+    assert.equal(before, JSON.stringify(settings));
+  });
 });

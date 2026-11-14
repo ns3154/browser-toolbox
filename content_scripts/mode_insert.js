@@ -1,5 +1,6 @@
 class InsertMode extends Mode {
   constructor(options) {
+    if (globalThis.BrowserToolboxScrollControllerInstance) return new BrowserToolboxInputRuntime.InsertMode(options);
     super();
     if (options == null) {
       options = {};
@@ -17,14 +18,15 @@ class InsertMode extends Mode {
     // This list of keys is parsed from the user's key mapping config by commands.js, and stored in
     // chrome.storage.session.
     chrome.storage.session.get("passNextKeyKeys").then((value) => {
-      this.passNextKeyKeys = value.passNextKeyKeys || [];
+      if (this.modeIsActive) this.passNextKeyKeys = value.passNextKeyKeys || [];
     });
 
-    chrome.storage.onChanged.addListener(async (changes, areaName) => {
+    const storageListener = async (changes, areaName) => {
       if (areaName != "local") return;
       if (changes.passNextKeyKeys == null) return;
       this.passNextKeyKeys = changes.passNextKeyKeys.newValue;
-    });
+    };
+    chrome.storage.onChanged.addListener(storageListener);
 
     const handleKeyEvent = (event) => {
       if (!this.isActive(event)) {
@@ -65,6 +67,7 @@ class InsertMode extends Mode {
     };
 
     super.init(Object.assign(defaults, options));
+    this.onExit(() => chrome.storage.onChanged.removeListener(storageListener));
 
     // Only for tests. This gives us a hook to test the status of the permanently-installed
     // instance.
@@ -102,6 +105,7 @@ InsertMode.suppressedEvent = null;
 // This implements the pasNexKey command.
 class PassNextKeyMode extends Mode {
   constructor(count) {
+    if (globalThis.BrowserToolboxScrollControllerInstance) return new BrowserToolboxInputRuntime.PassNextKeyMode(count);
     if (count == null) {
       count = 1;
     }

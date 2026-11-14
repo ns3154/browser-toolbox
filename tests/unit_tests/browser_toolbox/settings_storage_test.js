@@ -430,4 +430,20 @@ context("Settings storage adapter", () => {
         BrowserToolboxSettingsStorage.MAX_SYNC_BYTES,
     );
   });
+
+  should("计算浏览器转义字符的真实容量并在写入前拒绝超额", async () => {
+    assert.equal(8, BrowserToolboxSettingsStorage.serializedSize("<"));
+    assert.equal(8, BrowserToolboxSettingsStorage.serializedSize("\u2028"));
+    assert.equal(8, BrowserToolboxSettingsStorage.serializedSize("\u2029"));
+    const { storage, writes } = createQuotaHarness();
+    let failure;
+    try {
+      await storage.writeSettings({ value: "<".repeat(1400) });
+    } catch (error) {
+      failure = error;
+    }
+    assert.equal("browser-toolbox-sync-quota", failure?.code);
+    assert.equal("item", failure?.quota);
+    assert.equal([], writes);
+  });
 });

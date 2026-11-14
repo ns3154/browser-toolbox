@@ -369,7 +369,7 @@
     "message": "既定値に戻す"
   },
   "restoreDefaultsConfirm": {
-    "message": "Browser Toolbox の設定を既定値に戻しますか？"
+    "message": "Browser Toolbox の設定を既定値に戻しますか？ 以前のポインター画像はこの端末に残ります。"
   },
   "importSettings": {
     "message": "設定をインポート"
@@ -518,8 +518,65 @@
   "noCursorAsset": {
     "message": "ローカルポインターが選択されていません。"
   },
+  "localCursorTitle": {
+    "message": "この端末のポインター画像"
+  },
+  "localCursorNote": {
+    "message": "確認した画像を下書きに使用するか書き出せます。どちらも直前に確認した内容を使い、適用には保存が必要です。一覧は画像の使用状況を示しません。"
+  },
+  "localCursorSelect": {
+    "message": "この端末の画像を選択"
+  },
+  "localCursorRefresh": {
+    "message": "画像一覧を更新"
+  },
+  "localCursorMore": {
+    "message": "さらに読み込む"
+  },
+  "localCursorView": {
+    "message": "選択した画像を確認"
+  },
+  "localCursorUse": {
+    "message": "確認した画像を使用"
+  },
+  "localCursorDraftPreview": {
+    "message": "ローカル画像を選択済み（未保存）"
+  },
+  "localCursorDraft": {
+    "message": "画像を下書きに追加しました。設定を保存すると適用され、元の画像はこの端末に残ります。"
+  },
+  "localCursorExport": {
+    "message": "確認した画像を書き出す"
+  },
+  "localCursorItem": {
+    "message": "ローカル画像 $1"
+  },
+  "localCursorListed": {
+    "message": "ローカル画像の記録を $1 件読み込みました。"
+  },
+  "localCursorEmpty": {
+    "message": "この端末にポインター画像はありません。"
+  },
+  "localCursorUnavailable": {
+    "message": "ローカル画像の一覧を取得できません。元のデータは変更されていません。"
+  },
+  "localCursorUnreadable": {
+    "message": "この記録は対応する画像として読み取れません。元のデータはこの端末に残ります。"
+  },
+  "localCursorPreviewed": {
+    "message": "ブラウザーで画像を確認できます。書き出すのは直前に確認した内容です。"
+  },
+  "localCursorOriginalOnly": {
+    "message": "画像を表示できません。元のバイト列を .bin ファイルとして書き出せます。"
+  },
+  "localCursorExported": {
+    "message": "確認した内容を書き出しました。ローカルデータは変更されていません。"
+  },
+  "cursorRetentionNote": {
+    "message": "ポインターの変更や無効化、初期設定の復元、設定のインポート後も、以前の画像はこの端末に残ります。拡張機能のローカル保存領域を使用し、安全な削除機能はまだありません。"
+  },
   "resetCursor": {
-    "message": "ローカルポインターを削除"
+    "message": "現在のポインターを無効にする"
   },
   "wheelThreshold": {
     "message": "ホイールのしきい値"
@@ -2462,6 +2519,24 @@
   "vomnibarHintClose": {
     "message": "閉じる"
   },
+  "vomnibarHintOpenNewTab": {
+    "message": "新しいタブで開く"
+  },
+  "generalTheme": {
+    "message": "テーマ"
+  },
+  "themeSageMist": {
+    "message": "セージミスト（既定）"
+  },
+  "themeCobalt": {
+    "message": "コバルトブルー"
+  },
+  "themePaperInk": {
+    "message": "温かみのある紙と墨"
+  },
+  "themeSlate": {
+    "message": "ミニマルスレート"
+  },
   "appearance": {
     "message": "外観"
   },
@@ -2615,22 +2690,874 @@
   "languageSpanish": {
     "message": "Español"
   },
-  "syncQuotaItemExceeded": {"message": "ツールボックス設定が項目ごとの同期上限（8 KiB）を超えています。「ツールボックス設定を同期」をオフにしてこの端末に保存するか、先にバックアップをエクスポートしてください。", "description": "项目体验完善文案"},
-  "syncQuotaTotalExceeded": {"message": "ブラウザーの同期ストレージが不足しています。「ツールボックス設定を同期」をオフにしてこの端末に保存するか、先にバックアップをエクスポートしてください。", "description": "项目体验完善文案"},
-  "toolTimeUnit": {"message": "タイムスタンプの単位", "description": "项目体验完善文案"},
-  "toolTimeLocalOutput": {"message": "現地時刻の出力", "description": "项目体验完善文案"},
-  "toolTimeUnixOutput": {"message": "Unix タイムスタンプの出力", "description": "项目体验完善文案"},
-  "toolTimeFiletimeOutput": {"message": "FILETIME の出力", "description": "项目体验完善文案"},
-  "onboardingTools": {"message": "拡張機能のポップアップから JSON 整形、テキスト比較、設定変換を開けます。すべてのツールは入力を端末内で処理します。", "description": "项目体验完善文案"},
-  "onboardingPauseTitle": {"message": "ページの操作と競合する場合", "description": "项目体验完善文案"},
-  "onboardingPause": {"message": "ポップアップですべてのサイトのキーボード・マウス機能を一時停止し、終わったら再開できます。特定のサイトだけ調整するには「このサイトを管理」からルールを作り、確認して保存します。", "description": "项目体验完善文案"},
-  "sessionAllSites": {"message": "全サイト · このセッション", "description": "会话与站点入口文案"},
-  "sessionScopeHint": {"message": "一時的な切り替えは全サイトに適用されます。復元すると保存済み設定に戻ります。", "description": "会话与站点入口文案"},
-  "restoreSession": {"message": "このセッションを復元", "description": "会话与站点入口文案"},
-  "sessionUpdating": {"message": "更新中…", "description": "会话与站点入口文案"},
-  "sessionUpdateFailed": {"message": "セッションの状態を更新できませんでした。もう一度お試しください。", "description": "会话与站点入口文案"},
-  "manageCurrentSite": {"message": "このサイトを管理", "description": "会话与站点入口文案"},
-  "siteRuleShortcutInvalid": {"message": "サイトの指定が無効です。通常のウェブページで拡張機能のポップアップから開き直してください。", "description": "会话与站点入口文案"},
-  "siteRuleShortcutDraft": {"message": "このサイトのルールの下書きを作成しました。調整後に保存してください。", "description": "会话与站点入口文案"},
-  "siteRuleShortcutExisting": {"message": "このサイトの既存ルールを選択しました。変更後に保存してください。", "description": "会话与站点入口文案"}
+  "syncQuotaItemExceeded": {
+    "message": "ツールボックス設定が項目ごとの同期上限（8 KiB）を超えています。「ツールボックス設定を同期」をオフにしてこの端末に保存するか、先にバックアップをエクスポートしてください。",
+    "description": "项目体验完善文案"
+  },
+  "syncQuotaTotalExceeded": {
+    "message": "ブラウザーの同期ストレージが不足しています。「ツールボックス設定を同期」をオフにしてこの端末に保存するか、先にバックアップをエクスポートしてください。",
+    "description": "项目体验完善文案"
+  },
+  "toolTimeUnit": {
+    "message": "タイムスタンプの単位",
+    "description": "项目体验完善文案"
+  },
+  "toolTimeLocalOutput": {
+    "message": "現地時刻の出力",
+    "description": "项目体验完善文案"
+  },
+  "toolTimeUnixOutput": {
+    "message": "Unix タイムスタンプの出力",
+    "description": "项目体验完善文案"
+  },
+  "toolTimeFiletimeOutput": {
+    "message": "FILETIME の出力",
+    "description": "项目体验完善文案"
+  },
+  "onboardingTools": {
+    "message": "拡張機能のポップアップから JSON 整形、テキスト比較、設定変換を開けます。すべてのツールは入力を端末内で処理します。",
+    "description": "项目体验完善文案"
+  },
+  "onboardingPauseTitle": {
+    "message": "ページの操作と競合する場合",
+    "description": "项目体验完善文案"
+  },
+  "onboardingPause": {
+    "message": "ポップアップですべてのサイトのキーボード・マウス機能を一時停止し、終わったら再開できます。特定のサイトだけ調整するには「このサイトを管理」からルールを作り、確認して保存します。",
+    "description": "项目体验完善文案"
+  },
+  "sessionAllSites": {
+    "message": "全サイト · このセッション",
+    "description": "会话与站点入口文案"
+  },
+  "sessionScopeHint": {
+    "message": "一時的な切り替えは全サイトに適用されます。復元すると保存済み設定に戻ります。",
+    "description": "会话与站点入口文案"
+  },
+  "restoreSession": {
+    "message": "このセッションを復元",
+    "description": "会话与站点入口文案"
+  },
+  "sessionUpdating": {
+    "message": "更新中…",
+    "description": "会话与站点入口文案"
+  },
+  "sessionUpdateFailed": {
+    "message": "セッションの状態を更新できませんでした。もう一度お試しください。",
+    "description": "会话与站点入口文案"
+  },
+  "manageCurrentSite": {
+    "message": "このサイトを管理",
+    "description": "会话与站点入口文案"
+  },
+  "siteRuleShortcutInvalid": {
+    "message": "サイトの指定が無効です。通常のウェブページで拡張機能のポップアップから開き直してください。",
+    "description": "会话与站点入口文案"
+  },
+  "siteRuleShortcutDraft": {
+    "message": "このサイトのルールの下書きを作成しました。調整後に保存してください。",
+    "description": "会话与站点入口文案"
+  },
+  "siteRuleShortcutExisting": {
+    "message": "このサイトの既存ルールを選択しました。変更後に保存してください。",
+    "description": "会话与站点入口文案"
+  },
+  "runtimeMaintenance": {
+    "message": "ランタイムの保守",
+    "description": "兼容运行时维护入口"
+  },
+  "runtimeMaintenanceNote": {
+    "message": "キーボード操作が動作しない場合は互換エンジンを復元できます。古いページを手動で再読み込みする前に入力を保存してください。",
+    "description": "兼容运行时维护入口"
+  },
+  "runtimeInspect": {
+    "message": "動作状態を確認",
+    "description": "兼容运行时维护入口"
+  },
+  "runtimeRestore": {
+    "message": "互換エンジンを復元",
+    "description": "兼容运行时维护入口"
+  },
+  "runtimeStatus": {
+    "message": "互換エンジン · プラン $1 · 動作中のフレーム $2 · 失敗したフレーム $3 · 再読み込みが必要なフレーム $4",
+    "description": "兼容运行时维护入口"
+  },
+  "runtimePending": {
+    "message": "$1 件のフレームは復元処理中です。しばらくして確認し、必要に応じて復元を再試行してください。",
+    "description": "运行时维护仍在处理的提示"
+  },
+  "runtimeUnavailable": {
+    "message": "バックグラウンドサービスを利用できません。入力を保存し、拡張機能を再読み込みしてから、影響を受けたページを再読み込みしてください。",
+    "description": "兼容运行时维护入口"
+  },
+  "configurationInspect": {
+    "message": "設定を確認"
+  },
+  "configurationRollback": {
+    "message": "互換版への復元を準備"
+  },
+  "configurationIncoming": {
+    "message": "外部の変更を使用"
+  },
+  "configurationCommitted": {
+    "message": "保存済み設定を維持"
+  },
+  "configurationSaveFirst": {
+    "message": "設定を処理する前に、ページの変更を保存するか破棄してください。"
+  },
+  "configurationConflict": {
+    "message": "外部の設定変更が見つかりました。最後の有効な設定を保持しています。データ保護のため、競合の解決操作を一時的に停止しています。"
+  },
+  "configurationExportConflict": {
+    "message": "競合の観測記録をエクスポート"
+  },
+  "configurationConflictExportNote": {
+    "message": "ファイルには設定内容が含まれますが、別途保存されたローカルのポインター画像と不明な最上位キーは含まれません。設定バックアップとしてインポートできません。"
+  },
+  "configurationConflictExported": {
+    "message": "競合の観測記録をエクスポートしました。既存データと競合記録は保持されています。"
+  },
+  "conflictObservationList": {
+    "message": "この端末の競合観測記録"
+  },
+  "conflictObservationNote": {
+    "message": "保存した観測記録には対応する設定が含まれますが、別保存のポインター画像と未保存の下書きは含まれません。直接インポートはできません。端末の時刻は参考情報です。不明な項目は印のみで、元データは同期により変わる場合があります。"
+  },
+  "conflictObservationRefresh": {
+    "message": "観測記録を更新"
+  },
+  "conflictObservationCapture": {
+    "message": "現在の観測を保存"
+  },
+  "conflictObservationExport": {
+    "message": "選択した観測をエクスポート"
+  },
+  "conflictObservationSaved": {
+    "message": "保存済みの設定観測"
+  },
+  "conflictObservationUnsupported": {
+    "message": "印のみ、内容は未保存"
+  },
+  "conflictObservationQuotaMarker": {
+    "message": "印のみ：内容を保存する容量が不足"
+  },
+  "conflictObservationInvalid": {
+    "message": "観測記録が無効または破損しています。書き込みは引き続き停止します。元の記録を保持してください。"
+  },
+  "conflictObservationListed": {
+    "message": "この端末の観測記録を $1 件表示しました。"
+  },
+  "conflictObservationEmpty": {
+    "message": "この端末に競合の観測記録はありません。"
+  },
+  "conflictObservationCaptured": {
+    "message": "この端末に観測を保存しました。出所や原子的な時点は証明されず、競合は未解決です。"
+  },
+  "conflictObservationOnlyMarker": {
+    "message": "確認できない項目があるため、内容を含まない印のみを保存しました。元データは同期で変わる場合があります。必要なら現在の観測をすぐにエクスポートしてください。"
+  },
+  "conflictObservationQuota": {
+    "message": "端末の空き容量または保持上限が不足し、設定内容を保存できませんでした。停止用の印のみ保持された場合があります。後で取得できなくなる可能性があるため、現在の観測をすぐにエクスポートしてください。"
+  },
+  "conflictObservationFailed": {
+    "message": "この端末への観測の保存を確認できませんでした。後で取得できなくなる可能性があるため、現在の観測をすぐにエクスポートしてください。"
+  },
+  "conflictObservationNotCaptured": {
+    "message": "この端末に観測はまだ保存されていません。現在の観測を保存またはエクスポートできます。"
+  },
+  "conflictObservationExported": {
+    "message": "選択した観測をエクスポートしました。元の記録は保持されています。"
+  },
+  "conflictReviewOpen": {
+    "message": "観測記録を項目ごとに確認"
+  },
+  "conflictReviewTitle": {
+    "message": "保存した観測記録を確認"
+  },
+  "conflictReviewNote": {
+    "message": "この端末に保存した観測には、最新の同期変更、不明な項目、未保存の下書きが含まれない場合があります。信頼できる共通基準がないため、各差分を選択してください。配列は全体で選択します。候補バックアップにはローカルのポインター画像が含まれず、インポート時にポインターは無効になります。エクスポートしても設定は書き込まれず、競合保護も解除されません。"
+  },
+  "conflictReviewExport": {
+    "message": "候補バックアップをエクスポート"
+  },
+  "conflictReviewCommitted": {
+    "message": "保存された確定値"
+  },
+  "conflictReviewObserved": {
+    "message": "保存された観測値"
+  },
+  "conflictReviewMissing": {
+    "message": "項目なし"
+  },
+  "conflictReviewChoose": {
+    "message": "エクスポート前にすべての差分について値を選択してください。"
+  },
+  "conflictReviewNoChanges": {
+    "message": "保存された観測記録に選択する差分はありません。"
+  },
+  "conflictReviewTooLarge": {
+    "message": "観測記録が大きすぎてここでは確認できません。観測記録をエクスポートしてください。元のデータは保護されます。"
+  },
+  "conflictReviewChanged": {
+    "message": "保存された観測記録が変化したか、検証できません。一覧を更新し、もう一度確認してください。"
+  },
+  "conflictReviewInvalid": {
+    "message": "選択した項目から有効な候補を作れませんでした。再確認してください。元のデータは変更されていません。"
+  },
+  "conflictReviewExported": {
+    "message": "候補バックアップをエクスポートしました。元の観測記録と競合保護は保持されています。"
+  },
+  "configurationUnavailable": {
+    "message": "現在、設定を保存できません。既存のデータを保持し、バックアップをエクスポートして後で再試行してください。"
+  },
+  "configurationStatus": {
+    "message": "設定を保存しました（リビジョン $1）。現在の設定で互換版に復元できます。"
+  },
+  "configurationExport": {
+    "message": "復元用の設定をエクスポート"
+  },
+  "configurationBaselineExported": {
+    "message": "移行前の復元用設定のみをエクスポートしました。その後の変更は含まれません。"
+  },
+  "runtimeStatusCanary": {
+    "message": "入力 Canary · プラン $1 · 動作中フレーム $2 · 失敗フレーム $3 · 再読み込みが必要なフレーム $4",
+    "description": "输入试用运行时的脱敏状态"
+  },
+  "markUnavailable": {
+    "message": "マークを読み書きできません。",
+    "description": "标记存储失败或运行时不可用时的提示"
+  },
+  "recoveryPageLink": {
+    "message": "復旧状態と診断",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryPageTitle": {
+    "message": "復旧状態",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryPageIntro": {
+    "message": "拡張機能のバックグラウンドが利用できない場合も、この端末の復旧記録を確認できます。",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryPagePrivacy": {
+    "message": "上の復旧状態の概要はデータの完全性を検証しません。書き出す診断情報には拡張機能のバージョンと記録の状態だけが含まれ、設定やページの内容は含まれません。",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryRecordCompatibilityConflicts": {
+    "message": "この端末の競合観測記録"
+  },
+  "recoveryCompatibilityConflictCount": {
+    "message": "$1 件の記録を検出しました。整合性は確認していません。"
+  },
+  "recoveryRecordConfiguration": {
+    "message": "設定の保存",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryRecordRollback": {
+    "message": "互換性の復元",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryRecordSync": {
+    "message": "キーボード同期の準備",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryNotChecked": {
+    "message": "未確認",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryStateAbsent": {
+    "message": "記録なし",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryStatePending": {
+    "message": "処理中または復旧待ち",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryStateCommitted": {
+    "message": "記録上は完了",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryStateAborted": {
+    "message": "記録上は中止",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryStateInvalid": {
+    "message": "記録の形式を識別できません",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryStateUnsupported": {
+    "message": "記録のバージョンに対応していません",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryConflictLabel": {
+    "message": "競合の記録あり",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryBlocked": {
+    "message": "移行の復旧記録があり、設定を保存できない可能性があります。現在の記録とバックアップを保持してください。",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryNoBlock": {
+    "message": "独立した同期公開や回退の記録は見つかりませんでした。設定の完全性を検証したことにはなりません。",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryReadUnavailable": {
+    "message": "この端末の復旧記録を読み取れませんでした。このページはデータを変更していません。",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryInspect": {
+    "message": "再確認",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryExport": {
+    "message": "機密情報を除いた診断をエクスポート",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryExported": {
+    "message": "診断をダウンロードする準備ができました。",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryExportFailed": {
+    "message": "診断をダウンロードできませんでした。",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "recoveryBack": {
+    "message": "設定に戻る",
+    "description": "本机恢复状态和脱敏诊断"
+  },
+  "legacyBackupUnknownFields": {
+    "message": "このバックアップには認識できない項目があり、インポートされません。元のファイルは変更されません。認識できる設定をインポートしますか？",
+    "description": "旧键盘备份的未知字段提示"
+  },
+  "legacyBackupUnsupportedRules": {
+    "message": "除外ルールの一部の項目を安全に保持できません。設定はインポートされていません。元のバックアップを保管してください。",
+    "description": "旧键盘备份的排除规则字段提示"
+  },
+  "legacyBackupPreview": {
+    "message": "インポートする前に項目を確認してください。元のファイルは変更されません。続行しますか？",
+    "description": "旧键盘备份导入预览"
+  },
+  "legacyBackupRecognizedFields": {
+    "message": "インポートする項目",
+    "description": "旧键盘备份识别字段"
+  },
+  "legacyBackupConvertedFields": {
+    "message": "変換される項目",
+    "description": "旧键盘备份转换字段"
+  },
+  "legacyBackupErrorFields": {
+    "message": "無効な項目",
+    "description": "旧键盘备份错误字段"
+  },
+  "legacyBackupInvalidFields": {
+    "message": "バックアップに無効な項目があります。設定はインポートされていません。元のバックアップを保管してください。",
+    "description": "旧键盘备份无效字段提示"
+  },
+  "beforeImportBackups": {
+    "message": "インポート前のローカルバックアップ",
+    "description": "导入前本机备份"
+  },
+  "beforeImportBackupsNote": {
+    "message": "インポート前に、保存済みの設定と、存在する場合はローカルポインター画像をこの端末に保存します。バックアップ画像は下書きに追加するか、別途書き出せます。設定ファイルには画像が含まれません。以前の画像はローカル領域に残り、安全な削除機能はまだありません。",
+    "description": "导入前本机备份"
+  },
+  "refreshBackupList": {
+    "message": "バックアップを更新",
+    "description": "导入前本机备份"
+  },
+  "exportSelectedBackup": {
+    "message": "選択したバックアップを書き出す",
+    "description": "导入前本机备份"
+  },
+  "importBackupInvalid": {
+    "message": "バックアップが破損しているか、形式に対応していません",
+    "description": "导入前本机备份"
+  },
+  "importBackupExported": {
+    "message": "バックアップを書き出しました。ローカルポインター画像は含まれません。",
+    "description": "导入前本机备份"
+  },
+  "importBackupAssetMissing": {
+    "message": "元のローカルポインター画像が見つかりません",
+    "description": "导入前本机备份"
+  },
+  "configurationBackupQuota": {
+    "message": "設定バックアップの保存領域が不足しているため、操作を停止しました。必要なバックアップを書き出してください。このバージョンではまだバックアップを削除できません。",
+    "description": "导入前本机备份"
+  },
+  "configurationLocalQuota": {
+    "message": "拡張機能のローカル保存領域が不足しているため、操作を停止しました。既存の設定とバックアップは削除していません。",
+    "description": "导入前本机备份"
+  },
+  "importBackupUnsupported": {
+    "message": "このバックアップには、このバージョンでインポートできないフィールドがあります。書き出したファイルを保管してください",
+    "description": "导入前备份兼容限制"
+  },
+  "beforeImportBackupSelect": {
+    "message": "バックアップを選択",
+    "description": "导入前备份选择"
+  },
+  "importBackupAssetInvalid": {
+    "message": "元のローカルポインター画像が無効か、確認できません",
+    "description": "导入前备份指针资源提示"
+  },
+  "previewImportBackup": {
+    "message": "復元の差分を確認",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "useBackupCursor": {
+    "message": "バックアップのポインター画像を使用"
+  },
+  "importBackupCursorLoading": {
+    "message": "バックアップ画像を読み込み中…"
+  },
+  "importBackupCursorUseInvalid": {
+    "message": "バックアップ画像をプレビューできないため、下書きに追加できません。元のバックアップは変更されていません。"
+  },
+  "importBackupCursorUseFailed": {
+    "message": "バックアップ画像を読み取れませんでした。元のバックアップは変更されていません。"
+  },
+  "exportBackupCursor": {
+    "message": "ポインター画像を書き出す",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupPreviewIntro": {
+    "message": "このプレビューは設定を復元せず、デバイス間のデータの由来も証明しません。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupPreviewKeyboard": {
+    "message": "異なるキーボード項目",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupToolboxChanged": {
+    "message": "ツールボックスの設定が異なります。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupToolboxSame": {
+    "message": "ツールボックスの設定は同じです。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupPreviewCursor": {
+    "message": "バックアップ内のポインター",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorNone": {
+    "message": "ローカルポインター画像は参照されていません。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorMissing": {
+    "message": "元のローカル画像がありません。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorInvalid": {
+    "message": "PNG の署名またはサイズを確認できませんでした。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorUnchecked": {
+    "message": "ポインター画像を確認できませんでした。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorHeaderValid": {
+    "message": "PNG の署名とサイズは確認済みです。完全なデコードは未確認です。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorChanged": {
+    "message": "現在のポインター設定または画像が異なります。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorDecodeFailed": {
+    "message": "画像データの Base64 をデコードできません。ダウンロードせず、元のバックアップを保持しています。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorExported": {
+    "message": "ポインター画像を書き出しました。正常に開ける場合は「外観」で再選択して保存してください。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "importBackupCursorExportedInvalid": {
+    "message": "元データを書き出しました。PNG の署名またはサイズを確認できず、ポインターとして使えない可能性があります。",
+    "description": "导入前备份恢复预览与资源导出"
+  },
+  "recoveryConflictDetails": {
+    "message": "トランザクション競合の読み取り専用分類",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictDetailsIntro": {
+    "message": "バックグラウンドが必要です。状態は今回の読み取り結果であり、選択の実行や書き込み保護の解除は行わず、端末間の由来も証明しません。",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryInspectRollbackConflict": {
+    "message": "ロールバックの項目を確認",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryInspectSyncConflict": {
+    "message": "同期の項目を確認",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictSelect": {
+    "message": "完了または停止したトランザクションがある場合に分類を確認できます。",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictLoading": {
+    "message": "トランザクションの詳細を確認しています…",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictUnavailable": {
+    "message": "分類できません。バックグラウンドが利用できないか、記録、バックアップ、現在のデータが無効または変更された可能性があります。この確認では変更しません。",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictUnchanged": {
+    "message": "トランザクション前後で同じ項目の数",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictBefore": {
+    "message": "トランザクション前と一致",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictAfter": {
+    "message": "トランザクション後と一致",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictOther": {
+    "message": "前後のどちらとも異なる",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictAbsent": {
+    "message": "欠落",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictMatching": {
+    "message": "記録と一致",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictDifferent": {
+    "message": "記録と異なる",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictIndex": {
+    "message": "同期インデックス",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryConflictChunks": {
+    "message": "分割データの一致 / 欠落 / 相違",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryOtherSyncChanged": {
+    "message": "その他の同期データは記録と異なります。",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryOtherSyncSame": {
+    "message": "今回の読み取りでは、その他の同期データは記録と一致します。",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryLocalChanged": {
+    "message": "ローカルのツールボックスデータは記録と異なります。",
+    "description": "事务冲突只读分类"
+  },
+  "recoveryLocalSame": {
+    "message": "今回の読み取りでは、ローカルのツールボックスデータは記録と一致します。",
+    "description": "事务冲突只读分类"
+  },
+  "exclusionRulePreserved": {
+    "message": "このルールには現在のバージョンで編集できない追加項目があるため、読み取り専用でそのまま保持します。これらの項目を含むバックアップは対応バージョンで復元してください。",
+    "description": "排除规则附加字段的保留提示"
+  },
+  "configurationExistingRulesProtected": {
+    "message": "インポートを停止しました。現在の除外ルールには、このバージョンで安全に置き換えられない追加項目があります。現在の設定とバックアップは保持されています。対応バージョンで処理してください。",
+    "description": "导入保护现有排除规则附加字段"
+  },
+  "importSavedWithDraft": {
+    "message": "インポートが完了しました。フォームの未保存の変更は保持されています。保存時にインポートした設定との競合を確認します。",
+    "description": "导入成功后保留未保存表单草稿"
+  },
+  "thirdPartyFeatureBreakdownTitle": {
+    "message": "コンポーネント別機能一覧",
+    "description": "第三方声明页面功能对照标题"
+  },
+  "thirdPartyVimiumHeading": {
+    "message": "Vimium v2.4.2（MIT ライセンス）",
+    "description": "Vimium 第三方声明条目标题"
+  },
+  "thirdPartyVimiumFeatures": {
+    "message": "キーボード操作と入力モード（Normal / Insert / Visual）、Link Hints、キーボードスクロール、ページ内検索（/）、マーク、Vomnibar とブックマーク/履歴/タブ補完、キーボード HUD、URL 除外ルール、従来の設定・ヘルプ・コマンド一覧ページを担当します。",
+    "description": "Vimium 所承载的功能清单"
+  },
+  "thirdPartyYamlHeading": {
+    "message": "yaml 2.9.1（ISC ライセンス）",
+    "description": "yaml 解析器第三方声明条目标题"
+  },
+  "thirdPartyYamlFeatures": {
+    "message": "ユーティリティ内の Properties / YAML 相互変換ツールにおけるローカル YAML 解析と出力を担当します。",
+    "description": "yaml 解析器所承载的功能"
+  },
+  "thirdPartyShouldaHeading": {
+    "message": "shoulda.js（MIT ライセンス・テスト専用）",
+    "description": "shoulda.js 第三方声明条目标题"
+  },
+  "thirdPartyShouldaFeatures": {
+    "message": "開発およびビルド検証の単体テストフレームワークとしてのみ使用され、拡張機能の実行時機能には含まれません。",
+    "description": "shoulda.js 的使用范围"
+  },
+  "thirdPartySelfHeading": {
+    "message": "Browser Toolbox 独自実装（GPL-3.0-or-later）",
+    "description": "本项目自研模块标题"
+  },
+  "thirdPartySelfFeatures": {
+    "message": "独自実装機能：マウスジェスチャー（軌跡・HUD・キャンセル領域・右ダブルクリックメニュー連携・iframe 橋渡し）、スーパードラッグ、ホイールジェスチャー、ロッカージェスチャー、カスタムカーソル、統合コマンドディスパッチャとコマンドセンター、タブ一覧ポップアップ、JSON ドキュメント自動整形、8 種類のローカルオフラインツール（JSON、Properties/YAML 変換、テキスト差分、エンコード/ハッシュ、日時/タイムゾーン、ID 生成、パスワード生成、表形式変換）、サイト別ルール、設定マイグレーション/復元、多言語対応および統合設定 UI。",
+    "description": "浏览器工具箱自研功能清单"
+  },
+  "command_scrollDown": {
+    "message": "下にスクロール"
+  },
+  "command_scrollUp": {
+    "message": "上にスクロール"
+  },
+  "command_scrollPageDown": {
+    "message": "半ページ下にスクロール"
+  },
+  "command_scrollPageUp": {
+    "message": "半ページ上にスクロール"
+  },
+  "command_scrollLeft": {
+    "message": "左にスクロール"
+  },
+  "command_scrollRight": {
+    "message": "右にスクロール"
+  },
+  "command_scrollToLeft": {
+    "message": "左端までスクロール"
+  },
+  "command_scrollToRight": {
+    "message": "右端までスクロール"
+  },
+  "command_copyCurrentUrl": {
+    "message": "現在の URL をクリップボードにコピー"
+  },
+  "command_openCopiedUrlInCurrentTab": {
+    "message": "クリップボードの URL を現在のタブで開く"
+  },
+  "command_openCopiedUrlInNewTab": {
+    "message": "クリップボードの URL を新しいタブで開く"
+  },
+  "command_goUp": {
+    "message": "URL の 1 つ上の階層へ移動"
+  },
+  "command_goToRoot": {
+    "message": "現在の URL のルート階層へ移動"
+  },
+  "command_enterInsertMode": {
+    "message": "インサートモードに入る"
+  },
+  "command_enterVisualMode": {
+    "message": "ビジュアルモードに入る"
+  },
+  "command_enterVisualLineMode": {
+    "message": "行ビジュアルモードに入る"
+  },
+  "command_passNextKey": {
+    "message": "次のキー入力をページへそのまま渡す"
+  },
+  "command_focusInput": {
+    "message": "ページ内の最初の入力欄にフォーカス"
+  },
+  "command_LinkHints_activateMode": {
+    "message": "リンクを現在のタブで開く"
+  },
+  "command_LinkHints_activateModeToOpenInNewTab": {
+    "message": "リンクを新しいバックグラウンドタブで開く"
+  },
+  "command_LinkHints_activateModeToOpenInNewForegroundTab": {
+    "message": "リンクを新しい前面タブで開いて切り替える"
+  },
+  "command_LinkHints_activateModeWithQueue": {
+    "message": "複数のリンクを連続して新しいタブで開く"
+  },
+  "command_LinkHints_activateModeToDownloadLink": {
+    "message": "リンク先をダウンロード"
+  },
+  "command_LinkHints_activateModeToOpenIncognito": {
+    "message": "シークレットウィンドウでリンクを開く"
+  },
+  "command_LinkHints_activateModeToCopyLinkUrl": {
+    "message": "リンクの URL をクリップボードにコピー"
+  },
+  "command_goPrevious": {
+    "message": "「前へ」または < のリンクへ移動"
+  },
+  "command_goNext": {
+    "message": "「次へ」または > のリンクへ移動"
+  },
+  "command_nextFrame": {
+    "message": "ページ内の次のフレームを選択"
+  },
+  "command_mainFrame": {
+    "message": "ページのメイン/最上位フレームを選択"
+  },
+  "command_Marks_activateCreateMode": {
+    "message": "新しいマークを作成"
+  },
+  "command_Marks_activateGotoMode": {
+    "message": "マークの位置へジャンプ"
+  },
+  "command_Vomnibar_activate": {
+    "message": "URL・ブックマーク・履歴を現在のタブで開く"
+  },
+  "command_Vomnibar_activateInNewTab": {
+    "message": "URL・ブックマーク・履歴を新しいタブで開く"
+  },
+  "command_Vomnibar_activateBookmarks": {
+    "message": "ブックマークを検索して現在のタブで開く"
+  },
+  "command_Vomnibar_activateBookmarksInNewTab": {
+    "message": "ブックマークを検索して新しいタブで開く"
+  },
+  "command_Vomnibar_activateTabSelection": {
+    "message": "開いているタブを検索"
+  },
+  "command_Vomnibar_activateEditUrl": {
+    "message": "現在の URL を編集"
+  },
+  "command_Vomnibar_activateEditUrlInNewTab": {
+    "message": "現在の URL を編集して新しいタブで開く"
+  },
+  "command_enterFindMode": {
+    "message": "ページ内検索モードに入る"
+  },
+  "command_performFind": {
+    "message": "次の一致箇所へ移動"
+  },
+  "command_performBackwardsFind": {
+    "message": "前の一致箇所へ移動"
+  },
+  "command_findSelected": {
+    "message": "選択したテキストを下方向に検索"
+  },
+  "command_findSelectedBackwards": {
+    "message": "選択したテキストを上方向に検索"
+  },
+  "command_createTab": {
+    "message": "新しいタブを作成"
+  },
+  "command_visitPreviousTab": {
+    "message": "直前に表示していたタブへ切り替え"
+  },
+  "command_firstTab": {
+    "message": "最初のタブへ移動"
+  },
+  "command_lastTab": {
+    "message": "最後のタブへ移動"
+  },
+  "command_duplicateTab": {
+    "message": "現在のタブを複製"
+  },
+  "command_togglePinTab": {
+    "message": "現在のタブを固定/解除"
+  },
+  "command_toggleMuteTab": {
+    "message": "現在のタブをミュート/解除"
+  },
+  "command_moveTabToNewWindow": {
+    "message": "タブを新しいウィンドウへ移動"
+  },
+  "command_closeTabsOnLeft": {
+    "message": "左側のタブを閉じる"
+  },
+  "command_closeTabsOnRight": {
+    "message": "右側のタブを閉じる"
+  },
+  "command_closeOtherTabs": {
+    "message": "他のタブをすべて閉じる"
+  },
+  "command_moveTabLeft": {
+    "message": "タブを左へ移動"
+  },
+  "command_moveTabRight": {
+    "message": "タブを右へ移動"
+  },
+  "command_setZoom": {
+    "message": "ズーム倍率を設定"
+  },
+  "command_zoomIn": {
+    "message": "ページを拡大"
+  },
+  "command_zoomOut": {
+    "message": "ページを縮小"
+  },
+  "command_zoomReset": {
+    "message": "ズームをリセット"
+  },
+  "command_toggleViewSource": {
+    "message": "ページのソースを表示"
+  },
+  "command_showHelp": {
+    "message": "ヘルプを表示"
+  },
+  "navBasicPreferences": {
+    "message": "基本設定"
+  },
+  "navInteractionEnhancement": {
+    "message": "操作拡張"
+  },
+  "navToolsAndRendering": {
+    "message": "ツールと描画"
+  },
+  "navRulesAndData": {
+    "message": "ルールとデータ"
+  },
+  "generalAndTheme": {
+    "message": "一般・テーマ"
+  },
+  "shortcutToolsConfig": {
+    "message": "クイックツール設定"
+  },
+  "pageAutoFormatter": {
+    "message": "自動フォーマット"
+  },
+  "privacyStatement": {
+    "message": "プライバシー方針"
+  },
+  "searchEnginesDescription": {
+    "message": "検索エンジンを短いキーワードに割り当て、ページ上のクイックランチャー（Vomnibar）から直接検索できます。"
+  },
+  "searchStep1Kicker": {
+    "message": "手順 1 · 設定して保存"
+  },
+  "searchStep1Title": {
+    "message": "下の入力欄でキーワード規則を編集"
+  },
+  "searchStep1Desc": {
+    "message": "1行ごとに「キーワード: 検索URL [名前]」（例: bd: https://www.baidu.com/s?wd=%s 百度）を記入し、右上の「設定を保存」をクリックします。"
+  },
+  "searchStep2Kicker": {
+    "message": "手順 2 · ページ上で起動"
+  },
+  "searchStep2Title": {
+    "message": "o（現在のタブ）または O（新しいタブ）"
+  },
+  "searchStep2Desc": {
+    "message": "クイックランチャーを開きます（「キーボード」を有効にするか、ジェスチャー／コマンドセンターから開きます）。"
+  },
+  "searchStep3Kicker": {
+    "message": "手順 3 · キーワード検索"
+  },
+  "searchStep3Title": {
+    "message": "bd 検索語 を入力して Enter"
+  },
+  "searchStep3Desc": {
+    "message": "キーワードの後ろにスペースを入れると百度検索に切り替わり、語句を入力して Enter で結果を開きます。"
+  },
+  "searchRulesLabel": {
+    "message": "カスタム検索ルール"
+  },
+  "searchSyntaxFormatLabel": {
+    "message": "書式ルール"
+  },
+  "searchSyntaxFormatDesc": {
+    "message": "書式は「キーワード: URL [表示名]」（例: bd: https://www.baidu.com/s?wd=%s 百度）。%s は URL エンコード済み語句、%S は生文字列に置換され、省略時は末尾に追加されます。"
+  },
+  "searchSyntaxCommentLabel": {
+    "message": "コメントと反映"
+  },
+  "searchSyntaxCommentDesc": {
+    "message": "# または \" で始まる行はコメントとして無視されます。編集後は右上の「設定を保存」をクリックしてください。"
+  }
 }

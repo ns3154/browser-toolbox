@@ -39,6 +39,18 @@
       return this.source()?.getSettings?.();
     }
 
+    get defaultOptions() {
+      return this.source()?.defaultOptions || {};
+    }
+
+    addEventListener(name, listener) {
+      this.source()?.addEventListener?.(name, listener);
+    }
+
+    removeEventListener(name, listener) {
+      this.source()?.removeEventListener?.(name, listener);
+    }
+
     async load() {
       return this.source()?.load?.();
     }

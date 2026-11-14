@@ -6,8 +6,16 @@ import * as shoulda from "../vendor/shoulda.js";
 Object.assign(globalThis, shoulda);
 globalThis.shoulda = shoulda;
 
-document.addEventListener("DOMContentLoaded", async () => {
-  isEnabledForUrl = true;
-  await Settings.onLoaded();
-  await HUD.init();
-});
+globalThis.domTestInitialization = new Promise((resolve, reject) =>
+  document.addEventListener("DOMContentLoaded", async () => {
+    try {
+      isEnabledForUrl = true;
+      await Utils.populateBrowserInfo();
+      await Settings.onLoaded();
+      await HUD.init();
+      resolve();
+    } catch (error) {
+      reject(error);
+    }
+  })
+);
