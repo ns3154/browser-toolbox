@@ -100,6 +100,27 @@
       if (!sender.tab || typeof sender.documentId !== "string") {
         throw fail("DOCUMENT_ID_UNAVAILABLE");
       }
+      if (
+        this.role(sender) === "component" &&
+        sender.tab.incognito !== true &&
+        this.api.runtime.getContexts
+      ) {
+        // webNavigation 不枚举扩展 UI iframe；非无痕组件优先查 Runtime 上下文，避免无效 getFrame IPC。
+        const contexts = await this.api.runtime.getContexts({ documentIds: [sender.documentId] });
+        const context = contexts.find((item) =>
+          item.documentId === sender.documentId && item.tabId === sender.tab.id &&
+          (sender.frameId == null || item.frameId === sender.frameId) &&
+          item.incognito === (sender.tab.incognito === true) &&
+          item.documentUrl?.startsWith(this.api.runtime.getURL(""))
+        );
+        if (context) {
+          return {
+            documentId: context.documentId,
+            documentLifecycle: "active",
+            extensionContext: true,
+          };
+        }
+      }
       let current = await this.api.webNavigation.getFrame({
         tabId: sender.tab.id,
         documentId: sender.documentId,
@@ -422,8 +443,7 @@
         item.documentId === sender.documentId && item.tabId === sender.tab?.id && item.component
       );
       if (!record) throw fail("UI_NOT_AUTHORIZED");
-      await this.active(sender);
-      await this.validateOwner(record);
+      await Promise.all([this.active(sender), this.validateOwner(record)]);
       return record;
     }
     async target(tabId, frameId) {

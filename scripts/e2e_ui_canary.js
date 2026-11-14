@@ -826,8 +826,9 @@ async function run(extensionPath, plan) {
       await idle();
       await openFind();
       const previous = (await state()).findSession;
-      await page.keyboard.press("Escape");
-      await page.keyboard.press("/");
+      // 先等待上一次 Esc 退出 Find 并将焦点归还宿主文档，避免紧接着的 `/` 被即将销毁的 HUD 输入框吞掉。
+      await closeFind();
+      await openFind();
       await wait(async () =>
         (await state()).find && (await state()).findSession !== previous &&
         componentFrame("hud") && await componentFrame("hud").evaluate(() =>

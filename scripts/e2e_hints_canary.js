@@ -498,8 +498,10 @@ async function run(name, extensionPath, plan) {
         document.activeElement?.blur();
         scrollTo(0, 0);
         location.hash = "";
+        window.focus();
       });
       await page.bringToFront();
+      await page.mouse.click(4, 4);
       await wait(async () => (await inspect("state", {}, true)).every((state) => !state.container));
     }
     async function enter(keys = "f") {
