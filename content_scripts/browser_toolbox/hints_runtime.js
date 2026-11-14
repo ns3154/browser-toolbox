@@ -96,21 +96,24 @@
         const caption =
           (this.markerMatcher.filtered ? marker.hintString : marker.hintString.toUpperCase()) +
           (this.markerMatcher.filtered && marker.localHint.showLinkText ? ": " + text : "");
-        marker.element.replaceChildren(...[...caption].map((character) => {
+        const element = marker.element;
+        if (element.firstChild) element.textContent = "";
+        for (const character of caption) {
           const span = DomUtils.createElement("span");
           span.className = "vimium-reset";
           span.textContent = character;
-          return span;
-        }));
+          element.appendChild(span);
+        }
       }
       renderHints() {
         const container = this.containerEl = DomUtils.createElement("div");
         container.id = "vimium-hint-marker-container";
         container.className = "vimium-reset";
-        document.documentElement.appendChild(container);
+        // 先在离线容器组装全部提示节点，再一次性挂载到文档，避免 1000 次实 DOM 重排与样式失效。
         for (const marker of this.hintMarkers) {
           if (marker.element) container.appendChild(marker.element);
         }
+        document.documentElement.appendChild(container);
         if (container.showPopover) {
           container.popover = "manual";
           container.showPopover();

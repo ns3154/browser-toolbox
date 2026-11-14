@@ -1107,11 +1107,19 @@ async function run(name, extensionPath, plan) {
         }
       });
       await oldOptions.close().catch(() => {});
-      await wait(() =>
-        options.evaluate(() =>
-          new Promise((resolve) => chrome.extension.isAllowedIncognitoAccess(resolve))
-        )
-      );
+      await wait(async () => {
+        try {
+          // 开启无痕权限后 Chrome 可能异步重载扩展页，忽略上下文销毁并等待新页面稳定。
+          return await options.evaluate(() =>
+            new Promise((resolve) => chrome.extension.isAllowedIncognitoAccess(resolve))
+          );
+        } catch (error) {
+          if (
+            /Execution context was destroyed|Cannot find context|Target closed/i.test(error.message)
+          ) return false;
+          throw error;
+        }
+      });
       metadata.incognitoPermission = {
         nativeUiChecked: true,
         apiAllowed: true,

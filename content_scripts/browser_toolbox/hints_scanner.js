@@ -12,14 +12,16 @@
     "radio",
     "textbox",
   ]);
+  const contentEditableValues = new Set(["", "contenteditable", "true"]);
   function deepHit(x, y) {
     let root = document;
     const seen = new Set();
     let last;
     for (;;) {
-      const hit = root.elementsFromPoint
-        ? root.elementsFromPoint(x, y)[0]
-        : root.elementFromPoint(x, y);
+      // elementFromPoint 只取最顶层命中元素，避免为全部候选构造 elementsFromPoint 栈数组。
+      const hit = root.elementFromPoint
+        ? root.elementFromPoint(x, y)
+        : root.elementsFromPoint?.(x, y)?.[0];
       if (!hit) return last;
       if (seen.has(hit) || !hit.shadowRoot) return hit;
       seen.add(hit);
@@ -31,13 +33,27 @@
   function scannerType() {
     return Scanner ||= class Scanner {
       elements() {
-        const stack = [...(document.documentElement?.children || [])].reverse();
+        const rootChildren = document.documentElement?.children;
+        const stack = [];
+        if (rootChildren) {
+          for (let index = rootChildren.length - 1; index >= 0; index--) {
+            stack.push(rootChildren[index]);
+          }
+        }
         const result = [];
         while (stack.length) {
           const element = stack.pop();
           result.push(element);
-          stack.push(...[...element.children].reverse());
-          if (element.shadowRoot) stack.push(...[...element.shadowRoot.children].reverse());
+          const children = element.children;
+          for (let index = children.length - 1; index >= 0; index--) {
+            stack.push(children[index]);
+          }
+          const shadowChildren = element.shadowRoot?.children;
+          if (shadowChildren) {
+            for (let index = shadowChildren.length - 1; index >= 0; index--) {
+              stack.push(shadowChildren[index]);
+            }
+          }
         }
         return result;
       }
@@ -49,25 +65,28 @@
             )
             : [];
         }
+        if (!this.angularAttributes.length) return false;
         return this.angularAttributes.some((attribute) => element.hasAttribute(attribute));
       }
       candidate(element) {
         const tag = element.tagName?.toLowerCase?.() || "";
         if (element.getAttribute("aria-disabled")?.toLowerCase() === "true") return [];
         let reason;
-        let clickable = this.angular(element) || element.hasAttribute("onclick") ||
-          roles.has(element.getAttribute("role")?.toLowerCase()) ||
-          ["", "contenteditable", "true"].includes(
-            element.getAttribute("contenteditable")?.toLowerCase(),
-          );
-        if (!clickable && element.hasAttribute("jsaction")) {
-          clickable = element.getAttribute("jsaction").split(";").some((rule) => {
-            const parts = rule.trim().split(":");
-            if (parts.length > 2) return false;
-            const event = parts.length === 1 ? "click" : parts[0];
-            const [namespace, action = "_"] = parts.at(-1).trim().split(".");
-            return event === "click" && namespace !== "none" && action !== "_";
-          });
+        // 常见原生链接只要未显式禁用即可直接进入几何裁剪，省去冗余属性检查。
+        let clickable = tag === "a";
+        if (!clickable) {
+          clickable = this.angular(element) || element.hasAttribute("onclick") ||
+            roles.has(element.getAttribute("role")?.toLowerCase()) ||
+            contentEditableValues.has(element.getAttribute("contenteditable")?.toLowerCase());
+          if (!clickable && element.hasAttribute("jsaction")) {
+            clickable = element.getAttribute("jsaction").split(";").some((rule) => {
+              const parts = rule.trim().split(":");
+              if (parts.length > 2) return false;
+              const event = parts.length === 1 ? "click" : parts[0];
+              const [namespace, action = "_"] = parts.at(-1).trim().split(".");
+              return event === "click" && namespace !== "none" && action !== "_";
+            });
+          }
         }
         let areas = [];
         if (tag === "img" && element.getAttribute("usemap")) {
@@ -79,66 +98,70 @@
             areas = DomUtils.getClientRectsForAreas(rect, map.getElementsByTagName("area"));
           }
         }
-        switch (tag) {
-          case "a":
-          case "object":
-          case "embed":
-            clickable = true;
-            break;
-          case "textarea":
-            clickable ||= !element.disabled && !element.readOnly;
-            break;
-          case "input":
-            clickable ||= element.getAttribute("type")?.toLowerCase() !== "hidden" &&
-              !element.disabled && !(element.readOnly && DomUtils.isSelectable(element));
-            break;
-          case "button":
-          case "select":
-            clickable ||= !element.disabled;
-            break;
-          case "label":
-            clickable ||= !!element.control && !element.control.disabled &&
-              !this.candidate(element.control).length;
-            break;
-          case "body":
-            if (element === document.body && !clickable) {
-              if (!windowIsFocused() && innerWidth > 3 && innerHeight > 3) {
-                clickable = true;
-                reason = "Frame.";
-              } else if (
-                windowIsFocused() &&
+        if (tag !== "a") {
+          switch (tag) {
+            case "object":
+            case "embed":
+              clickable = true;
+              break;
+            case "textarea":
+              clickable ||= !element.disabled && !element.readOnly;
+              break;
+            case "input":
+              clickable ||= element.getAttribute("type")?.toLowerCase() !== "hidden" &&
+                !element.disabled && !(element.readOnly && DomUtils.isSelectable(element));
+              break;
+            case "button":
+            case "select":
+              clickable ||= !element.disabled;
+              break;
+            case "label":
+              clickable ||= !!element.control && !element.control.disabled &&
+                !this.candidate(element.control).length;
+              break;
+            case "body":
+              if (element === document.body && !clickable) {
+                if (!windowIsFocused() && innerWidth > 3 && innerHeight > 3) {
+                  clickable = true;
+                  reason = "Frame.";
+                } else if (
+                  windowIsFocused() &&
+                  BrowserToolboxScrollControllerInstance.isScrollableElement(element)
+                ) {
+                  clickable = true;
+                  reason = "Scroll.";
+                }
+              }
+              break;
+            case "img":
+              clickable ||= ["zoom-in", "zoom-out"].includes(element.style.cursor);
+              break;
+            case "div":
+            case "ol":
+            case "ul":
+              if (
+                !clickable && element.clientHeight < element.scrollHeight &&
                 BrowserToolboxScrollControllerInstance.isScrollableElement(element)
               ) {
                 clickable = true;
                 reason = "Scroll.";
               }
-            }
-            break;
-          case "img":
-            clickable ||= ["zoom-in", "zoom-out"].includes(element.style.cursor);
-            break;
-          case "div":
-          case "ol":
-          case "ul":
-            if (
-              !clickable && element.clientHeight < element.scrollHeight &&
-              BrowserToolboxScrollControllerInstance.isScrollableElement(element)
-            ) {
+              break;
+            case "details":
               clickable = true;
-              reason = "Scroll.";
-            }
-            break;
-          case "details":
-            clickable = true;
-            reason = "Open.";
-            break;
+              reason = "Open.";
+              break;
+          }
         }
         const weakClass = !clickable &&
           /button|btn/.test(element.getAttribute("class")?.toLowerCase() || "");
         clickable ||= weakClass;
-        const tabIndex = parseInt(element.getAttribute("tabindex") || "-1");
-        const secondClassCitizen = !clickable && Number.isFinite(tabIndex) && tabIndex >= 0;
-        if (!clickable && !secondClassCitizen) return [];
+        let secondClassCitizen = false;
+        if (!clickable) {
+          const tabIndex = parseInt(element.getAttribute("tabindex") || "-1");
+          secondClassCitizen = Number.isFinite(tabIndex) && tabIndex >= 0;
+          if (!secondClassCitizen) return [];
+        }
         const common = {
           reason,
           secondClassCitizen,

@@ -2840,14 +2840,18 @@ async function testMouseGestures(page, base127, browser, options) {
   await waitForController(options, page.url());
   const settingsTargetCount =
     browser.targets().filter((target) => target.url().includes("/pages/mouse_options.html")).length;
+  // 从 #gesture-target 下方空白区起笔绘制闭合方框，避免末笔回原点时落入顶部居中 Cancel 圆圈触发区。
+  const settingsOrigin = await centerFor(page, "#gesture-target");
+  const settingsStartY = settingsOrigin.y + 160;
   await sendDrag(
     page,
-    await gesturePoints(page, "#gesture-target", [
-      { x: 80, y: 0 },
-      { x: 80, y: 80 },
-      { x: 0, y: 80 },
-      { x: 0, y: 0 },
-    ]),
+    [
+      { x: settingsOrigin.x, y: settingsStartY },
+      { x: settingsOrigin.x + 80, y: settingsStartY },
+      { x: settingsOrigin.x + 80, y: settingsStartY + 80 },
+      { x: settingsOrigin.x, y: settingsStartY + 80 },
+      { x: settingsOrigin.x, y: settingsStartY },
+    ],
     "left",
   );
   const openedSettingsTarget = await waitFor(() => {

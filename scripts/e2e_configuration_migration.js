@@ -570,16 +570,23 @@ try {
   fixture = await browser.newPage();
   await fixture.goto(fixtureUrl);
   await fixture.bringToFront();
+  await fixture.click("h1");
   await until(() =>
     options.evaluate(async (url) => {
       const tab = (await chrome.tabs.query({})).find((tab) => tab.url === url);
+      if (!tab?.id) return false;
       const states = await chrome.scripting.executeScript({
         target: { tabId: tab.id, frameIds: [0] },
         world: "ISOLATED",
-        func: () =>
-          BrowserToolboxRuntimeHostInstance?.getDiagnostics().initializationState === "active",
+        func: () => {
+          const diagnostics = BrowserToolboxRuntimeHostInstance?.getDiagnostics();
+          // activation 后仍需等待 frame-handshake 应用键位映射，否则 normal 模式尚未绑定反引号命令。
+          return diagnostics?.initializationState === "active" &&
+            diagnostics?.initializationStage === "ready" &&
+            Boolean(Mode.modes.find((mode) => mode.name === "normal")?.keyMapping?.["`"]);
+        },
       });
-      return states[0]?.result;
+      return states[0]?.result === true;
     }, fixtureUrl), "重启后的运行时未完成初始化");
   await fixture.keyboard.type("`");
   await fixture.keyboard.down("Shift");

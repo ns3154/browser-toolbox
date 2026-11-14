@@ -122,7 +122,8 @@ export class CompletionSession {
     const candidates = [];
     for (const item of await this.read("bookmark")) {
       const title = path ? item.pathAndTitle : item.title;
-      const short = UrlUtils.hasJavascriptProtocol(item.url) ? "javascript:..." : undefined;
+      const isJs = item.isJavascript ?? UrlUtils.hasJavascriptProtocol(item.url);
+      const short = isJs ? "javascript:..." : undefined;
       const url = short ?? item.url;
       if (!prepared.matches(url, title)) continue;
       candidates.push(model.candidate({
@@ -139,6 +140,8 @@ export class CompletionSession {
   }
   async histories(terms, all, prepared = model.prepareQuery(terms)) {
     const candidates = [];
+    // 单次查询共用同一时间戳，避免遍历数千条历史记录时重复读取系统时钟。
+    const now = Date.now();
     for (const item of await this.orderedHistory()) {
       if (!(terms.length ? prepared.matches(item.url, item.title) : all)) continue;
       candidates.push(model.candidate({
@@ -147,7 +150,7 @@ export class CompletionSession {
         url: item.url,
         title: item.title,
         relevancyData: item,
-        relevancy: prepared.historyScore(item.url, item.title, item.lastVisitTime),
+        relevancy: prepared.historyScore(item.url, item.title, item.lastVisitTime, now),
       }));
     }
     return candidates;
@@ -179,18 +182,24 @@ export class CompletionSession {
       for (const item of entries) this.addDomain(item);
     }
     // 删除时保留仍被引用的旧最近访问分数，重复访问也增加引用计数，沿用冻结域名候选的语义。
-    const ranked = [...this.domainIndex].filter(([domain]) => domain.includes(terms[0])).map((
-      [domain, slot],
-    ) => ({
-      domain,
-      score: prepared.historyScore(domain, null, slot.entry.lastVisitTime || 0),
-    })).sort((a, b) => b.score - a.score);
-    return ranked.length
+    let bestDomain = null;
+    let bestScore = -Infinity;
+    const needle = terms[0];
+    const now = Date.now();
+    for (const [domain, slot] of this.domainIndex) {
+      if (!domain.includes(needle)) continue;
+      const score = prepared.historyScore(domain, null, slot.entry.lastVisitTime || 0, now);
+      if (score > bestScore) {
+        bestScore = score;
+        bestDomain = domain;
+      }
+    }
+    return bestDomain
       ? [
         model.candidate({
           queryTerms: terms,
           description: "domain",
-          url: ranked[0].domain,
+          url: bestDomain,
           relevancy: 2,
         }),
       ]

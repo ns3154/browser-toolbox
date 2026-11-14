@@ -19,11 +19,11 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const assert = (value, message) => {
   if (!value) throw new Error(message);
 };
-async function wait(predicate, message = "等待查找栏状态超时", ms = 10000) {
+async function wait(predicate, message = "等待查找栏状态超时", ms = 10000, interval = 20) {
   const end = Date.now() + ms;
   while (Date.now() < end) {
     if (await predicate()) return;
-    await sleep(20);
+    await sleep(interval);
   }
   throw new Error(message);
 }
@@ -571,14 +571,33 @@ async function run(name, extensionPath, plan) {
     const started = performance.now();
     await page.keyboard.type(keys);
     if (metadata.workerRestart?.tracing) console.log("重启后open：按键完成");
+    let current = null;
     await wait(
-      async () => (await state())?.showing && Boolean(componentFrame()),
-      "真实按键未打开查找栏",
+      async () => {
+        if (!componentFrame()) return false;
+        // 缩短轮询间隔至 5ms 并直接复用当轮组件状态，避免 20ms 定时器与重复探测掩盖真实延迟。
+        const [visible, snapshot] = await Promise.all([
+          page.evaluate(() =>
+            [...document.querySelectorAll(".vimium-reset")].some((wrapper) =>
+              wrapper.shadowRoot?.querySelector("iframe.vomnibar-frame.vimium-ui-component-visible")
+            )
+          ).catch(() => false),
+          ui().catch(() => null),
+        ]);
+        if (!visible || !snapshot?.focused || (snapshot.own && !snapshot.active)) return false;
+        current = snapshot;
+        return true;
+      },
+      "真实按键未打开查找栏或未获得原生焦点",
+      10000,
+      5,
     );
-    await componentFrame().waitForSelector("input");
+    if (!current.own) {
+      // 旧版 VomnibarUI 无 active 标记，window focus 可能早于 activate 异步设置完成；补采一次完整状态。
+      await sleep(10);
+      current = await ui();
+    }
     if (metadata.workerRestart?.tracing) console.log("重启后open：输入元素完成");
-    await wait(async () => Boolean((await ui())?.focused), "查找栏未获得原生焦点");
-    const current = await ui();
     metadata.openSamples ||= [];
     metadata.openSamples.push({ keys, durationMs: performance.now() - started });
     return current;
@@ -1199,7 +1218,10 @@ async function run(name, extensionPath, plan) {
         firstOpen: metadata.openSamples[0].durationMs,
         scope: "已就绪真实按键到组件焦点，含自动化检查；首开另记，不删样本或预热",
       };
-      assert(p95 <= 100, "已就绪查找栏反馈超过100ms");
+      assert(
+        p95 <= 100,
+        `已就绪查找栏反馈超过100ms (p95=${p95.toFixed(1)}ms, max=${sorted.at(-1).toFixed(1)}ms)`,
+      );
     });
     await check("1000书签和1000历史的30次Native补全与稳定后台内存", async () => {
       const created = await options.evaluate(async (url) => {

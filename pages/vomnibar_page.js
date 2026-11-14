@@ -23,19 +23,34 @@ let activationRevision = 0;
 let pendingActivation = null;
 let pendingOwnPreparation = null;
 let ownCssInjected = false;
-function prepareOwnUi() {
-  if (!pendingOwnPreparation) {
-    // 初次DOM就绪和activate会同时到达；共享在途准备，独立读语言与模块不必排在设置读取之后。
+let sharedDomPreparation = null;
+function ensureUserCssInjected() {
+  if (ownCssInjected) return;
+  DomUtils.injectUserCss();
+  ownCssInjected = true;
+}
+function ensureBaseDomPreparation() {
+  if (!sharedDomPreparation) {
+    // 并发初始化共享同一次在途读取，完成后清空以便语言或主题热切换后重新生效。
     const preparation = Promise.all([
       Settings.onLoaded(),
       BrowserToolboxI18n.applyStoredLocale(document),
       BrowserToolboxTheme?.applyStoredTheme?.(document),
+    ]).finally(() => {
+      if (sharedDomPreparation === preparation) sharedDomPreparation = null;
+    });
+    sharedDomPreparation = preparation;
+  }
+  return sharedDomPreparation;
+}
+function prepareOwnUi() {
+  if (!pendingOwnPreparation) {
+    // 初次DOM就绪和activate会同时到达；共享设置/语言/主题预读与模块加载，与父文档握手并行。
+    const preparation = Promise.all([
+      ensureBaseDomPreparation(),
       import("./browser_toolbox/vomnibar_controller.js"),
-    ]).then(([, , , module]) => {
-      if (!ownCssInjected) {
-        DomUtils.injectUserCss();
-        ownCssInjected = true;
-      }
+    ]).then(([, module]) => {
+      ensureUserCssInjected();
       return module;
     }).finally(() => {
       if (pendingOwnPreparation === preparation) pendingOwnPreparation = null;
@@ -69,6 +84,7 @@ export function reset() {
   ui?.destroy?.();
   ui = null;
   pendingOwnPreparation = null;
+  sharedDomPreparation = null;
   ownCssInjected = false;
 }
 
@@ -101,9 +117,8 @@ export async function activate(options) {
     return;
   }
   Utils.assertType(VomnibarShowOptions, options || {});
-  await Settings.onLoaded();
-  await BrowserToolboxI18n.applyStoredLocale(document);
-  await BrowserToolboxTheme?.applyStoredTheme?.(document);
+  await ensureBaseDomPreparation();
+  ensureUserCssInjected();
   userSearchEngines.set(Settings.get("searchEngines"));
 
   const defaults = {
@@ -582,7 +597,7 @@ const testEnv = globalThis.window == null ||
   globalThis.window.location.search.includes("dom_tests=true");
 if (!testEnv) {
   BrowserToolboxTheme?.watchTheme?.(document);
-  document.addEventListener("DOMContentLoaded", async () => {
+  const onDomReady = async () => {
     void BrowserToolboxTheme?.applyStoredTheme?.(document);
     const authorization = await BrowserToolboxUIAuthorization.ready;
     const ownPlan = BrowserToolboxRuntimePlans.allowed.find((plan) => plan.planVersion === authorization?.planVersion);
@@ -592,10 +607,15 @@ if (!testEnv) {
       });
       return;
     }
-    await Settings.onLoaded();
-    await BrowserToolboxI18n.applyStoredLocale(document);
-    await BrowserToolboxTheme?.applyStoredTheme?.(document);
-    DomUtils.injectUserCss(); // Manually inject custom user styles.
-  });
+    // 授权后并行读取设置、语言与主题，避免串行等待且不在授权前读后台设置。
+    await ensureBaseDomPreparation();
+    ensureUserCssInjected(); // Manually inject custom user styles.
+  };
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", onDomReady, { once: true });
+  } else {
+    // 模块加载若晚于 DOMContentLoaded（缓存文档/热切换场景），立即补跑就绪准备与样式注入。
+    void onDomReady();
+  }
   init();
 }

@@ -972,6 +972,15 @@ try {
   console.log(
     `运行时门禁：${report.status}；性能绝对预算：${report.performance.absoluteBudgetPassed}`,
   );
+  if (report.status === "failed") {
+    console.error("运行时性能诊断：", JSON.stringify({
+      inputSyncP95: report.performance.inputSyncMs?.p95,
+      hintsActivationP95: report.performance.hintsActivationMs?.p95,
+      commandFeedbackP95: report.performance.commandFeedbackMs?.p95,
+      relativeBudgetPassed: report.performance.relativeBudgetPassed,
+      finalToFirstRatio: report.performance.memory?.finalToFirstRatio,
+    }));
+  }
   if (keepOpen) {
     await page.bringToFront();
     report.browserPid = browser.process()?.pid;
