@@ -25,10 +25,20 @@ jobs:
       - name: 安装归档工具和 Chrome for Testing 依赖
         run: |
           sudo apt-get update
-          sudo apt-get install -y zip unzip libnss3 libatk-bridge2.0-0 libx11-xcb1 libxcomposite1 libxdamage1 libxrandr2 libgbm1 libasound2t64
-          deno run -A npm:puppeteer browsers install chrome@152.0.7977.64
-          CHROME_PATH="$HOME/.cache/puppeteer/chrome/linux-152.0.7977.64/chrome-linux64/chrome"
+          sudo apt-get install -y curl zip unzip libnss3 libatk-bridge2.0-0 libx11-xcb1 libxcomposite1 libxdamage1 libxrandr2 libgbm1 libasound2t64
+          CFT_VERSION="152.0.7977.64"
+          CFT_DIR="$HOME/.cache/puppeteer/chrome/linux-${CFT_VERSION}"
+          CFT_ZIP="$(mktemp -t chrome-linux64.XXXXXX.zip)"
+          mkdir -p "$CFT_DIR"
+          curl -fsSL --retry 3 "https://storage.googleapis.com/chrome-for-testing-public/${CFT_VERSION}/linux64/chrome-linux64.zip" -o "$CFT_ZIP"
+          unzip -q -o "$CFT_ZIP" -d "$CFT_DIR"
+          rm -f "$CFT_ZIP"
+          if [ -f "${CFT_DIR}/chrome-linux64/deb.deps" ]; then
+            sudo apt-get satisfy -y "$(grep -v '^[[:space:]]*$' "${CFT_DIR}/chrome-linux64/deb.deps" | paste -sd,)" --no-install-recommends
+          fi
+          CHROME_PATH="${CFT_DIR}/chrome-linux64/chrome"
           test -x "$CHROME_PATH"
+          "$CHROME_PATH" --version
           echo "PUPPETEER_EXECUTABLE_PATH=$CHROME_PATH" >> "$GITHUB_ENV"
       - name: 完整自动化门禁
         run: deno run -A scripts/verify.js --report local-development/tracking/ci-verification.json
