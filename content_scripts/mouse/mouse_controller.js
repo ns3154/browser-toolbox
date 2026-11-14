@@ -225,6 +225,15 @@
 
     activateGestureFeedback(event, result) {
       this.captureGesturePointer(event);
+      if (
+        this.gestureButton() === 0 &&
+        !event?.target?.closest?.("input, textarea, [contenteditable]") &&
+        !globalThis.DomUtils?.isEditable?.(event?.target)
+      ) {
+        // 左键手势越过激活阈值后清除按下瞬间产生的非编辑选区，避免后续手势误触原生拖拽。
+        const selection = this.document.defaultView?.getSelection?.();
+        if (selection && !selection.isCollapsed) selection.removeAllRanges();
+      }
       if (this.settings.mouse.suppressContextMenuAfterActivation !== false) {
         this.guard.activate();
       }
@@ -308,6 +317,11 @@
       this.listen("mouseup", (event) => this.onMouseUp(event), capture);
       this.listen("pointercancel", (event) => this.onPointerCancel(event), capture);
       this.listen("dragstart", (event) => this.onDragStart(event), capture);
+      this.listen("selectstart", (event) => {
+        if (this.gesture?.isActive() && this.gestureButton() === 0) {
+          event.preventDefault();
+        }
+      }, capture);
       this.listen("click", (event) => this.onClick(event), capture);
       this.listen("contextmenu", (event) => this.onContextMenu(event), capture);
       this.listen("wheel", (event) => this.onWheel(event), { capture: true, passive: false });
@@ -498,6 +512,7 @@
     async onPointerUp(event) {
       if (!trusted(event)) return;
       this.wheel?.release(event.button);
+      let completionPromise = null;
       if (this.gesture && event.button === this.gestureButton()) {
         this.cancelPendingGestureRender();
         this.releaseGesturePointer();
@@ -509,6 +524,8 @@
           return;
         }
         this.clearGestureTimeout();
+        const bridge = this.bridge;
+        const gestureRequestId = this.gestureRequestId;
         const result = this.gesture.end(event.timeStamp || Date.now());
         // 仅当本次确实在按下阶段拦下了早到的系统菜单，且是短轻点未发生明显位移时，才允许快速双击弹出原生菜单。
         const shouldArmNativeMenuRetry = result.state === "NATIVE_CONTEXT_MENU" &&
@@ -525,52 +542,58 @@
         } else {
           this.guard.reset();
         }
-        if (result.state === "COMPLETED") {
+        // 在任何 await 之前同步清空会话和覆盖层，防止连续手势的 pointerdown 被上一轮异步收尾覆盖。
+        this.bridge = null;
+        this.gesture = null;
+        this.gestureRequestId = null;
+        this.lastGestureMatch = null;
+        if (result.state !== "COMPLETED") {
+          bridge?.cancel();
+          if (shouldArmNativeMenuRetry) {
+            // 首次右键轻点不伪造菜单，只给下一次近距离右键保留一个短暂的原生菜单入口。
+            this.guard.armNativeMenuRetry(
+              { x: event.clientX, y: event.clientY },
+              NATIVE_MENU_RETRY_MS,
+            );
+          }
+          this.overlay.hide();
+        } else {
           event.preventDefault();
           event.stopPropagation();
-          const settings = await this.waitForSettings();
-          const mouseEnabled = this.effective("mouse");
-          const bridgeReady = this.bridge?.waitUntilReady
-            ? mouseEnabled && await this.bridge.waitUntilReady()
-            : mouseEnabled;
-          const match = mouseEnabled
-            ? recognizer.find(result.pattern, settings?.mouse?.bindings || [])
-            : { exact: null };
-          if (bridgeReady && match.exact) {
-            await this.dispatchBinding(
-              match.exact,
-              "mouseGesture",
-              pageContext({ pointer: { x: event.clientX, y: event.clientY } }),
-              this.gestureRequestId,
-            );
-          } else if (!bridgeReady) {
-            this.bridge?.cancel();
-          } else {
-            if (this.showCommandHud()) {
+          this.overlay.hide();
+          const pointerPoint = { x: event.clientX, y: event.clientY };
+          completionPromise = (async () => {
+            const settings = await this.waitForSettings();
+            const mouseEnabled = this.effective("mouse");
+            const bridgeReady = bridge?.waitUntilReady
+              ? mouseEnabled && await bridge.waitUntilReady()
+              : mouseEnabled;
+            const match = mouseEnabled
+              ? recognizer.find(result.pattern, settings?.mouse?.bindings || [])
+              : { exact: null };
+            if (bridgeReady && match.exact) {
+              await this.dispatchBinding(
+                match.exact,
+                "mouseGesture",
+                pageContext({ pointer: pointerPoint }),
+                gestureRequestId,
+              );
+            } else if (!bridgeReady) {
+              bridge?.cancel();
+            } else if (!this.gesture && this.showCommandHud()) {
               this.overlay.setHud(
                 globalThis.BrowserToolboxI18n?.message("gestureUnrecognized") ||
                   "Gesture not recognized",
                 true,
               );
             }
-          }
-          this.bridge?.finish(result.pattern);
-        } else {
-          this.bridge?.cancel();
+            bridge?.finish(result.pattern);
+            if (!this.gesture) {
+              this.guard.deactivate();
+              this.overlay.hide();
+            }
+          })();
         }
-        this.bridge = null;
-        this.gesture = null;
-        this.gestureRequestId = null;
-        this.lastGestureMatch = null;
-        if (result.state === "COMPLETED") this.guard.deactivate();
-        else if (shouldArmNativeMenuRetry) {
-          // 首次右键轻点不伪造菜单，只给下一次近距离右键保留一个短暂的原生菜单入口。
-          this.guard.armNativeMenuRetry(
-            { x: event.clientX, y: event.clientY },
-            NATIVE_MENU_RETRY_MS,
-          );
-        }
-        this.overlay.hide();
       }
       if (this.drag && event.button === 0) {
         const result = this.drag.pointerUp(event.timeStamp || Date.now());
@@ -590,6 +613,7 @@
         event.preventDefault();
         event.stopPropagation();
       }
+      if (completionPromise) await completionPromise;
     }
 
     onMouseUp(event) {
@@ -658,8 +682,8 @@
     }
 
     onDragStart(event) {
-      // 只有已越过超级拖拽阈值才接管，避免破坏文件上传和普通原生拖拽。
-      if (!this.drag?.active) return;
+      // 只有已越过超级拖拽阈值或处于左键鼠标手势中才接管，避免破坏文件上传和普通原生拖拽。
+      if (!this.drag?.active && !(this.gesture && this.gestureButton() === 0)) return;
       event.preventDefault();
       event.stopPropagation();
     }

@@ -1376,16 +1376,41 @@ async function run(name, extensionPath, plan) {
         const before = await options.evaluate(async (tabId) => {
           const tab = await chrome.tabs.get(tabId);
           const window = await chrome.windows.get(tab.windowId);
-          return { tabId: tab.id, windowId: window.id, focused: window.focused, active: tab.active };
+          return {
+            tabId: tab.id,
+            windowId: window.id,
+            focused: window.focused,
+            active: tab.active,
+            left: Number.isFinite(window.left) ? window.left : 0,
+            top: Number.isFinite(window.top) ? window.top : 0,
+          };
         }, tabId);
         assert(before.focused && before.active, "受控对照开始前窗口必须实际聚焦");
         await page.keyboard.press("o");
         await wait(async () => (await inspect("focus-gate-status")).some((x) => x.blocked),
           "打开操作未到达焦点等待点");
-        const competitor = await options.evaluate(() => chrome.windows.create({
-          url: "about:blank", type: "popup", focused: true, left: 1960, top: 213,
-          width: 300, height: 200,
-        }));
+        const competitor = await options.evaluate(async (bounds) => {
+          try {
+            return await chrome.windows.create({
+              url: "about:blank",
+              type: "popup",
+              focused: true,
+              left: bounds.left + 40,
+              top: bounds.top + 40,
+              width: 300,
+              height: 200,
+            });
+          } catch (_) {
+            // 不同桌面环境的可用屏幕坐标系可能偏移，退回默认定位仍能验证失焦窗口交接。
+            return chrome.windows.create({
+              url: "about:blank",
+              type: "popup",
+              focused: true,
+              width: 300,
+              height: 200,
+            });
+          }
+        }, before);
         try {
           await wait(async () => !(await options.evaluate((id) => chrome.windows.get(id), before.windowId)).focused,
             "对照窗口没有实际夺取原生焦点");
