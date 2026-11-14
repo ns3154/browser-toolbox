@@ -1816,7 +1816,11 @@ async function testOptionsAccessibility(options) {
   );
 
   await options.focus("#settings-section-search");
-  await options.keyboard.type("site");
+  const siteSearchQuery = await options.$eval(
+    "html",
+    (element) => element.lang.toLocaleLowerCase().startsWith("zh") ? "站点规则" : "site rules",
+  );
+  await options.keyboard.type(siteSearchQuery);
   await waitFor(() =>
     options.$eval(
       ".browser-toolbox-nav-item:not([hidden])",

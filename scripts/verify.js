@@ -22,6 +22,7 @@ for (let index = 0; index < Deno.args.length; index++) {
   if (Deno.args[index] !== "--skip-e2e") throw new Error(`未知参数：${Deno.args[index]}`);
 }
 const reportFile = reportIndex >= 0 ? path.resolve(Deno.args[reportIndex + 1]) : null;
+if (reportFile) await Deno.mkdir(path.dirname(reportFile), { recursive: true });
 const pageCuaQueue = Deno.env.get("BROWSER_TOOLBOX_PAGE_CUA_LAUNCH_QUEUE") ??
   Deno.env.get("BROWSER_TOOLBOX_CUA_LAUNCH_QUEUE") ?? "";
 const report = {

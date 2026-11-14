@@ -380,7 +380,10 @@ async function testToolPages(browser, id) {
       };
     });
     assert(
-      sortMenu?.role === "listbox" && sortMenu.options.join("/") === "原始/升序/降序" && sortMenu.matchingStyle,
+      sortMenu?.role === "listbox" &&
+        (sortMenu.options.join("/") === "原始/升序/降序" ||
+          sortMenu.options.join("/") === "Original/Ascending/Descending") &&
+        sortMenu.matchingStyle,
       `排序菜单应使用统一的本地控件样式：${JSON.stringify(sortMenu)}`,
     );
     await clickVisible(page, "#json-sort-trigger");
@@ -393,7 +396,9 @@ async function testToolPages(browser, id) {
     );
     await page.click('#json-sort-menu [data-sort-value="ascending"]');
     assert(
-      await page.$eval("#json-sort-trigger", (button) => button.getAttribute("aria-expanded") === "false" && button.textContent.includes("升序")),
+      await page.$eval("#json-sort-trigger", (button) =>
+        button.getAttribute("aria-expanded") === "false" && /升序|Ascending/.test(button.textContent)
+      ),
       "选择排序选项后菜单应收起并更新当前文字。 ",
     );
     await clickVisible(page, ".browser-toolbox-json-advanced > summary");

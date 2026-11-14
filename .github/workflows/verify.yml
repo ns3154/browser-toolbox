@@ -19,13 +19,15 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.9.5
       - name: 安装归档工具和 Chrome for Testing 依赖
         run: |
           sudo apt-get update
-          sudo apt-get install -y curl zip unzip libnss3 libatk-bridge2.0-0 libx11-xcb1 libxcomposite1 libxdamage1 libxrandr2 libgbm1 libasound2t64
+          sudo apt-get install -y curl zip unzip xvfb libnss3 libatk-bridge2.0-0 libx11-xcb1 libxcomposite1 libxdamage1 libxrandr2 libgbm1 libasound2t64
           CFT_VERSION="152.0.7977.64"
           CFT_DIR="$HOME/.cache/puppeteer/chrome/linux-${CFT_VERSION}"
           CFT_ZIP="$(mktemp -t chrome-linux64.XXXXXX.zip)"
@@ -46,4 +48,4 @@ jobs:
           "$CHROME_PATH" --headless --dump-dom about:blank >/dev/null
           echo "PUPPETEER_EXECUTABLE_PATH=$CHROME_PATH" >> "$GITHUB_ENV"
       - name: 完整自动化门禁
-        run: deno run -A scripts/verify.js --report local-development/tracking/ci-verification.json
+        run: xvfb-run --auto-servernum --server-args="-screen 0 1920x1080x24" deno run -A scripts/verify.js --report local-development/tracking/ci-verification.json
