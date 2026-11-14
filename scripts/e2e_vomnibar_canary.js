@@ -1905,16 +1905,23 @@ async function run(name, extensionPath, plan) {
         const regularPage = page, regularTab = tabId;
         const privateUrl = url + "?private=1",
           nativeWindow = await options.evaluate(
-            ({ url, position, windowOptions }) =>
-              chrome.windows.create({
+            async ({ url, windowOptions }) => {
+              const createOptions = {
                 url,
                 incognito: true,
-                ...position,
                 width: 1280,
                 height: 1000,
                 ...windowOptions,
-              }),
-            { url: privateUrl, position: session.windowPosition, windowOptions: session.windowCreateOptions },
+              };
+              try {
+                return await chrome.windows.create(createOptions);
+              } catch (_) {
+                // 单屏或无副屏环境省略固定偏移，避免扩展窗口 API 拒绝越界坐标。
+                const { left: _left, top: _top, ...fallbackOptions } = createOptions;
+                return chrome.windows.create(fallbackOptions);
+              }
+            },
+            { url: privateUrl, windowOptions: session.windowCreateOptions },
           );
         const privateTarget = await browser.waitForTarget((target) =>
           target.type() === "page" && target.url() === privateUrl
