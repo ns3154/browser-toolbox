@@ -621,7 +621,7 @@ function createCompatRuntimeHost() {
   const inputSnapshot = globalThis.BrowserToolboxRuntimePlans?.COMPILED_CANARY
     ? new BrowserToolboxInputRuntime.SessionSnapshotReader(chrome, BrowserToolboxDocumentResources)
     : null;
-  inputSnapshot?.read().catch(() => {});
+  (inputSnapshot?.preload ? inputSnapshot.preload() : inputSnapshot?.read())?.catch(() => {});
   globalThis.BrowserToolboxSettingsProviderInstance = provider;
   globalThis.BrowserToolboxFrameRuntimeBridgeInstance = bridge;
   const host = new BrowserToolboxRuntime.RuntimeHost({

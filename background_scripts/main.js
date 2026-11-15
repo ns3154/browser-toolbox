@@ -1053,7 +1053,10 @@ const sendRequestHandlers = {
         if (browserToolboxDocumentAuthority.role(sender) === "component") {
           await browserToolboxDocumentAuthority.component(sender);
         }
-        const plan = await BrowserToolboxRuntimePlans.select(chrome);
+        const [plan] = await Promise.all([
+          BrowserToolboxRuntimePlans.select(chrome),
+          Settings.onLoaded(),
+        ]);
         const session = request.payload.runtimeEpoch == null
           ? null
           : await browserToolboxDocumentAuthority.register(sender, request.payload.runtimeEpoch, plan.planVersion);
@@ -1071,7 +1074,6 @@ const sendRequestHandlers = {
           });
           await browserToolboxDocumentAuthority.active(sender);
         }
-        await Settings.onLoaded();
         return {
           ...await sendRequestHandlers.initializeFrame(request.payload, sender),
           ...session,

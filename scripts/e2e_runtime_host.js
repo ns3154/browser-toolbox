@@ -978,6 +978,7 @@ try {
       hintsActivationP95: report.performance.hintsActivationMs?.p95,
       commandFeedbackP95: report.performance.commandFeedbackMs?.p95,
       relativeBudgetPassed: report.performance.relativeBudgetPassed,
+      relativeComparisons: report.performance.relativeComparisons,
       finalToFirstRatio: report.performance.memory?.finalToFirstRatio,
     }));
   }

@@ -260,6 +260,11 @@
     }
   }
 
+  const cloneSnapshot = (value) =>
+    globalThis.BrowserToolboxValueUtils
+      ? globalThis.BrowserToolboxValueUtils.clone(value)
+      : structuredClone(value);
+
   class SessionSnapshotReader {
     constructor(api, resources) {
       this.api = api;
@@ -274,14 +279,14 @@
         for (const key of this.keys) {
           if (changes[key]) this.snapshot[key] = changes[key].newValue;
         }
-        for (const listener of this.listeners) listener(structuredClone(this.snapshot));
+        for (const listener of this.listeners) listener(cloneSnapshot(this.snapshot));
       };
       api.storage.onChanged.addListener(this.listener);
       resources.add(() => this.destroy(), "subscription");
     }
-    read() {
+    loadIntoCache() {
       if (this.closed) return Promise.reject(new Error("INPUT_SNAPSHOT_CLOSED"));
-      if (this.snapshot) return Promise.resolve(structuredClone(this.snapshot));
+      if (this.snapshot) return Promise.resolve(this.snapshot);
       if (this.loading) return this.loading;
       const generation = this.generation;
       const loading = (async () => {
@@ -291,12 +296,32 @@
           if (this.closed || generation !== this.generation) throw new Error("STALE_INPUT_SNAPSHOT");
           // 读取期间收到更新时重新读；不能用较早的回包覆盖最新映射或查询历史。
           if (revision !== this.revision) continue;
-          this.snapshot = Object.fromEntries(this.keys.map((key) => [key, values[key]]));
-          return structuredClone(this.snapshot);
+          const snapshot = {};
+          for (const key of this.keys) snapshot[key] = values[key];
+          this.snapshot = snapshot;
+          return snapshot;
         }
       })().finally(() => { if (this.loading === loading) this.loading = null; });
       this.loading = loading;
       return loading;
+    }
+    preload() {
+      // 文档启动阶段只需把 session 快照拉入缓存，避免未消费的防御性深克隆。
+      return this.loadIntoCache().then(() => {});
+    }
+    read() {
+      const loading = this.loadIntoCache();
+      if (this.reading && this.readingSource === loading) return this.reading;
+      const reading = loading.then((snapshot) => cloneSnapshot(snapshot));
+      this.reading = reading;
+      this.readingSource = loading;
+      reading.finally(() => {
+        if (this.reading === reading) {
+          this.reading = null;
+          this.readingSource = null;
+        }
+      }).catch(() => {});
+      return reading;
     }
     subscribe(listener) {
       this.listeners.add(listener);
@@ -304,7 +329,7 @@
     }
     invalidate() {
       this.generation++;
-      this.snapshot = this.loading = null;
+      this.snapshot = this.loading = this.reading = this.readingSource = null;
     }
     destroy() {
       if (this.closed) return;
