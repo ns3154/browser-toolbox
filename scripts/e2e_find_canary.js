@@ -236,8 +236,11 @@ async function run(name, extensionPath, plan) {
       return frame;
     }
     async function exitFind(key = "Escape") {
-      await page.keyboard.press(key);
+      // OOPIF Find 输入框在 Escape/Enter keydown 后立即失焦并隐藏；先等主文档接回焦点再发送 keyUp，避免 Chromium CDP 路由到切换中的 OOPIF 挂起。
+      await page.keyboard.down(key);
       await wait(async () => !(await inspect()).mode.includes("find"));
+      await sleep(20);
+      await page.keyboard.up(key);
     }
     try {
       await wait(async () => (await inspect())?.active === "active");
