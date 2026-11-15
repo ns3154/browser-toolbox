@@ -48,7 +48,7 @@
         "<all_urls>"
       ],
       "js": [
-        "lib/i18n.js",
+        "lib/browser_toolbox/content_i18n.js",
         "lib/browser_toolbox/value_utils.js",
         "lib/browser_toolbox/tools/tool_contract.js",
         "lib/browser_toolbox/tools/tool_registry.js",

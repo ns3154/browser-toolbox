@@ -1,8 +1,75 @@
 // _locales 是翻译的唯一事实源；生成同步可用的内置文案，避免内容脚本首开等待异步加载。
 const projectRoot = new URL("../", import.meta.url);
 const runtimeFile = new URL("lib/i18n.js", projectRoot);
+const contentRuntimeFile = new URL("lib/browser_toolbox/content_i18n.js", projectRoot);
 const startMarker = "  // 本地化消息开始：由 scripts/sync_i18n.js 生成，请修改 _locales。";
 const endMarker = "  // 本地化消息结束。";
+const contentExactKeys = new Set([
+  "cancel",
+  "close",
+  "gestureCancelled",
+  "gestureUnrecognized",
+  "markUnavailable",
+]);
+
+function isContentKey(key) {
+  return contentExactKeys.has(key) ||
+    key.startsWith("gestureDirection") ||
+    key.startsWith("documentFormatter") ||
+    key.startsWith("command_");
+}
+
+function renderCatalogBlock(catalogs, filterKey = null) {
+  const lines = [
+    startMarker,
+    "  // 未用到的语言不构造完整目录；第一次读取仍同步完成，切换后缓存保持不变。",
+    "  const catalogCache = Object.create(null);",
+    "  // deno-fmt-ignore",
+    "  const catalogs = {",
+  ];
+  for (const [locale, catalog] of Object.entries(catalogs)) {
+    lines.push(
+      `    get ${JSON.stringify(locale)}() { return catalogCache[${JSON.stringify(locale)}] ||= {`,
+    );
+    for (const [key, value] of Object.entries(catalog)) {
+      if (filterKey && !filterKey(key)) continue;
+      lines.push(`      ${JSON.stringify(key)}: ${JSON.stringify(value)},`);
+    }
+    lines.push("    }; },");
+  }
+  lines.push("  };", endMarker);
+  return lines.join("\n");
+}
+
+async function applyCatalogBlock(file, block, check) {
+  const source = await Deno.readTextFile(file);
+  const start = source.indexOf(startMarker);
+  const end = source.indexOf(endMarker, start);
+  if (start < 0 || end < start) throw new Error(`未找到内置文案的生成区间：${file.pathname}`);
+  const result = source.slice(0, start) + block + source.slice(end + endMarker.length);
+  if (check && result !== source) {
+    throw new Error(
+      "内置文案未同步，请运行 deno run --allow-read --allow-write scripts/sync_i18n.js",
+    );
+  }
+  if (!check && result !== source) await Deno.writeTextFile(file, result);
+}
+
+async function assertContentKeysCovered(directoryUrl) {
+  for await (const entry of Deno.readDir(directoryUrl)) {
+    const childUrl = new URL(entry.name + (entry.isDirectory ? "/" : ""), directoryUrl);
+    if (entry.isDirectory) {
+      await assertContentKeysCovered(childUrl);
+    } else if (entry.name.endsWith(".js")) {
+      const source = await Deno.readTextFile(childUrl);
+      for (const match of source.matchAll(/(?:localizedMessage|hasMessage|message)\("([a-zA-Z0-9_]+)"/g)) {
+        if (!isContentKey(match[1])) {
+          throw new Error(`内容脚本引用了未收录进 content_i18n.js 的文案键：${match[1]} (${childUrl.pathname})`);
+        }
+      }
+    }
+  }
+}
 
 export async function synchronizeCatalogs({ check = false } = {}) {
   const locales = [];
@@ -36,34 +103,9 @@ export async function synchronizeCatalogs({ check = false } = {}) {
       }
     }
   }
-  const lines = [
-    startMarker,
-    "  // 未用到的语言不构造完整目录；第一次读取仍同步完成，切换后缓存保持不变。",
-    "  const catalogCache = Object.create(null);",
-    "  // deno-fmt-ignore",
-    "  const catalogs = {",
-  ];
-  for (const [locale, catalog] of Object.entries(catalogs)) {
-    lines.push(
-      `    get ${JSON.stringify(locale)}() { return catalogCache[${JSON.stringify(locale)}] ||= {`,
-    );
-    for (const [key, value] of Object.entries(catalog)) {
-      lines.push(`      ${JSON.stringify(key)}: ${JSON.stringify(value)},`);
-    }
-    lines.push("    }; },");
-  }
-  lines.push("  };", endMarker);
-  const source = await Deno.readTextFile(runtimeFile);
-  const start = source.indexOf(startMarker);
-  const end = source.indexOf(endMarker, start);
-  if (start < 0 || end < start) throw new Error("未找到内置文案的生成区间");
-  const result = source.slice(0, start) + lines.join("\n") + source.slice(end + endMarker.length);
-  if (check && result !== source) {
-    throw new Error(
-      "内置文案未同步，请运行 deno run --allow-read --allow-write scripts/sync_i18n.js",
-    );
-  }
-  if (!check && result !== source) await Deno.writeTextFile(runtimeFile, result);
+  await assertContentKeysCovered(new URL("content_scripts/", projectRoot));
+  await applyCatalogBlock(runtimeFile, renderCatalogBlock(catalogs), check);
+  await applyCatalogBlock(contentRuntimeFile, renderCatalogBlock(catalogs, isContentKey), check);
   return { locales, messageCount: keys.length };
 }
 
