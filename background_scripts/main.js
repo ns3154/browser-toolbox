@@ -559,9 +559,10 @@ const browserToolboxDispatcher = new globalThis.BrowserToolboxCommandDispatcher(
 const browserToolboxDocumentAuthority = new BrowserToolboxDocumentAuthority(chrome);
 let browserToolboxCompletionHub = null;
 const sameCompletionOwner = (a, b) => ["documentId", "componentId", "ownerDocumentId", "ownerEpoch", "tabId", "frameId", "planVersion", "incognito"].every((key) => a[key] === b[key]);
-async function browserToolboxCompletionSession(sender) {
+async function browserToolboxCompletionSession(sender, verifiedComponent = null) {
   if (!BrowserToolboxRuntimePlans.COMPILED_VOMNIBAR_CANARY || browserToolboxDocumentAuthority.role(sender) !== "component") return null;
-  const record = await browserToolboxDocumentAuthority.component(sender);
+  // 消息入口已刚校验过 component(sender) 时直接复用其授权快照，避免补全前重复执行两轮 getFrame IPC。
+  const record = verifiedComponent || await browserToolboxDocumentAuthority.component(sender);
   const plan = BrowserToolboxRuntimePlans.allowed.find((item) => item.planVersion === record.planVersion);
   if (record.component !== "vomnibar" || plan?.moduleImplementations.completers !== "browser-toolbox") return null;
   if (!browserToolboxCompletionHub) {
@@ -1560,14 +1561,14 @@ const sendRequestHandlers = {
     };
   },
 
-  async filterCompletions(request, sender) {
+  async filterCompletions(request, sender, verifiedComponent = null) {
     const warm = BrowserToolboxRuntimePlans.COMPILED_VOMNIBAR_CANARY &&
       !browserToolboxDocumentAuthority.writingDocuments &&
       browserToolboxDocumentAuthority.role(sender) === "component"
       ? browserToolboxCompletionHub?.warmSession(sender, browserToolboxDocumentAuthority.cachedDocuments)
       : null;
     const own = warm ||
-      await browserToolboxCompletionSession(sender).catch(() => ({ denied: true }));
+      await browserToolboxCompletionSession(sender, verifiedComponent).catch(() => ({ denied: true }));
     if (own?.denied) return { ok: false, code: "UI_NOT_AUTHORIZED" };
     if (own) {
       try {
@@ -1596,8 +1597,8 @@ const sendRequestHandlers = {
     return response;
   },
 
-  async refreshCompletions(request, sender) {
-    const own = await browserToolboxCompletionSession(sender).catch(() => ({ denied: true }));
+  async refreshCompletions(request, sender, verifiedComponent = null) {
+    const own = await browserToolboxCompletionSession(sender, verifiedComponent).catch(() => ({ denied: true }));
     if (own?.denied) return { ok: false, code: "UI_NOT_AUTHORIZED" };
     if (own) {
       try { await own.session.refresh(request.completerName); return { ok: true }; }
@@ -1607,8 +1608,8 @@ const sendRequestHandlers = {
     completer.refresh();
   },
 
-  async cancelCompletions(request, sender) {
-    const own = await browserToolboxCompletionSession(sender).catch(() => ({ denied: true }));
+  async cancelCompletions(request, sender, verifiedComponent = null) {
+    const own = await browserToolboxCompletionSession(sender, verifiedComponent).catch(() => ({ denied: true }));
     if (own?.denied) return { ok: false, code: "UI_NOT_AUTHORIZED" };
     if (own) return own.session.cancel();
     const completer = completers[request.completerName];
@@ -1700,12 +1701,14 @@ Utils.addChromeRuntimeOnMessageListener(
     if (!globalThis.BrowserToolboxMessageProtocol.isTrustedSender(sender, chrome.runtime.id)) {
       return;
     }
+    let verifiedComponent = null;
     if (
       !bgUtils.isFirefox() && browserToolboxDocumentAuthority.role(sender) === "component" &&
       request.handler !== "browserToolbox.message" && request.handler !== "getBrowserInfo"
     ) {
       try {
         const component = await browserToolboxDocumentAuthority.component(sender);
+        verifiedComponent = component;
         const actions = {
           hud: ["browserToolbox.configuration"],
           vomnibar: [
@@ -1793,7 +1796,7 @@ Utils.addChromeRuntimeOnMessageListener(
       tabId: sender.tab?.id,
     });
     const handler = sendRequestHandlers[request.handler];
-    const result = handler ? await handler(request, sender) : null;
+    const result = handler ? await handler(request, sender, verifiedComponent) : null;
     return result;
   },
 );

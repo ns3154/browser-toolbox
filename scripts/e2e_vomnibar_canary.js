@@ -188,6 +188,8 @@ async function run(name, extensionPath, plan) {
       args: [
         `--disable-extensions-except=${extensionPath}`,
         `--load-extension=${extensionPath}`,
+        // Linux CI 容器 /dev/shm 仅 64MB，避免后台补全与 2000 条本地数据 IPC 产生共享内存尖刺。
+        "--disable-dev-shm-usage",
         "--no-first-run",
         "--no-default-browser-check",
         "--window-size=1280,1000",
