@@ -141,6 +141,7 @@ async function run(name, extensionPath, plan) {
     args: [
       `--disable-extensions-except=${extensionPath}`,
       `--load-extension=${extensionPath}`,
+      "--disable-dev-shm-usage",
       "--no-first-run",
       "--no-default-browser-check",
       "--window-size=1280,1000",

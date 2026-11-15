@@ -2086,7 +2086,10 @@ try {
     const old = oldBrowser.completionPerformance[metric],
       current = newBrowser.completionPerformance[metric];
     performanceChanges[metric] = { old, current, regressionPercent: (current / old - 1) * 100 };
-    assert(current <= old * 1.25, `完成器${metric}超过原25%冻结预算`);
+    assert(
+      current <= old * 1.25,
+      `完成器${metric}超过原25%冻结预算（old=${old}, current=${current}, regressionPercent=${performanceChanges[metric].regressionPercent.toFixed(2)}%）`,
+    );
   }
   const corrected = [
     ...(report.frozenDefects.length === 1 && compat.childFocus === false &&

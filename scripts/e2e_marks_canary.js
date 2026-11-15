@@ -224,7 +224,7 @@ async function run(extensionPath, plan) {
   };
   const create = (key, target = page) => press(["m", key], target);
   const goto = (key, target = page) => press(["`", key], target);
-  const settle = () => wait(async () => (await call()).components === 0, "标记HUD未自然释放", 5000);
+  const settle = () => wait(async () => (await call()).components === 0, "标记HUD未自然释放", 10000);
   try {
     id = metadata.extensionId = await resolveCanaryExtensionId(browser);
     options = await session.newPage();

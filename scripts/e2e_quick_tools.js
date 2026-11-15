@@ -56,6 +56,16 @@ async function waitFor(predicate, timeout = 10000, interval = 50) {
   throw new Error("快捷工具 E2E 等待条件超时。");
 }
 
+async function focusTargetPage(browser, page) {
+  // 新 profile 安装扩展后后台可能异步打开引导页并抢占前台，截图前先关闭引导页并切回目标标签。
+  for (const candidate of await browser.pages()) {
+    if (candidate !== page && candidate.url().includes("/pages/onboarding.html")) {
+      await candidate.close().catch(() => {});
+    }
+  }
+  await page.bringToFront();
+}
+
 function response(body, contentType) {
   return new Response(body, { headers: { "content-type": contentType } });
 }
@@ -108,6 +118,7 @@ async function startBrowser(excludedPort) {
     args: [
       ...(headless ? ["--headless=new"] : []),
       "--no-sandbox",
+      "--disable-dev-shm-usage",
       "--disable-gpu",
       "--disable-background-timer-throttling",
       "--disable-backgrounding-occluded-windows",
@@ -624,6 +635,7 @@ export async function testDocumentFormatter(browser, baseUrl) {
       await downloadClient.detach().catch(() => {});
       await Deno.remove(downloadDir, { recursive: true }).catch(() => {});
     }
+    await focusTargetPage(browser, json);
     await json.screenshot({ path: "/tmp/browser-toolbox-document-json.png", fullPage: true });
     await clickDocumentButton(json, "toggle-original");
     assert(await json.$eval(".browser-toolbox-document-output", (element) => element.textContent.includes("9007199254740993")), "查看原文应保留原始文本。 ");
@@ -662,6 +674,7 @@ export async function testDocumentFormatter(browser, baseUrl) {
       }
       assert(await page.$(".browser-toolbox-json-toggle") === null, `${label} 不应显示 JSON 专属折叠树。 `);
       assert(await page.$('[aria-label="Sort JSON keys"]') === null, `${label} 不应显示 JSON 排序控件。 `);
+      await focusTargetPage(browser, page);
       await page.screenshot({ path: `/tmp/browser-toolbox-document-${path}.png`, fullPage: true });
     } finally {
       await page.close();
@@ -746,12 +759,14 @@ export async function testSettings(browser, id) {
     assert(counts.auto === 5, "设置页应有五种自动格式化开关。 ");
     assert(counts.groups === 4 && counts.panels === 12, "设置页应收敛为四大分组和十二个功能分区。 ");
     assert(counts.directory === counts.expectedDirectory && counts.openLinks === counts.expectedDirectory, "工具总览应由注册表生成完整工具目录。 ");
+    await focusTargetPage(browser, page);
     await page.screenshot({ path: "/tmp/browser-toolbox-settings-tools-overview.png", fullPage: true });
     await page.click("button[data-section='general']");
     await waitFor(() => page.$eval("#language", (element) => !element.closest("[hidden]")));
     assert(await page.$eval("#language", (element) => element.options.length === 6), "统一语言设置应提供五种语言和跟随浏览器。 ");
     await page.click("button[data-section='jsonFormatter']");
     await waitFor(() => page.$eval("[data-panel='jsonFormatter']", (element) => !element.hidden));
+    await focusTargetPage(browser, page);
     await page.screenshot({ path: "/tmp/browser-toolbox-settings-json.png", fullPage: true });
   } finally {
     await page.close();

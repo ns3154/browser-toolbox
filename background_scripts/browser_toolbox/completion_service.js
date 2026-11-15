@@ -428,6 +428,34 @@ export class CompletionHub {
     this.sessions.set(key, entry);
     return entry.session;
   }
+  warmSession(sender, records) {
+    // 仅复用同一活动会话中已完成一次完整 IPC 校验且上次走热过滤的记录，避免高频键入重复查询 Chrome。
+    if (!Array.isArray(records) || !sender?.documentId || sender.tab?.id == null) return null;
+    if (sender.documentLifecycle === "prerendering") return null;
+    const incognito = sender.tab.incognito === true;
+    for (const entry of this.sessions.values()) {
+      const target = entry.record;
+      if (
+        target.component !== "vomnibar" ||
+        target.documentId !== sender.documentId ||
+        target.tabId !== sender.tab.id ||
+        target.frameId !== sender.frameId ||
+        target.incognito !== incognito ||
+        entry.session.closed ||
+        entry.session.suspended ||
+        !entry.session.lastFilterWarm
+      ) continue;
+      const current = records.find((record) =>
+        record.role === "component" &&
+        record.component === "vomnibar" &&
+        ["documentId", "componentId", "ownerDocumentId", "ownerEpoch", "tabId", "frameId", "planVersion", "incognito"]
+          .every((field) => record[field] === target[field])
+      );
+      if (!current || !this.ownerPresent(target, records)) return null;
+      return { record: target, session: entry.session };
+    }
+    return null;
+  }
   remove(key) {
     this.sessions.get(key)?.session.destroy();
     this.sessions.delete(key);

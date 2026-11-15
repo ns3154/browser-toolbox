@@ -1559,7 +1559,13 @@ const sendRequestHandlers = {
   },
 
   async filterCompletions(request, sender) {
-    const own = await browserToolboxCompletionSession(sender).catch(() => ({ denied: true }));
+    const warm = BrowserToolboxRuntimePlans.COMPILED_VOMNIBAR_CANARY &&
+      !browserToolboxDocumentAuthority.writingDocuments &&
+      browserToolboxDocumentAuthority.role(sender) === "component"
+      ? browserToolboxCompletionHub?.warmSession(sender, browserToolboxDocumentAuthority.cachedDocuments)
+      : null;
+    const own = warm ||
+      await browserToolboxCompletionSession(sender).catch(() => ({ denied: true }));
     if (own?.denied) return { ok: false, code: "UI_NOT_AUTHORIZED" };
     if (own) {
       try {
