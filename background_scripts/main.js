@@ -1583,9 +1583,12 @@ const sendRequestHandlers = {
           // 热查询后优先读取已同步维护的内存文档快照，仅在缓存失效时才等待 records() 异步读取。
           const documents = browserToolboxDocumentAuthority.cachedDocuments ||
             await browserToolboxDocumentAuthority.records();
-          current = documents.find((item) =>
+          const matched = documents.find((item) =>
             item.documentId === sender.documentId && item.tabId === sender.tab?.id && item.component
           );
+          current = matched && browserToolboxCompletionHub.ownerPresent(matched, documents)
+            ? matched
+            : null;
         } else {
           current = await browserToolboxDocumentAuthority.component(sender);
         }
@@ -1717,7 +1720,15 @@ Utils.addChromeRuntimeOnMessageListener(
       request.handler !== "browserToolbox.message" && request.handler !== "getBrowserInfo"
     ) {
       try {
-        const component = await browserToolboxDocumentAuthority.component(sender);
+        const warm = request.handler === "filterCompletions" &&
+          BrowserToolboxRuntimePlans.COMPILED_VOMNIBAR_CANARY &&
+          !browserToolboxDocumentAuthority.writingDocuments &&
+          !browserToolboxPausedRuntimeTabs.has(sender.tab?.id)
+          ? browserToolboxCompletionHub?.warmSession(sender, browserToolboxDocumentAuthority.cachedDocuments)
+          : null;
+        const component = warm
+          ? warm.record
+          : await browserToolboxDocumentAuthority.component(sender);
         verifiedComponent = component;
         const actions = {
           hud: ["browserToolbox.configuration"],
