@@ -130,15 +130,19 @@ export class CompletionSession {
       const short = isJs ? "javascript:..." : undefined;
       const url = short ?? item.url;
       if (!prepared.matches(url, title)) continue;
-      candidates.push(model.candidate({
+      // 保持与 model.candidate 一致的单态对象结构，避免热循环中再创建中间对象和展开拷贝。
+      candidates.push({
+        title,
+        autoSelect: false,
+        highlightTerms: true,
+        deDuplicate: short == null,
+        isPrimarySuggestion: false,
         queryTerms: terms,
         description: "bookmark",
         url: item.url,
-        title,
         shortUrl: short,
-        deDuplicate: short == null,
         relevancy: prepared.wordScore(url, title),
-      }));
+      });
     }
     return candidates;
   }
@@ -151,14 +155,19 @@ export class CompletionSession {
     const now = Date.now();
     for (const item of ordered) {
       if (!(terms.length ? prepared.matches(item.url, item.title) : all)) continue;
-      candidates.push(model.candidate({
+      // 与书签候选使用相同的字面量结构，减少数千条全命中场景下的对象展开与 GC 压力。
+      candidates.push({
+        title: item.title,
+        autoSelect: false,
+        highlightTerms: true,
+        deDuplicate: true,
+        isPrimarySuggestion: false,
         queryTerms: terms,
         description: "history",
         url: item.url,
-        title: item.title,
-        relevancyData: item,
+        shortUrl: undefined,
         relevancy: prepared.historyScore(item.url, item.title, item.lastVisitTime, now),
-      }));
+      });
     }
     return candidates;
   }
@@ -311,7 +320,11 @@ export class CompletionSession {
         const historyCandidates = this.scoreHistories(this.historyOrder, terms, all, prepared);
         const domainCandidates = this.scoreDomains(this.domainIndex, terms, query, prepared);
         const tabCandidates = await tabsPromise;
-        candidates = bookmarkCandidates.concat(historyCandidates, domainCandidates, tabCandidates);
+        // 直接复用本轮新建的数组合并四类候选，避免 concat 为全量命中再复制一次数组。
+        candidates = bookmarkCandidates;
+        for (let i = 0; i < historyCandidates.length; i++) candidates.push(historyCandidates[i]);
+        for (let i = 0; i < domainCandidates.length; i++) candidates.push(domainCandidates[i]);
+        for (let i = 0; i < tabCandidates.length; i++) candidates.push(tabCandidates[i]);
       } else {
         const [bookmarkCandidates, historyCandidates, domainCandidates, tabCandidates] =
           await Promise.all([
@@ -320,13 +333,22 @@ export class CompletionSession {
             this.domains(terms, query, prepared),
             tabsPromise,
           ]);
-        candidates = bookmarkCandidates.concat(historyCandidates, domainCandidates, tabCandidates);
+        candidates = bookmarkCandidates;
+        for (let i = 0; i < historyCandidates.length; i++) candidates.push(historyCandidates[i]);
+        for (let i = 0; i < domainCandidates.length; i++) candidates.push(domainCandidates[i]);
+        for (let i = 0; i < tabCandidates.length; i++) candidates.push(tabCandidates[i]);
       }
     }
     if (this.closed || generation !== this.generation) throw new Error("STALE_COMPLETIONS");
-    return model.finish(candidates, this.api, this.firefox);
+    return model.finish(candidates, this.api, this.firefox, { inPlace: true });
   }
 }
+
+const sameSessionRecord = (a, b) =>
+  a.documentId === b.documentId && a.componentId === b.componentId &&
+  a.ownerDocumentId === b.ownerDocumentId && a.ownerEpoch === b.ownerEpoch &&
+  a.tabId === b.tabId && a.frameId === b.frameId &&
+  a.planVersion === b.planVersion && a.incognito === b.incognito;
 
 export class CompletionHub {
   constructor(api, options) {
@@ -353,17 +375,7 @@ export class CompletionHub {
       for (const [key, entry] of this.sessions) {
         const identity = entry.record;
         const present = records.some((record) =>
-          record.role === "component" &&
-          [
-            "documentId",
-            "componentId",
-            "ownerDocumentId",
-            "ownerEpoch",
-            "tabId",
-            "frameId",
-            "planVersion",
-            "incognito",
-          ].every((field) => record[field] === identity[field])
+          record.role === "component" && sameSessionRecord(record, identity)
         );
         if (!present) {
           if (this.ownerPresent(identity, records)) this.park(key);
@@ -404,12 +416,8 @@ export class CompletionHub {
     this.idle.set(owner, entry);
   }
   get(record) {
-    const key = JSON.stringify([
-      record.incognito === true,
-      record.documentId,
-      record.componentId,
-      record.ownerEpoch,
-    ]);
+    // 组合会话主键无需 JSON 序列化；单一活跃会话命中时跳过 LRU 重排以降低高频查询开销。
+    const key = `${record.incognito === true}\0${record.documentId}\0${record.componentId}\0${record.ownerEpoch}`;
     let entry = this.sessions.get(key);
     if (!entry) {
       const owner = this.ownerKey(record), parked = this.idle.get(owner);
@@ -419,13 +427,17 @@ export class CompletionHub {
         else this.remove(this.sessions.keys().next().value);
       }
       entry = {
-        record: structuredClone(record),
+        record: { ...record },
         session: parked?.session || new CompletionSession(this.api, this.options),
       };
       entry.session.suspended = false;
+      this.sessions.set(key, entry);
+      return entry.session;
     }
-    this.sessions.delete(key);
-    this.sessions.set(key, entry);
+    if (this.sessions.size > 1) {
+      this.sessions.delete(key);
+      this.sessions.set(key, entry);
+    }
     return entry.session;
   }
   warmSession(sender, records) {
@@ -448,8 +460,7 @@ export class CompletionHub {
       const current = records.find((record) =>
         record.role === "component" &&
         record.component === "vomnibar" &&
-        ["documentId", "componentId", "ownerDocumentId", "ownerEpoch", "tabId", "frameId", "planVersion", "incognito"]
-          .every((field) => record[field] === target[field])
+        sameSessionRecord(record, target)
       );
       if (!current || !this.ownerPresent(target, records)) return null;
       return { record: target, session: entry.session };

@@ -558,7 +558,11 @@ const browserToolboxDispatcher = new globalThis.BrowserToolboxCommandDispatcher(
 });
 const browserToolboxDocumentAuthority = new BrowserToolboxDocumentAuthority(chrome);
 let browserToolboxCompletionHub = null;
-const sameCompletionOwner = (a, b) => ["documentId", "componentId", "ownerDocumentId", "ownerEpoch", "tabId", "frameId", "planVersion", "incognito"].every((key) => a[key] === b[key]);
+const sameCompletionOwner = (a, b) =>
+  a.documentId === b.documentId && a.componentId === b.componentId &&
+  a.ownerDocumentId === b.ownerDocumentId && a.ownerEpoch === b.ownerEpoch &&
+  a.tabId === b.tabId && a.frameId === b.frameId &&
+  a.planVersion === b.planVersion && a.incognito === b.incognito;
 async function browserToolboxCompletionSession(sender, verifiedComponent = null) {
   if (!BrowserToolboxRuntimePlans.COMPILED_VOMNIBAR_CANARY || browserToolboxDocumentAuthority.role(sender) !== "component") return null;
   // 消息入口已刚校验过 component(sender) 时直接复用其授权快照，避免补全前重复执行两轮 getFrame IPC。
@@ -1562,7 +1566,8 @@ const sendRequestHandlers = {
   },
 
   async filterCompletions(request, sender, verifiedComponent = null) {
-    const warm = BrowserToolboxRuntimePlans.COMPILED_VOMNIBAR_CANARY &&
+    // 入口未提前提供 component 快照时才尝试 warmSession 预命中；已有 verifiedComponent 时直接进入会话解析避免重复扫表。
+    const warm = !verifiedComponent && BrowserToolboxRuntimePlans.COMPILED_VOMNIBAR_CANARY &&
       !browserToolboxDocumentAuthority.writingDocuments &&
       browserToolboxDocumentAuthority.role(sender) === "component"
       ? browserToolboxCompletionHub?.warmSession(sender, browserToolboxDocumentAuthority.cachedDocuments)
@@ -1573,12 +1578,17 @@ const sendRequestHandlers = {
     if (own) {
       try {
         const response = await own.session.filter(request);
-        const current = own.session.lastFilterWarm
-          // 热查询仅执行内存扫描与 tabs.query，且 CompletionHub 监听导航/关闭事件；复用 records 验证同代所有者即可避免冗余 IPC。
-          ? (await browserToolboxDocumentAuthority.records()).find((item) =>
+        let current;
+        if (own.session.lastFilterWarm) {
+          // 热查询后优先读取已同步维护的内存文档快照，仅在缓存失效时才等待 records() 异步读取。
+          const documents = browserToolboxDocumentAuthority.cachedDocuments ||
+            await browserToolboxDocumentAuthority.records();
+          current = documents.find((item) =>
             item.documentId === sender.documentId && item.tabId === sender.tab?.id && item.component
-          )
-          : await browserToolboxDocumentAuthority.component(sender);
+          );
+        } else {
+          current = await browserToolboxDocumentAuthority.component(sender);
+        }
         if (!current || !sameCompletionOwner(own.record, current)) {
           return { ok: false, code: "STALE_COMPLETIONS_OWNER" };
         }
