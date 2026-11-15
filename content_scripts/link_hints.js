@@ -540,19 +540,21 @@ class LinkHintsMode {
   }
 
   renderHints() {
-    if (this.containerEl == null) {
+    const isNewContainer = this.containerEl == null;
+    if (isNewContainer) {
       const div = DomUtils.createElement("div");
       div.id = "vimium-hint-marker-container";
       div.className = "vimium-reset";
       this.containerEl = div;
-      document.documentElement.appendChild(div);
     }
 
     // Append these markers as top level children instead of as child nodes to the link itself,
     // because some clickable elements cannot contain children, e.g. submit buttons.
     const markerEls = this.hintMarkers.filter((m) => m.isLocalMarker()).map((m) => m.element);
-    for (const el of markerEls) {
-      this.containerEl.appendChild(el);
+    // 先在离屏容器批量挂载全部标记再一次性挂入文档，避免千级节点逐个插入触发布局。
+    this.containerEl.append(...markerEls);
+    if (isNewContainer) {
+      document.documentElement.appendChild(this.containerEl);
     }
 
     // TODO(philc): 2024-03-27 Remove this hasPopoverSupport check once Firefox has popover support.
@@ -1193,6 +1195,20 @@ const spanWrap = (hintString) => {
   return innerHTML.join("");
 };
 
+// 复用静态角色集合，避免扫描每个候选元素时重复创建数组。
+const CLICKABLE_ROLES = new Set([
+  "button",
+  "tab",
+  "link",
+  "checkbox",
+  "menuitem",
+  "menuitemcheckbox",
+  "menuitemradio",
+  "radio",
+  "textbox",
+]);
+const CONTENT_EDITABLE_VALUES = new Set(["", "contenteditable", "true"]);
+
 const LocalHints = {
   // Returns an array of LocalHints if the element is visible and clickable, and computes the rect
   // which bounds this element in the viewport. We return an array because there may be more than
@@ -1257,47 +1273,41 @@ const LocalHints = {
       })();
     }
 
-    if (!isClickable) isClickable = this.checkForAngularJs(element);
-
-    if (element.hasAttribute("onclick")) {
+    // 原生 a 标签确定可点击且无需扩展属性推导，可直接跳过 Angular、role 与 jsaction 检查。
+    if (tagName === "a") {
       isClickable = true;
     } else {
-      const role = element.getAttribute("role");
-      const clickableRoles = [
-        "button",
-        "tab",
-        "link",
-        "checkbox",
-        "menuitem",
-        "menuitemcheckbox",
-        "menuitemradio",
-        "radio",
-        "textbox",
-      ];
-      if (role != null && clickableRoles.includes(role.toLowerCase())) {
+      if (!isClickable) isClickable = this.checkForAngularJs(element);
+
+      if (element.hasAttribute("onclick")) {
         isClickable = true;
       } else {
-        const contentEditable = element.getAttribute("contentEditable");
-        if (
-          contentEditable != null &&
-          ["", "contenteditable", "true"].includes(contentEditable.toLowerCase())
-        ) {
+        const role = element.getAttribute("role");
+        if (role != null && CLICKABLE_ROLES.has(role.toLowerCase())) {
           isClickable = true;
+        } else {
+          const contentEditable = element.getAttribute("contentEditable");
+          if (
+            contentEditable != null &&
+            CONTENT_EDITABLE_VALUES.has(contentEditable.toLowerCase())
+          ) {
+            isClickable = true;
+          }
         }
       }
-    }
 
-    // Check for jsaction event listeners on the element.
-    if (!isClickable && element.hasAttribute("jsaction")) {
-      const jsactionRules = element.getAttribute("jsaction").split(";");
-      for (const jsactionRule of jsactionRules) {
-        const ruleSplit = jsactionRule.trim().split(":");
-        if ((ruleSplit.length >= 1) && (ruleSplit.length <= 2)) {
-          const [eventType, namespace, actionName] = ruleSplit.length === 1
-            ? ["click", ...ruleSplit[0].trim().split("."), "_"]
-            : [ruleSplit[0], ...ruleSplit[1].trim().split("."), "_"];
-          if (!isClickable) {
-            isClickable = (eventType === "click") && (namespace !== "none") && (actionName !== "_");
+      // Check for jsaction event listeners on the element.
+      if (!isClickable && element.hasAttribute("jsaction")) {
+        const jsactionRules = element.getAttribute("jsaction").split(";");
+        for (const jsactionRule of jsactionRules) {
+          const ruleSplit = jsactionRule.trim().split(":");
+          if ((ruleSplit.length >= 1) && (ruleSplit.length <= 2)) {
+            const [eventType, namespace, actionName] = ruleSplit.length === 1
+              ? ["click", ...ruleSplit[0].trim().split("."), "_"]
+              : [ruleSplit[0], ...ruleSplit[1].trim().split("."), "_"];
+            if (!isClickable) {
+              isClickable = (eventType === "click") && (namespace !== "none") && (actionName !== "_");
+            }
           }
         }
       }
@@ -1381,11 +1391,13 @@ const LocalHints = {
 
     // Elements with tabindex are sometimes useful, but usually not. We can treat them as second
     // class citizens when it improves UX, so take special note of them.
-    const tabIndexValue = element.getAttribute("tabindex");
-    const tabIndex = tabIndexValue ? parseInt(tabIndexValue) : -1;
-    if (!isClickable && !(tabIndex < 0) && !isNaN(tabIndex)) {
-      isClickable = true;
-      onlyHasTabIndex = true;
+    if (!isClickable) {
+      const tabIndexValue = element.getAttribute("tabindex");
+      const tabIndex = tabIndexValue ? parseInt(tabIndexValue) : -1;
+      if (!(tabIndex < 0) && !isNaN(tabIndex)) {
+        isClickable = true;
+        onlyHasTabIndex = true;
+      }
     }
 
     if (isClickable) {
@@ -1428,9 +1440,10 @@ const LocalHints = {
   getElementFromPoint(x, y, root, stack) {
     if (root == null) root = document;
     if (stack == null) stack = [];
-    const element = root.elementsFromPoint
-      ? root.elementsFromPoint(x, y)[0]
-      : root.elementFromPoint(x, y);
+    // 优先使用 elementFromPoint 只取最顶层命中元素，避免为全部候选构造栈数组。
+    const element = root.elementFromPoint
+      ? root.elementFromPoint(x, y)
+      : root.elementsFromPoint?.(x, y)?.[0];
 
     if (stack.includes(element)) return element;
 
@@ -1459,7 +1472,7 @@ const LocalHints = {
     // Find all elements, recursing into shadow DOM if present.
     const getAllElements = (root, elements) => {
       if (elements == null) elements = [];
-      for (const element of Array.from(root.querySelectorAll("*"))) {
+      for (const element of root.querySelectorAll("*")) {
         elements.push(element);
         if (element.shadowRoot) {
           getAllElements(element.shadowRoot, elements);
@@ -1477,7 +1490,7 @@ const LocalHints = {
     // NOTE(mrmr1993): Our previous method (combined XPath and DOM traversal for jsaction) couldn't
     // provide this, so it's necessary to check whether elements are clickable in order, as we do
     // below.
-    for (const element of Array.from(elements)) {
+    for (const element of elements) {
       if (!requireHref || !!element.href) {
         const hints = this.getLocalHintsForElement(element);
         localHints.push(...hints);
