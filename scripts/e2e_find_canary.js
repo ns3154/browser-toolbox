@@ -194,7 +194,11 @@ async function run(name, extensionPath, plan) {
       console.log(`${name}：${label} 通过`);
     }
     async function reset() {
+      await page.bringToFront();
+      // 点击空白页边距并在评估前聚焦主文档，确保重载或切换后台页后按键一定会送达内容页。
+      await page.mouse.click(4, 4);
       await page.evaluate(() => {
+        window.focus();
         document.activeElement?.blur();
         scrollTo(0, 0);
         const selection = getSelection();
@@ -204,7 +208,6 @@ async function run(name, extensionPath, plan) {
         selection.removeAllRanges();
         selection.addRange(range);
       });
-      await page.bringToFront();
     }
     async function currentFindFrame() {
       let frame;
