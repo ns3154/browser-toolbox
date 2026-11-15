@@ -550,11 +550,13 @@
   async function runInit() {
     if (!isTopLevel() || !document.body) return;
     if (state || document.querySelector(".browser-toolbox-document-toolbar")) return;
+    // 普通 HTML 文档无需进入设置加载或读取正文，提前返回以消除首屏异步与克隆开销。
+    if (!formatter.detectDocument({ contentType: document.contentType, url: location.href })) return;
     const settingsClient = globalThis.BrowserToolboxSettingsRuntimeClientInstance;
     if (!settingsClient?.ensureLoaded) return;
     let settings;
     try {
-      settings = await settingsClient.ensureLoaded(location.href);
+      settings = await settingsClient.ensureLoaded(location.href, { readonly: true });
     } catch (_) {
       return;
     }

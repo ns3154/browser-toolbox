@@ -272,14 +272,25 @@
       if (api.extension?.inIncognitoContext) this.keys.push("findModeRawQueryListIncognito");
       this.generation = this.revision = 0;
       this.listeners = new Set();
+      this.sharedListeners = new Set();
       this.listener = (changes, area) => {
         if (this.closed || area !== "session" || !this.keys.some((key) => changes[key])) return;
         this.revision++;
         if (!this.snapshot) return;
+        const nextSnapshot = { ...this.snapshot };
         for (const key of this.keys) {
-          if (changes[key]) this.snapshot[key] = changes[key].newValue;
+          if (changes[key]) nextSnapshot[key] = changes[key].newValue;
         }
-        for (const listener of this.listeners) listener(cloneSnapshot(this.snapshot));
+        this.snapshot = nextSnapshot;
+        let cloned = null;
+        for (const listener of this.listeners) {
+          if (this.sharedListeners.has(listener)) {
+            listener(this.snapshot);
+          } else {
+            cloned ??= cloneSnapshot(this.snapshot);
+            listener(cloned);
+          }
+        }
       };
       api.storage.onChanged.addListener(this.listener);
       resources.add(() => this.destroy(), "subscription");
@@ -323,9 +334,17 @@
       }).catch(() => {});
       return reading;
     }
-    subscribe(listener) {
+    readShared() {
+      // 内部输入引擎仅只读检索映射表和放行列表，直接复用已缓存快照免除每次加载深克隆开销。
+      return this.loadIntoCache();
+    }
+    subscribe(listener, { shared = false } = {}) {
       this.listeners.add(listener);
-      return () => this.listeners.delete(listener);
+      if (shared) this.sharedListeners.add(listener);
+      return () => {
+        this.listeners.delete(listener);
+        this.sharedListeners.delete(listener);
+      };
     }
     invalidate() {
       this.generation++;
@@ -337,6 +356,7 @@
       this.invalidate();
       this.api.storage.onChanged.removeListener(this.listener);
       this.listeners.clear();
+      this.sharedListeners.clear();
     }
   }
 
@@ -365,8 +385,8 @@
       if (this.inputSnapshot) resources.add(this.inputSnapshot.subscribe((values) => {
         snapshotUpdated = true;
         this.inputSettings = values;
-      }));
-      const snapshotReady = this.inputSnapshot ? this.inputSnapshot.read() : chrome.storage.session.get([
+      }, { shared: true }));
+      const snapshotReady = this.inputSnapshot ? this.inputSnapshot.readShared() : chrome.storage.session.get([
         "normalModeKeyStateMapping",
         "passNextKeyKeys",
       ]);

@@ -103,7 +103,7 @@
           if (!this.effective("mouse") && this.gesture) this.cancelAll("settings-disabled");
           this.applyCursor().catch(() => {});
         };
-        if (runtimeSettings) runtimeSettings.addEventListener(this.settingsListener);
+        if (runtimeSettings) runtimeSettings.addEventListener(this.settingsListener, { readonly: true });
         else repository.addEventListener(this.settingsListener);
         this.settingsLoadPromise = this.refreshSettings();
         await this.settingsLoadPromise.catch(() => {});
@@ -118,7 +118,7 @@
     bootstrapSettings() {
       const url = globalThis.location?.href || "";
       try {
-        const settings = runtimeSettings?.getSettings?.();
+        const settings = runtimeSettings?.getSettings?.({ readonly: true });
         if (settings) return settings;
       } catch (_) {
         // 运行时客户端尚未准备好时继续尝试本地缓存。
@@ -134,7 +134,7 @@
 
     async refreshSettings() {
       const url = globalThis.location?.href || "";
-      if (runtimeSettings) this.settings = await runtimeSettings.ensureLoaded(url);
+      if (runtimeSettings) this.settings = await runtimeSettings.ensureLoaded(url, { readonly: true });
       else if (repository) {
         await repository.ensureLoaded();
         this.settings = repository.getEffectiveSettings(url);
