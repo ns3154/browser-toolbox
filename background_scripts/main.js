@@ -1564,8 +1564,15 @@ const sendRequestHandlers = {
     if (own) {
       try {
         const response = await own.session.filter(request);
-        const current = await browserToolboxDocumentAuthority.component(sender);
-        if (!sameCompletionOwner(own.record, current)) return { ok: false, code: "STALE_COMPLETIONS_OWNER" };
+        const current = own.session.lastFilterWarm
+          // 热查询仅执行内存扫描与 tabs.query，且 CompletionHub 监听导航/关闭事件；复用 records 验证同代所有者即可避免冗余 IPC。
+          ? (await browserToolboxDocumentAuthority.records()).find((item) =>
+            item.documentId === sender.documentId && item.tabId === sender.tab?.id && item.component
+          )
+          : await browserToolboxDocumentAuthority.component(sender);
+        if (!current || !sameCompletionOwner(own.record, current)) {
+          return { ok: false, code: "STALE_COMPLETIONS_OWNER" };
+        }
         return response;
       } catch (_) { return { ok: false, code: "COMPLETIONS_UNAVAILABLE" }; }
     }

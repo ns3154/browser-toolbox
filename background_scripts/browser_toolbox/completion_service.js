@@ -69,14 +69,18 @@ export class CompletionSession {
           : await this.api.bookmarks.getTree();
         if (this.closed || generation !== this.generation) throw new Error("STALE_COMPLETIONS");
         if (revision !== this[revisionKey]) continue;
-        this[dataKey] = kind === "history"
-          ? new Map(
+        if (kind === "history") {
+          this.history = new Map(
             [...items].sort((a, b) => a.url < b.url ? -1 : a.url > b.url ? 1 : 0).map((
               item,
             ) => [item.url, { ...item, title: item.title || "" }]),
-          )
-          : model.bookmarks(items);
-        return this[dataKey];
+          );
+          // read 时已按 url 排序构造 Map，直接复用顺序快照避免首次 orderedHistory 重复排序。
+          this.historyOrder = [...this.history.values()];
+          return this.history;
+        }
+        this.bookmarkItems = model.bookmarks(items);
+        return this.bookmarkItems;
       }
     })().finally(() => {
       if (this[loadingKey] === loading) this[loadingKey] = null;
@@ -117,10 +121,10 @@ export class CompletionSession {
       ? this.engines[parts[0]]
       : null;
   }
-  async bookmarks(terms, prepared = model.prepareQuery(terms)) {
+  scoreBookmarks(items, terms, prepared) {
     const path = terms.some((term) => term.startsWith("/"));
     const candidates = [];
-    for (const item of await this.read("bookmark")) {
+    for (const item of items) {
       const title = path ? item.pathAndTitle : item.title;
       const isJs = item.isJavascript ?? UrlUtils.hasJavascriptProtocol(item.url);
       const short = isJs ? "javascript:..." : undefined;
@@ -138,11 +142,14 @@ export class CompletionSession {
     }
     return candidates;
   }
-  async histories(terms, all, prepared = model.prepareQuery(terms)) {
+  async bookmarks(terms, prepared = model.prepareQuery(terms)) {
+    return this.scoreBookmarks(await this.read("bookmark"), terms, prepared);
+  }
+  scoreHistories(ordered, terms, all, prepared) {
     const candidates = [];
     // 单次查询共用同一时间戳，避免遍历数千条历史记录时重复读取系统时钟。
     const now = Date.now();
-    for (const item of await this.orderedHistory()) {
+    for (const item of ordered) {
       if (!(terms.length ? prepared.matches(item.url, item.title) : all)) continue;
       candidates.push(model.candidate({
         queryTerms: terms,
@@ -154,6 +161,9 @@ export class CompletionSession {
       }));
     }
     return candidates;
+  }
+  async histories(terms, all, prepared = model.prepareQuery(terms)) {
+    return this.scoreHistories(await this.orderedHistory(), terms, all, prepared);
   }
   async orderedHistory() {
     const history = await this.read("history");
@@ -174,19 +184,14 @@ export class CompletionSession {
     slot.references++;
     this.domainIndex.set(domain, slot);
   }
-  async domains(terms, query, prepared = model.prepareQuery(terms)) {
+  scoreDomains(index, terms, query, prepared) {
     if (!terms.length || /\S\s/.test(query)) return [];
-    if (!this.domainIndex) {
-      const entries = await this.orderedHistory();
-      this.domainIndex = new Map();
-      for (const item of entries) this.addDomain(item);
-    }
     // 删除时保留仍被引用的旧最近访问分数，重复访问也增加引用计数，沿用冻结域名候选的语义。
     let bestDomain = null;
     let bestScore = -Infinity;
     const needle = terms[0];
     const now = Date.now();
-    for (const [domain, slot] of this.domainIndex) {
+    for (const [domain, slot] of index) {
       if (!domain.includes(needle)) continue;
       const score = prepared.historyScore(domain, null, slot.entry.lastVisitTime || 0, now);
       if (score > bestScore) {
@@ -205,9 +210,20 @@ export class CompletionSession {
       ]
       : [];
   }
+  async domains(terms, query, prepared = model.prepareQuery(terms)) {
+    if (!terms.length || /\S\s/.test(query)) return [];
+    if (!this.domainIndex) {
+      const entries = await this.orderedHistory();
+      this.domainIndex = new Map();
+      for (const item of entries) this.addDomain(item);
+    }
+    return this.scoreDomains(this.domainIndex, terms, query, prepared);
+  }
   async tabs(terms, prepared = model.prepareQuery(terms)) {
-    await this.tabRecency.init();
+    // 若 tabRecency 已就绪则跳过额外微任务；否则与 tabs.query 并发初始化。
+    const recencyReady = this.tabRecency.loaded ? null : this.tabRecency.init();
     const tabs = await this.api.tabs.query({});
+    if (recencyReady) await recencyReady;
     const values = tabs.filter((tab) => prepared.matches(tab.url, tab.title)).map((tab) =>
       model.candidate({
         queryTerms: terms,
@@ -265,6 +281,7 @@ export class CompletionSession {
       this.closed || !["omni", "bookmarks", "tabs"].includes(name) || typeof query !== "string" ||
       !Array.isArray(terms) || terms.some((term) => typeof term !== "string" || !term.length)
     ) throw new Error("INVALID_COMPLETIONS_REQUEST");
+    this.lastFilterWarm = false;
     if (!terms.length && name !== "tabs") return [];
     const enginesConfig = this.settings.get("searchEngines");
     if (this.enginesSource !== enginesConfig) {
@@ -275,18 +292,37 @@ export class CompletionSession {
     const generation = this.generation;
     const prepared = model.prepareQuery(terms);
     const engine = name === "omni" ? this.engine(query) : null;
-    const candidates = engine
-      ? await this.search(engine, terms)
-      : name === "tabs"
-      ? await this.tabs(terms, prepared)
-      : name === "bookmarks"
-      ? await this.bookmarks(terms, prepared)
-      : (await Promise.all([
-        this.bookmarks(terms, prepared),
-        this.histories(terms, all, prepared),
-        this.domains(terms, query, prepared),
-        this.tabs(terms, prepared),
-      ])).flat();
+    let candidates;
+    if (engine) {
+      candidates = await this.search(engine, terms);
+    } else if (name === "tabs") {
+      candidates = await this.tabs(terms, prepared);
+    } else if (name === "bookmarks") {
+      candidates = await this.bookmarks(terms, prepared);
+    } else {
+      // 预先发起 tabs.query IPC，使其与内存中的书签/历史/域名扫描并行执行。
+      const tabsPromise = this.tabs(terms, prepared);
+      const warm = Boolean(
+        this.bookmarkItems && this.history && this.historyOrder && this.domainIndex,
+      );
+      if (warm) {
+        this.lastFilterWarm = true;
+        const bookmarkCandidates = this.scoreBookmarks(this.bookmarkItems, terms, prepared);
+        const historyCandidates = this.scoreHistories(this.historyOrder, terms, all, prepared);
+        const domainCandidates = this.scoreDomains(this.domainIndex, terms, query, prepared);
+        const tabCandidates = await tabsPromise;
+        candidates = bookmarkCandidates.concat(historyCandidates, domainCandidates, tabCandidates);
+      } else {
+        const [bookmarkCandidates, historyCandidates, domainCandidates, tabCandidates] =
+          await Promise.all([
+            this.bookmarks(terms, prepared),
+            this.histories(terms, all, prepared),
+            this.domains(terms, query, prepared),
+            tabsPromise,
+          ]);
+        candidates = bookmarkCandidates.concat(historyCandidates, domainCandidates, tabCandidates);
+      }
+    }
     if (this.closed || generation !== this.generation) throw new Error("STALE_COMPLETIONS");
     return model.finish(candidates, this.api, this.firefox);
   }
