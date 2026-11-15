@@ -717,6 +717,7 @@ export async function testSettings(browser, id) {
       expectedDirectory: BrowserToolboxToolRegistry.entries.length,
     }));
     console.log(`设置页工具数量：${JSON.stringify(counts)}`);
+    await focusTargetPage(browser, page);
     assert(counts.action === counts.expectedAction, "动作弹窗设置应列出全部支持弹窗的工具。 ");
     assert(counts.context === counts.expectedContext, "右键菜单设置应列出全部支持右键菜单的工具。 ");
     const actionInputs = await page.$$("#action-tool-list input");
@@ -793,8 +794,15 @@ async function main() {
   })();
   const onTerminate = () => { cleanup().finally(() => Deno.exit(143)); };
   if (Deno.build.os !== "windows") Deno.addSignalListener("SIGTERM", onTerminate);
+  const closeOnboarding = async (target) => {
+    if (target.type() !== "page" || !target.url().includes("/pages/onboarding.html")) return;
+    const onboardingPage = await target.page().catch(() => null);
+    await onboardingPage?.close().catch(() => {});
+  };
   try {
     ({ browser, process: chromeProcess, userDataDir } = await startBrowser(server.addr.port));
+    browser.on("targetcreated", closeOnboarding);
+    browser.on("targetchanged", closeOnboarding);
     const id = await extensionId(browser);
     await runStage(browser, "工具设置", () => testSettings(browser, id));
     await runStage(browser, "动作弹窗", () => testActionPopup(browser, id, baseUrl));
@@ -802,6 +810,8 @@ async function main() {
     await runStage(browser, "文档格式化器", () => testDocumentFormatter(browser, baseUrl));
     console.log(`快捷工具 E2E 通过：扩展 ${id}，目录、工具页、令牌失败闭环、五种文档格式和无限工具选择。`);
   } finally {
+    browser?.off("targetcreated", closeOnboarding);
+    browser?.off("targetchanged", closeOnboarding);
     if (Deno.build.os !== "windows") Deno.removeSignalListener("SIGTERM", onTerminate);
     await cleanup();
   }
