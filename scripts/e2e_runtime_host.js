@@ -59,6 +59,8 @@ const browser = await puppeteer.launch({
   args: [
     `--disable-extensions-except=${extensionPath}`,
     `--load-extension=${extensionPath}`,
+    // Linux CI 容器默认 /dev/shm 仅 64MB，高频跨页与双 frame 测试需避免共享内存耗尽导致 IPC 尖刺。
+    "--disable-dev-shm-usage",
     "--no-first-run",
     "--no-default-browser-check",
     "--window-size=1280,900",

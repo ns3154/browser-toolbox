@@ -207,7 +207,8 @@
     mutate(action) {
       const result = this.queue.then(async () => {
         const previous = await this.records();
-        const documents = structuredClone(previous);
+        // 文档授权记录只包含扁平原始字段，浅拷贝可避免高频登记下的 structuredClone 开销。
+        const documents = previous.map((item) => ({ ...item }));
         const value = await action(documents);
         // 重复登记与迟到清理仍执行原生校验；记录完全未变时不重复写入及广播 session。
         if (
@@ -226,15 +227,16 @@
       this.queue = result.catch(() => {});
       return result;
     }
-    register(sender, runtimeEpoch, planVersion = 1) {
+    async register(sender, runtimeEpoch, planVersion = 1) {
+      // 在进入全局写队列前并发完成身份与存活 frame IPC 校验，避免多 frame 初始化串行排队。
+      const role = this.role(sender);
+      if (
+        !["content", "ownedUi", "component"].includes(role) ||
+        !Number.isSafeInteger(runtimeEpoch) || runtimeEpoch < 1 ||
+        !this.planVersions.has(planVersion)
+      ) throw fail("PERMISSION_DENIED");
+      await this.active(sender);
       return this.mutate(async (documents) => {
-        const role = this.role(sender);
-        if (
-          !["content", "ownedUi", "component"].includes(role) ||
-          !Number.isSafeInteger(runtimeEpoch) || runtimeEpoch < 1 ||
-          !this.planVersions.has(planVersion)
-        ) throw fail("PERMISSION_DENIED");
-        await this.active(sender);
         // frame 导航后旧文档不再拥有执行权；缓存恢复要重新注册，不能累积已失效组件记录。
         const obsolete = documents.filter((item) =>
           item.tabId === sender.tab.id && item.frameId === sender.frameId &&
@@ -278,7 +280,7 @@
         }
         record.runtimeEpoch = runtimeEpoch;
         record.planVersion = planVersion;
-        return structuredClone(record);
+        return { ...record };
       });
     }
     async validateOwner(record) {
