@@ -23,6 +23,25 @@ import {
 } from "../../../background_scripts/browser_toolbox/completion_service.js";
 import { Suggestions } from "../../../background_scripts/browser_toolbox/completion_suggestions.js";
 
+context("默认搜索隐私边界", () => {
+  should("Canary 完成器不会为默认 Google 输入发送联想请求", async () => {
+    let calls = 0;
+    const suggestions = new Suggestions({
+      fetcher: () => {
+        calls++;
+        throw new Error("默认搜索不应请求在线联想");
+      },
+    });
+    try {
+      const url = Settings.defaultOptions.searchEngines.split(/\s+/)[1];
+      assert.equal([], await suggestions.complete(url, ["synthetic", "query"]));
+      assert.equal(0, calls);
+    } finally {
+      suggestions.destroy();
+    }
+  });
+});
+
 const event = () => {
   const listeners = new Set();
   return {

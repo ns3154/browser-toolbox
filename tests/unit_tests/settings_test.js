@@ -2,6 +2,25 @@ import "./test_helper.js";
 import "../../lib/settings.js";
 
 context("settings", () => {
+  context("搜索引擎默认值", () => {
+    teardown(async () => {
+      await Settings.clear();
+    });
+
+    should("新配置默认提供 Google 搜索关键字", async () => {
+      await Settings.clear();
+      await Settings.load();
+      assert.equal("g: https://google.com/search?q=%s Google", Settings.get("searchEngines"));
+    });
+
+    should("保留已保存的搜索引擎配置", async () => {
+      const existing = "bd: https://www.baidu.com/s?wd=%s 百度";
+      await chrome.storage.sync.set({ settingsVersion: "2.4.2", searchEngines: existing });
+      await Settings.load();
+      assert.equal(existing, Settings.get("searchEngines"));
+    });
+  });
+
   should("旧备份导入请求后台先保存当前配置，不退化为普通提交", async () => {
     const baseline = { ...structuredClone(Settings.defaultOptions), settingsVersion: "2.4.2" };
     let captured;

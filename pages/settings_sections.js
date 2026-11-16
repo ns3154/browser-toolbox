@@ -112,7 +112,15 @@
       id: "keyboard",
       group: "browsingEnhancement",
       labelKey: "keyboard",
-      searchKeys: ["keyMappings", "keyboardMappingNote"],
+      searchKeys: [
+        "keyMappings",
+        "keyboardMappingNote",
+        "keyboardGuideDescription",
+        "keyboardStep2Title",
+        "keyboardStep2Desc",
+        "keyboardSyntaxFormatDesc",
+        "keyboardCommandsLink",
+      ],
     },
     {
       id: "appearance",

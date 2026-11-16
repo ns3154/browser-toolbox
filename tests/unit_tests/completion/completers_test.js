@@ -3,6 +3,7 @@ import "../../../background_scripts/tab_recency.js";
 import "../../../background_scripts/bg_utils.js";
 import "../../../background_scripts/completion/search_engines.js";
 import "../../../background_scripts/completion/search_wrapper.js";
+import "../../../lib/settings.js";
 import * as userSearchEngines from "../../../background_scripts/user_search_engines.js";
 import {
   BookmarkCompleter,
@@ -397,6 +398,21 @@ context("SearchEngineCompleter", () => {
       [googleSearchUrl + "blue", googleSearchUrl + "blue1", googleSearchUrl + "blue2"],
       results.map((suggestion) => suggestion.url),
     );
+  });
+
+  should("默认 Google 搜索只生成本地候选，不在输入时发送联想请求", async () => {
+    let calls = 0;
+    stub(globalThis, "fetch", () => {
+      calls++;
+      throw new Error("默认搜索不应请求在线联想");
+    });
+    userSearchEngines.set(Settings.defaultOptions.searchEngines);
+    const results = await filterCompleter(completer, ["g", "synthetic", "query"]);
+    assert.equal(
+      ["https://google.com/search?q=synthetic%20query"],
+      results.map((item) => item.url),
+    );
+    assert.equal(0, calls);
   });
 });
 

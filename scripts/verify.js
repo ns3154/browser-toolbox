@@ -135,6 +135,7 @@ try {
     const [name, script] of [
       ["快捷工具 E2E", "scripts/e2e_quick_tools.js"],
       ["BrowserToolbox E2E", "scripts/e2e_browser_toolbox.js"],
+      ["设置引导与站点规则 E2E", "scripts/e2e_settings_guidance.js"],
       ["超级拖拽尺寸调整 E2E", "scripts/e2e_super_drag_resize.js"],
       ["超级拖拽提示 E2E", "scripts/e2e_super_drag_feedback.js"],
       ["运行时适配 E2E 与性能", "scripts/e2e_runtime_host.js"],

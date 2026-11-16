@@ -1946,15 +1946,22 @@
       }
     });
     document.querySelector("#add-site-rule").addEventListener("click", () => {
-      settings.siteRules.push({
+      const rule = {
         id: siteRulesApi.newId(),
         matchType: "glob",
         pattern: "https://example.com/*",
         enabled: true,
         modules: {},
-      });
+      };
+      settings.siteRules.push(rule);
       renderSiteRules();
       markDraftDirty();
+      const row = [...document.querySelectorAll("#site-rules [data-rule-id]")]
+        .find((element) => element.dataset.ruleId === rule.id);
+      const pattern = row?.querySelector("[data-field=pattern]");
+      pattern?.focus({ preventScroll: true });
+      pattern?.select();
+      pattern?.scrollIntoView({ block: "center", inline: "nearest" });
     });
     document.querySelector("#add-super-drag-binding").addEventListener("click", () => {
       settings.superDrag.bindings.push({

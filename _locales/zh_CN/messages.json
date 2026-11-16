@@ -3377,8 +3377,7 @@
     "description": "搜索引擎"
   },
   "keyboardMappingNote": {
-    "message": "兼容 Vimium 的键盘映射会导入现有键盘设置。",
-    "description": "键盘导入说明"
+    "message": "每行填写一条；清空自定义内容可恢复默认映射，保存后生效。"
   },
   "searchEngineNote": {
     "message": "只有你主动执行搜索命令时，搜索词才会发送给目标搜索引擎。",
@@ -4372,7 +4371,7 @@
     "message": "在下方填写或编辑关键字规则"
   },
   "searchStep1Desc": {
-    "message": "每行一条「关键字: 搜索地址 [名称]」（如 bd: https://www.baidu.com/s?wd=%s 百度），改好后点击右上角“保存设置”。"
+    "message": "每行一条「关键字: 搜索地址 [名称]」（如 g: https://google.com/search?q=%s Google），改好后点击右上角“保存设置”。"
   },
   "searchStep2Kicker": {
     "message": "第 2 步 · 网页中呼出"
@@ -4387,10 +4386,10 @@
     "message": "第 3 步 · 关键字检索"
   },
   "searchStep3Title": {
-    "message": "输入 bd 搜索词 并回车"
+    "message": "默认示例：输入 g 搜索词 并回车"
   },
   "searchStep3Desc": {
-    "message": "关键字后加空格即可切换为百度搜索，继续输入关键词回车直接打开结果页。"
+    "message": "输入 g、空格和搜索词即可使用 Google；如果修改过规则，请使用自己设置的关键字。"
   },
   "searchRulesLabel": {
     "message": "自定义规则列表"
@@ -4399,12 +4398,57 @@
     "message": "行格式规范"
   },
   "searchSyntaxFormatDesc": {
-    "message": "格式为「关键字: URL [显示名称]」（例如 bd: https://www.baidu.com/s?wd=%s 百度）。%s 会替换为 URL 编码后的搜索词，%S 保持原样不编码；未写占位符时自动拼在地址末尾。"
+    "message": "格式为「关键字: URL [显示名称]」（例如 g: https://google.com/search?q=%s Google）。%s 会替换为 URL 编码后的搜索词，%S 保持原样不编码；未写占位符时自动拼在地址末尾。"
   },
   "searchSyntaxCommentLabel": {
     "message": "注释与生效"
   },
   "searchSyntaxCommentDesc": {
     "message": "以 # 或 \" 开头的行视作注释不会生效；编辑完成后需点击右上角「保存设置」。"
+  },
+  "keyboardGuideDescription": {
+    "message": "用快捷键浏览网页，也可以按自己的习惯调整按键。"
+  },
+  "keyboardStep1Kicker": {
+    "message": "第 1 步 · 开启"
+  },
+  "keyboardStep1Title": {
+    "message": "启用键盘导航"
+  },
+  "keyboardStep1Desc": {
+    "message": "打开下方开关，点击右上角“保存设置”。"
+  },
+  "keyboardStep2Kicker": {
+    "message": "第 2 步 · 浏览网页"
+  },
+  "keyboardStep2Title": {
+    "message": "在普通网页试用快捷键"
+  },
+  "keyboardStep2Desc": {
+    "message": "按 j / k 滚动，按 f 选择链接，按 ? 查看所有快捷键。"
+  },
+  "keyboardStep3Kicker": {
+    "message": "第 3 步 · 自定义"
+  },
+  "keyboardStep3Title": {
+    "message": "按需调整按键映射"
+  },
+  "keyboardStep3Desc": {
+    "message": "在下方每行填写一条并保存；无需修改也可使用默认快捷键。"
+  },
+  "keyboardSyntaxFormatLabel": {
+    "message": "映射示例"
+  },
+  "keyboardSyntaxFormatDesc": {
+    "message": "map J scrollDown 将 J 绑定为向下滚动；unmap J 移除 J 的绑定。"
+  },
+  "keyboardSyntaxResetLabel": {
+    "message": "默认值与注释"
+  },
+  "keyboardSyntaxResetDesc": {
+    "message": "unmapAll 会清除此前所有默认和自定义绑定；以 # 或 \" 开头的行为注释。"
+  },
+  "keyboardCommandsLink": {
+    "message": "查看全部命令"
   }
 }

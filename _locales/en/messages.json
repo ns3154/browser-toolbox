@@ -3377,8 +3377,7 @@
     "description": "Search engines"
   },
   "keyboardMappingNote": {
-    "message": "Vimium-compatible mappings are imported into the existing keyboard settings.",
-    "description": "Keyboard import note"
+    "message": "Leave the mappings empty to use defaults; save changes to apply them."
   },
   "searchEngineNote": {
     "message": "Searches are sent only when you explicitly invoke a search command.",
@@ -4372,7 +4371,7 @@
     "message": "Edit keyword rules below"
   },
   "searchStep1Desc": {
-    "message": "One entry per line as \"keyword: search_url [name]\" (e.g. bd: https://www.baidu.com/s?wd=%s Baidu), then click Save settings."
+    "message": "One entry per line as \"keyword: search_url [name]\" (e.g. g: https://google.com/search?q=%s Google), then click Save settings."
   },
   "searchStep2Kicker": {
     "message": "Step 2 · Open on any page"
@@ -4387,10 +4386,10 @@
     "message": "Step 3 · Search with keyword"
   },
   "searchStep3Title": {
-    "message": "Type bd query and press Enter"
+    "message": "Default example: type g query and press Enter"
   },
   "searchStep3Desc": {
-    "message": "Type the keyword plus a space to select Baidu, then enter your terms and hit Enter to open results."
+    "message": "Type g, a space, and your search terms. If you changed the rules, use your configured keyword instead."
   },
   "searchRulesLabel": {
     "message": "Custom search rules"
@@ -4399,12 +4398,57 @@
     "message": "Line syntax"
   },
   "searchSyntaxFormatDesc": {
-    "message": "Format: keyword: URL [display name] (e.g. bd: https://www.baidu.com/s?wd=%s Baidu). %s is replaced with the URL-encoded query, %S keeps the raw query, or it is appended if omitted."
+    "message": "Format: keyword: URL [display name] (e.g. g: https://google.com/search?q=%s Google). %s is replaced with the URL-encoded query, %S keeps the raw query, or it is appended if omitted."
   },
   "searchSyntaxCommentLabel": {
     "message": "Comments & saving"
   },
   "searchSyntaxCommentDesc": {
     "message": "Lines starting with # or \" are treated as comments and ignored; click Save settings to apply changes."
+  },
+  "keyboardGuideDescription": {
+    "message": "Use shortcuts to browse pages and customize their bindings."
+  },
+  "keyboardStep1Kicker": {
+    "message": "Step 1 · Enable"
+  },
+  "keyboardStep1Title": {
+    "message": "Enable keyboard navigation"
+  },
+  "keyboardStep1Desc": {
+    "message": "Turn on the switch below and click Save settings."
+  },
+  "keyboardStep2Kicker": {
+    "message": "Step 2 · Browse"
+  },
+  "keyboardStep2Title": {
+    "message": "Try shortcuts on a web page"
+  },
+  "keyboardStep2Desc": {
+    "message": "Use j / k to scroll, f to open link hints, and ? to see all shortcuts."
+  },
+  "keyboardStep3Kicker": {
+    "message": "Step 3 · Customize"
+  },
+  "keyboardStep3Title": {
+    "message": "Edit mappings if needed"
+  },
+  "keyboardStep3Desc": {
+    "message": "Add one mapping per line below and save; existing defaults work without edits."
+  },
+  "keyboardSyntaxFormatLabel": {
+    "message": "Mapping examples"
+  },
+  "keyboardSyntaxFormatDesc": {
+    "message": "map J scrollDown binds J; unmap J removes its binding."
+  },
+  "keyboardSyntaxResetLabel": {
+    "message": "Defaults and comments"
+  },
+  "keyboardSyntaxResetDesc": {
+    "message": "unmapAll removes all preceding bindings, including defaults. Lines starting with # or \" are comments."
+  },
+  "keyboardCommandsLink": {
+    "message": "View all commands"
   }
 }

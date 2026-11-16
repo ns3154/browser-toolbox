@@ -2547,7 +2547,7 @@
     "message": "検索エンジン"
   },
   "keyboardMappingNote": {
-    "message": "Vimium 互換のキー割り当ては既存のキーボード設定に取り込まれます。"
+    "message": "1行に1つ入力します。カスタム設定を空にすると既定の割り当てに戻り、保存後に反映されます。"
   },
   "searchEngineNote": {
     "message": "検索コマンドを明示的に実行した場合のみ、検索を送信します。"
@@ -3525,7 +3525,7 @@
     "message": "下の入力欄でキーワード規則を編集"
   },
   "searchStep1Desc": {
-    "message": "1行ごとに「キーワード: 検索URL [名前]」（例: bd: https://www.baidu.com/s?wd=%s 百度）を記入し、右上の「設定を保存」をクリックします。"
+    "message": "1行ごとに「キーワード: 検索URL [名前]」（例: g: https://google.com/search?q=%s Google）を入力し、右上の「設定を保存」をクリックします。"
   },
   "searchStep2Kicker": {
     "message": "手順 2 · ページ上で起動"
@@ -3540,10 +3540,10 @@
     "message": "手順 3 · キーワード検索"
   },
   "searchStep3Title": {
-    "message": "bd 検索語 を入力して Enter"
+    "message": "既定の例: g 検索語を入力して Enter"
   },
   "searchStep3Desc": {
-    "message": "キーワードの後ろにスペースを入れると百度検索に切り替わり、語句を入力して Enter で結果を開きます。"
+    "message": "g、スペース、検索語を入力すると Google で検索します。ルールを変更した場合は設定したキーワードを使います。"
   },
   "searchRulesLabel": {
     "message": "カスタム検索ルール"
@@ -3552,12 +3552,57 @@
     "message": "書式ルール"
   },
   "searchSyntaxFormatDesc": {
-    "message": "書式は「キーワード: URL [表示名]」（例: bd: https://www.baidu.com/s?wd=%s 百度）。%s は URL エンコード済み語句、%S は生文字列に置換され、省略時は末尾に追加されます。"
+    "message": "書式は「キーワード: URL [表示名]」（例: g: https://google.com/search?q=%s Google）。%s は URL エンコード済み語句、%S は生文字列に置換され、省略時は末尾に追加されます。"
   },
   "searchSyntaxCommentLabel": {
     "message": "コメントと反映"
   },
   "searchSyntaxCommentDesc": {
     "message": "# または \" で始まる行はコメントとして無視されます。編集後は右上の「設定を保存」をクリックしてください。"
+  },
+  "keyboardGuideDescription": {
+    "message": "ショートカットでページを操作し、キーの割り当ても変更できます。"
+  },
+  "keyboardStep1Kicker": {
+    "message": "ステップ 1 · 有効化"
+  },
+  "keyboardStep1Title": {
+    "message": "キーボード操作を有効にする"
+  },
+  "keyboardStep1Desc": {
+    "message": "下のスイッチをオンにして「設定を保存」をクリックします。"
+  },
+  "keyboardStep2Kicker": {
+    "message": "ステップ 2 · ページ操作"
+  },
+  "keyboardStep2Title": {
+    "message": "通常のページで試す"
+  },
+  "keyboardStep2Desc": {
+    "message": "j / k でスクロール、f でリンクを選択、? ですべてのショートカットを表示します。"
+  },
+  "keyboardStep3Kicker": {
+    "message": "ステップ 3 · カスタマイズ"
+  },
+  "keyboardStep3Title": {
+    "message": "必要に応じてキーを変更"
+  },
+  "keyboardStep3Desc": {
+    "message": "下に1行ずつ入力して保存します。変更しなくても既定のキーを使えます。"
+  },
+  "keyboardSyntaxFormatLabel": {
+    "message": "割り当て例"
+  },
+  "keyboardSyntaxFormatDesc": {
+    "message": "map J scrollDown は J に下スクロールを割り当て、unmap J は J の割り当てを解除します。"
+  },
+  "keyboardSyntaxResetLabel": {
+    "message": "既定値とコメント"
+  },
+  "keyboardSyntaxResetDesc": {
+    "message": "unmapAll は、それまでの既定およびカスタムの割り当てをすべて解除します。# または \" で始まる行はコメントです。"
+  },
+  "keyboardCommandsLink": {
+    "message": "すべてのコマンドを表示"
   }
 }

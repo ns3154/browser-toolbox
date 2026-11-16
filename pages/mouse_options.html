@@ -238,7 +238,7 @@
             <li class="browser-toolbox-search-step">
               <span class="browser-toolbox-search-step-kicker" data-i18n="searchStep1Kicker">Step 1 · Configure &amp; save</span>
               <strong data-i18n="searchStep1Title">Edit keyword rules below</strong>
-              <p data-i18n="searchStep1Desc">One entry per line as "keyword: search_url [name]" (e.g. bd: https://www.baidu.com/s?wd=%s Baidu), then click Save settings.</p>
+              <p data-i18n="searchStep1Desc">One entry per line as "keyword: search_url [name]" (e.g. g: https://google.com/search?q=%s Google), then click Save settings.</p>
             </li>
             <li class="browser-toolbox-search-step">
               <span class="browser-toolbox-search-step-kicker" data-i18n="searchStep2Kicker">Step 2 · Open on any page</span>
@@ -247,19 +247,19 @@
             </li>
             <li class="browser-toolbox-search-step">
               <span class="browser-toolbox-search-step-kicker" data-i18n="searchStep3Kicker">Step 3 · Search with keyword</span>
-              <strong data-i18n="searchStep3Title">Type bd query and press Enter</strong>
-              <p data-i18n="searchStep3Desc">Type the keyword plus a space to select Baidu, then enter your terms and hit Enter to open results.</p>
+              <strong data-i18n="searchStep3Title">Default example: type g query and press Enter</strong>
+              <p data-i18n="searchStep3Desc">Type g, a space, and your search terms. If you changed the rules, use your configured keyword instead.</p>
             </li>
           </ol>
           <div class="browser-toolbox-settings-subcard">
             <label class="browser-toolbox-field" for="search-engines">
               <span data-i18n="searchRulesLabel">Custom search rules</span>
               <textarea id="search-engines" rows="8" spellcheck="false"
-                placeholder="bd: https://www.baidu.com/s?wd=%s 百度"></textarea>
+                placeholder="g: https://google.com/search?q=%s Google"></textarea>
             </label>
             <dl class="browser-toolbox-search-syntax">
               <dt data-i18n="searchSyntaxFormatLabel">Line syntax</dt>
-              <dd data-i18n="searchSyntaxFormatDesc">Format: keyword: URL [display name] (e.g. bd: https://www.baidu.com/s?wd=%s Baidu). %s is replaced with the URL-encoded query, %S keeps the raw query, or it is appended if omitted.</dd>
+              <dd data-i18n="searchSyntaxFormatDesc">Format: keyword: URL [display name] (e.g. g: https://google.com/search?q=%s Google). %s is replaced with the URL-encoded query, %S keeps the raw query, or it is appended if omitted.</dd>
               <dt data-i18n="searchSyntaxCommentLabel">Comments &amp; saving</dt>
               <dd data-i18n="searchSyntaxCommentDesc">Lines starting with # or " are treated as comments and ignored; click Save settings to apply changes.</dd>
             </dl>
@@ -504,14 +504,44 @@
         </section>
 
         <section class="browser-toolbox-panel" data-panel="keyboard" hidden>
-          <h2 data-i18n="keyboard">Keyboard</h2>
+          <div class="browser-toolbox-page-header">
+            <div class="browser-toolbox-page-heading">
+              <h2 data-i18n="keyboard">Keyboard</h2>
+              <p class="browser-toolbox-note" data-i18n="keyboardGuideDescription">Use shortcuts to browse pages and customize their bindings.</p>
+            </div>
+          </div>
+          <ol class="browser-toolbox-search-steps">
+            <li class="browser-toolbox-search-step">
+              <span class="browser-toolbox-search-step-kicker" data-i18n="keyboardStep1Kicker">Step 1 · Enable</span>
+              <strong data-i18n="keyboardStep1Title">Enable keyboard navigation</strong>
+              <p data-i18n="keyboardStep1Desc">Turn on the switch below and click Save settings.</p>
+            </li>
+            <li class="browser-toolbox-search-step">
+              <span class="browser-toolbox-search-step-kicker" data-i18n="keyboardStep2Kicker">Step 2 · Browse</span>
+              <strong data-i18n="keyboardStep2Title">Try shortcuts on a web page</strong>
+              <p data-i18n="keyboardStep2Desc">Use j / k to scroll, f to open link hints, and ? to see all shortcuts.</p>
+            </li>
+            <li class="browser-toolbox-search-step">
+              <span class="browser-toolbox-search-step-kicker" data-i18n="keyboardStep3Kicker">Step 3 · Customize</span>
+              <strong data-i18n="keyboardStep3Title">Edit mappings if needed</strong>
+              <p data-i18n="keyboardStep3Desc">Add one mapping per line below and save; existing defaults work without edits.</p>
+            </li>
+          </ol>
           <div class="browser-toolbox-settings-subcard">
             <label
               class="browser-toolbox-check"><input id="keyboard-enabled" type="checkbox"> <span data-i18n="enabled">Enabled</span></label>
             <label
-              class="browser-toolbox-field"><span data-i18n="keyMappings">Keyboard mappings</span><textarea id="key-mappings" rows="10" spellcheck="false"></textarea></label>
-            <p class="browser-toolbox-note"
-              data-i18n="keyboardMappingNote">Vimium-compatible mappings are imported into the existing keyboard settings.</p>
+              class="browser-toolbox-field"><span data-i18n="keyMappings">Keyboard mappings</span><textarea id="key-mappings" rows="10" spellcheck="false" aria-describedby="keyboard-mapping-note"></textarea></label>
+            <p id="keyboard-mapping-note" class="browser-toolbox-note"
+              data-i18n="keyboardMappingNote">Leave the mappings empty to use defaults; save changes to apply them.</p>
+            <dl class="browser-toolbox-search-syntax">
+              <dt data-i18n="keyboardSyntaxFormatLabel">Mapping examples</dt>
+              <dd data-i18n="keyboardSyntaxFormatDesc">map J scrollDown binds J; unmap J removes its binding.</dd>
+              <dt data-i18n="keyboardSyntaxResetLabel">Defaults and comments</dt>
+              <dd data-i18n="keyboardSyntaxResetDesc">unmapAll removes all preceding bindings, including defaults. Lines starting with # or " are comments.</dd>
+            </dl>
+            <p class="browser-toolbox-note"><a href="command_listing.html" target="_blank" rel="noopener"
+              data-i18n="keyboardCommandsLink">View all commands</a></p>
           </div>
         </section>
 

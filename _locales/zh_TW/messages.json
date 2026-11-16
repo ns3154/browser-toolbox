@@ -3377,8 +3377,7 @@
     "message": "搜尋引擎"
   },
   "keyboardMappingNote": {
-    "description": "键盘导入说明",
-    "message": "相容 Vimium 的鍵盤映射會匯入現有鍵盤設定。"
+    "message": "每行填寫一條；清空自訂內容可恢復預設映射，儲存後生效。"
   },
   "searchEngineNote": {
     "description": "搜索隐私说明",
@@ -4372,7 +4371,7 @@
     "message": "在下方填寫或編輯關鍵字規則"
   },
   "searchStep1Desc": {
-    "message": "每行一條「關鍵字: 搜尋網址 [名稱]」（如 bd: https://www.baidu.com/s?wd=%s 百度），改好後點擊右上角「儲存設定」。"
+    "message": "每行一條「關鍵字: 搜尋網址 [名稱]」（如 g: https://google.com/search?q=%s Google），修改後點擊右上角「儲存設定」。"
   },
   "searchStep2Kicker": {
     "message": "第 2 步 · 網頁中叫出"
@@ -4387,10 +4386,10 @@
     "message": "第 3 步 · 關鍵字檢索"
   },
   "searchStep3Title": {
-    "message": "輸入 bd 搜尋詞 並按 Enter"
+    "message": "預設範例：輸入 g 搜尋詞並按 Enter"
   },
   "searchStep3Desc": {
-    "message": "關鍵字後加空格即可切換為百度搜尋，繼續輸入關鍵詞按 Enter 直接開啟結果頁。"
+    "message": "輸入 g、空格和搜尋詞即可使用 Google；如果修改過規則，請使用自己設定的關鍵字。"
   },
   "searchRulesLabel": {
     "message": "自訂規則清單"
@@ -4399,12 +4398,57 @@
     "message": "行格式規範"
   },
   "searchSyntaxFormatDesc": {
-    "message": "格式為「關鍵字: URL [顯示名稱]」（例如 bd: https://www.baidu.com/s?wd=%s 百度）。%s 會替換為 URL 編碼後的搜尋詞，%S 保持原樣不編碼；未寫佔位符時自動接在網址末尾。"
+    "message": "格式為「關鍵字: URL [顯示名稱]」（例如 g: https://google.com/search?q=%s Google）。%s 會替換為 URL 編碼後的搜尋詞，%S 保持原樣不編碼；未寫佔位符時自動接在網址末尾。"
   },
   "searchSyntaxCommentLabel": {
     "message": "註解與生效"
   },
   "searchSyntaxCommentDesc": {
     "message": "以 # 或 \" 開頭的行視為註解不會生效；編輯完成後需點擊右上角「儲存設定」。"
+  },
+  "keyboardGuideDescription": {
+    "message": "使用快捷鍵瀏覽網頁，也可以依照習慣調整按鍵。"
+  },
+  "keyboardStep1Kicker": {
+    "message": "第 1 步 · 開啟"
+  },
+  "keyboardStep1Title": {
+    "message": "啟用鍵盤導覽"
+  },
+  "keyboardStep1Desc": {
+    "message": "打開下方開關，點擊右上角「儲存設定」。"
+  },
+  "keyboardStep2Kicker": {
+    "message": "第 2 步 · 瀏覽網頁"
+  },
+  "keyboardStep2Title": {
+    "message": "在一般網頁試用快捷鍵"
+  },
+  "keyboardStep2Desc": {
+    "message": "按 j / k 捲動、按 f 選擇連結、按 ? 查看所有快捷鍵。"
+  },
+  "keyboardStep3Kicker": {
+    "message": "第 3 步 · 自訂"
+  },
+  "keyboardStep3Title": {
+    "message": "依需要調整按鍵映射"
+  },
+  "keyboardStep3Desc": {
+    "message": "在下方每行填寫一條並儲存；不修改也可使用預設快捷鍵。"
+  },
+  "keyboardSyntaxFormatLabel": {
+    "message": "映射範例"
+  },
+  "keyboardSyntaxFormatDesc": {
+    "message": "map J scrollDown 將 J 綁定為向下捲動；unmap J 移除 J 的綁定。"
+  },
+  "keyboardSyntaxResetLabel": {
+    "message": "預設值與註解"
+  },
+  "keyboardSyntaxResetDesc": {
+    "message": "unmapAll 會清除先前所有預設和自訂綁定；以 # 或 \" 開頭的行為註解。"
+  },
+  "keyboardCommandsLink": {
+    "message": "查看全部命令"
   }
 }

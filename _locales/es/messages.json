@@ -2547,7 +2547,7 @@
     "message": "Motores de búsqueda"
   },
   "keyboardMappingNote": {
-    "message": "Las asignaciones compatibles con Vimium se importan a los ajustes de teclado existentes."
+    "message": "Deja las asignaciones vacías para usar las predeterminadas; guarda para aplicar los cambios."
   },
   "searchEngineNote": {
     "message": "Las búsquedas solo se envían cuando ejecutas explícitamente un comando de búsqueda."
@@ -3525,7 +3525,7 @@
     "message": "Edita las reglas abajo"
   },
   "searchStep1Desc": {
-    "message": "Una regla por línea con el formato \"clave: url [nombre]\" (ej. bd: https://www.baidu.com/s?wd=%s Baidu) y haz clic en Guardar."
+    "message": "Una regla por línea con el formato \"clave: URL [nombre]\" (ej. g: https://google.com/search?q=%s Google); después, guarda los cambios."
   },
   "searchStep2Kicker": {
     "message": "Paso 2 · Abre en cualquier página"
@@ -3540,10 +3540,10 @@
     "message": "Paso 3 · Busca con la clave"
   },
   "searchStep3Title": {
-    "message": "Escribe bd consulta y pulsa Intro"
+    "message": "Ejemplo predeterminado: escribe g consulta y pulsa Intro"
   },
   "searchStep3Desc": {
-    "message": "Escribe la palabra clave seguida de un espacio para elegir Baidu, añade tu búsqueda y pulsa Intro."
+    "message": "Escribe g, un espacio y tu búsqueda para usar Google. Si cambiaste las reglas, usa la palabra clave que configuraste."
   },
   "searchRulesLabel": {
     "message": "Reglas de búsqueda personalizadas"
@@ -3552,12 +3552,57 @@
     "message": "Sintaxis de línea"
   },
   "searchSyntaxFormatDesc": {
-    "message": "Formato: clave: URL [nombre] (ej. bd: https://www.baidu.com/s?wd=%s Baidu). %s codifica la consulta, %S la conserva sin codificar y, si falta, se añade al final."
+    "message": "Formato: clave: URL [nombre] (ej. g: https://google.com/search?q=%s Google). %s codifica la consulta, %S la conserva sin codificar y, si falta, se añade al final."
   },
   "searchSyntaxCommentLabel": {
     "message": "Comentarios y guardado"
   },
   "searchSyntaxCommentDesc": {
     "message": "Las líneas que empiezan por # o \" se ignoran como comentarios; haz clic en Guardar para aplicar los cambios."
+  },
+  "keyboardGuideDescription": {
+    "message": "Navega por las páginas con atajos y personaliza sus teclas."
+  },
+  "keyboardStep1Kicker": {
+    "message": "Paso 1 · Activar"
+  },
+  "keyboardStep1Title": {
+    "message": "Activa la navegación con teclado"
+  },
+  "keyboardStep1Desc": {
+    "message": "Activa el interruptor de abajo y pulsa Guardar ajustes."
+  },
+  "keyboardStep2Kicker": {
+    "message": "Paso 2 · Navegar"
+  },
+  "keyboardStep2Title": {
+    "message": "Prueba los atajos en una página web"
+  },
+  "keyboardStep2Desc": {
+    "message": "Usa j / k para desplazarte, f para elegir enlaces y ? para ver todos los atajos."
+  },
+  "keyboardStep3Kicker": {
+    "message": "Paso 3 · Personalizar"
+  },
+  "keyboardStep3Title": {
+    "message": "Cambia las asignaciones si lo necesitas"
+  },
+  "keyboardStep3Desc": {
+    "message": "Añade una asignación por línea y guarda; los atajos predeterminados funcionan sin cambios."
+  },
+  "keyboardSyntaxFormatLabel": {
+    "message": "Ejemplos de asignación"
+  },
+  "keyboardSyntaxFormatDesc": {
+    "message": "map J scrollDown asigna J al desplazamiento hacia abajo; unmap J elimina la asignación de J."
+  },
+  "keyboardSyntaxResetLabel": {
+    "message": "Valores y comentarios"
+  },
+  "keyboardSyntaxResetDesc": {
+    "message": "unmapAll elimina todas las asignaciones anteriores, incluidas las predeterminadas. Las líneas que empiezan por # o \" son comentarios."
+  },
+  "keyboardCommandsLink": {
+    "message": "Ver todos los comandos"
   }
 }
