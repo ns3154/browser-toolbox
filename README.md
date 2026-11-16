@@ -110,10 +110,10 @@ direction, and release:
 
 | Target | Direction | Default action |
 | ------ | --------- | -------------- |
-| Link | `→` / `←` | Open in the current tab / a background new tab |
+| Link | `→` / `←` | Open in a foreground / background new tab |
 | Selected text | `→` / `←` | Search in the foreground / background |
 | Selected text | `↓` | Copy text |
-| Image | `→` / `←` | Open in the current tab / a background new tab |
+| Image | `→` / `←` | Open in a foreground / background new tab |
 | Image | `↓` | Copy the image URL |
 | Image | `↓ · →` | Download the image |
 
