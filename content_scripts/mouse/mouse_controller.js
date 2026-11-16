@@ -53,6 +53,7 @@
       this.nativeDragAttribute = null;
       this.gestureTimeoutId = null;
       this.lastGestureMatch = null;
+      this.lastDragMatch = null;
       this.captureElement = null;
       this.capturePointerId = null;
       this.renderFrameId = null;
@@ -189,6 +190,28 @@
         );
       }
       return { cancelHovered, match };
+    }
+
+    updateDragFeedback(result, point) {
+      const match = recognizer.find(
+        result.pattern,
+        this.drag.settings?.bindings,
+        this.drag.context?.type,
+      );
+      const cancelHovered = this.overlay?.isCancelPoint(point) === true;
+      if (match.exact) {
+        this.lastDragMatch = { pattern: match.pattern.slice(), binding: match.exact };
+      }
+      this.overlay?.setCancelHover(cancelHovered);
+      if (this.showCommandHud() && match.pattern.length > 0) {
+        const displayMatch = cancelHovered && this.lastDragMatch
+          ? this.lastDragMatch
+          : { pattern: match.pattern, binding: match.exact };
+        this.overlay.setGesture(displayMatch.pattern, commandHudLabel(displayMatch.binding), {
+          cancelLabel: localizedMessage("cancel", "Cancel"),
+          cancelHovered,
+        });
+      }
     }
 
     captureGesturePointer(event) {
@@ -415,6 +438,7 @@
           event.target,
           event.composedPath?.(),
         );
+        this.lastDragMatch = null;
         this.drag = new globalThis.BrowserToolboxSuperDragController(this.settings.superDrag);
         if (!this.drag.pointerDown(event, selection, event.dataTransfer, this.cursor?.style)) {
           this.drag = null;
@@ -504,11 +528,12 @@
         if (this.drag.active) {
           event.preventDefault();
           event.stopPropagation();
+          if (result.activated) {
+            this.overlay.showCancel({ label: localizedMessage("cancel", "Cancel") });
+          }
           this.overlay.show();
           this.overlay.draw(result.points);
-          if (result.pattern?.length && this.showCommandHud()) {
-            this.overlay.setHud(recognizer.format(result.pattern), true);
-          }
+          this.updateDragFeedback(result, { x: event.clientX, y: event.clientY });
         }
       }
     }
@@ -600,17 +625,22 @@
         }
       }
       if (this.drag && event.button === 0) {
-        const result = this.drag.pointerUp(event.timeStamp || Date.now());
-        if (result.active) {
+        const cancelled = this.drag.active &&
+          this.overlay?.isCancelPoint({ x: event.clientX, y: event.clientY }) === true;
+        let result = null;
+        if (cancelled) this.drag.cancel();
+        else result = this.drag.pointerUp(event.timeStamp || Date.now());
+        if (cancelled || result?.active) {
           event.preventDefault();
           event.stopPropagation();
           this.suppressClickUntil = Date.now() + 500;
-          if (result.binding) {
+          if (result?.binding) {
             this.dispatchBinding(result.binding, "superDrag", pageContext(result.context));
           }
         }
         this.restoreNativeDrag();
         this.drag = null;
+        this.lastDragMatch = null;
         this.overlay.hide();
       }
       if (this.rocker?.pointerUp(event.button)) {
@@ -755,6 +785,7 @@
       this.gesture = null;
       this.gestureRequestId = null;
       this.lastGestureMatch = null;
+      this.lastDragMatch = null;
       this.drag = null;
       this.suppressClickUntil = 0;
       this.guard?.reset();

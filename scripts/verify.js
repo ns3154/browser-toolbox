@@ -136,6 +136,7 @@ try {
       ["快捷工具 E2E", "scripts/e2e_quick_tools.js"],
       ["BrowserToolbox E2E", "scripts/e2e_browser_toolbox.js"],
       ["超级拖拽尺寸调整 E2E", "scripts/e2e_super_drag_resize.js"],
+      ["超级拖拽提示 E2E", "scripts/e2e_super_drag_feedback.js"],
       ["运行时适配 E2E 与性能", "scripts/e2e_runtime_host.js"],
       ["配置同 ID 升级与持久恢复 E2E", "scripts/e2e_configuration_migration.js"],
       ["命令身份、组件授权与文档恢复 E2E", "scripts/e2e_command_runtime.js"],
