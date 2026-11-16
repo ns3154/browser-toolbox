@@ -9,6 +9,8 @@ const extension = Deno.env.get("BROWSER_TOOLBOX_E2E_EXTENSION_PATH") ||
   path.join(root, "dist/browser-toolbox");
 const executablePath = Deno.env.get("PUPPETEER_EXECUTABLE_PATH") || puppeteer.executablePath();
 const evidenceDir = Deno.env.get("BROWSER_TOOLBOX_FEEDBACK_EVIDENCE_DIR");
+const headless = Deno.env.get("BROWSER_TOOLBOX_E2E_HEADLESS") !== "false";
+const flushHeadlessGesture = headless;
 const fixture = await Deno.readTextFile(path.join(root, "tests/fixtures/super-drag-feedback.html"));
 const pixel = Uint8Array.from(
   atob(
@@ -35,7 +37,7 @@ let browser;
 try {
   browser = await puppeteer.launch({
     executablePath,
-    headless: Deno.env.get("BROWSER_TOOLBOX_E2E_HEADLESS") !== "false",
+    headless,
     userDataDir: profile,
     defaultViewport: { width: 1280, height: 900 },
     ignoreDefaultArgs: ["--disable-extensions"],
@@ -58,19 +60,20 @@ try {
 
   // 只记录合成命令，避免测试打开外部搜索或更改其他标签页。
   const probe = async (operation) =>
-    await worker.evaluate(async ({ fixtureUrl, operation }) => {
+    await worker.evaluate(async ({ fixtureUrl, operation, flushHeadlessGesture }) => {
       const tab = (await chrome.tabs.query({})).find((item) => item.url === fixtureUrl);
       if (!tab) throw new Error("没有找到测试标签页");
       const results = await chrome.scripting.executeScript({
         target: { tabId: tab.id },
         world: "ISOLATED",
-        func: (operation) => {
+        func: (operation, flushHeadlessGesture) => {
           const controller = globalThis.BrowserToolboxMouseControllerInstance;
           if (!controller?.settingsReady) return { ready: false };
           if (operation === "install") {
             controller.settings = structuredClone(controller.settings);
             controller.settings.general.showHud = true;
             controller.settings.mouse.showCommandHud = true;
+            controller.settings.mouse.maxDurationMs = 10000;
             controller.settings.mouse.bindings = [{
               id: "feedback-mouse",
               pattern: ["L", "R", "L"],
@@ -114,6 +117,16 @@ try {
             controller.settings.general.showHud = false;
           } else if (operation === "hud-on") {
             controller.settings.general.showHud = true;
+          }
+          if (
+            flushHeadlessGesture && operation === "snapshot" && controller.gesture?.isActive() &&
+            controller.pendingRender
+          ) {
+            // 无头模式按住鼠标时可能不提交动画帧；执行已排队的生产渲染逻辑再读取状态。
+            const pendingRender = controller.pendingRender;
+            controller.cancelPendingGestureRender();
+            controller.pendingRender = pendingRender;
+            controller.flushGestureRender();
           }
           const overlay = controller.overlay;
           const hud = overlay?.hud;
@@ -164,10 +177,10 @@ try {
             labels,
           };
         },
-        args: [operation],
+        args: [operation, flushHeadlessGesture],
       });
       return results[0].result;
-    }, { fixtureUrl, operation });
+    }, { fixtureUrl, operation, flushHeadlessGesture });
 
   let ready = false;
   for (let attempt = 0; attempt < 100 && !ready; attempt++) {
@@ -208,25 +221,38 @@ try {
       clickCount: 1,
     });
   };
-  const move = async (x, y) => {
+  const queueMouseEvent = (event) => {
+    const request = client.send("Input.dispatchMouseEvent", event);
+    request.catch(() => {});
+    pending.push(request);
+  };
+  const move = async (x, y, expected) => {
     current = { x, y };
-    pending.push(client.send("Input.dispatchMouseEvent", {
-      type: "mouseMoved",
-      ...current,
-      button,
-      buttons,
-    }));
-    // 截图让 Chrome 提交当前帧，确保检查的是按键仍按住时实际绘制的提示。
-    await page.screenshot();
+    // 连续发送相同坐标，促使不同平台处理前一个可信鼠标事件；重复采样不改变轨迹。
+    for (let attempt = 0; attempt < 2; attempt++) {
+      queueMouseEvent({ type: "mouseMoved", ...current, button, buttons });
+      await delay(60);
+    }
+    const deadline = Date.now() + 8000;
+    let state;
+    while (Date.now() < deadline) {
+      state = await probe("snapshot");
+      if (expected(state)) return state;
+      await delay(50);
+    }
+    // 先释放鼠标，避免失败时浏览器的原生拖动循环阻碍退出。
+    queueMouseEvent({ type: "mouseReleased", ...current, button, buttons: 0, clickCount: 1 });
+    await Promise.race([Promise.allSettled(pending), delay(1000)]);
+    throw new Error(`等待拖拽状态超时：${JSON.stringify(state)}`);
   };
   const end = async () => {
-    pending.push(client.send("Input.dispatchMouseEvent", {
+    queueMouseEvent({
       type: "mouseReleased",
       ...current,
       button,
       buttons: 0,
       clickCount: 1,
-    }));
+    });
     await Promise.all(pending);
     pending = [];
     await delay(100);
@@ -234,12 +260,21 @@ try {
   const trace = async (selector, mouseButton = "left", selectText = false) => {
     await start(selector, mouseButton, selectText);
     const origin = { ...current };
-    await move(origin.x - 100, origin.y);
-    const first = await probe("snapshot");
-    await move(origin.x + 50, origin.y);
-    const second = await probe("snapshot");
-    await move(origin.x - 80, origin.y);
-    const third = await probe("snapshot");
+    const first = await move(
+      origin.x - 100,
+      origin.y,
+      (state) => state.directions.join(">") === "L",
+    );
+    const second = await move(
+      origin.x + 50,
+      origin.y,
+      (state) => state.directions.join(">") === "L>R",
+    );
+    const third = await move(
+      origin.x - 80,
+      origin.y,
+      (state) => state.directions.join(">") === "L>R>L",
+    );
     return { first, second, third };
   };
   const checkGesture = (snapshot, directions, context, command) => {
@@ -261,6 +296,13 @@ try {
   const capture = async (name) => {
     if (!evidenceDir) return;
     await Deno.mkdir(evidenceDir, { recursive: true });
+    if (flushHeadlessGesture) {
+      await Deno.writeTextFile(
+        path.join(evidenceDir, `${name}.json`),
+        JSON.stringify(await probe("snapshot"), null, 2),
+      );
+      return;
+    }
     await page.screenshot({ path: path.join(evidenceDir, `${name}.png`) });
   };
 
@@ -271,8 +313,7 @@ try {
   await capture("超级拖拽提示");
   assert(link.third.context === "LINK", "链接上下文不正确");
   const cancelPoint = link.third.cancelRect;
-  await move(cancelPoint.x, cancelPoint.y);
-  const hovered = await probe("snapshot");
+  const hovered = await move(cancelPoint.x, cancelPoint.y, (state) => state.cancelHovered);
   assert(hovered.cancelHovered, "拖到取消区域没有高亮");
   checkGesture(hovered, ["L", "R", "L"], "取消悬停", "BrowserToolbox.openLinkForeground");
   await end();
@@ -331,13 +372,12 @@ try {
   await probe("hud-off");
   await start("#link");
   const origin = { ...current };
-  await move(origin.x - 100, origin.y);
-  state = await probe("snapshot");
+  state = await move(origin.x - 100, origin.y, (value) => value.dragActive && value.cancelVisible);
   assert(
     !state.hudVisible && state.cancelVisible,
     "关闭命令提示后没有保持与鼠标手势一致的取消区域",
   );
-  await move(state.cancelRect.x, state.cancelRect.y);
+  await move(state.cancelRect.x, state.cancelRect.y, (value) => value.cancelHovered);
   await end();
   state = await probe("snapshot");
   assert(state.calls.length === 0 && !state.hostVisible, "关闭命令提示时取消失败");
