@@ -89,4 +89,42 @@ context("Super drag controller", () => {
       );
     }
   });
+
+  should("leave resize cursors and native resize corners to the page", () => {
+    const doc = new jsdom.JSDOM(`
+      <div id="handle" style="cursor: col-resize">column</div>
+      <a id="resize-link" href="https://example.com" style="cursor: ew-resize">link</a>
+      <div id="box" style="resize: both; overflow: auto"><span>text</span></div>
+      <div id="rtl" style="resize: horizontal; overflow: auto; direction: rtl">text</div>
+      <div id="bordered" style="resize: both; overflow: auto; border: 12px solid">text</div>
+    `).window.document;
+    const controller = new BrowserToolboxSuperDragController({ enabled: true, bindings: [] });
+    const event = { button: 0, clientX: 100, clientY: 100 };
+    const box = doc.querySelector("#box");
+    const rtl = doc.querySelector("#rtl");
+    const bordered = doc.querySelector("#bordered");
+    const rectangle = { left: 100, right: 300, top: 100, bottom: 200 };
+    box.getBoundingClientRect = () => rectangle;
+    rtl.getBoundingClientRect = () => rectangle;
+    bordered.getBoundingClientRect = () => rectangle;
+    assert.isFalse(
+      controller.pointerDown({ ...event, target: doc.querySelector("#handle") }, "text"),
+    );
+    assert.isFalse(
+      controller.pointerDown({ ...event, target: doc.querySelector("#resize-link") }, ""),
+    );
+    assert.isFalse(
+      controller.pointerDown({ ...event, target: box, clientX: 296, clientY: 196 }, "text"),
+    );
+    assert.isFalse(
+      controller.pointerDown({ ...event, target: rtl, clientX: 104, clientY: 196 }, "text"),
+    );
+    assert.isFalse(
+      controller.pointerDown({ ...event, target: bordered, clientX: 280, clientY: 180 }, "text"),
+    );
+    assert.isTrue(
+      controller.pointerDown({ ...event, target: box, clientX: 200, clientY: 150 }, "text"),
+    );
+    controller.cancel();
+  });
 });

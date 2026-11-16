@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>超级拖拽与尺寸调整测试</title>
+  <style>
+    body { max-width: 900px; margin: 32px auto; padding: 0 24px; font: 16px/1.5 sans-serif; }
+    h1 { font-size: 24px; }
+    .hint { color: #555; }
+    table { table-layout: fixed; border-collapse: collapse; width: 420px; }
+    th, td { position: relative; border: 1px solid #777; padding: 10px; text-align: left; }
+    #column { width: 190px; }
+    #column-handle { position: absolute; right: -6px; top: 0; bottom: 0; width: 12px; cursor: col-resize; background: #bde3ff; z-index: 1; }
+    #column-handle-child { display: block; height: 100%; }
+    #row-handle { position: absolute; bottom: -6px; left: 0; right: 0; height: 12px; cursor: row-resize; background: #bde3ff; z-index: 1; }
+    .resize-box { width: 260px; height: 90px; border: 1px solid #777; overflow: auto; resize: both; margin: 12px 0; }
+    #resize-rtl { direction: rtl; }
+    #large-handle::-webkit-scrollbar { width: 30px; height: 30px; }
+    #large-handle::-webkit-resizer { width: 30px; height: 30px; background: #bde3ff; }
+    textarea { display: block; width: 260px; height: 80px; margin: 12px 0; }
+    input[type=range] { width: 240px; }
+    #unrelated { padding: 12px; background: #f3f3f3; }
+    #image { width: 80px; height: 50px; object-fit: contain; background: #e2edf3; }
+  </style>
+</head>
+<body>
+  <h1>超级拖拽与尺寸调整测试</h1>
+  <p class="hint">先选中下面的文字，再拖动表格列边、输入框右下角或可调整区域的角标。调整尺寸时不应执行超级拖拽。</p>
+  <p><span id="selected-text">这是一段用于测试的已选中文字。</span></p>
+  <table>
+    <tr><th id="column"><span id="column-text">表格第一列标题</span><span id="column-handle"><span id="column-handle-child"></span></span></th><th>第二列</th></tr>
+    <tr><td id="row-cell">第一列内容<span id="row-handle"></span></td><td>第二列内容</td></tr>
+  </table>
+  <div id="resize-box" class="resize-box"><span id="resize-text">可以拖动右下角调整大小的区域。</span></div>
+  <div id="resize-rtl" class="resize-box"><span id="rtl-text">从左下角调整的区域。</span></div>
+  <div id="resize-bordered" class="resize-box" style="border-width: 12px"><span id="bordered-text">带有粗边框的区域。</span></div>
+  <div id="large-handle" class="resize-box"><span id="large-text">带有较大角标的区域。</span></div>
+  <textarea id="textarea">可以拖动右下角调整大小的文本框。</textarea>
+  <input id="slider" type="range" min="0" max="100" value="20" aria-label="测试滑块">
+  <div id="unrelated">其他未选中区域</div>
+  <p><a id="link" href="/target">用于测试的本地链接</a> <img id="image" src="/pixel.png" alt="用于测试的本地图片"></p>
+  <script>
+    let resizing = "";
+    let startPosition = 0;
+    let startSize = 0;
+    window.resizeEvents = [];
+    const column = document.querySelector("#column");
+    document.querySelector("#column-handle").addEventListener("pointerdown", (event) => {
+      event.preventDefault();
+      resizing = "column";
+      startPosition = event.clientX;
+      startSize = column.getBoundingClientRect().width;
+      window.resizeEvents.push("down");
+    });
+    const rowCell = document.querySelector("#row-cell");
+    document.querySelector("#row-handle").addEventListener("pointerdown", (event) => {
+      event.preventDefault();
+      resizing = "row";
+      startPosition = event.clientY;
+      startSize = rowCell.getBoundingClientRect().height;
+      window.resizeEvents.push("down");
+    });
+    document.addEventListener("pointermove", (event) => {
+      if (!resizing) return;
+      if (resizing === "column") {
+        column.style.width = `${startSize + event.clientX - startPosition}px`;
+      } else {
+        rowCell.style.height = `${startSize + event.clientY - startPosition}px`;
+      }
+      window.resizeEvents.push("move");
+    });
+    document.addEventListener("pointerup", () => {
+      if (resizing) window.resizeEvents.push("up");
+      resizing = "";
+    });
+  </script>
+</body>
+</html>

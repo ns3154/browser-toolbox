@@ -106,4 +106,22 @@ context("Drag context classifier", () => {
     assert.equal(null, BrowserToolboxDragContextClassifier.safeUrl("javascript:alert(1)"));
     assert.equal(null, BrowserToolboxDragContextClassifier.safeUrl("blob:https://example.com/id"));
   });
+
+  should("only use selected text when the target intersects the selection", () => {
+    const doc = new jsdom.JSDOM(
+      "<p id='selected'><span>selected text</span></p><div id='other'>other</div>",
+    ).window.document;
+    const selected = doc.querySelector("#selected");
+    const range = doc.createRange();
+    range.selectNodeContents(selected.querySelector("span"));
+    const selection = doc.defaultView.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    const textAtTarget = BrowserToolboxDragContextClassifier.selectedTextAtTarget;
+    assert.equal("selected text", textAtTarget(selection, selected));
+    assert.equal("selected text", textAtTarget(selection, selected.querySelector("span")));
+    assert.equal("", textAtTarget(selection, doc.querySelector("#other")));
+    selection.removeAllRanges();
+    assert.equal("", textAtTarget(selection, selected));
+  });
 });

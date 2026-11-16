@@ -410,9 +410,13 @@
         return;
       }
       if (event.button === 0 && gestureButton !== 0 && this.effective("superDrag")) {
-        const selection = this.document.defaultView?.getSelection?.()?.toString() || "";
+        const selection = globalThis.BrowserToolboxDragContextClassifier.selectedTextAtTarget(
+          this.document.defaultView?.getSelection?.(),
+          event.target,
+          event.composedPath?.(),
+        );
         this.drag = new globalThis.BrowserToolboxSuperDragController(this.settings.superDrag);
-        if (!this.drag.pointerDown(event, selection, event.dataTransfer)) {
+        if (!this.drag.pointerDown(event, selection, event.dataTransfer, this.cursor?.style)) {
           this.drag = null;
         } else {
           this.suppressNativeDrag(event.target, this.drag.context?.type);

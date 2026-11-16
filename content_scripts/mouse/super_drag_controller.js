@@ -27,7 +27,7 @@
       return event?.[keys[modifier]] === true;
     }
 
-    pointerDown(event, selectedText, dataTransfer) {
+    pointerDown(event, selectedText, dataTransfer, customCursorStyle = null) {
       if (!this.settings.enabled || event.button !== 0) return false;
       if (this.hasBypassModifier(event)) return false;
       const context = classifier.classify(
@@ -37,6 +37,7 @@
         event.composedPath?.(),
       );
       if (context.type === "UNSUPPORTED_NATIVE_DRAG") return false;
+      if (classifier.isResizeHandle(event, customCursorStyle)) return false;
       this.context = context;
       this.session = new Session({
         activationDistancePx: this.settings.activationDistancePx || 10,
