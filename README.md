@@ -45,27 +45,12 @@ content features on `file://` pages, enable **Allow access to file URLs** in the
    **Restore this session**. For a lasting change on one site, use **Manage this site** to create a
    Site Rule.
 
-Under **General → Language**, choose English, 简体中文, 繁體中文, 日本語, Español, or **Follow
+Under **General & theme → Language**, choose English, 简体中文, 繁體中文, 日本語, Español, or **Follow
 browser**.
 
 ## Keyboard navigation
 
-Browser Toolbox retains Vimium's keyboard workflow and exposes commands through a searchable command
-registry:
-
-- Use `h` / `j` / `k` / `l`, `gg` / `G`, `d` / `u`, and directional commands to scroll.
-- Use `f` / `F` for link hints, opening links in the current tab, a foreground new tab, or other
-  configured targets; link copying and downloading are also available.
-- Use `o` / `O` for the Vomnibar to search URLs, bookmarks, history, and open tabs; search engines
-  are configurable.
-- Use `T` to search open tabs, `H` / `L` to go back or forward, and `J` / `K` to switch tabs.
-- Use `t`, `x` / `X`, and `r` / `R` to create, close, restore, and reload; use `zi` / `zo` / `z0`
-  for zoom.
-- Use `/`, `n` / `N` for find, `m` / `'` for page marks, and `yy` to copy the current URL.
-- Tab pinning, muting, moving, duplication, side-based closing, window management, view source,
-  and fullscreen commands are available as well.
-
-Common defaults:
+Browser Toolbox retains Vimium's keyboard workflow and supports custom mappings. Common defaults:
 
 | Key | Action |
 | --- | ------ |
@@ -73,6 +58,7 @@ Common defaults:
 | `:` | Open the Command center |
 | `h` / `j` / `k` / `l` | Scroll left / down / up / right |
 | `gg` / `G` | Scroll to the top / bottom |
+| `d` / `u` | Scroll half a page down / up |
 | `f` / `F` | Open a link in the current tab / a new tab |
 | `o` / `O` | Search or open URLs, bookmarks, and history in the current tab / a new tab |
 | `T` | Search open tabs |
@@ -80,12 +66,16 @@ Common defaults:
 | `J` / `K` | Switch to the previous / next tab |
 | `t` | Open a new tab |
 | `x` / `X` | Close / restore a tab |
+| `r` / `R` | Reload / reload without cache |
+| `zi` / `zo` / `z0` | Zoom in / out / reset |
 | `/`, `n` / `N` | Find text and jump to the next / previous match |
+| `m` / `'` | Create / jump to a page mark |
 | `yy` | Copy the current URL |
 | `Esc` | Cancel the current action or leave input mode |
 
 Help reflects customized bindings. The **Keyboard** settings accept Vimium-compatible mappings;
-keyboard mappings and search engines continue to use Vimium's existing browser-sync behavior.
+keyboard mappings and search engines continue to use Vimium's existing browser-sync behavior. Find
+other commands in Help and the Command center.
 
 ## Mouse gestures
 
@@ -170,21 +160,21 @@ Select **All tools** from the extension popup, or search for a tool in the Comma
 | CSV / TSV converter | Convert to Markdown, CSV, TSV, JSON, XML, MySQL `INSERT`, or PHP arrays |
 
 Tool inputs are processed locally in the browser, with copy and, where applicable, download actions.
-The tool directory shows categories, keywords, and entry points. **Tool overview** independently
+The tool directory shows categories, keywords, and entry points. **Quick tools** independently
 configures action-popup and native context-menu tools; any number of eligible tools can be selected,
 with no product-level three- or six-item cap. The context menu includes only tools that support that
 surface; ID and password generators remain available from the action popup and Command center.
 
 ### Document auto-formatting
 
-Enable document auto-formatting under **JSON Formatter** to format matching JSON, XML, CSS,
+Enable document auto-formatting under **Auto-formatting** to format matching JSON, XML, CSS,
 JavaScript, and Java documents. Each format can be toggled independently. Configure the maximum
 automatic input size, JSON key sorting, and default collapse depth. Matching document content is read
 locally and is not uploaded.
 
 ## Browser-startup and new-tab website
 
-Under **General → Browser startup**, enter an `http://` or `https://` URL. The two switches are
+Under **General & theme → Browser startup**, enter an `http://` or `https://` URL. The two switches are
 independent:
 
 - **Open a website when Chrome starts** opens the configured website when the Chrome profile starts.
@@ -207,25 +197,14 @@ browser new-tab behavior.
 
 ## Settings and configuration
 
-The Settings page is organized into these panels:
+The Settings page has four groups:
 
-| Panel | Contents |
-| ----- | -------- |
-| General | Global switch, command feedback, toolbox sync, language, and browser-startup/new-tab website |
-| Keyboard | Keyboard module and Vimium-compatible mappings |
-| Tool overview | Tool switch, action popup, context menu, tool directory, and search |
-| JSON formatter | Document auto-formatting and JSON defaults |
-| Content diff | Text diff tool settings and entry |
-| Encoding & conversion | Codec tool settings and entry |
-| Time & IDs | Time, ID, and password tool settings and entry |
-| Search | Search engines and search settings |
-| Appearance | Local PNG custom pointer, hotspot coordinates, and preview |
-| Mouse Gestures | Trail recognition, actions, context-menu behavior, and feedback |
-| Super Drag | Link, text, and image actions plus native bypass modifier |
-| Wheel & Rocker | Wheel threshold, cooldown, tab switching, and rocker actions |
-| Site Rules | Glob/regex matching, module switches, profiles, precedence, and rule tests |
-| Privacy | Local processing, network boundary, no-telemetry promise, and license |
-| Backup & About | Import preview, export, defaults, onboarding, and third-party notices |
+| Group | Panels |
+| ----- | ------ |
+| Basic preferences | General & theme, Search engines |
+| Interactions | Mouse Gestures, Super Drag, Wheel & Rocker, Keyboard, Custom pointer |
+| Tools & rendering | Quick tools, Auto-formatting |
+| Rules & data | Site Rules, Privacy notice, Backup & About |
 
 ### Site Rules and profiles
 
