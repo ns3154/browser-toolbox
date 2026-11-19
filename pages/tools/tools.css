@@ -417,8 +417,7 @@ body.browser-toolbox-tools-document {
   background: var(--toolbox-surface-muted);
 }
 
-.browser-toolbox-tools-document .browser-toolbox-tool-output,
-.browser-toolbox-tools-document .browser-toolbox-codec-output {
+.browser-toolbox-tools-document .browser-toolbox-tool-output {
   min-height: 190px;
   max-height: 620px;
   margin: 0;
@@ -457,8 +456,7 @@ body.browser-toolbox-tools-document {
 }
 
 /* JSON：左侧只输入原文，右侧以可折叠树显示结果；行级操作只有图标。 */
-.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-workspace,
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-workspace {
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-workspace {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   grid-template-rows: auto auto minmax(0, 1fr) auto auto auto;
@@ -466,42 +464,33 @@ body.browser-toolbox-tools-document {
 }
 
 .browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-workspace-heading,
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-workspace-heading,
-.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-controls,
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-controls {
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-controls {
   grid-column: 1 / -1;
 }
 
-.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-input-grid,
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-input-grid {
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-input-grid {
   grid-column: 1;
   grid-row: 3;
   align-self: stretch;
 }
 
-.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-input,
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-input {
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-input {
   min-height: 0;
 }
 
-.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-input textarea,
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-input textarea {
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-input textarea {
   height: 100%;
   min-height: 390px;
   resize: none;
 }
 
 .browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-file,
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-file,
 .browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-actions,
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-actions,
-.browser-toolbox-tools-document.browser-toolbox-tool-is-json #tool-status,
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec #tool-status {
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json #tool-status {
   grid-column: 1;
 }
 
-.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-result,
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-result {
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-result {
   grid-column: 2;
   grid-row: 3 / 7;
   min-height: 0;
@@ -678,105 +667,6 @@ body.browser-toolbox-tools-document {
   color: var(--toolbox-muted);
 }
 
-/* 编码：操作和类型永远在上方，输入与结果固定为左右两栏。 */
-.browser-toolbox-tools-document .browser-toolbox-codec-controls {
-  display: grid;
-  grid-column: 1 / -1;
-  gap: 13px;
-}
-
-.browser-toolbox-tools-document .browser-toolbox-codec-operation,
-.browser-toolbox-tools-document .browser-toolbox-codec-type-group {
-  display: grid;
-  gap: 7px;
-}
-
-.browser-toolbox-tools-document .browser-toolbox-segmented-control {
-  display: inline-flex;
-  width: fit-content;
-  padding: 3px;
-  gap: 3px;
-  border: 1px solid var(--toolbox-line);
-  border-radius: 11px;
-  background: var(--toolbox-surface-muted);
-}
-
-.browser-toolbox-tools-document .browser-toolbox-segmented-control button,
-.browser-toolbox-tools-document .browser-toolbox-codec-type-card {
-  border: 1px solid transparent;
-  border-radius: 9px;
-  background: transparent;
-  color: var(--toolbox-muted);
-  cursor: pointer;
-  text-shadow: none;
-}
-
-.browser-toolbox-tools-document .browser-toolbox-segmented-control button {
-  min-width: 88px;
-  padding: 7px 14px;
-  font-weight: 750;
-}
-
-.browser-toolbox-tools-document .browser-toolbox-segmented-control button.is-selected,
-.browser-toolbox-tools-document .browser-toolbox-segmented-control button:hover,
-.browser-toolbox-tools-document .browser-toolbox-segmented-control button:focus-visible {
-  border-color: #b3cdfb;
-  background: var(--toolbox-blue);
-  color: #fff;
-  outline: none;
-}
-
-.browser-toolbox-tools-document .browser-toolbox-codec-type-grid {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(74px, 1fr));
-  gap: 7px;
-}
-
-.browser-toolbox-tools-document .browser-toolbox-codec-type-card {
-  min-height: 43px;
-  padding: 8px 9px;
-  border-color: var(--toolbox-line);
-  background: var(--toolbox-surface-muted);
-  color: var(--toolbox-ink);
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.browser-toolbox-tools-document .browser-toolbox-codec-type-card.is-selected,
-.browser-toolbox-tools-document .browser-toolbox-codec-type-card:hover,
-.browser-toolbox-tools-document .browser-toolbox-codec-type-card:focus-visible {
-  border-color: #8bb2fb;
-  background: var(--toolbox-blue-soft);
-  color: var(--toolbox-blue);
-  outline: none;
-  box-shadow: 0 0 0 2px rgb(37 99 235 / 11%);
-}
-
-.browser-toolbox-tools-document .browser-toolbox-codec-advanced {
-  margin-top: 2px;
-  color: var(--toolbox-muted);
-  font-size: 12px;
-}
-
-.browser-toolbox-tools-document .browser-toolbox-codec-advanced summary {
-  width: fit-content;
-  cursor: pointer;
-  font-weight: 700;
-}
-
-.browser-toolbox-tools-document .browser-toolbox-codec-type-grid-advanced {
-  grid-template-columns: repeat(5, minmax(110px, 1fr));
-  margin-top: 8px;
-}
-
-.browser-toolbox-tools-document .browser-toolbox-codec-output {
-  flex: 1 1 auto;
-  min-height: 390px;
-  max-height: none;
-  background: #fbfcff;
-  color: #26364c;
-}
-
 /* 对比：编辑区固定在上方，差异区固定在下方，差异文字只在自己的面板滚动。 */
 .browser-toolbox-tools-document.browser-toolbox-tool-is-diff .browser-toolbox-tools-page {
   height: 100vh;
@@ -919,7 +809,6 @@ body.browser-toolbox-tools-document {
 
   .browser-toolbox-tools-document :is(input, select, textarea),
   .browser-toolbox-tools-document .browser-toolbox-tool-output,
-  .browser-toolbox-tools-document .browser-toolbox-codec-output,
   .browser-toolbox-tools-document .browser-toolbox-json-tree,
   .browser-toolbox-tools-document .browser-toolbox-diff-list {
     background: #121c2d;
@@ -950,16 +839,6 @@ body.browser-toolbox-tools-document {
   .browser-toolbox-tools-document .browser-toolbox-diff-row-remove {
     background: #3a202b;
     color: #ff9eb1;
-  }
-}
-
-@media (max-width: 900px) {
-  .browser-toolbox-tools-document .browser-toolbox-codec-type-grid {
-    grid-template-columns: repeat(4, minmax(90px, 1fr));
-  }
-
-  .browser-toolbox-tools-document .browser-toolbox-codec-type-grid-advanced {
-    grid-template-columns: repeat(3, minmax(110px, 1fr));
   }
 }
 
@@ -998,7 +877,6 @@ body.browser-toolbox-tools-document {
   }
 
   .browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-workspace,
-  .browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-workspace,
   .browser-toolbox-tools-document.browser-toolbox-tool-is-diff .browser-toolbox-tool-workspace {
     height: auto;
     min-height: calc(100vh - 132px);
@@ -1007,13 +885,11 @@ body.browser-toolbox-tools-document {
   }
 
   .browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-input-grid,
-  .browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-input-grid,
   .browser-toolbox-tools-document.browser-toolbox-tool-is-diff .browser-toolbox-tool-input-grid {
     grid-template-columns: 1fr;
   }
 
   .browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-input textarea,
-  .browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-input textarea,
   .browser-toolbox-tools-document.browser-toolbox-tool-is-diff .browser-toolbox-tool-input textarea {
     height: auto;
     min-height: 230px;
@@ -1021,11 +897,6 @@ body.browser-toolbox-tools-document {
 
   .browser-toolbox-tools-document .browser-toolbox-tool-result {
     min-height: 300px;
-  }
-
-  .browser-toolbox-tools-document .browser-toolbox-codec-type-grid,
-  .browser-toolbox-tools-document .browser-toolbox-codec-type-grid-advanced {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .browser-toolbox-tools-document.browser-toolbox-tool-is-diff .browser-toolbox-tool-input-grid {
@@ -1194,14 +1065,12 @@ body.browser-toolbox-tools-document {
 }
 
 .browser-toolbox-tools-document .browser-toolbox-tool-output,
-.browser-toolbox-tools-document .browser-toolbox-codec-output,
 .browser-toolbox-tools-document .browser-toolbox-json-tree,
 .browser-toolbox-tools-document .browser-toolbox-diff-list {
   background: var(--toolbox-surface);
 }
 
-.browser-toolbox-tools-document .browser-toolbox-tool-output,
-.browser-toolbox-tools-document .browser-toolbox-codec-output {
+.browser-toolbox-tools-document .browser-toolbox-tool-output {
   min-height: 170px;
   padding: 13px;
   font-size: 12.5px;
@@ -1248,16 +1117,6 @@ body.browser-toolbox-tools-document {
   padding: 4px;
 }
 
-.browser-toolbox-tools-document .browser-toolbox-codec-type-grid {
-  gap: 6px;
-}
-
-.browser-toolbox-tools-document .browser-toolbox-codec-type-card {
-  min-height: 41px;
-  padding: 7px 8px;
-  border-radius: 9px;
-}
-
 .browser-toolbox-tools-document .browser-toolbox-diff-result {
   gap: 7px;
 }
@@ -1287,7 +1146,6 @@ body.browser-toolbox-tools-document {
   }
 
   .browser-toolbox-tools-document .browser-toolbox-tool-output,
-  .browser-toolbox-tools-document .browser-toolbox-codec-output,
   .browser-toolbox-tools-document .browser-toolbox-json-tree,
   .browser-toolbox-tools-document .browser-toolbox-diff-list {
     background: var(--bt-surface-subtle);
@@ -1507,120 +1365,33 @@ body.browser-toolbox-tools-document {
 }
 
 /* 顶部控制已经脱离工作区，输入与结果在桌面端保持对照布局。 */
-.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-workspace,
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-workspace {
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-workspace {
   grid-template-rows: auto minmax(0, 1fr) auto auto;
 }
 
-.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-workspace-heading,
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-workspace-heading {
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-workspace-heading {
   grid-column: 1 / -1;
   grid-row: 1;
 }
 
-.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-input-grid,
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-input-grid {
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-input-grid {
   grid-column: 1;
   grid-row: 2;
 }
 
-.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-file,
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-file {
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-file {
   grid-column: 1;
   grid-row: 3;
 }
 
-.browser-toolbox-tools-document.browser-toolbox-tool-is-json #tool-status,
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec #tool-status {
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json #tool-status {
   grid-column: 1;
   grid-row: 4;
 }
 
-.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-result,
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-result {
+.browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-result {
   grid-column: 2;
   grid-row: 2 / 5;
-}
-
-/* 编码选项可展开为多行，独占标题下方，避免更多选项撑宽后覆盖标题。 */
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tools-header {
-  grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-areas:
-    "heading badge"
-    "toolbar toolbar";
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-header-toolbar {
-  flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: flex-start;
-  overflow: visible;
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-header-toolbar
-  > .browser-toolbox-codec-controls {
-  display: flex;
-  flex: 1 1 620px;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 9px;
-  width: auto;
-  min-width: 0;
-  overflow: visible;
-  white-space: normal;
-}
-
-.browser-toolbox-tools-document .browser-toolbox-codec-operation,
-.browser-toolbox-tools-document .browser-toolbox-codec-type-group {
-  display: flex;
-  flex: 0 0 auto;
-  align-items: center;
-  gap: 6px;
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-codec-type-group {
-  flex: 1 1 360px;
-  flex-wrap: wrap;
-  min-width: 0;
-}
-
-.browser-toolbox-tools-document .browser-toolbox-codec-operation .browser-toolbox-control-heading,
-.browser-toolbox-tools-document .browser-toolbox-codec-type-group .browser-toolbox-control-heading {
-  display: none;
-}
-
-.browser-toolbox-tools-document .browser-toolbox-codec-type-grid {
-  display: flex;
-  flex: 1 1 auto;
-  flex-wrap: wrap;
-  gap: 4px;
-  min-width: 0;
-  width: auto;
-}
-
-.browser-toolbox-tools-document .browser-toolbox-codec-type-card {
-  flex: 0 1 auto;
-  min-width: 53px;
-  max-width: 100%;
-  padding: 7px 9px;
-  font-size: 11px;
-  white-space: normal;
-}
-
-.browser-toolbox-tools-document .browser-toolbox-codec-advanced {
-  flex: 1 0 100%;
-  min-width: 0;
-  white-space: normal;
-}
-
-/* 原始数据是普通文本输入，不显示 JSON 专用行号和语法高亮层。 */
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-input {
-  grid-template-rows: auto minmax(0, 1fr);
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec #json-input-line-numbers,
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec #json-input-highlight {
-  display: none;
 }
 
 /* 文本对比页的桌面结构：两侧输入、下方结果；操作按钮位于页头。 */
@@ -1699,7 +1470,6 @@ body.browser-toolbox-tools-document {
   }
 
   .browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-workspace,
-  .browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-workspace,
   .browser-toolbox-tools-document.browser-toolbox-tool-is-diff .browser-toolbox-tool-workspace {
     display: flex;
     flex-direction: column;
@@ -1709,7 +1479,6 @@ body.browser-toolbox-tools-document {
   }
 
   .browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-input-grid,
-  .browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-input-grid,
   .browser-toolbox-tools-document.browser-toolbox-tool-is-diff .browser-toolbox-tool-input-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -1718,14 +1487,12 @@ body.browser-toolbox-tools-document {
   }
 
   .browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-input textarea,
-  .browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-input textarea,
   .browser-toolbox-tools-document.browser-toolbox-tool-is-diff .browser-toolbox-tool-input textarea {
     height: 230px;
     min-height: 230px;
   }
 
   .browser-toolbox-tools-document.browser-toolbox-tool-is-json .browser-toolbox-tool-result,
-  .browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-result,
   .browser-toolbox-tools-document.browser-toolbox-tool-is-diff .browser-toolbox-tool-result {
     grid-row: auto;
     min-height: 300px;
@@ -4206,7 +3973,7 @@ body.browser-toolbox-tools-document {
 }
 
 /* 原生 icon-button 会把图标和文字排成两行；下载按钮保持与运行按钮同高并横向排列。 */
-.browser-toolbox-tools-document:is(.browser-toolbox-tool-is-diff, .browser-toolbox-tool-is-codec) .browser-toolbox-tool-header-toolbar
+.browser-toolbox-tools-document.browser-toolbox-tool-is-diff .browser-toolbox-tool-header-toolbar
   .browser-toolbox-tool-actions #tool-download {
   display: inline-flex;
   width: auto;
@@ -4220,14 +3987,14 @@ body.browser-toolbox-tools-document {
   white-space: nowrap;
 }
 
-.browser-toolbox-tools-document:is(.browser-toolbox-tool-is-diff, .browser-toolbox-tool-is-codec) #tool-download-icon,
-.browser-toolbox-tools-document:is(.browser-toolbox-tool-is-diff, .browser-toolbox-tool-is-codec) #tool-download-icon .browser-toolbox-tool-icon {
+.browser-toolbox-tools-document.browser-toolbox-tool-is-diff #tool-download-icon,
+.browser-toolbox-tools-document.browser-toolbox-tool-is-diff #tool-download-icon .browser-toolbox-tool-icon {
   width: 18px;
   height: 18px;
   flex: 0 0 18px;
 }
 
-.browser-toolbox-tools-document:is(.browser-toolbox-tool-is-diff, .browser-toolbox-tool-is-codec) #tool-download-label {
+.browser-toolbox-tools-document.browser-toolbox-tool-is-diff #tool-download-label {
   display: inline;
   flex: 0 0 auto;
   line-height: 1;
@@ -4372,512 +4139,450 @@ body.browser-toolbox-tools-document {
   }
 }
 
-/* 编码工作台：左侧双列操作，右侧上下编辑区；展开选项只在侧栏内滚动。 */
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tools-page {
-  display: grid;
-  grid-template-columns: 306px minmax(0, 1fr);
-  grid-template-rows: 78px minmax(0, 1fr);
-  gap: 16px;
-  width: 100%;
-  max-width: 1920px;
+/* 编码转换工作台：同一份输入驱动右侧两个独立的结果区。 */
+.browser-toolbox-tools-document.browser-toolbox-tool-is-codec {
+  --codec-pane-padding: 20px;
+  --codec-heading-surface: color-mix(in srgb, var(--bt-surface) 58%, var(--bt-surface-card));
+  --codec-result-surface: color-mix(in srgb, var(--bt-bg) 24%, var(--bt-surface-card));
+  --codec-caption: color-mix(in srgb, var(--bt-muted) 80%, var(--bt-subtle));
+  -webkit-font-smoothing: antialiased;
+}
+
+.browser-toolbox-tool-is-codec .browser-toolbox-tools-page {
+  width: min(100%, 1520px);
   height: 100dvh;
-  min-height: 640px;
-  padding: 22px 32px 26px;
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tools-header {
-  grid-column: 1 / -1;
-  grid-row: 1;
-  grid-template-areas: "heading badge";
-  grid-template-columns: minmax(0, 1fr) auto;
-  padding: 16px 22px;
-  border-radius: 12px;
-  box-shadow: none;
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-heading {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-eyebrow {
-  margin: 0;
-  font-size: 18px;
-  letter-spacing: 0;
-  white-space: nowrap;
-  text-transform: none;
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-icon-wrap {
-  width: 34px;
-  height: 34px;
-  background: transparent;
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-icon-wrap svg {
-  width: 32px;
-  height: 32px;
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-title-row {
-  padding-left: 24px;
-  border-left: 1px solid var(--toolbox-line-strong);
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec #tool-title {
-  margin: 0;
-  font-size: 28px;
-  line-height: 1.25;
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec :is(#tool-description, #tool-title-icon, #tool-file-label, #json-input-line-numbers, #json-input-highlight) {
-  display: none;
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec #tool-header-toolbar {
-  display: grid;
-  grid-area: 2 / 1;
-  grid-template-rows: minmax(0, 1fr) auto;
-  align-items: stretch;
-  gap: 22px;
-  min-height: 0;
-  padding: 18px;
-  border: 1px solid var(--toolbox-line);
-  border-radius: 12px;
-  background: var(--toolbox-surface);
-  overflow: hidden;
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec #tool-controls {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: flex-start;
-  flex-wrap: nowrap;
-  gap: 22px;
-  width: 100%;
-  min-height: 0;
-  overflow: auto;
-  white-space: normal;
-  scrollbar-width: thin;
-  scrollbar-gutter: stable;
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec :is(.browser-toolbox-codec-operation, .browser-toolbox-codec-type-group) {
-  display: flex;
-  flex: 0 0 auto;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 8px;
-  width: 100%;
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-control-heading {
-  display: block;
-  color: var(--toolbox-ink);
-  font-size: 15px;
-  font-weight: 650;
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-segmented-control {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  width: 100%;
-  padding: 0;
+  min-height: 100dvh;
   gap: 0;
-  border-radius: 8px;
+  padding: 0 28px 22px;
 }
 
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-segmented-control button {
-  min-width: 0;
-  min-height: 45px;
-  padding: 7px;
-  font-size: 16px;
-  box-shadow: none;
-  border-radius: 7px;
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-codec-type-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 6px;
-  width: 100%;
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-codec-type-card {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 12px;
+.browser-toolbox-tool-is-codec .browser-toolbox-tools-header {
+  display: flex;
   align-items: center;
-  gap: 2px;
-  min-width: 0;
-  min-height: 50px;
-  height: 50px;
-  padding: 5px 10px 5px 12px;
-  border: 1px solid var(--toolbox-line-strong);
-  border-radius: 7px;
-  background: var(--toolbox-surface);
-  color: var(--toolbox-ink);
-  font-size: 14px;
-  line-height: 18px;
-  text-align: left;
-  white-space: normal;
-  overflow-wrap: anywhere;
-  box-shadow: none;
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-codec-type-card strong {
-  font-weight: 500;
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-codec-type-card::after {
-  content: "";
-  width: 10px;
-  height: 6px;
-  border-left: 2px solid transparent;
-  border-bottom: 2px solid transparent;
-  transform: rotate(-45deg);
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-codec-type-card.is-selected {
-  border-color: #adc9fd;
-  background: var(--toolbox-blue-soft);
-  color: var(--toolbox-blue);
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-codec-type-card.is-selected::after {
-  border-color: currentColor;
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec button:hover:not(:disabled) {
-  border-color: #8bb2fb;
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec button:focus-visible {
-  outline: 2px solid var(--toolbox-blue);
-  outline-offset: 2px;
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec button:disabled {
-  opacity: .45;
-  cursor: default;
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-codec-advanced {
-  flex: 0 0 auto;
-  margin: 14px 0 0;
-  padding-top: 14px;
-  border-top: 1px solid var(--toolbox-line);
-  font-size: 14px;
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-codec-advanced summary {
-  width: 100%;
-  padding: 2px 0;
-  cursor: pointer;
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-codec-type-grid-advanced {
-  margin-top: 12px;
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec #codec-type-hint {
-  margin: -6px 0 0;
-  color: var(--toolbox-muted);
-  font-size: 13px;
-  line-height: 1.65;
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec #tool-header-toolbar .browser-toolbox-tool-actions {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  align-items: stretch;
-  gap: 12px;
-  width: 100%;
-  margin: 0 0 32px;
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec #tool-header-toolbar :is(#tool-run, #tool-restore) {
-  min-width: 0;
-  min-height: 50px;
-  height: auto;
-  padding: 8px;
-  border-radius: 8px;
-  font-size: 16px;
-  line-height: 1.25;
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec :is(#tool-restore, #tool-copy, #tool-download, #tool-file-trigger) {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: auto;
-  min-height: 44px;
-  padding: 9px 15px;
-  border: 1px solid var(--toolbox-line-strong);
-  border-radius: 10px;
-  color: var(--toolbox-ink);
-  background: var(--toolbox-surface-muted);
-  font-size: 14px;
-  line-height: 1.3;
-  text-shadow: none;
-  white-space: nowrap;
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec :is(#tool-restore, #tool-copy, #tool-download, #tool-file-trigger) svg {
-  display: block;
-  width: 20px;
-  height: 20px;
-  flex: 0 0 20px;
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec #tool-restore span:last-child {
-  white-space: normal;
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-local-badge {
-  padding: 5px 12px;
-  font-size: 14px;
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec #tool-workspace {
-  display: grid;
-  grid-area: 2 / 2;
-  grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: minmax(0, 1fr) minmax(0, 1.04fr);
-  gap: 12px;
-  min-height: 0;
-  padding: 0;
+  gap: 10px;
+  min-height: 54px;
+  padding: 8px 0;
   border: 0;
+  border-bottom: 1px solid var(--toolbox-line);
   border-radius: 0;
   background: transparent;
   box-shadow: none;
 }
 
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec :is(.browser-toolbox-codec-input-panel, #tool-result-workspace) {
+.browser-toolbox-tool-is-codec .browser-toolbox-tool-heading {
   display: flex;
-  flex-direction: column;
-  grid-column: auto;
-  grid-row: auto;
-  min-width: 0;
-  min-height: 0;
-  gap: 12px;
-  padding: 15px;
-  border: 1px solid var(--toolbox-line);
-  border-radius: 12px;
-  background: var(--toolbox-surface-muted);
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0 10px;
 }
 
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec :is(.browser-toolbox-workspace-heading, .browser-toolbox-result-heading) {
+.browser-toolbox-tool-is-codec .browser-toolbox-eyebrow {
+  margin: 0;
+  color: var(--toolbox-muted);
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.browser-toolbox-tool-is-codec .browser-toolbox-eyebrow::after {
+  margin-inline-start: 10px;
+  color: var(--toolbox-line-strong);
+  content: "/";
+}
+
+.browser-toolbox-tool-is-codec #tool-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 650;
+  letter-spacing: -.01em;
+}
+
+.browser-toolbox-tool-is-codec :is(#tool-description, #tool-icon, #tool-title-icon, #tool-file-label, #json-input-line-numbers, #json-input-highlight) {
+  display: none;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-local-badge {
+  margin-inline-start: auto;
+  padding: 0 4px 0 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--toolbox-muted);
+  font-size: 12.5px;
+  font-weight: 400;
+}
+
+.browser-toolbox-tool-is-codec #tool-header-toolbar {
+  display: block;
+  width: 100%;
+  padding: 12px 0;
+  overflow: visible;
+}
+
+.browser-toolbox-tools-document.browser-toolbox-tool-is-codec #tool-controls {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  gap: 7px;
+  white-space: normal;
+}
+
+.browser-toolbox-codec-format-row {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 16px;
+  min-height: 30px;
+}
+
+.browser-toolbox-codec-format-row > span {
+  min-width: 26px;
+  color: var(--codec-caption);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.browser-toolbox-codec-formats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.browser-toolbox-tool-is-codec button.browser-toolbox-codec-format,
+.browser-toolbox-tool-is-codec button.browser-toolbox-codec-button {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 30px;
+  padding: 4px 11px;
+  border: 1px solid var(--toolbox-line);
+  border-radius: 6px;
+  background: var(--toolbox-surface);
+  color: var(--toolbox-muted);
+  box-shadow: none;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  text-shadow: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.browser-toolbox-tool-is-codec button.browser-toolbox-codec-format {
+  max-width: 100%;
+  padding-inline: 11px;
+  border-color: transparent;
+  border-radius: 5px;
+  background: transparent;
+  font-size: 13.5px;
+}
+
+.browser-toolbox-tool-is-codec .browser-toolbox-codec-button svg {
+  display: block;
+  width: 15px;
+  height: 15px;
+}
+
+.browser-toolbox-tool-is-codec button.browser-toolbox-codec-format[aria-pressed="true"],
+.browser-toolbox-tool-is-codec :is(#codec-encode-copy, #codec-decode-copy):not(:disabled) {
+  border-color: color-mix(in srgb, var(--bt-accent) 15%, var(--bt-border));
+  background: var(--bt-accent-soft);
+  color: var(--bt-accent-strong);
+  font-weight: 600;
+}
+
+.browser-toolbox-tool-is-codec button:is(.browser-toolbox-codec-format, .browser-toolbox-codec-button):hover:not(:disabled) {
+  border-color: var(--toolbox-line-strong);
+  color: var(--bt-accent-strong);
+}
+
+.browser-toolbox-tool-is-codec button:is(.browser-toolbox-codec-format, .browser-toolbox-codec-button):focus-visible {
+  outline: 2px solid var(--bt-accent);
+  outline-offset: 1px;
+}
+
+.browser-toolbox-tool-is-codec button.browser-toolbox-codec-button:disabled {
+  opacity: .46;
+  cursor: default;
+}
+
+.browser-toolbox-codec-format-row > p {
+  max-width: 380px;
+  margin: 0;
+  color: var(--toolbox-muted);
+  font-size: 12.5px;
+  text-align: end;
+}
+
+.browser-toolbox-tool-is-codec #tool-workspace {
+  display: grid;
+  flex: 1 1 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 0;
+  min-height: 390px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--bt-border);
+  border-radius: 8px;
+  background: var(--toolbox-surface);
+  box-shadow: none;
+}
+
+.browser-toolbox-codec-input-panel,
+.browser-toolbox-codec-result {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.browser-toolbox-tool-is-codec #codec-results {
+  display: grid;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  min-width: 0;
+  min-height: 0;
+  border-inline-start: 1px solid var(--toolbox-line);
+}
+
+.browser-toolbox-codec-result + .browser-toolbox-codec-result {
+  border-top: 1px solid var(--toolbox-line);
+}
+
+.browser-toolbox-tool-is-codec .browser-toolbox-codec-pane-heading {
   display: flex;
   flex: 0 0 auto;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 10px;
-  min-height: 42px;
+  gap: 6px 10px;
+  min-height: 44px;
   margin: 0;
-  padding: 0 7px;
+  padding: 6px var(--codec-pane-padding);
+  border-bottom: 1px solid var(--toolbox-line);
+  background: var(--codec-heading-surface);
 }
 
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec :is(.browser-toolbox-workspace-heading > div:first-child, .browser-toolbox-codec-result-label, .browser-toolbox-codec-result-actions) {
+.browser-toolbox-codec-pane-label,
+.browser-toolbox-codec-actions {
   display: flex;
-  align-items: center;
-  gap: 18px;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 3px 10px;
   min-width: 0;
 }
 
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-codec-result-actions {
-  gap: 10px;
+.browser-toolbox-codec-actions {
+  align-items: center;
+  gap: 6px 8px;
 }
 
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec :is(#tool-input-title, #tool-output-title) {
+.browser-toolbox-tool-is-codec .browser-toolbox-codec-pane-heading h2 {
   margin: 0;
   color: var(--toolbox-ink);
-  font-size: 22px;
+  font-size: 13.5px;
   font-weight: 650;
 }
 
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec :is(#tool-input-label, #codec-output-label) {
-  color: var(--toolbox-muted);
-  font-size: 14px;
-  font-weight: 400;
+.browser-toolbox-tool-is-codec #codec-encode-title {
+  color: var(--bt-accent-strong);
 }
 
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-file {
-  display: block;
+.browser-toolbox-codec-pane-label > span {
+  color: var(--codec-caption);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.browser-toolbox-tool-is-codec .browser-toolbox-tool-file {
+  order: 0;
   width: auto;
-  max-width: 60%;
   min-width: 0;
+  min-height: 0;
 }
 
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-file-picker {
-  gap: 16px;
+.browser-toolbox-tool-is-codec .browser-toolbox-file-name {
+  max-width: min(16ch, 20vw);
 }
 
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-file-name {
-  max-width: 200px;
-  font-size: 14px;
-}
-
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-input-grid {
-  display: flex;
+.browser-toolbox-tool-is-codec .browser-toolbox-tool-input-grid {
   flex: 1 1 0;
   min-height: 0;
 }
 
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec :is(.browser-toolbox-tool-input, .browser-toolbox-tool-editor) {
+.browser-toolbox-tool-is-codec :is(.browser-toolbox-tool-input, .browser-toolbox-tool-editor) {
   display: block;
   width: 100%;
   height: 100%;
   min-height: 0;
 }
 
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec :is(#tool-input, #codec-output) {
-  display: block;
-  flex: 1 1 0;
-  width: 100%;
-  height: 100%;
+.browser-toolbox-tool-is-codec :is(#tool-input, .browser-toolbox-codec-result-body) {
   min-height: 0;
-  max-height: none;
-  margin: 0;
-  padding: 14px 16px;
+  padding: 18px var(--codec-pane-padding);
   overflow: auto;
-  border: 1px solid var(--toolbox-line-strong);
-  border-radius: 8px;
-  background: var(--toolbox-surface);
+}
+
+.browser-toolbox-tool-is-codec #tool-input,
+.browser-toolbox-codec-output {
+  margin: 0;
   color: var(--toolbox-ink);
-  font: 16px/1.7 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font: 14.5px/1.75 ui-monospace, SFMono-Regular, Menlo, Consolas, "PingFang SC", monospace;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+}
+
+.browser-toolbox-tool-is-codec #tool-input {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  background: var(--toolbox-surface);
   resize: none;
 }
 
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec #tool-status {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  flex: 0 0 auto;
+.browser-toolbox-tool-is-codec #tool-input:focus-visible {
+  outline: 2px solid var(--bt-accent);
+  outline-offset: -2px;
+}
+
+.browser-toolbox-codec-result-body {
+  flex: 1 1 0;
+  background: var(--codec-result-surface);
+}
+
+.browser-toolbox-codec-output {
+  padding: 0;
+  border: 0;
+}
+
+.browser-toolbox-codec-result-note {
   margin: 0;
-  padding: 10px 5px 0;
+  color: var(--codec-caption);
+  font-size: 13.5px;
+  overflow-wrap: anywhere;
+}
+
+.browser-toolbox-codec-result-note:not(:empty) {
+  margin-bottom: 8px;
+}
+
+.browser-toolbox-codec-statusbar {
+  display: flex;
+  grid-column: 1 / -1;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  min-height: 32px;
+  padding: 5px var(--codec-pane-padding);
   border-top: 1px solid var(--toolbox-line);
-  color: var(--toolbox-muted);
-  font-size: 13px;
-  line-height: 1.5;
+  background: var(--codec-heading-surface);
+  font-size: 12px;
 }
 
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec #tool-status::before {
-  content: "";
-  width: 9px;
-  height: 9px;
-  flex: 0 0 9px;
-  border-radius: 50%;
-  background: var(--toolbox-green);
+.browser-toolbox-codec-statusbar #tool-status {
+  display: flex;
+  order: 0;
+  align-items: center;
+  gap: 8px;
+  min-height: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
 }
 
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec #tool-status.is-error {
+.browser-toolbox-codec-statusbar #tool-status.is-error {
   color: var(--toolbox-red);
 }
 
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec #tool-status.is-error::before {
-  background: var(--toolbox-red);
+.browser-toolbox-codec-statusbar #tool-status:not(.is-error, :empty)::before {
+  width: 8px;
+  height: 5px;
+  flex: 0 0 8px;
+  border-bottom: 1.5px solid var(--toolbox-green);
+  border-left: 1.5px solid var(--toolbox-green);
+  content: "";
+  transform: translateY(-1px) rotate(-45deg);
 }
 
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec #codec-result-note {
-  margin: 0;
-  color: var(--toolbox-muted);
-  font-size: 13px;
+.browser-toolbox-codec-counts {
+  display: flex;
+  gap: 14px;
+  color: var(--codec-caption);
+  font-variant-numeric: tabular-nums;
 }
 
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec #codec-file-source {
+.browser-toolbox-tool-is-codec #codec-file-source {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  gap: 16px;
+  justify-content: center;
+  gap: 12px;
   height: 100%;
-  padding: 22px;
-  border: 1px dashed var(--toolbox-line-strong);
-  border-radius: 8px;
-  background: var(--toolbox-surface);
-  text-align: center;
+  padding: var(--codec-pane-padding);
   overflow: auto;
+  text-align: center;
 }
 
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec #codec-file-info {
+.browser-toolbox-tool-is-codec #codec-file-info {
   margin: 0;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec #codec-file-source > svg {
-  width: 40px;
-  height: 40px;
-  flex: 0 0 40px;
+.browser-toolbox-tool-is-codec #codec-file-source > svg {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
   color: var(--toolbox-muted);
 }
 
-.browser-toolbox-tools-document.browser-toolbox-tool-is-codec #codec-file-source button {
-  min-height: 40px;
-  font-size: 14px;
+@media (max-width: 1080px) {
+  .browser-toolbox-tool-is-codec .browser-toolbox-tools-page {
+    padding-inline: 16px;
+  }
+
+  .browser-toolbox-codec-format-row {
+    grid-template-columns: max-content minmax(0, 1fr);
+  }
+
+  .browser-toolbox-codec-format-row > p {
+    grid-column: 2;
+    max-width: none;
+    text-align: start;
+  }
 }
 
-@media (max-width: 1100px) {
-  .browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tools-page {
-    padding: 16px;
+@media (max-width: 760px) {
+  .browser-toolbox-tools-document.browser-toolbox-tool-is-codec {
+    --codec-pane-padding: 12px;
   }
-  .browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-file {
-    max-width: 100%;
-  }
-  .browser-toolbox-tools-document.browser-toolbox-tool-is-codec #tool-header-toolbar .browser-toolbox-tool-actions {
-    margin-bottom: 0;
-  }
-}
 
-@media (max-width: 720px) {
-  .browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tools-page {
-    display: flex;
+  .browser-toolbox-tool-is-codec .browser-toolbox-tools-page {
     height: auto;
-    padding: 12px;
-    gap: 12px;
+    padding-inline: 12px;
   }
-  .browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tools-header {
-    padding: 14px;
+
+  .browser-toolbox-tool-is-codec .browser-toolbox-tools-header {
+    flex-wrap: wrap;
+    gap: 6px 8px;
   }
-  .browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-eyebrow {
-    display: none;
-  }
-  .browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-title-row {
-    padding: 0;
-    border: 0;
-  }
-  .browser-toolbox-tools-document.browser-toolbox-tool-is-codec #tool-title {
-    font-size: 22px;
-  }
-  .browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-tool-heading {
-    gap: 10px;
-  }
-  .browser-toolbox-tools-document.browser-toolbox-tool-is-codec #tool-header-toolbar {
-    grid-template-rows: auto auto;
-    overflow: visible;
-  }
-  .browser-toolbox-tools-document.browser-toolbox-tool-is-codec #tool-controls {
-    overflow: visible;
-  }
-  .browser-toolbox-tools-document.browser-toolbox-tool-is-codec #tool-workspace {
-    grid-template-rows: minmax(300px, 42vh) minmax(320px, 44vh);
+
+  .browser-toolbox-tool-is-codec #tool-workspace {
     flex: 0 0 auto;
-    overflow: visible;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(230px, 42vh) auto auto;
   }
-  .browser-toolbox-tools-document.browser-toolbox-tool-is-codec :is(.browser-toolbox-codec-input-panel, #tool-result-workspace) {
-    padding: 12px;
-  }
-  .browser-toolbox-tools-document.browser-toolbox-tool-is-codec :is(#tool-input-title, #tool-output-title) {
-    font-size: 20px;
-  }
-  .browser-toolbox-tools-document.browser-toolbox-tool-is-codec .browser-toolbox-file-name {
-    max-width: 150px;
+
+  .browser-toolbox-tool-is-codec #codec-results {
+    grid-template-rows: repeat(2, minmax(166px, 32vh));
+    border-top: 1px solid var(--toolbox-line);
+    border-inline-start: 0;
   }
 }
 

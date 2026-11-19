@@ -480,17 +480,77 @@ async function testToolPages(browser, id) {
 
   const codec = await openTool(browser, id, "codec.transform");
   try {
-    assert(await codec.$("#tool-picker") === null, "编码页不应使用下拉框选择编码类型。 ");
-    await clickVisible(codec, '[data-codec-operation="encode"]');
-    await clickVisible(codec, '[data-codec-type="base64"]');
+    await codec.waitForSelector('[data-codec-type="base64"][aria-pressed="true"]', {
+      visible: true,
+    });
+    assert(await codec.$("[data-codec-operation]") === null, "编码页应直接显示两个方向的结果。");
+    assert(
+      await codec.$eval("#tool-run", (button) => button.getClientRects().length === 0),
+      "编码页应自动转换。",
+    );
     await setTextarea(codec, "#tool-input", "hello");
-    await waitFor(() => codec.$eval("#codec-output", (element) => element.textContent === "aGVsbG8=")
-      .catch(() => false));
-    assert(await codec.$eval("#codec-output", (element) => element.textContent) === "aGVsbG8=", "编码工具应在扩展页内本地运行。 ");
-    await clickVisible(codec, '[data-codec-operation="decode"]');
+    await codec.waitForFunction(() =>
+      document.querySelector("#codec-output").textContent === "aGVsbG8="
+    );
+    assert(
+      await codec.evaluate(() =>
+        Boolean(document.querySelector("#codec-decode-note").textContent) &&
+        document.querySelector("#codec-decode-download").disabled &&
+        !document.querySelector("#codec-encode-download").disabled
+      ),
+      "解码格式错误应留在解码区，编码结果仍可下载。",
+    );
+
     await setTextarea(codec, "#tool-input", "aGVsbG8=");
-    await waitFor(() => codec.$eval("#codec-output", (element) => element.textContent === "hello")
-      .catch(() => false));
+    await codec.waitForFunction(() =>
+      document.querySelector("#codec-output").textContent === "YUdWc2JHOD0=" &&
+      document.querySelector("#codec-decode-output").textContent === "hello"
+    );
+    await clickVisible(codec, '[data-codec-type="url"]');
+    await codec.waitForFunction(() =>
+      document.querySelector("#codec-output").textContent === "aGVsbG8%3D" &&
+      document.querySelector("#codec-decode-output").textContent === "aGVsbG8="
+    );
+
+    await clickVisible(codec, '[data-codec-type="md5"]');
+    await setTextarea(codec, "#tool-input", "abc");
+    await codec.waitForFunction(() =>
+      document.querySelector("#codec-output").textContent === "900150983cd24fb0d6963f7d28e17f72"
+    );
+    assert(
+      await codec.$eval("#codec-decode-copy", (button) => button.disabled),
+      "MD5 摘要没有解码结果。",
+    );
+
+    await clickVisible(codec, '[data-codec-type="dataUrl"]');
+    await setTextarea(codec, "#tool-input", "data:application/octet-stream;base64,AP9h");
+    await codec.waitForFunction(() =>
+      document.querySelector("#codec-decode-output").textContent === "00 ff 61"
+    );
+    assert(
+      await codec.evaluate(() =>
+        document.querySelector("#codec-decode-copy").disabled &&
+        !document.querySelector("#codec-decode-download").disabled &&
+        !document.querySelector("#codec-encode-copy").disabled
+      ),
+      "Data URL 的二进制结果仅可下载，编码结果仍可复制。",
+    );
+
+    await clickVisible(codec, "#codec-clear");
+    await codec.waitForFunction(() =>
+      document.querySelector("#tool-input").value === "" &&
+      document.querySelector("#codec-output").hidden &&
+      document.querySelector("#codec-decode-output").hidden &&
+      document.querySelector("#codec-encode-download").disabled &&
+      document.querySelector("#codec-decode-download").disabled
+    );
+    await clickVisible(codec, "#tool-restore");
+    await codec.waitForFunction(() =>
+      document.querySelector("#tool-input").value.includes("Base64 · UTF-8") &&
+      document.querySelector('[data-codec-type="base64"]').getAttribute("aria-pressed") ===
+        "true" &&
+      !document.querySelector("#codec-output").hidden
+    );
   } finally {
     await codec.close();
   }

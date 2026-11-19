@@ -1820,6 +1820,62 @@
   "toolCodecDigest": {
     "message": "Hash"
   },
+  "toolCodecCommon": {
+    "message": "Comunes",
+    "description": "常用格式"
+  },
+  "toolCodecMore": {
+    "message": "Más",
+    "description": "其他格式"
+  },
+  "toolCodecLiveHint": {
+    "message": "Pega una vez para codificar y decodificar a la vez",
+    "description": "自动进行两种方向的转换提示"
+  },
+  "toolCodecInputLabel": {
+    "message": "Texto o archivo · Conversión en directo",
+    "description": "输入区提示"
+  },
+  "toolCodecEncodeResult": {
+    "message": "Resultado de codificación",
+    "description": "编码结果区标题"
+  },
+  "toolCodecDecodeResult": {
+    "message": "Resultado de decodificación",
+    "description": "解码结果区标题"
+  },
+  "toolCodecDigestResult": {
+    "message": "Resumen criptográfico",
+    "description": "摘要结果区标题"
+  },
+  "toolCodecClear": {
+    "message": "Borrar",
+    "description": "清空编码转换输入"
+  },
+  "toolCodecRestoreExample": {
+    "message": "Restaurar ejemplo",
+    "description": "恢复编码转换示例"
+  },
+  "toolCodecLocalOnly": {
+    "message": "Solo en local",
+    "description": "编码转换仅在本地运行"
+  },
+  "toolCodecInputCount": {
+    "message": "Entrada: {count} bytes",
+    "description": "输入字节计数"
+  },
+  "toolCodecCharacterCount": {
+    "message": "{count} caracteres",
+    "description": "结果字符计数"
+  },
+  "toolCodecFileDecodeHint": {
+    "message": "Pega una URL de datos a la izquierda o elige un archivo de texto que la contenga.",
+    "description": "二进制文件的解码提示"
+  },
+  "toolCodecInputTooLarge": {
+    "message": "La entrada supera el límite de tamaño para esta dirección de conversión.",
+    "description": "输入超过该转换方向的大小限制"
+  },
   "toolCodecCopyShort": {
     "message": "Copiar"
   },

@@ -1820,6 +1820,62 @@
   "toolCodecDigest": {
     "message": "ハッシュ"
   },
+  "toolCodecCommon": {
+    "message": "よく使う形式",
+    "description": "常用格式"
+  },
+  "toolCodecMore": {
+    "message": "その他",
+    "description": "其他格式"
+  },
+  "toolCodecLiveHint": {
+    "message": "一度貼り付けると、エンコードとデコードを同時に実行します",
+    "description": "自动进行两种方向的转换提示"
+  },
+  "toolCodecInputLabel": {
+    "message": "テキストまたはファイル · リアルタイム変換",
+    "description": "输入区提示"
+  },
+  "toolCodecEncodeResult": {
+    "message": "エンコード結果",
+    "description": "编码结果区标题"
+  },
+  "toolCodecDecodeResult": {
+    "message": "デコード結果",
+    "description": "解码结果区标题"
+  },
+  "toolCodecDigestResult": {
+    "message": "ダイジェスト結果",
+    "description": "摘要结果区标题"
+  },
+  "toolCodecClear": {
+    "message": "クリア",
+    "description": "清空编码转换输入"
+  },
+  "toolCodecRestoreExample": {
+    "message": "例を復元",
+    "description": "恢复编码转换示例"
+  },
+  "toolCodecLocalOnly": {
+    "message": "ローカルでのみ実行",
+    "description": "编码转换仅在本地运行"
+  },
+  "toolCodecInputCount": {
+    "message": "入力 {count} バイト",
+    "description": "输入字节计数"
+  },
+  "toolCodecCharacterCount": {
+    "message": "{count} 文字",
+    "description": "结果字符计数"
+  },
+  "toolCodecFileDecodeHint": {
+    "message": "左側に Data URL を貼り付けるか、Data URL を含むテキストファイルを選択してください。",
+    "description": "二进制文件的解码提示"
+  },
+  "toolCodecInputTooLarge": {
+    "message": "入力がこの変換方向のサイズ制限を超えています。",
+    "description": "输入超过该转换方向的大小限制"
+  },
   "toolCodecCopyShort": {
     "message": "コピー"
   },

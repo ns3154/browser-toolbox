@@ -2408,6 +2408,62 @@
     "description": "编码转换功能",
     "message": "計算摘要"
   },
+  "toolCodecCommon": {
+    "message": "常用",
+    "description": "常用格式"
+  },
+  "toolCodecMore": {
+    "message": "更多",
+    "description": "其他格式"
+  },
+  "toolCodecLiveHint": {
+    "message": "貼上一次即可同時計算編碼與解碼，無須手動切換方向",
+    "description": "自动进行两种方向的转换提示"
+  },
+  "toolCodecInputLabel": {
+    "message": "文字或檔案 · 即時同步計算",
+    "description": "输入区提示"
+  },
+  "toolCodecEncodeResult": {
+    "message": "編碼結果",
+    "description": "编码结果区标题"
+  },
+  "toolCodecDecodeResult": {
+    "message": "解碼結果",
+    "description": "解码结果区标题"
+  },
+  "toolCodecDigestResult": {
+    "message": "摘要結果",
+    "description": "摘要结果区标题"
+  },
+  "toolCodecClear": {
+    "message": "清空",
+    "description": "清空编码转换输入"
+  },
+  "toolCodecRestoreExample": {
+    "message": "還原範例",
+    "description": "恢复编码转换示例"
+  },
+  "toolCodecLocalOnly": {
+    "message": "僅在本機執行",
+    "description": "编码转换仅在本地运行"
+  },
+  "toolCodecInputCount": {
+    "message": "輸入 {count} 位元組",
+    "description": "输入字节计数"
+  },
+  "toolCodecCharacterCount": {
+    "message": "{count} 個字元",
+    "description": "结果字符计数"
+  },
+  "toolCodecFileDecodeHint": {
+    "message": "請在左側貼上 Data URL 文字，或選擇儲存了 Data URL 的文字檔。",
+    "description": "二进制文件的解码提示"
+  },
+  "toolCodecInputTooLarge": {
+    "message": "輸入超過此轉換方向的大小限制。",
+    "description": "输入超过该转换方向的大小限制"
+  },
   "toolCodecCopyShort": {
     "description": "编码转换功能",
     "message": "複製"

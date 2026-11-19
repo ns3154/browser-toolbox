@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="light dark">
     <title data-i18n="tools">Browser Toolbox Tools</title>
     <link rel="stylesheet" href="../theme_tokens.css">
@@ -102,10 +103,59 @@
             </div>
             <div id="diff-result-list" class="browser-toolbox-diff-list" role="list"></div>
           </div>
-          <pre id="codec-output" class="browser-toolbox-codec-output" hidden tabindex="0"></pre>
           <pre id="tool-output" class="browser-toolbox-tool-output" tabindex="0"></pre>
           <dl id="tool-metadata" class="browser-toolbox-tool-metadata"></dl>
         </section>
+        <div id="codec-results" hidden>
+          <section id="codec-encode-result" class="browser-toolbox-codec-result" aria-labelledby="codec-encode-title">
+            <div class="browser-toolbox-codec-pane-heading">
+              <div class="browser-toolbox-codec-pane-label">
+                <h2 id="codec-encode-title" data-i18n="toolCodecEncodeResult">Encoded result</h2>
+                <span class="browser-toolbox-codec-result-meta"></span>
+              </div>
+              <div class="browser-toolbox-codec-actions">
+                <button id="codec-encode-copy" class="browser-toolbox-codec-button" type="button" disabled
+                  aria-labelledby="codec-encode-copy-label codec-encode-title">
+                  <span id="codec-encode-copy-icon" aria-hidden="true"></span>
+                  <span id="codec-encode-copy-label" data-i18n="toolCodecCopyShort">Copy</span>
+                </button>
+                <button id="codec-encode-download" class="browser-toolbox-codec-button" type="button" disabled
+                  aria-labelledby="codec-encode-download-label codec-encode-title">
+                  <span id="codec-encode-download-icon" aria-hidden="true"></span>
+                  <span id="codec-encode-download-label" data-i18n="toolDownloadShort">Download</span>
+                </button>
+              </div>
+            </div>
+            <div class="browser-toolbox-codec-result-body">
+              <p id="codec-encode-note" class="browser-toolbox-codec-result-note" aria-live="polite"></p>
+              <pre id="codec-output" class="browser-toolbox-codec-output" hidden tabindex="0" aria-labelledby="codec-encode-title"></pre>
+            </div>
+          </section>
+          <section id="codec-decode-result" class="browser-toolbox-codec-result" aria-labelledby="codec-decode-title">
+            <div class="browser-toolbox-codec-pane-heading">
+              <div class="browser-toolbox-codec-pane-label">
+                <h2 id="codec-decode-title" data-i18n="toolCodecDecodeResult">Decoded result</h2>
+                <span class="browser-toolbox-codec-result-meta"></span>
+              </div>
+              <div class="browser-toolbox-codec-actions">
+                <button id="codec-decode-copy" class="browser-toolbox-codec-button" type="button" disabled
+                  aria-labelledby="codec-decode-copy-label codec-decode-title">
+                  <span id="codec-decode-copy-icon" aria-hidden="true"></span>
+                  <span id="codec-decode-copy-label" data-i18n="toolCodecCopyShort">Copy</span>
+                </button>
+                <button id="codec-decode-download" class="browser-toolbox-codec-button" type="button" disabled
+                  aria-labelledby="codec-decode-download-label codec-decode-title">
+                  <span id="codec-decode-download-icon" aria-hidden="true"></span>
+                  <span id="codec-decode-download-label" data-i18n="toolDownloadShort">Download</span>
+                </button>
+              </div>
+            </div>
+            <div class="browser-toolbox-codec-result-body">
+              <p id="codec-decode-note" class="browser-toolbox-codec-result-note" aria-live="polite"></p>
+              <pre id="codec-decode-output" class="browser-toolbox-codec-output" hidden tabindex="0" aria-labelledby="codec-decode-title"></pre>
+            </div>
+          </section>
+        </div>
         <div class="browser-toolbox-tool-footer">
           <p id="tool-status" role="status" aria-live="polite"></p>
           <div class="browser-toolbox-tool-file">
@@ -128,6 +178,12 @@
             <span id="json-depth-summary"></span>
           </div>
           <span class="browser-toolbox-json-responsive-hint" data-i18n="toolJsonResponsiveHint">窄屏时标题换行，工具栏可横向滚动</span>
+        </div>
+        <div id="codec-statusbar" class="browser-toolbox-codec-statusbar" hidden>
+          <div class="browser-toolbox-codec-counts">
+            <span>UTF-8</span>
+            <span id="codec-input-count"></span>
+          </div>
         </div>
       </section>
     </main>
