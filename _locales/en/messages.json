@@ -1349,7 +1349,7 @@
     "description": "配置互转工具文案"
   },
   "toolConfigDirection": {
-    "message": "Conversion direction",
+    "message": "Direction",
     "description": "配置互转工具文案"
   },
   "toolConfigSwap": {
@@ -1501,7 +1501,7 @@
     "description": "Time tool section title"
   },
   "toolTimeCurrentLocal": {
-    "message": "Current local time:",
+    "message": "Current local time",
     "description": "Time tool label"
   },
   "toolTimeCurrentUnix": {
@@ -1525,7 +1525,7 @@
     "description": "Time tool section title"
   },
   "toolTimeFiletime": {
-    "message": "Windows FILETIME conversion",
+    "message": "Windows FILETIME",
     "description": "Time tool section title"
   },
   "toolTimeWorldClock": {
@@ -1869,11 +1869,11 @@
     "description": "JSON byte length label"
   },
   "toolJsonObject": {
-    "message": "JSON object",
+    "message": "Object",
     "description": "JSON root type label"
   },
   "toolJsonArray": {
-    "message": "JSON array",
+    "message": "Array",
     "description": "JSON root type label"
   },
   "toolJsonValue": {
@@ -1889,7 +1889,7 @@
     "description": "JSON responsive layout hint"
   },
   "toolTimezone": {
-    "message": "Timezone",
+    "message": "Target time zone",
     "description": "Tool timezone option"
   },
   "toolIndent2": {
@@ -2037,15 +2037,15 @@
     "description": "ID option"
   },
   "toolCount1": {
-    "message": "1 value",
+    "message": "1",
     "description": "ID count option"
   },
   "toolCount5": {
-    "message": "5 values",
+    "message": "5",
     "description": "ID count option"
   },
   "toolCount10": {
-    "message": "10 values",
+    "message": "10",
     "description": "ID count option"
   },
   "toolLength12": {
@@ -2265,7 +2265,7 @@
     "description": "Formatter sort option"
   },
   "toolKeepOrder": {
-    "message": "Original",
+    "message": "Original order",
     "description": "Formatter order option"
   },
   "toolSortAscending": {
@@ -2297,11 +2297,11 @@
     "description": "Expand JSON node"
   },
   "toolCollapseAll": {
-    "message": "Collapse all nodes",
+    "message": "Collapse all",
     "description": "Collapse all JSON nodes"
   },
   "toolExpandAll": {
-    "message": "Expand all nodes",
+    "message": "Expand all",
     "description": "Expand all JSON nodes"
   },
   "toolJsonNoResult": {
@@ -4506,5 +4506,398 @@
   },
   "keyboardCommandsLink": {
     "message": "View all commands"
+  },
+  "toolWorkbenchNavigation": {
+    "message": "Tool navigation"
+  },
+  "toolWorkbenchView": {
+    "message": "View"
+  },
+  "toolWorkbenchFileError": {
+    "message": "This file could not be read."
+  },
+  "toolWorkbenchInputLimit": {
+    "message": "Input exceeds this tool’s local size limit."
+  },
+  "toolWorkbenchLines": {
+    "message": "Lines: {count}"
+  },
+  "toolConversionResult": {
+    "message": "Conversion result"
+  },
+  "toolCopyAll": {
+    "message": "Copy all"
+  },
+  "toolCopyRow": {
+    "message": "Copy row"
+  },
+  "toolJsonKeySort": {
+    "message": "Key order"
+  },
+  "toolJsonLiveCheck": {
+    "message": "Validate on paste"
+  },
+  "toolJsonLiveCheckShort": {
+    "message": "Live validation"
+  },
+  "toolJsonExpandEscaped": {
+    "message": "Expand escapes"
+  },
+  "toolJsonSource": {
+    "message": "Source"
+  },
+  "toolJsonTree": {
+    "message": "Tree"
+  },
+  "toolJsonTreeLabel": {
+    "message": "JSON tree"
+  },
+  "toolJsonFieldCount": {
+    "message": "Fields: {count}"
+  },
+  "toolJsonItemCount": {
+    "message": "Items: {count}"
+  },
+  "toolJsonTreeLimited": {
+    "message": "The tree reached its display limit. Open Source for the full result."
+  },
+  "toolJsonCursor": {
+    "message": "Ln {line}, Col {column}"
+  },
+  "toolJsonCharacterCount": {
+    "message": "{count} chars"
+  },
+  "toolJsonStringType": {
+    "message": "String"
+  },
+  "toolJsonNumberType": {
+    "message": "Number"
+  },
+  "toolJsonBooleanType": {
+    "message": "Boolean"
+  },
+  "toolJsonNullType": {
+    "message": "Null"
+  },
+  "toolJsonValid": {
+    "message": "Valid JSON"
+  },
+  "toolJsonValidDuplicates": {
+    "message": "Valid JSON · Duplicate keys: {count}"
+  },
+  "toolJsonErrorPosition": {
+    "message": "Invalid JSON · Line {line}, column {column}"
+  },
+  "toolJsonBudget": {
+    "message": "JSON exceeds the local parsing limit."
+  },
+  "toolJsonRepairNone": {
+    "message": "No reversible text repair found."
+  },
+  "toolConfigForward": {
+    "message": "Properties → YAML"
+  },
+  "toolConfigReverse": {
+    "message": "YAML → Properties"
+  },
+  "toolConfigNameProperties": {
+    "message": "Properties"
+  },
+  "toolConfigNameYaml": {
+    "message": "YAML"
+  },
+  "toolConfigShortHint": {
+    "message": "Dots create levels · Comments are omitted"
+  },
+  "toolConfigRefill": {
+    "message": "Use result & reverse"
+  },
+  "toolConfigStats": {
+    "message": "Pairs parsed: {count} · Comment lines omitted: {comments}"
+  },
+  "toolConfigExampleComment": {
+    "message": "Basic Spring service configuration"
+  },
+  "toolTableHint": {
+    "message": "RFC quoting and multiline fields"
+  },
+  "toolTableSource": {
+    "message": "Source"
+  },
+  "toolTablePreview": {
+    "message": "Table preview"
+  },
+  "toolTablePreviewLimited": {
+    "message": "Preview shows {rows} data rows and {columns} columns. Source contains the full result."
+  },
+  "toolTableDimensions": {
+    "message": "Data rows: {rows} · Columns: {columns}"
+  },
+  "toolTableFormulaCount": {
+    "message": "Formula prefixes detected: {count}."
+  },
+  "toolTableLimit": {
+    "message": "The table exceeds the local row or cell limit."
+  },
+  "toolTableAfterQuote": {
+    "message": "A closing quote must be followed by a delimiter or line break."
+  },
+  "toolTableUnexpectedQuote": {
+    "message": "An unquoted field cannot contain a double quote."
+  },
+  "toolTableUnclosedQuote": {
+    "message": "A quoted field is missing its closing quote."
+  },
+  "toolDiffUnified": {
+    "message": "Line by line"
+  },
+  "toolDiffSideBySide": {
+    "message": "Side by side"
+  },
+  "toolDiffOnlyChanges": {
+    "message": "Only changes"
+  },
+  "toolDiffSwap": {
+    "message": "Swap sides"
+  },
+  "toolDiffCollapseInput": {
+    "message": "Collapse inputs"
+  },
+  "toolDiffExpandInput": {
+    "message": "Expand inputs"
+  },
+  "toolDiffOriginal": {
+    "message": "Original text"
+  },
+  "toolDiffModified": {
+    "message": "Modified text"
+  },
+  "toolDiffOldLine": {
+    "message": "Old"
+  },
+  "toolDiffNewLine": {
+    "message": "New"
+  },
+  "toolDiffContents": {
+    "message": "Line contents"
+  },
+  "toolDiffCopy": {
+    "message": "Copy diff"
+  },
+  "toolDiffChanges": {
+    "message": "Change blocks: {count}"
+  },
+  "toolDiffAdded": {
+    "message": "+{count} added"
+  },
+  "toolDiffRemoved": {
+    "message": "−{count} removed"
+  },
+  "toolDiffStats": {
+    "message": "Old: {left} · New: {right} · Output lines: {count}"
+  },
+  "toolDiffMethod": {
+    "message": "Line-by-line LCS"
+  },
+  "toolDiffLineLimit": {
+    "message": "Comparison supports up to {max} lines per side."
+  },
+  "toolTimeUnixSeconds": {
+    "message": "Unix sec"
+  },
+  "toolTimeUnixMillis": {
+    "message": "Unix ms"
+  },
+  "toolTimeClickCopy": {
+    "message": "Click a value to copy"
+  },
+  "toolTimeInput": {
+    "message": "Input time"
+  },
+  "toolTimeAuto": {
+    "message": "Auto"
+  },
+  "toolTimeAutoHint": {
+    "message": "Detect format"
+  },
+  "toolTimeParseMode": {
+    "message": "Input format"
+  },
+  "toolTimeValueLabel": {
+    "message": "Value (timestamp / date / FILETIME)"
+  },
+  "toolTimeInputHint": {
+    "message": "Accepts 10-/13-digit Unix, ISO 8601, local dates and Windows FILETIME."
+  },
+  "toolTimeFillNow": {
+    "message": "Use current time"
+  },
+  "toolTimeAllFormats": {
+    "message": "All formats"
+  },
+  "toolTimeIsoUtc": {
+    "message": "ISO 8601 (UTC)"
+  },
+  "toolTimeUtcHint": {
+    "message": "Zero UTC offset"
+  },
+  "toolTimeTargetValue": {
+    "message": "Target zone time"
+  },
+  "toolTimeSystemZone": {
+    "message": "System time zone"
+  },
+  "toolTimeSecondsValue": {
+    "message": "Unix timestamp (s)"
+  },
+  "toolTimeMillisValue": {
+    "message": "Unix timestamp (ms)"
+  },
+  "toolTimeSecondsHint": {
+    "message": "Seconds"
+  },
+  "toolTimeMillisHint": {
+    "message": "Milliseconds"
+  },
+  "toolTimeFiletimeHint": {
+    "message": "Since 1601 · 100 ns units"
+  },
+  "toolTimeInputWorld": {
+    "message": "Input time around the world"
+  },
+  "toolTimeSameOffset": {
+    "message": "Target has the same offset as local"
+  },
+  "toolTimeAhead": {
+    "message": "Target is {offset} ahead of local"
+  },
+  "toolTimeBehind": {
+    "message": "Target is {offset} behind local"
+  },
+  "toolTimeParsedSeconds": {
+    "message": "Parsed as Unix seconds"
+  },
+  "toolTimeParsedMillis": {
+    "message": "Parsed as Unix milliseconds"
+  },
+  "toolTimeParsedFiletime": {
+    "message": "Parsed as Windows FILETIME"
+  },
+  "toolTimeParsedIso": {
+    "message": "Parsed as ISO 8601"
+  },
+  "toolTimeParsedLocal": {
+    "message": "Parsed as local date and time"
+  },
+  "toolTimeInvalidInput": {
+    "message": "This time could not be parsed. Check the value or selected format."
+  },
+  "toolTimeIntl": {
+    "message": "Local Intl time-zone conversion"
+  },
+  "toolZoneUtc": {
+    "message": "UTC"
+  },
+  "toolZoneShanghai": {
+    "message": "Shanghai"
+  },
+  "toolZoneNewYork": {
+    "message": "New York"
+  },
+  "toolZoneSanFrancisco": {
+    "message": "San Francisco"
+  },
+  "toolZoneLondon": {
+    "message": "London"
+  },
+  "toolZoneTokyo": {
+    "message": "Tokyo"
+  },
+  "toolZoneFrankfurt": {
+    "message": "Frankfurt"
+  },
+  "toolZoneSingapore": {
+    "message": "Singapore"
+  },
+  "toolGenerateParameters": {
+    "message": "Generation settings"
+  },
+  "toolGenerateResult": {
+    "message": "Generated results"
+  },
+  "toolIdType": {
+    "message": "ID type"
+  },
+  "toolIdCount": {
+    "message": "Number to generate"
+  },
+  "toolIdResultCount": {
+    "message": "Count: {count}"
+  },
+  "toolCount20": {
+    "message": "20"
+  },
+  "toolIdUuidDetail": {
+    "message": "36 characters · 122 random bits"
+  },
+  "toolIdUlidDetail": {
+    "message": "26-character time-sortable code"
+  },
+  "toolIdSnowflakeDetail": {
+    "message": "64-bit timestamp-based integer"
+  },
+  "toolIdNanoidDetail": {
+    "message": "21 URL-safe characters"
+  },
+  "toolIdStats": {
+    "message": "Characters: {length} · Random bits: {bits}"
+  },
+  "toolIdCopyHint": {
+    "message": "Click any row to copy it"
+  },
+  "toolIdRegenerate": {
+    "message": "Regenerate"
+  },
+  "toolPasswordLength": {
+    "message": "Password length"
+  },
+  "toolPasswordComposition": {
+    "message": "Character sets"
+  },
+  "toolPasswordSymbols": {
+    "message": "Include symbols"
+  },
+  "toolPasswordExclusions": {
+    "message": "Similar characters such as 0/O and 1/l/I are excluded."
+  },
+  "toolPasswordResultLength": {
+    "message": "Random password · {count} chars"
+  },
+  "toolPasswordRegenerate": {
+    "message": "Regenerate"
+  },
+  "toolPasswordAlternatives": {
+    "message": "Alternatives"
+  },
+  "toolPasswordCopyHint": {
+    "message": "Click any row to copy"
+  },
+  "toolPasswordEntropy": {
+    "message": "{strength} · ≈ {bits} bits of theoretical entropy ({size} characters)"
+  },
+  "toolPasswordStrength1": {
+    "message": "Weak"
+  },
+  "toolPasswordStrength2": {
+    "message": "Fair"
+  },
+  "toolPasswordStrength3": {
+    "message": "Good"
+  },
+  "toolPasswordStrength4": {
+    "message": "Strong"
+  },
+  "toolPasswordMemoryOnly": {
+    "message": "The extension keeps passwords in this page’s memory only"
   }
 }

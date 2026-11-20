@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="../theme_tokens.css">
     <link rel="stylesheet" href="../options.css">
     <link rel="stylesheet" href="tools.css">
-    <link rel="stylesheet" href="properties_yaml.css">
+    <link rel="stylesheet" href="workbench.css">
     <script src="../../lib/i18n.js"></script>
     <script src="../../lib/browser_toolbox/theme.js"></script>
     <script src="../../lib/browser_toolbox/tools/tool_contract.js"></script>
@@ -23,9 +23,8 @@
     <script src="generator_tools.js"></script>
     <script src="table_tool.js"></script>
     <script type="module" src="properties_yaml_tool.js"></script>
-    <script src="properties_yaml_view.js"></script>
     <script src="tool_loader.js"></script>
-    <script src="index.js" defer></script>
+    <script type="module" src="index.js"></script>
   </head>
   <body class="browser-toolbox-tools-document">
     <main class="browser-toolbox-tools-page" data-tool-page="true">
@@ -45,11 +44,6 @@
           <div id="tool-controls" class="browser-toolbox-tool-controls"></div>
           <div class="browser-toolbox-tool-actions">
             <button id="tool-run" class="primary" type="button" data-i18n="toolRun">Run</button>
-            <button id="tool-download" class="browser-toolbox-icon-button" type="button"
-              data-i18n-aria-label="toolDownload" data-i18n-title="toolDownload">
-              <span id="tool-download-icon" aria-hidden="true"></span>
-              <span id="tool-download-label" data-i18n="toolDownloadShort">下载</span>
-            </button>
             <button id="tool-restore" class="browser-toolbox-icon-button" type="button"
               data-i18n-aria-label="toolRestore" data-i18n-title="toolRestore"><span id="tool-restore-icon" aria-hidden="true"></span></button>
           </div>
@@ -67,45 +61,11 @@
           <label class="browser-toolbox-tool-input" for="tool-input">
             <span id="tool-input-label" data-i18n="toolInput">Input</span>
             <div class="browser-toolbox-tool-editor">
-              <div id="json-input-line-numbers" class="browser-toolbox-json-line-numbers" aria-hidden="true">1</div>
-              <pre id="json-input-highlight" class="browser-toolbox-json-input-highlight" aria-hidden="true"></pre>
               <textarea id="tool-input" rows="14" spellcheck="false"
                 data-i18n-placeholder="toolInputHint"></textarea>
             </div>
           </label>
-          <label id="tool-input-right-wrap" class="browser-toolbox-tool-input" for="tool-input-right" hidden>
-            <span data-i18n="toolInputRight">Right input</span>
-            <textarea id="tool-input-right" rows="14" spellcheck="false"
-              data-i18n-placeholder="toolInputHint"></textarea>
-          </label>
         </div>
-        <section id="tool-result-workspace" class="browser-toolbox-tool-result" aria-labelledby="tool-output-title">
-          <div class="browser-toolbox-result-heading">
-            <h2 id="tool-output-title" data-i18n="toolOutput">Output</h2>
-            <button id="tool-copy" class="browser-toolbox-icon-button" type="button" hidden
-              data-i18n-aria-label="toolCopy" data-i18n-title="toolCopy"><span id="tool-copy-icon" aria-hidden="true"></span></button>
-            <button id="json-copy-root" class="browser-toolbox-icon-button" type="button" hidden
-              data-i18n-aria-label="toolCopyNode" data-i18n-title="toolCopyNode"><span id="json-copy-root-icon" aria-hidden="true"></span></button>
-          </div>
-          <div id="json-result-panel" class="browser-toolbox-json-result" hidden>
-            <div class="browser-toolbox-json-result-toolbar">
-              <button id="json-collapse-all" class="browser-toolbox-icon-button" type="button"
-                data-i18n-aria-label="toolCollapseAll" data-i18n-title="toolCollapseAll"><span id="json-collapse-all-icon" aria-hidden="true"></span></button>
-              <button id="json-expand-all" class="browser-toolbox-icon-button" type="button"
-                data-i18n-aria-label="toolExpandAll" data-i18n-title="toolExpandAll"><span id="json-expand-all-icon" aria-hidden="true"></span></button>
-            </div>
-            <div id="json-result-tree" class="browser-toolbox-json-tree" tabindex="0"></div>
-          </div>
-          <div id="diff-result-panel" class="browser-toolbox-diff-result" hidden>
-            <div class="browser-toolbox-diff-heading">
-              <h3 data-i18n="toolDiffPanel">Differences</h3>
-              <span id="diff-summary" class="browser-toolbox-diff-summary"></span>
-            </div>
-            <div id="diff-result-list" class="browser-toolbox-diff-list" role="list"></div>
-          </div>
-          <pre id="tool-output" class="browser-toolbox-tool-output" tabindex="0"></pre>
-          <dl id="tool-metadata" class="browser-toolbox-tool-metadata"></dl>
-        </section>
         <div id="codec-results" hidden>
           <section id="codec-encode-result" class="browser-toolbox-codec-result" aria-labelledby="codec-encode-title">
             <div class="browser-toolbox-codec-pane-heading">
@@ -170,14 +130,6 @@
                 accept=".txt,.json,.xml,.css,.js,.mjs,.cjs,.java,.csv,.tsv,text/*,application/json,application/xml">
             </div>
           </div>
-          <div id="json-tool-summary" class="browser-toolbox-json-summary" hidden>
-            <span id="json-cursor-summary"></span>
-            <span id="json-character-summary"></span>
-            <span id="json-length-summary"></span>
-            <span id="json-type-summary"></span>
-            <span id="json-depth-summary"></span>
-          </div>
-          <span class="browser-toolbox-json-responsive-hint" data-i18n="toolJsonResponsiveHint">窄屏时标题换行，工具栏可横向滚动</span>
         </div>
         <div id="codec-statusbar" class="browser-toolbox-codec-statusbar" hidden>
           <div class="browser-toolbox-codec-counts">
@@ -187,5 +139,29 @@
         </div>
       </section>
     </main>
+    <template id="tool-workbench-template">
+      <main class="tool-workbench" data-tool-page="true">
+        <header class="workbench-header">
+          <nav class="workbench-breadcrumb" data-i18n-aria-label="toolWorkbenchNavigation">
+            <span data-i18n="browserToolbox"></span>
+            <span class="workbench-slash" aria-hidden="true">/</span>
+            <a href="../mouse_options.html#toolsOverview" data-i18n="allTools"></a>
+            <span class="workbench-slash" aria-hidden="true">/</span>
+            <h1 id="tool-title"></h1>
+          </nav>
+          <div class="workbench-header-actions">
+            <span data-i18n="toolCodecLocalOnly"></span>
+          </div>
+        </header>
+        <div class="workbench-toolbar" id="tool-controls" hidden></div>
+        <div class="workbench-board" id="tool-workspace">
+          <div class="workbench-foot">
+            <p id="tool-status" role="status"></p>
+            <div class="workbench-stats"></div>
+          </div>
+        </div>
+        <p class="workbench-toast" role="status"></p>
+      </main>
+    </template>
   </body>
 </html>

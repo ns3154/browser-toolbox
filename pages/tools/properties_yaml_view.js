@@ -1,231 +1,198 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-// 配置页复用共享输入、文件和结果控件，布局与 JSON 工作台保持一致。
-(function () {
-  function create({ message, icon, onDirectionChange, onSwap, onIndentChange }) {
-    const byId = (id) => document.getElementById(id);
-    const element = (tag, className = "", text = "") => {
-      const node = document.createElement(tag);
-      node.className = className;
-      node.textContent = text;
-      return node;
-    };
-    let direction = "propertiesToYaml";
-    const heading = document.querySelector(".browser-toolbox-tool-heading");
-    const divider = element("span", "config-brand-divider");
-    divider.setAttribute("aria-hidden", "true");
-    heading.replaceChildren(
-      byId("tool-icon"),
-      document.querySelector(".browser-toolbox-eyebrow"),
-      divider,
-      byId("tool-title"),
+import {
+  action,
+  assertSize,
+  codeResult,
+  divider,
+  group,
+  inputPane,
+  liveResult,
+  mountPanes,
+  node,
+  panel,
+  restoreButton,
+  resultActions,
+  segments,
+  selectControl,
+  t,
+} from "./workbench_view.js";
+
+function highlightConfig(target, source, properties) {
+  const fragment = document.createDocumentFragment();
+  const entry = properties
+    ? /^(\s*)((?:\\.|[^=:\s\\])+)([ \t]*(?:[=:][ \t]*|[ \t]+))(.*)$/
+    : /^(\s*(?:-\s+)?)(.*?)(:\s+|:$)(.*)$/;
+  source.split(/\r\n|\r|\n/).forEach((line, index) => {
+    if (index) fragment.append("\n");
+    if ((properties ? /^\s*[#!]/ : /^\s*#/).test(line)) {
+      fragment.append(node("span", "token-comment", line));
+      return;
+    }
+    const match = entry.exec(line);
+    if (!match) {
+      fragment.append(line);
+      return;
+    }
+    const [, space, key, separator, value] = match;
+    fragment.append(
+      space,
+      node("span", "token-key", key),
+      node("span", "token-punctuation", separator),
+      properties || /^["']/.test(value) ? node("span", "token-string", value) : value,
     );
-    const input = byId("tool-input");
-    const controls = byId("tool-controls");
-    const directions = element("div", "config-directions");
-    directions.setAttribute("role", "group");
-    directions.setAttribute("aria-label", message("toolConfigDirection"));
-    const directionButtons = new Map();
-    for (
-      const [value, label] of [
-        ["propertiesToYaml", "Properties → YAML"],
-        ["yamlToProperties", "YAML → Properties"],
-      ]
-    ) {
-      const button = element("button", "config-direction", label);
-      button.type = "button";
-      button.dataset.direction = value;
-      button.addEventListener("click", () => {
-        if (direction === value) return;
-        setDirection(value);
-        onDirectionChange();
-      });
-      directionButtons.set(value, button);
-      directions.append(button);
-    }
-    const swap = element("button", "browser-toolbox-icon-button config-text-button");
-    swap.type = "button";
-    swap.id = "config-swap";
-    swap.title = message("toolConfigSwapHint");
-    swap.append(icon("swap"), element("span", "", message("toolConfigSwap")));
-    swap.addEventListener("click", onSwap);
-    controls.replaceChildren(directions, swap);
-    byId("tool-run").textContent = message("toolConvert");
-    byId("tool-restore").hidden = true;
+  });
+  target.append(fragment);
+}
 
-    const inputPanel = element("section", "config-input-panel");
-    inputPanel.setAttribute("aria-labelledby", "tool-input-title");
-    const inputHeading = element("div", "config-panel-heading");
-    const inputLabel = element("div", "config-panel-label");
-    const inputKind = element("span", "config-kind", message("toolInput"));
-    inputKind.id = "config-input-kind";
-    inputLabel.append(byId("tool-input-title"), inputKind);
-    const filePicker = document.querySelector(".browser-toolbox-tool-file");
-    byId("tool-file-trigger").replaceChildren(
-      icon("document"),
-      element("span", "", message("toolFileChoose")),
-    );
-    byId("tool-file").accept = ".properties,.yaml,.yml,.txt,text/plain,application/yaml,text/yaml";
-    byId("tool-file-name").hidden = true;
-    inputHeading.append(inputLabel, filePicker);
-    const inputGrid = document.querySelector(".browser-toolbox-tool-input-grid");
-    inputGrid.before(inputPanel);
-    inputPanel.append(inputHeading, inputGrid);
-    input.setAttribute("aria-labelledby", "tool-input-title config-input-kind");
-    input.setAttribute("wrap", "off");
+export function mountConfig(ctx) {
+  const direction = segments(
+    "config-direction",
+    t("toolConfigDirection"),
+    [
+      ["propertiesToYaml", t("toolConfigForward")],
+      ["yamlToProperties", t("toolConfigReverse")],
+    ],
+    "propertiesToYaml",
+    () => {
+      updateDirection();
+      refresh();
+    },
+  );
+  const toYaml = () => direction.value === "propertiesToYaml";
+  const indent = selectControl(
+    t("toolIndent"),
+    [
+      ["2", t("toolIndent2")],
+      ["4", t("toolIndent4")],
+    ],
+    "2",
+    "config-indent",
+  );
+  indent.addEventListener("change", () => refresh());
+  ctx.toolbar.append(
+    group(t("toolConfigDirection"), direction.element),
+    divider(),
+    group(t("toolIndent"), indent),
+    node("span", "workbench-toolbar-note", t("toolConfigShortHint")),
+  );
 
-    const resultHeading = document.querySelector(".browser-toolbox-result-heading");
-    const resultLabel = element("div", "config-panel-label");
-    resultLabel.append(
-      byId("tool-output-title"),
-      element("span", "config-kind", message("toolOutput")),
-    );
-    const resultActions = element("div", "config-result-actions");
-    const indent = element("select", "config-indent");
-    indent.id = "config-indent";
-    indent.setAttribute("aria-label", message("toolIndent"));
-    for (const size of [2, 4]) {
-      const option = element("option", "", message(`toolIndent${size}`));
-      option.value = String(size);
-      indent.append(option);
-    }
-    indent.addEventListener("change", onIndentChange);
-    for (
-      const [id, iconName, labelKey] of [
-        ["tool-copy", "copy", "toolConfigCopy"],
-        ["tool-download", "download", "toolDownloadShort"],
-      ]
-    ) {
-      const button = byId(id);
-      button.classList.add("config-text-button");
-      button.replaceChildren(icon(iconName), element("span", "", message(labelKey)));
-      resultActions.append(button);
-    }
-    resultActions.prepend(indent);
-    resultHeading.replaceChildren(resultLabel, resultActions);
-    const outputEditor = element("div", "config-output-editor");
-    const outputLines = element("div", "config-output-lines");
-    outputLines.setAttribute("aria-hidden", "true");
-    const output = byId("tool-output");
-    output.setAttribute("aria-labelledby", "tool-output-title");
-    output.dataset.placeholder = message("toolConfigOutputHint");
-    output.before(outputEditor);
-    outputEditor.append(outputLines, output);
-    output.addEventListener("scroll", () => {
-      outputLines.scrollTop = output.scrollTop;
-    });
-    const summary = element("span", "config-summary");
-    summary.id = "config-summary";
-    const note = element("p", "config-note", message("toolConfigSemantics"));
-    const footer = document.querySelector(".browser-toolbox-tool-footer");
-    footer.append(summary, note);
-
-    function renderCode(target, text, format) {
-      target.replaceChildren();
-      if (text.length > 80000) {
-        target.textContent = text;
-        return;
+  let filename = "";
+  const input = inputPane(ctx, {
+    title: t("toolInput"),
+    highlight: (target, source) => highlightConfig(target, source, toYaml()),
+    accept: ".properties,.yaml,.yml,.txt,text/plain,application/yaml,text/yaml",
+    async readFile(file) {
+      try {
+        return new TextDecoder("utf-8", { fatal: true }).decode(await file.arrayBuffer());
+      } catch (_) {
+        throw Object.assign(new Error(), { messageKey: "toolConfigEncoding" });
       }
-      const fragment = document.createDocumentFragment();
-      const sourceLines = text.replace(/\r\n|\r/g, "\n").split("\n");
-      sourceLines.forEach((line, index) => {
-        if (index) fragment.append(document.createTextNode("\n"));
-        if (/^\s*[#!]/.test(line)) fragment.append(element("span", "config-token-comment", line));
-        else {
-          const match = format === "properties"
-            ? /^(\s*)(.*?)([=:])(.*)$/.exec(line)
-            : /^(\s*(?:-\s+)?)(.*?)(:\s+|:$)(.*)$/.exec(line);
-          if (match) {
-            fragment.append(
-              document.createTextNode(match[1]),
-              element("span", "config-token-key", match[2]),
-              document.createTextNode(match[3]),
-              element("span", "config-token-value", match[4]),
-            );
-          } else fragment.append(document.createTextNode(line));
-        }
-      });
-      target.append(fragment);
-    }
+    },
+    onFile(file) {
+      if (/\.ya?ml$/i.test(file.name)) direction.set("yamlToProperties");
+      else if (/\.properties$/i.test(file.name)) direction.set("propertiesToYaml");
+      filename = file.name;
+      updateDirection();
+    },
+  });
+  let output = "";
+  const swap = action("toolConfigRefill", {
+    id: "config-swap",
+    glyph: "swap",
+    run: () => {
+      direction.set(toYaml() ? "yamlToProperties" : "propertiesToYaml");
+      updateDirection();
+      input.set(output);
+      refresh();
+    },
+  });
+  swap.disabled = true;
+  const resultButtons = resultActions(ctx, {
+    download: () => {
+      const base = filename.replace(/\.[^.]+$/, "").replace(/[\\/:*?"<>|]/g, "_") || "application";
+      return toYaml()
+        ? { name: `${base}.yaml`, mime: "application/yaml;charset=utf-8" }
+        : { name: `${base}.properties` };
+    },
+  });
+  const result = panel(t("toolConversionResult"), {
+    id: "tool-result-workspace",
+    result: true,
+    actions: [swap, ...resultButtons.buttons],
+  });
+  const code = codeResult(result.heading.id);
+  result.element.append(code.element);
+  mountPanes(ctx, input, result);
 
-    function updateInput() {
-      const highlight = byId("json-input-highlight");
-      const gutter = byId("json-input-line-numbers");
-      const count = input.value.length > 80000
-        ? 0
-        : input.value.replace(/\r\n|\r/g, "\n").split("\n").length;
-      const plain = input.value.length > 80000 || count > 5000;
-      input.classList.toggle("config-plain-input", plain);
-      if (plain) {
-        highlight.textContent = "";
-        gutter.textContent = "";
-        return;
-      }
-      gutter.textContent = Array.from({ length: count }, (_, index) => index + 1).join("\n");
-      renderCode(
-        highlight,
-        input.value + (input.value.endsWith("\n") ? " " : ""),
-        direction === "propertiesToYaml" ? "properties" : "yaml",
-      );
-      syncScroll();
-    }
-
-    function syncScroll() {
-      byId("json-input-highlight").scrollTop = input.scrollTop;
-      byId("json-input-highlight").scrollLeft = input.scrollLeft;
-      byId("json-input-line-numbers").scrollTop = input.scrollTop;
-    }
-    input.addEventListener("scroll", syncScroll);
-
-    function setDirection(value) {
-      direction = value;
-      for (const [key, button] of directionButtons) {
-        button.setAttribute("aria-pressed", String(key === value));
-      }
-      const toYaml = value === "propertiesToYaml";
-      byId("tool-input-title").textContent = toYaml ? "Properties" : "YAML";
-      byId("tool-output-title").textContent = toYaml ? "YAML" : "Properties";
-      input.placeholder = message(toYaml ? "toolConfigPropertiesHint" : "toolConfigYamlHint");
-      indent.hidden = !toYaml;
-      updateInput();
-    }
-
-    function clear() {
-      output.replaceChildren();
-      outputLines.textContent = "";
-      summary.textContent = "";
-      swap.disabled = true;
-      byId("tool-copy").disabled = true;
-      byId("tool-download").disabled = true;
-    }
-
-    function applyResult(result) {
-      const value = result.output.replace(/\n$/, "");
-      renderCode(output, value, result.extension);
-      outputLines.textContent = Array.from({ length: result.metadata.outputLines }, (_, i) => i + 1)
-        .join("\n");
-      summary.textContent = message("toolConfigLineSummary")
-        .replace("{input}", result.metadata.inputLines).replace(
-          "{output}",
-          result.metadata.outputLines,
-        );
-      swap.disabled = !result.output;
-      byId("tool-copy").disabled = !result.output;
-      byId("tool-download").disabled = !result.output;
-    }
-
-    setDirection(direction);
-    clear();
-    return {
-      options: () => ({ direction, indent: Number(indent.value) }),
-      setDirection,
-      updateInput,
-      clear,
-      applyResult,
-      selectFile: (name) => {
-        if (/\.ya?ml$/i.test(name)) setDirection("yamlToProperties");
-        else if (/\.properties$/i.test(name)) setDirection("propertiesToYaml");
-      },
-    };
+  function updateDirection() {
+    input.detail.textContent = toYaml() ? t("toolConfigNameProperties") : t("toolConfigNameYaml");
+    result.detail.textContent = toYaml() ? t("toolConfigNameYaml") : t("toolConfigNameProperties");
+    input.input.placeholder = t(toYaml() ? "toolConfigPropertiesHint" : "toolConfigYamlHint");
+    indent.disabled = !toYaml();
+    input.redraw();
   }
-  globalThis.BrowserToolboxPropertiesYamlView = Object.freeze({ create });
-})();
+
+  const refresh = liveResult(() => {
+    const value = input.input.value;
+    assertSize(ctx, value);
+    if (!value.trim()) return null;
+    return ctx.implementation.run({
+      input: value,
+      options: { direction: direction.value, indent: Number(indent.value) },
+    });
+  }, (converted) => {
+    output = converted?.output ?? "";
+    code.set(
+      output.replace(/\n$/, ""),
+      (target, source) => highlightConfig(target, source, !toYaml()),
+    );
+    swap.disabled = !output;
+    resultButtons.set(output);
+    const metadata = converted?.metadata;
+    ctx.status(
+      metadata
+        ? t("toolConfigStats", { count: metadata.count, comments: metadata.commentLines })
+        : "",
+      {
+        ok: Boolean(metadata),
+      },
+    );
+    ctx.stats(
+      "UTF-8",
+      metadata &&
+        t("toolConfigLineSummary", { input: metadata.inputLines, output: metadata.outputLines }),
+    );
+  }, (error) => {
+    code.set("");
+    const detail = t(error.messageKey || "toolConfigYamlSyntax");
+    ctx.status(
+      error.line
+        ? t("toolConfigErrorLocation", {
+          line: error.line,
+          column: error.column || 1,
+          message: detail,
+        })
+        : detail,
+      { error: true },
+    );
+    ctx.stats("UTF-8");
+  }, () => {
+    swap.disabled = true;
+    resultButtons.set("");
+  });
+  input.input.addEventListener("input", () => refresh(150));
+  restoreButton(() => {
+    filename = "";
+    direction.set("propertiesToYaml");
+    updateDirection();
+    input.set([
+      `# ${t("toolConfigExampleComment")}`,
+      "server.port=8080",
+      "spring.application.name=browser-toolbox",
+      "logging.level.root=INFO",
+      "features.local-only=true",
+    ].join("\n"));
+  });
+  updateDirection();
+  return { input, refresh };
+}

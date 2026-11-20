@@ -35,6 +35,11 @@
   --bt-scrim: rgba(15, 30, 22, 0.45);
 }
 
+:root {
+  --bt-code-key: #215574;
+  --bt-code-literal: #5945a1;
+}
+
 :root[data-bt-theme="cobalt"] {
   color-scheme: light dark;
   --bt-bg: #f6f8fc;
@@ -135,6 +140,11 @@
 }
 
 @media (prefers-color-scheme: dark) {
+  :root {
+    --bt-code-key: #a4cef2;
+    --bt-code-literal: #c8b9fb;
+  }
+
   :root,
   :root[data-bt-theme="sage-mist"] {
     --bt-bg: #0c120f;

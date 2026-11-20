@@ -1029,7 +1029,7 @@
     "message": "configuración Spring aplicación"
   },
   "toolConfigDirection": {
-    "message": "Dirección de conversión"
+    "message": "Dirección"
   },
   "toolConfigSwap": {
     "message": "Intercambiar"
@@ -1143,7 +1143,7 @@
     "message": "Definición de marca de tiempo Unix"
   },
   "toolTimeCurrentLocal": {
-    "message": "Hora local actual:"
+    "message": "Hora local actual"
   },
   "toolTimeCurrentUnix": {
     "message": "Marca de tiempo Unix actual:"
@@ -1161,7 +1161,7 @@
     "message": "Hora local a marca de tiempo Unix"
   },
   "toolTimeFiletime": {
-    "message": "Conversión de Windows FILETIME"
+    "message": "Windows FILETIME"
   },
   "toolTimeWorldClock": {
     "message": "Reloj mundial"
@@ -1419,10 +1419,10 @@
     "message": "Longitud"
   },
   "toolJsonObject": {
-    "message": "Objeto JSON"
+    "message": "Objeto"
   },
   "toolJsonArray": {
-    "message": "Matriz JSON"
+    "message": "Matriz"
   },
   "toolJsonValue": {
     "message": "Valor JSON"
@@ -1434,7 +1434,7 @@
     "message": "En pantallas estrechas, el título se ajusta y la barra se desplaza horizontalmente"
   },
   "toolTimezone": {
-    "message": "Zona horaria"
+    "message": "Zona horaria de destino"
   },
   "toolIndent2": {
     "message": "2 espacios"
@@ -1545,13 +1545,13 @@
     "message": "ID de estilo NanoID"
   },
   "toolCount1": {
-    "message": "1 valor"
+    "message": "1"
   },
   "toolCount5": {
-    "message": "5 valores"
+    "message": "5"
   },
   "toolCount10": {
-    "message": "10 valores"
+    "message": "10"
   },
   "toolLength12": {
     "message": "12 caracteres"
@@ -1716,7 +1716,7 @@
     "message": "Ordenar"
   },
   "toolKeepOrder": {
-    "message": "Original"
+    "message": "Orden original"
   },
   "toolSortAscending": {
     "message": "Ascendente"
@@ -1740,10 +1740,10 @@
     "message": "Expandir nodo"
   },
   "toolCollapseAll": {
-    "message": "Contraer todos los nodos"
+    "message": "Contraer todo"
   },
   "toolExpandAll": {
-    "message": "Expandir todos los nodos"
+    "message": "Expandir todo"
   },
   "toolJsonNoResult": {
     "message": "No hay ningún resultado JSON formateado"
@@ -3660,5 +3660,398 @@
   },
   "keyboardCommandsLink": {
     "message": "Ver todos los comandos"
+  },
+  "toolWorkbenchNavigation": {
+    "message": "Navegación de herramientas"
+  },
+  "toolWorkbenchView": {
+    "message": "Vista"
+  },
+  "toolWorkbenchFileError": {
+    "message": "No se pudo leer este archivo."
+  },
+  "toolWorkbenchInputLimit": {
+    "message": "La entrada supera el límite local de esta herramienta."
+  },
+  "toolWorkbenchLines": {
+    "message": "Líneas: {count}"
+  },
+  "toolConversionResult": {
+    "message": "Resultado de conversión"
+  },
+  "toolCopyAll": {
+    "message": "Copiar todo"
+  },
+  "toolCopyRow": {
+    "message": "Copiar fila"
+  },
+  "toolJsonKeySort": {
+    "message": "Orden de claves"
+  },
+  "toolJsonLiveCheck": {
+    "message": "Validación al pegar"
+  },
+  "toolJsonLiveCheckShort": {
+    "message": "Validación en vivo"
+  },
+  "toolJsonExpandEscaped": {
+    "message": "Expandir escapes"
+  },
+  "toolJsonSource": {
+    "message": "Fuente"
+  },
+  "toolJsonTree": {
+    "message": "Árbol"
+  },
+  "toolJsonTreeLabel": {
+    "message": "Árbol JSON"
+  },
+  "toolJsonFieldCount": {
+    "message": "Campos: {count}"
+  },
+  "toolJsonItemCount": {
+    "message": "Elementos: {count}"
+  },
+  "toolJsonTreeLimited": {
+    "message": "El árbol alcanzó su límite de visualización. Abre Fuente para ver el resultado completo."
+  },
+  "toolJsonCursor": {
+    "message": "Lín. {line}, col. {column}"
+  },
+  "toolJsonCharacterCount": {
+    "message": "{count} caracteres"
+  },
+  "toolJsonStringType": {
+    "message": "Cadena"
+  },
+  "toolJsonNumberType": {
+    "message": "Número"
+  },
+  "toolJsonBooleanType": {
+    "message": "Booleano"
+  },
+  "toolJsonNullType": {
+    "message": "Nulo"
+  },
+  "toolJsonValid": {
+    "message": "JSON válido"
+  },
+  "toolJsonValidDuplicates": {
+    "message": "JSON válido · Claves duplicadas: {count}"
+  },
+  "toolJsonErrorPosition": {
+    "message": "JSON no válido · Línea {line}, columna {column}"
+  },
+  "toolJsonBudget": {
+    "message": "El JSON supera el límite de análisis local."
+  },
+  "toolJsonRepairNone": {
+    "message": "No se encontraron errores de codificación reparables."
+  },
+  "toolConfigForward": {
+    "message": "Properties → YAML"
+  },
+  "toolConfigReverse": {
+    "message": "YAML → Properties"
+  },
+  "toolConfigNameProperties": {
+    "message": "Properties"
+  },
+  "toolConfigNameYaml": {
+    "message": "YAML"
+  },
+  "toolConfigShortHint": {
+    "message": "Los puntos anidan · Se omiten comentarios"
+  },
+  "toolConfigRefill": {
+    "message": "Usar e invertir"
+  },
+  "toolConfigStats": {
+    "message": "Pares analizados: {count} · Líneas con comentarios omitidas: {comments}"
+  },
+  "toolConfigExampleComment": {
+    "message": "Configuración básica de Spring"
+  },
+  "toolTableHint": {
+    "message": "Comillas RFC y campos multilínea"
+  },
+  "toolTableSource": {
+    "message": "Código"
+  },
+  "toolTablePreview": {
+    "message": "Vista de tabla"
+  },
+  "toolTablePreviewLimited": {
+    "message": "La vista muestra {rows} filas de datos y {columns} columnas. Código contiene el resultado completo."
+  },
+  "toolTableDimensions": {
+    "message": "Filas de datos: {rows} · Columnas: {columns}"
+  },
+  "toolTableFormulaCount": {
+    "message": "Prefijos de fórmula detectados: {count}."
+  },
+  "toolTableLimit": {
+    "message": "La tabla supera el límite local de filas o celdas."
+  },
+  "toolTableAfterQuote": {
+    "message": "Tras cerrar comillas debe haber un delimitador o un salto de línea."
+  },
+  "toolTableUnexpectedQuote": {
+    "message": "Un campo sin comillas no puede contener comillas dobles."
+  },
+  "toolTableUnclosedQuote": {
+    "message": "Faltan las comillas de cierre de un campo."
+  },
+  "toolDiffUnified": {
+    "message": "Línea a línea"
+  },
+  "toolDiffSideBySide": {
+    "message": "En paralelo"
+  },
+  "toolDiffOnlyChanges": {
+    "message": "Solo cambios"
+  },
+  "toolDiffSwap": {
+    "message": "Intercambiar"
+  },
+  "toolDiffCollapseInput": {
+    "message": "Ocultar entradas"
+  },
+  "toolDiffExpandInput": {
+    "message": "Mostrar entradas"
+  },
+  "toolDiffOriginal": {
+    "message": "Texto original"
+  },
+  "toolDiffModified": {
+    "message": "Texto modificado"
+  },
+  "toolDiffOldLine": {
+    "message": "Orig."
+  },
+  "toolDiffNewLine": {
+    "message": "Nueva"
+  },
+  "toolDiffContents": {
+    "message": "Contenido de la línea"
+  },
+  "toolDiffCopy": {
+    "message": "Copiar diferencias"
+  },
+  "toolDiffChanges": {
+    "message": "Bloques de cambios: {count}"
+  },
+  "toolDiffAdded": {
+    "message": "+{count} añadidas"
+  },
+  "toolDiffRemoved": {
+    "message": "−{count} eliminadas"
+  },
+  "toolDiffStats": {
+    "message": "Original: {left} · Modificado: {right} · Líneas de salida: {count}"
+  },
+  "toolDiffMethod": {
+    "message": "LCS línea a línea"
+  },
+  "toolDiffLineLimit": {
+    "message": "La comparación admite hasta {max} líneas por lado."
+  },
+  "toolTimeUnixSeconds": {
+    "message": "Unix s"
+  },
+  "toolTimeUnixMillis": {
+    "message": "Unix ms"
+  },
+  "toolTimeClickCopy": {
+    "message": "Haz clic en un valor para copiarlo"
+  },
+  "toolTimeInput": {
+    "message": "Fecha de entrada"
+  },
+  "toolTimeAuto": {
+    "message": "Automático"
+  },
+  "toolTimeAutoHint": {
+    "message": "Detectar formato"
+  },
+  "toolTimeParseMode": {
+    "message": "Formato de entrada"
+  },
+  "toolTimeValueLabel": {
+    "message": "Valor (marca de tiempo / fecha / FILETIME)"
+  },
+  "toolTimeInputHint": {
+    "message": "Admite Unix de 10/13 dígitos, ISO 8601, fechas locales y Windows FILETIME."
+  },
+  "toolTimeFillNow": {
+    "message": "Usar hora actual"
+  },
+  "toolTimeAllFormats": {
+    "message": "Formatos simultáneos"
+  },
+  "toolTimeIsoUtc": {
+    "message": "ISO 8601 (UTC)"
+  },
+  "toolTimeUtcHint": {
+    "message": "Huso UTC cero"
+  },
+  "toolTimeTargetValue": {
+    "message": "Hora en la zona de destino"
+  },
+  "toolTimeSystemZone": {
+    "message": "Zona horaria del sistema"
+  },
+  "toolTimeSecondsValue": {
+    "message": "Marca Unix (s)"
+  },
+  "toolTimeMillisValue": {
+    "message": "Marca Unix (ms)"
+  },
+  "toolTimeSecondsHint": {
+    "message": "Segundos"
+  },
+  "toolTimeMillisHint": {
+    "message": "Milisegundos"
+  },
+  "toolTimeFiletimeHint": {
+    "message": "Desde 1601 · Unidades de 100 ns"
+  },
+  "toolTimeInputWorld": {
+    "message": "Hora de entrada en el mundo"
+  },
+  "toolTimeSameOffset": {
+    "message": "La zona de destino tiene el mismo desfase que la local"
+  },
+  "toolTimeAhead": {
+    "message": "La zona de destino está {offset} por delante de la local"
+  },
+  "toolTimeBehind": {
+    "message": "La zona de destino está {offset} por detrás de la local"
+  },
+  "toolTimeParsedSeconds": {
+    "message": "Interpretado como segundos Unix"
+  },
+  "toolTimeParsedMillis": {
+    "message": "Interpretado como milisegundos Unix"
+  },
+  "toolTimeParsedFiletime": {
+    "message": "Interpretado como Windows FILETIME"
+  },
+  "toolTimeParsedIso": {
+    "message": "Interpretado como ISO 8601"
+  },
+  "toolTimeParsedLocal": {
+    "message": "Interpretado como fecha y hora locales"
+  },
+  "toolTimeInvalidInput": {
+    "message": "No se pudo interpretar la fecha. Revisa el valor o el formato seleccionado."
+  },
+  "toolTimeIntl": {
+    "message": "Conversión local con Intl"
+  },
+  "toolZoneUtc": {
+    "message": "UTC"
+  },
+  "toolZoneShanghai": {
+    "message": "Shanghái"
+  },
+  "toolZoneNewYork": {
+    "message": "Nueva York"
+  },
+  "toolZoneSanFrancisco": {
+    "message": "San Francisco"
+  },
+  "toolZoneLondon": {
+    "message": "Londres"
+  },
+  "toolZoneTokyo": {
+    "message": "Tokio"
+  },
+  "toolZoneFrankfurt": {
+    "message": "Fráncfort"
+  },
+  "toolZoneSingapore": {
+    "message": "Singapur"
+  },
+  "toolGenerateParameters": {
+    "message": "Ajustes de generación"
+  },
+  "toolGenerateResult": {
+    "message": "Resultados"
+  },
+  "toolIdType": {
+    "message": "Tipo de ID"
+  },
+  "toolIdCount": {
+    "message": "Cantidad"
+  },
+  "toolIdResultCount": {
+    "message": "Cantidad: {count}"
+  },
+  "toolCount20": {
+    "message": "20"
+  },
+  "toolIdUuidDetail": {
+    "message": "36 caracteres · 122 bits aleatorios"
+  },
+  "toolIdUlidDetail": {
+    "message": "26 caracteres ordenables por tiempo"
+  },
+  "toolIdSnowflakeDetail": {
+    "message": "Entero de 64 bits basado en tiempo"
+  },
+  "toolIdNanoidDetail": {
+    "message": "21 caracteres seguros para URL"
+  },
+  "toolIdStats": {
+    "message": "Caracteres: {length} · Bits aleatorios: {bits}"
+  },
+  "toolIdCopyHint": {
+    "message": "Haz clic en una fila para copiarla"
+  },
+  "toolIdRegenerate": {
+    "message": "Volver a generar"
+  },
+  "toolPasswordLength": {
+    "message": "Longitud de contraseña"
+  },
+  "toolPasswordComposition": {
+    "message": "Tipos de caracteres"
+  },
+  "toolPasswordSymbols": {
+    "message": "Incluir símbolos"
+  },
+  "toolPasswordExclusions": {
+    "message": "Se excluyen caracteres similares como 0/O y 1/l/I."
+  },
+  "toolPasswordResultLength": {
+    "message": "Contraseña aleatoria · {count} caracteres"
+  },
+  "toolPasswordRegenerate": {
+    "message": "Generar otro grupo"
+  },
+  "toolPasswordAlternatives": {
+    "message": "Alternativas"
+  },
+  "toolPasswordCopyHint": {
+    "message": "Haz clic en una fila para copiarla"
+  },
+  "toolPasswordEntropy": {
+    "message": "{strength} · ≈ {bits} bits de entropía teórica ({size} caracteres)"
+  },
+  "toolPasswordStrength1": {
+    "message": "Débil"
+  },
+  "toolPasswordStrength2": {
+    "message": "Media"
+  },
+  "toolPasswordStrength3": {
+    "message": "Buena"
+  },
+  "toolPasswordStrength4": {
+    "message": "Fuerte"
+  },
+  "toolPasswordMemoryOnly": {
+    "message": "La extensión conserva las contraseñas solo en la memoria de esta página"
   }
 }

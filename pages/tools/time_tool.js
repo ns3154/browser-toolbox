@@ -195,8 +195,49 @@
     throw new Error("未知的时间转换模式。");
   }
 
+  function parseInput(input, mode = "auto") {
+    const value = String(input).trim();
+    const integer = /^[+-]?(\d+)$/.exec(value);
+    let kind = mode;
+    if (mode === "auto") {
+      const length = integer?.[1].length;
+      if (length === 10) kind = "seconds";
+      else if (length === 13) kind = "milliseconds";
+      else if (length > 13) kind = "filetime";
+      else if (/^\d{4}-\d{2}-\d{2}$|(?:Z|[+-]\d{2}:?\d{2})$/i.test(value)) kind = "iso";
+      else kind = "local";
+    }
+    let milliseconds;
+    let filetime;
+    if (kind === "filetime" && integer) {
+      filetime = BigInt(value);
+      milliseconds = Number((filetime - FILETIME_EPOCH) / 10000n);
+    } else if ((kind === "seconds" || kind === "milliseconds") && /^[+-]?\d+(?:\.\d+)?$/.test(value)) {
+      milliseconds = Number(value) * (kind === "seconds" ? 1000 : 1);
+    } else if (kind === "iso") {
+      // Date.parse 会归一化部分无效月日，先验明日历日期。
+      const parts = /^(\d{4})-(\d{2})-(\d{2})(?:$|[T ])/i.exec(value);
+      if (!parts) throw new Error("ISO 日期无效。");
+      const [, year, month, day] = parts.map(Number);
+      const date = new Date(0);
+      date.setUTCFullYear(year, month - 1, day);
+      if (date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day) throw new Error("ISO 日期无效。");
+      milliseconds = parseIso(value);
+    } else if (kind === "local") {
+      milliseconds = parseLocalDate(value);
+    }
+    const timestamp = new Date(milliseconds).getTime();
+    if (!Number.isFinite(timestamp)) throw new Error("时间无效或超出范围。");
+    return {
+      kind,
+      milliseconds: timestamp,
+      filetime: String(filetime ?? (BigInt(timestamp) * 10000n + FILETIME_EPOCH)),
+    };
+  }
+
   globalThis.BrowserToolboxTimeTool = Object.freeze({
     run,
+    parseInput,
     formatLocalDate,
     formatTimeZone,
   });

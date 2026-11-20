@@ -184,11 +184,7 @@ async function openTool(browser, id, toolId, source = "action") {
     { waitUntil: "load" },
   );
   await page.waitForSelector("[data-tool-page='true']", { timeout: 10000 });
-  await page.waitForFunction(() => {
-    const button = document.querySelector("#tool-run");
-    const status = document.querySelector("#tool-status");
-    return Boolean(button && !button.disabled && status?.textContent.trim());
-  }, { timeout: 10000 });
+  await page.waitForSelector('body[data-tool-ready="true"]', { timeout: 10000 });
   return page;
 }
 
@@ -343,141 +339,323 @@ async function testActionPopup(browser, id, baseUrl) {
   }
 }
 
-async function testToolPages(browser, id) {
-  const page = await openTool(browser, id, "json.format");
+const toolSelector = (name, value) => `[data-segment="${name}"] [data-value="${value}"]`;
+const textIn = (page, selector) => page.$eval(selector, (element) => element.textContent);
+
+async function waitText(page, selector, value) {
+  await page.waitForFunction((query, text) => document.querySelector(query)?.textContent.includes(text), {}, selector, value);
+}
+
+async function recordToolActions(page) {
+  await page.evaluate(() => {
+    const records = { copies: [], downloads: [] };
+    window.__workbenchActions = records;
+    navigator.clipboard.writeText = async (value) => { records.copies.push(value); };
+    HTMLAnchorElement.prototype.click = function () {
+      if (this.download) records.downloads.push({ filename: this.download, local: this.href.startsWith("blob:") });
+    };
+  });
+}
+
+function lastCopy(page) {
+  return page.evaluate(() => window.__workbenchActions.copies.at(-1));
+}
+
+async function uploadToolInput(page, { fileSelector, inputSelector, suffix, text }) {
+  const file = await Deno.makeTempFile({ prefix: "browser-toolbox-tool-input-", suffix });
   try {
-    assert(await page.$("#tool-catalog") === null, "独立工具页不应再次堆叠工具目录。 ");
-    assert(await page.$("#tool-picker") === null, "独立工具页不应显示工具选择器。 ");
-    const toolbar = await page.evaluate(() => {
-      const controls = document.querySelector("#tool-controls");
-      const actions = document.querySelector(".browser-toolbox-tool-actions");
-      const sort = document.querySelector('[data-tool-option="sortOrder"]');
+    await Deno.writeTextFile(file, text);
+    await (await page.$(fileSelector)).uploadFile(file);
+    await page.waitForFunction((query, value) => document.querySelector(query).value === value, {}, inputSelector, text);
+  } finally {
+    await Deno.remove(file);
+  }
+}
+
+async function testWorkbenchGeometry(page, tool) {
+  for (const width of [1440, 1280, 390, 320]) {
+    await page.setViewport({ width, height: 900, deviceScaleFactor: 1 });
+    const geometry = await page.evaluate((wide) => {
+      const group = document.querySelector(".workbench-toolbar");
+      const toolbar = [...group.querySelectorAll("button.workbench-button, .segmented, select, .clock-copy")];
+      const compact = [...document.querySelectorAll(".pane-header button.workbench-button, .pane-header .segmented")];
+      const sizes = (controls) => controls.map((control) => control.getBoundingClientRect())
+        .filter((rect) => rect.width && rect.height);
+      const toolbarBoxes = sizes(toolbar);
+      const clipped = [...document.querySelectorAll(".segmented button, button.workbench-button")]
+        .filter((button) => {
+          const box = button.getBoundingClientRect();
+          if (!box.width || !box.height) return false;
+          const range = document.createRange();
+          range.selectNodeContents(button);
+          return [...range.getClientRects()].some((text) =>
+            text.left < box.left - 1 || text.right > box.right + 1 ||
+            text.top < box.top - 1 || text.bottom > box.bottom + 1
+          );
+        }).map((control) => control.textContent);
       return {
-        controlsWrap: controls && getComputedStyle(controls).flexWrap,
-        controlsOverflow: controls && getComputedStyle(controls).overflowX,
-        controlsDisplay: controls && getComputedStyle(controls).display,
-        headerToolbarDisplay: getComputedStyle(document.querySelector("#tool-header-toolbar")).display,
-        headerToolbarOverflow: getComputedStyle(document.querySelector("#tool-header-toolbar")).overflowX,
-        actionsWrap: actions && getComputedStyle(actions).flexWrap,
-        copyInActions: Boolean(actions?.querySelector("#tool-copy")),
-        copyInResult: Boolean(document.querySelector(".browser-toolbox-result-heading #tool-copy")),
-        localBadge: Boolean(document.querySelector(".browser-toolbox-tools-header .browser-toolbox-local-badge")),
-        back: Boolean(document.querySelector("#tool-back")),
-        settings: Boolean(document.querySelector("#tool-settings")),
-        sortTag: sort?.tagName,
-        sortValues: sort ? [...sort.options].map((option) => option.value) : [],
-        sortLabels: sort ? [...sort.options].map((option) => option.textContent) : [],
+        document: document.documentElement.scrollWidth,
+        body: document.body.scrollWidth,
+        footerClear: [...document.querySelectorAll(".workbench-panes, .diff-list, .json-tree, .table-preview-scroll")]
+          .every((layer) => layer.getBoundingClientRect().bottom <= document.querySelector(".workbench-foot").getBoundingClientRect().top + 1),
+        singleToolbar: !wide || new Set(toolbarBoxes.map(({ top }) => Math.round(top))).size <= 1,
+        toolbarHeight: toolbarBoxes.map(({ height }) => height),
+        compactHeight: sizes(compact).map(({ height }) => height),
+        clipped,
       };
-    });
-    assert(toolbar.controlsWrap === "nowrap" && toolbar.actionsWrap === "nowrap" && toolbar.controlsOverflow === "visible", "宽屏工具栏和操作条应保持单行。 ");
-    assert(toolbar.localBadge && !toolbar.back && !toolbar.settings, "独立工具页顶部只保留品牌、工具标题和本地处理标记。 ");
-    assert(!toolbar.copyInActions && toolbar.copyInResult, "复制按钮应从操作条移到结果区。 ");
-    assert(toolbar.sortTag === "SELECT" && toolbar.sortValues.join(",") === "original,ascending,descending", "排序应使用单独的三态下拉框。 ");
-    assert(toolbar.sortLabels.join("/") === "原始/升序/降序" || toolbar.sortLabels.join("/") === "Original/Ascending/Descending", "排序下拉框文案应简洁明确。 ");
-    const sortMenu = await page.evaluate(() => {
-      const trigger = document.querySelector("#json-sort-trigger");
-      const menu = document.querySelector("#json-sort-menu");
-      const option = menu?.querySelector("[role=option]");
-      if (!trigger || !menu || !option) return null;
-      const triggerStyle = getComputedStyle(trigger);
-      const optionStyle = getComputedStyle(option);
-      return {
-        trigger: trigger.getAttribute("aria-label"),
-        role: menu.getAttribute("role"),
-        options: [...menu.querySelectorAll("[role=option]")].map((item) => item.textContent.replace("✓", "").trim()),
-        matchingStyle: ["fontFamily", "fontSize", "fontWeight", "lineHeight"].every((key) =>
-          triggerStyle[key] === optionStyle[key]
-        ),
-      };
-    });
+    }, width >= 1280);
     assert(
-      sortMenu?.role === "listbox" &&
-        (sortMenu.options.join("/") === "原始/升序/降序" ||
-          sortMenu.options.join("/") === "Original/Ascending/Descending") &&
-        sortMenu.matchingStyle,
-      `排序菜单应使用统一的本地控件样式：${JSON.stringify(sortMenu)}`,
+      geometry.document === width && geometry.body === width &&
+        geometry.singleToolbar && geometry.footerClear && geometry.clipped.length === 0 &&
+        geometry.compactHeight.every((height) => height === 28) &&
+        (width < 1280 || geometry.toolbarHeight.every((height) => height === 32)),
+      `${tool}/${width} 工具页控件和页面尺寸异常：${JSON.stringify(geometry)}`,
     );
-    await clickVisible(page, "#json-sort-trigger");
-    await waitFor(() => page.$eval("#json-sort-trigger", (button) => button.getAttribute("aria-expanded") === "true")
-      .catch(() => false));
-    await page.screenshot({ path: "/tmp/browser-toolbox-json-sort-menu.png", fullPage: false });
-    assert(
-      await page.$eval("#json-sort-menu", (menu) => menu.classList.contains("is-open") && menu.getBoundingClientRect().height > 0),
-      "排序菜单打开后应显示统一样式的选项。 ",
-    );
-    await page.click('#json-sort-menu [data-sort-value="ascending"]');
-    assert(
-      await page.$eval("#json-sort-trigger", (button) =>
-        button.getAttribute("aria-expanded") === "false" && /升序|Ascending/.test(button.textContent)
-      ),
-      "选择排序选项后菜单应收起并更新当前文字。 ",
-    );
-    await clickVisible(page, ".browser-toolbox-json-advanced > summary");
-    await waitFor(() => page.$eval(".browser-toolbox-json-advanced", (details) => details.open).catch(() => false));
-    await page.screenshot({ path: "/tmp/browser-toolbox-json-more-options-open.png", fullPage: false });
-    await page.mouse.click(20, 300);
-    await waitFor(() => page.$eval(".browser-toolbox-json-advanced", (details) => !details.open).catch(() => false));
-    assert(await page.$eval(".browser-toolbox-json-advanced", (details) => !details.open), "点击页面空白处应关闭更多选项。 ");
-    await page.select('[data-tool-option="operation"]', "sort");
-    await page.select('[data-tool-option="sortOrder"]', "ascending");
-    await setTextarea(page, "#tool-input", '{"z":9007199254740993,"a":2,"nested":{"keep":true}}');
-    await waitFor(() => page.$eval("#tool-output", (element) => element.textContent.includes("9007199254740993"))
-      .catch(() => false));
-    assert(await page.$eval("#tool-status", (element) => /自动解析|automatically/i.test(element.textContent)), "JSON 输入变化后应自动解析并更新状态。 ");
-    const output = await page.$eval("#tool-output", (element) => element.textContent);
-    assert(output.indexOf('"a": 2') < output.indexOf('"z": 9007199254740993'), "JSON 工具应稳定排序并保留大整数原文。 ");
-    const tree = await page.evaluate(() => ({
-      text: document.querySelector("#json-result-tree")?.textContent || "",
-      toggles: document.querySelectorAll(".browser-toolbox-json-toggle").length,
-      iconActions: [...document.querySelectorAll(".browser-toolbox-json-node-action")].map((button) => button.getAttribute("aria-label")),
-      keys: [...document.querySelectorAll("#json-result-tree .browser-toolbox-json-key")].map((element) => element.textContent),
-    }));
-    assert(tree.text.includes("9007199254740993") && tree.toggles >= 2, "JSON 结果应以可折叠节点树展示。 ");
-    assert(tree.iconActions.every((label) => label), "JSON 节点操作应通过可访问图标按钮提供。 ");
-    assert(tree.keys.indexOf('"a"') < tree.keys.indexOf('"z"'), "JSON 结果树应与排序下拉框保持一致。 ");
-    assert(await page.$eval("#json-copy-root", (button) => !button.hidden), "JSON 结果区应保留复制图标。 ");
-    await page.setViewport({ width: 390, height: 820, deviceScaleFactor: 1 });
-    const mobileToolbar = await page.$eval("#tool-header-toolbar", (element) => ({
-      display: getComputedStyle(element).display,
-      overflowX: getComputedStyle(element).overflowX,
-      scrollWidth: element.scrollWidth,
-      clientWidth: element.clientWidth,
-      gridAreas: getComputedStyle(element.closest(".browser-toolbox-tools-header")).gridTemplateAreas,
-      toolbarTop: Math.round(element.getBoundingClientRect().top),
-      headingTop: Math.round(element.closest(".browser-toolbox-tools-header").querySelector(".browser-toolbox-tool-heading").getBoundingClientRect().top),
-      badgeTop: Math.round(element.closest(".browser-toolbox-tools-header").querySelector(".browser-toolbox-local-badge").getBoundingClientRect().top),
-    }));
-    assert(
-      mobileToolbar.display === "flex" && mobileToolbar.overflowX === "auto" &&
-        mobileToolbar.scrollWidth > mobileToolbar.clientWidth && mobileToolbar.gridAreas.includes("toolbar toolbar") &&
-        mobileToolbar.toolbarTop > Math.max(mobileToolbar.headingTop, mobileToolbar.badgeTop),
-      `窄屏工具栏应收为两行，控制行可横向浏览：${JSON.stringify(mobileToolbar)}`,
-    );
-    const toggleBefore = await page.$eval(".browser-toolbox-json-toggle", (button) => button.getAttribute("aria-expanded"));
-    await page.$eval(".browser-toolbox-json-toggle", (button) => button.click());
-    await sleep(100);
-    assert(await page.$eval(".browser-toolbox-json-toggle", (button, before) => button.getAttribute("aria-expanded") !== before, toggleBefore), "JSON 节点应支持折叠和展开。 ");
-    await page.$eval(".browser-toolbox-json-toggle", (button) => button.click());
-    await sleep(100);
-    await page.click('.browser-toolbox-json-row[data-json-key="a"] [data-action="delete"]');
-    await waitFor(() => page.$eval("#tool-output", (element) => !element.textContent.includes('"a": 2'))
-      .catch(() => false));
-    assert(await page.$eval("#tool-output", (element) => !element.textContent.includes('"a": 2')), "JSON 删除图标应从结果中移除字段。 ");
-    await page.evaluate(() => {
-      window.__browserToolboxDownload = "";
-      const originalClick = HTMLAnchorElement.prototype.click;
-      HTMLAnchorElement.prototype.click = function () {
-        window.__browserToolboxDownload = this.download;
-        originalClick.call(this);
-      };
-    });
-    await clickVisible(page, "#tool-download");
-    assert(await page.evaluate(() => window.__browserToolboxDownload), "JSON 下载应触发本地链接。 ");
-    assert(await page.evaluate(() => /^browser-toolbox-\d+\.json$/.test(window.__browserToolboxDownload)), "JSON 下载文件名应使用毫秒级时间戳前缀。 ");
+  }
+}
+
+async function withWorkbench(browser, id, tool, test) {
+  const page = await browser.newPage();
+  const errors = [];
+  const externalRequests = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  page.on("console", (message) => {
+    if (message.type() === "error") errors.push(message.text());
+  });
+  page.on("request", (request) => {
+    if (/^https?:/.test(request.url())) externalRequests.push(request.url());
+  });
+  try {
+    await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1 });
+    await page.bringToFront();
+    await page.goto(`chrome-extension://${id}/pages/tools/index.html?tool=${tool}&source=action`);
+    await page.waitForSelector(`body[data-tool-ready="true"][data-tool-id="${tool}"]`);
+    assert(await page.title() === await textIn(page, "h1"), `${tool} 页面标题需匹配工具名称。`);
+    assert(await page.$("#tool-run") === null, `${tool} 不应包含手动提交按钮。`);
+    await recordToolActions(page);
+    await test(page);
+    await testWorkbenchGeometry(page, tool);
+    assert(!errors.length && !externalRequests.length, `${tool} 出现控制台错误或外部请求：${JSON.stringify({ errors, externalRequests })}`);
   } finally {
     await page.close();
   }
+}
 
+async function testWorkbenchPages(browser, id) {
+  await withWorkbench(browser, id, "json.format", async (page) => {
+    await page.click("#tool-restore");
+    await page.waitForSelector("#json-result-tree [data-json-key='app']");
+    assert(await page.$eval(".workbench-breadcrumb a", (link) => link.hash) === "#toolsOverview", "全部工具应指向真实目录。");
+    await setTextarea(page, "#tool-input", '{"z":9007199254740993,"a":"<strong>text</strong>","nested":"{\\"ok\\":true}"}');
+    await page.select("#json-sort", "ascending");
+    await page.select("#json-indent", "4");
+    await waitText(page, "#tool-output", '    "a"');
+    const output = await textIn(page, "#tool-output");
+    assert(output.indexOf('"a"') < output.indexOf('"z"') && output.includes("9007199254740993"), "JSON 键排序及大整数需保真。");
+    assert(await page.$("#json-result-tree strong") === null, "JSON 文字不得变成 HTML。");
+    await page.click("#json-expand-escaped");
+    await page.waitForSelector("#json-result-tree [data-json-key='ok']");
+    await page.click("#json-fold-all");
+    assert(await page.$('#json-result-tree .json-toggle[aria-expanded="true"]') === null, "全部折叠后应关上所有节点。");
+    await page.click("#json-fold-all");
+    await page.waitForSelector("#json-result-tree [data-json-key='ok']");
+    const nested = "#json-result-tree [data-json-key='nested']";
+    await page.hover(nested);
+    await page.click(`${nested} .json-copy-node`);
+    assert(JSON.parse(await lastCopy(page)).ok === true, "复制节点应复制展开后的局部 JSON。");
+    await page.click(toolSelector("json-view", "source"));
+    await page.waitForSelector("#tool-output", { visible: true });
+    await page.click(toolSelector("json-mode", "compact"));
+    await waitText(page, "#tool-output", '{"a":');
+    await page.click("#tool-download");
+    const download = await page.evaluate(() => window.__workbenchActions.downloads.at(-1));
+    assert(download.local && /^browser-toolbox-\d+\.json$/.test(download.filename), "JSON 下载需使用本地 Blob 与时间戳文件名。");
+    await setTextarea(page, "#tool-input", '{\n  "x": "bad\\q"\n}');
+    await page.waitForSelector('#tool-status[data-state="error"]');
+    assert((await textIn(page, "#tool-status")).includes("2") && (await textIn(page, "#tool-status")).includes("13"), "校验应反馈转义错误的真实行列。");
+    assert(await page.$eval("#tool-copy", (button) => button.disabled), "无效 JSON 不允许复制旧结果。");
+    await setTextarea(page, "#tool-input", '{"x":"cafÃ©"}');
+    await page.waitForSelector('#tool-status[data-state="valid"]');
+    page.once("dialog", (dialog) => void dialog.accept());
+    await page.click("#json-repair");
+    await waitText(page, "#tool-output", "café");
+    await page.click(toolSelector("json-view", "tree"));
+    await page.click("#tool-restore");
+    await page.waitForSelector("#json-result-tree [data-json-key='app']");
+    await page.click(".workbench-breadcrumb a");
+    await page.waitForSelector("[data-panel='toolsOverview']:not([hidden]) #browser-tool-directory a");
+    assert(new URL(page.url()).hash === "#toolsOverview", "面包屑应真正打开工具目录。");
+    await page.goBack();
+    await page.waitForSelector('body[data-tool-ready="true"]');
+    await page.click("#tool-restore");
+    await page.waitForSelector("#json-result-tree [data-json-key='app']");
+  });
+
+  await withWorkbench(browser, id, "config.convert", async (page) => {
+    await page.click("#tool-restore");
+    await waitText(page, "#tool-output", 'port: "8080"');
+    assert((await textIn(page, "#tool-status")).includes("4"), "配置转换应统计键值数。");
+    assert((await textIn(page, "#tool-status")).includes("1"), "配置转换应统计跳过的注释。");
+    assert(await page.$(".editor-highlight .token-comment"), "配置输入应显示注释高亮。");
+    await page.select("#config-indent", "4");
+    await waitText(page, "#tool-output", '    port: "8080"');
+    await page.click("#config-swap");
+    await waitText(page, "#tool-output", "server.port=8080");
+    assert(await page.$eval("#config-indent", (control) => control.disabled), "YAML 转 Properties 不应修改空格缩进。");
+    await page.click("#tool-copy");
+    assert((await lastCopy(page)).includes("spring.application.name=browser-toolbox"), "配置复制应使用反向转换的内容。");
+    await page.click("#tool-download");
+    assert(await page.evaluate(() => window.__workbenchActions.downloads.at(-1).filename === "application.properties"), "配置下载应跟随输出格式。");
+    await uploadToolInput(page, {
+      fileSelector: "#tool-file", inputSelector: "#tool-input", suffix: ".properties", text: "from.file=value",
+    });
+    await waitText(page, "#tool-output", "file: value");
+    assert(await page.$eval("#config-indent", (control) => !control.disabled), "扩展名应切换配置转换方向。");
+    await page.click(toolSelector("config-direction", "yamlToProperties"));
+    await setTextarea(page, "#tool-input", "a: 1\na: 2");
+    await page.waitForSelector('#tool-status[data-state="error"]');
+    assert(await page.$eval("#config-swap", (button) => button.disabled), "转换错误后不能回填旧结果。");
+    await page.click("#tool-restore");
+    await waitText(page, "#tool-output", "server:");
+  });
+
+  await withWorkbench(browser, id, "table.convert", async (page) => {
+    await page.click("#tool-restore");
+    await page.waitForSelector("#table-preview tbody tr");
+    assert(await textIn(page, "#tool-status") === "", "普通表格不应显示安全提示。");
+    await page.click(toolSelector("table-input", "tsv"));
+    assert(await textIn(page, toolSelector("table-output", "Delimited")) === "CSV", "TSV 输入应将互转目标变为 CSV。");
+    await setTextarea(page, "#tool-input", 'name\tnote\n<strong>text</strong>\t"two\nlines"');
+    await page.click(toolSelector("table-output", "Delimited"));
+    await waitText(page, "#table-preview", "two\nlines");
+    assert(await page.$("#table-preview strong") === null, "表格预览必须使用纯文本节点。");
+    await page.click(toolSelector("table-view", "source"));
+    await waitText(page, "#tool-output", 'name,note\n<strong>text</strong>,"two\nlines"');
+    await page.click("#tool-download");
+    assert(await page.evaluate(() => window.__workbenchActions.downloads.at(-1).filename.endsWith(".csv")), "表格下载扩展名需随选择变化。");
+    await setTextarea(page, "#tool-input", "name\tnote\nvalue\t=SUM(A1)");
+    await page.waitForSelector('#tool-status[data-state="warning"]');
+    assert((await textIn(page, "#tool-status")).includes("1"), "表格应报告真实公式计数。");
+    await page.click(toolSelector("table-output", "Mysql"));
+    await waitText(page, "#tool-output", "INSERT INTO");
+    await waitText(page, "#tool-status", "SQL");
+    await page.click("#tool-restore");
+    await page.waitForSelector("#table-preview tbody tr", { visible: true });
+    await page.waitForFunction(() => document.querySelector("#tool-status").textContent === "");
+    assert(await textIn(page, "#tool-status") === "", "切回普通样例应清除安全提示。");
+  });
+
+  await withWorkbench(browser, id, "text.diff", async (page) => {
+    await setTextarea(page, "#tool-input", "same\ntheme = item01");
+    await setTextarea(page, "#tool-input-right", "same\ntheme = item02\nextra");
+    await waitText(page, "#diff-result-list", "item02");
+    const rows = await page.$$eval(".diff-line", (nodes) => nodes.map((row) => ({
+      marker: row.querySelector(".diff-marker").textContent,
+      change: row.querySelector("mark")?.textContent,
+    })));
+    assert(rows.map(({ marker }) => marker).join() === ",−,+,+", "相邻变更应先删后增，未变行不显示符号。");
+    assert(rows[1].change === "1" && rows[2].change === "2", "行内高亮应精确到变化的字符。");
+    await page.click(toolSelector("diff-view", "side"));
+    assert(await page.$(".diff-side-line .diff-remove + .diff-add"), "并排差异应对齐旧行与新行。");
+    await page.click("#diff-only-changes");
+    assert(!(await textIn(page, "#diff-result-list")).includes("same"), "仅看变更应过滤相同行。");
+    await page.click("#tool-copy");
+    assert(await lastCopy(page) === "- theme = item01\n+ theme = item02\n+ extra", "差异复制应匹配筛选和旧新顺序。");
+    await page.click("#diff-fold-input");
+    assert(await page.$eval("#diff-inputs", (element) => element.hidden), "应支持收起输入。");
+    await page.click("#diff-fold-input");
+    await page.click("#diff-swap");
+    await page.waitForFunction(() => document.querySelector("#tool-input").value.endsWith("extra"));
+    await page.click("#tool-input-right-clear");
+    assert(await page.$eval("#tool-input-right", (input) => input.value) === "", "应能清空右侧。");
+    await uploadToolInput(page, {
+      fileSelector: "#tool-file-right", inputSelector: "#tool-input-right", suffix: ".txt", text: "from local file",
+    });
+    await waitText(page, "#diff-result-list", "from local file");
+    const longText = Array.from({ length: 700 }, (_, index) => `line-${index}`).join("\n");
+    await page.click("#diff-only-changes");
+    await setTextarea(page, "#tool-input", longText);
+    await setTextarea(page, "#tool-input-right", `${longText}\nend-of-diff`);
+    await waitText(page, "#diff-result-list", "end-of-diff");
+    assert(await page.$eval("#diff-result-list", (element) => element.scrollHeight > element.clientHeight), "长差异应在结果区内滚动。");
+    await page.click(toolSelector("diff-view", "unified"));
+    await page.click("#tool-restore");
+    await waitText(page, "#diff-result-list", "sage-mist");
+  });
+
+  await withWorkbench(browser, id, "time.convert", async (page) => {
+    await setTextarea(page, "#time-input", "2026-11-20T04:30:00Z");
+    const result = (id) => `[data-time-result="${id}"] code`;
+    const world = '[data-world-zone="America/New_York"] code';
+    await waitText(page, result("iso"), "2026-11-20T04:30:00.000Z");
+    assert((await textIn(page, world)) === "2026-11-19 23:30:00", "全球时区应使用输入时间和当日冬令时。");
+    assert((await textIn(page, result("seconds"))) === "1795149000", "时间格式应同步更新。");
+    await page.click("#time-current-toggle");
+    const paused = await textIn(page, "#time-current-milliseconds");
+    await sleep(1100);
+    assert(paused === await textIn(page, "#time-current-milliseconds"), "独立时钟暂停后应冻结。");
+    await page.click("#time-current-milliseconds");
+    assert(await lastCopy(page) === paused, "参考条中的毫秒值应可直接复制。");
+    await page.click("#time-current-toggle");
+    await page.waitForFunction((last) => document.querySelector("#time-current-milliseconds").textContent !== last, {}, paused);
+    assert((await textIn(page, world)) === "2026-11-19 23:30:00", "参考时钟不应驱动全球时区区块。");
+    await page.click('[data-zone="Asia/Shanghai"]');
+    await waitText(page, result("zone"), "2026-11-20 12:30:00 (UTC+08:00)");
+    await page.click('[data-time-result="iso"]');
+    assert(await lastCopy(page) === "2026-11-20T04:30:00.000Z", "整行点击应复制时间。");
+    await page.click('[data-world-zone="America/New_York"]');
+    assert(await lastCopy(page) === "2026-11-19 23:30:00", "全球时区单元格应可复制。");
+    await page.click("#tool-copy");
+    assert((await lastCopy(page)).split("\n").length === 6, "复制全部应包含六种格式。");
+    await page.click(toolSelector("time-parse", "filetime"));
+    await setTextarea(page, "#time-input", "0");
+    await waitText(page, result("iso"), "1601-01-01T00:00:00.000Z");
+    await page.click("#time-clear");
+    assert(await page.$eval("#tool-copy", (button) => button.disabled), "清空后应禁用结果复制。");
+    await page.click("#time-fill-now");
+    assert(/^\d{13}$/.test(await page.$eval("#time-input", (input) => input.value)), "应按当前时间填入毫秒值。");
+  });
+
+  await withWorkbench(browser, id, "id.generate", async (page) => {
+    assert((await page.$$("#id-values li")).length === 5, "ID 应按设计默认生成 5 个。");
+    await page.click(toolSelector("id-count", "20"));
+    await page.click('input[name="id-kind"][value="nanoid"]');
+    const first = await page.$$eval("#id-values code", (values) => values.map((value) => value.textContent));
+    assert(first.length === 20 && first.every((value) => value.length === 21), "ID 类型和数量应立即生效。");
+    await page.click("#id-values .copy-row");
+    assert(await lastCopy(page) === first[0], "ID 行应复制当前 ID。");
+    await page.click("#tool-regenerate");
+    assert(await textIn(page, "#id-values code") !== first[0], "重新生成应刷新结果。");
+    await page.click("#tool-copy");
+    assert((await lastCopy(page)).split("\n").length === 20, "应能复制全部 ID。");
+  });
+
+  await withWorkbench(browser, id, "password.generate", async (page) => {
+    const code = ".password-main-value code";
+    const sizes = [];
+    for (const length of [12, 20, 32, 64]) {
+      await page.click(toolSelector("password-length", length));
+      assert((await textIn(page, code)).length === length, "主密码应跟随长度即时刷新。");
+      assert(await page.$eval("#password-entropy", (value, size) => Number(value.dataset.bits) === Math.round(size * Math.log2(79)), length),
+        "含符号的理论熵应使用 79 字符集。");
+      sizes.push(await page.$eval(code, (node) => parseFloat(getComputedStyle(node).fontSize)));
+    }
+    assert(sizes[1] > sizes[2] && sizes[2] > sizes[3], "32 位和 64 位密码应逐级缩小字号。");
+    await page.click("#password-symbols");
+    assert(await page.$eval("#password-entropy", (value) =>
+      Number(value.dataset.bits) === Math.round(64 * Math.log2(57)) && Number(value.dataset.charsetSize) === 57),
+    "关闭符号后理论熵应使用 57 字符集。");
+    assert(await page.$eval(code, (value) => !/[0O1lI]/.test(value.textContent) && /^[A-Za-z0-9]+$/.test(value.textContent)), "密码应排除设计要求中的易混淆字符。");
+    assert((await page.$$("#password-alternatives li")).length === 3, "密码应提供三条独立备选。");
+    await page.click("#password-alternatives .copy-row");
+    assert(await lastCopy(page) === await textIn(page, "#password-alternatives code"), "备选密码应整行复制。");
+    const previous = await textIn(page, code);
+    await page.click("#tool-regenerate");
+    assert(await textIn(page, code) !== previous, "换一组应刷新主密码。");
+  });
+}
+
+async function testToolPages(browser, id) {
   const codec = await openTool(browser, id, "codec.transform");
   try {
     await codec.waitForSelector('[data-codec-type="base64"][aria-pressed="true"]', {
@@ -553,30 +731,6 @@ async function testToolPages(browser, id) {
     );
   } finally {
     await codec.close();
-  }
-
-  const diff = await openTool(browser, id, "text.diff");
-  try {
-    await setTextarea(diff, "#tool-input", "same\nold");
-    await setTextarea(diff, "#tool-input-right", "same\nnew");
-    await diff.click("#tool-run");
-    await waitFor(() => diff.$eval("#diff-result-list", (element) => element.textContent.includes("new")));
-    const diffState = await diff.$eval("#diff-result-list", (element) => ({
-      rows: element.querySelectorAll("[role=listitem]").length,
-      height: element.clientHeight,
-      scrollHeight: element.scrollHeight,
-      panel: getComputedStyle(element).overflowY,
-    }));
-    assert(diffState.rows >= 3 && diffState.panel === "auto", "对比差异应固定在独立的底部滚动面板。 ");
-    const longText = Array.from({ length: 700 }, (_, index) => `line-${index}`).join("\n");
-    await setTextarea(diff, "#tool-input", longText);
-    await setTextarea(diff, "#tool-input-right", `${longText}\nextra`);
-    await diff.click("#tool-run");
-    await waitFor(() => diff.$eval("#diff-result-list", (element) => element.scrollHeight > element.clientHeight)
-      .catch(() => false));
-    assert(await diff.$eval("#diff-result-list", (element) => element.scrollHeight > element.clientHeight), "长差异文本应在结果面板内部滚动。 ");
-  } finally {
-    await diff.close();
   }
 
   const invalidToken = await openTool(browser, id, "json.format", "selection");
@@ -866,7 +1020,8 @@ async function main() {
     const id = await extensionId(browser);
     await runStage(browser, "工具设置", () => testSettings(browser, id));
     await runStage(browser, "动作弹窗", () => testActionPopup(browser, id, baseUrl));
-    await runStage(browser, "独立工具页", () => testToolPages(browser, id));
+    await runStage(browser, "七个 V3 工具工作台", () => testWorkbenchPages(browser, id));
+    await runStage(browser, "编码转换与无效令牌", () => testToolPages(browser, id));
     await runStage(browser, "文档格式化器", () => testDocumentFormatter(browser, baseUrl));
     console.log(`快捷工具 E2E 通过：扩展 ${id}，目录、工具页、令牌失败闭环、五种文档格式和无限工具选择。`);
   } finally {

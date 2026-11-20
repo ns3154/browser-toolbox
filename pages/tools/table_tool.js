@@ -3,6 +3,7 @@
   const MAX_ROWS = 100000;
   const MAX_CELLS = 500000;
   const message = (key, fallback) => globalThis.BrowserToolboxI18n?.message?.(key) || fallback;
+  const inputError = (messageKey, text) => Object.assign(new Error(text), { messageKey });
 
   function parseDelimited(source, delimiter) {
     source = String(source).replace(/^\uFEFF/, "");
@@ -15,7 +16,7 @@
     let cellCount = 0;
     const pushRow = () => {
       if (rows.length >= MAX_ROWS || cellCount + row.length > MAX_CELLS) {
-        throw new Error("表格行数或单元格数量超过本地预算。");
+        throw inputError("toolTableLimit", "表格行数或单元格数量超过本地预算。");
       }
       rows.push(row);
       cellCount += row.length;
@@ -50,7 +51,7 @@
           if (source[index + 1] === "\n") index++;
           pushRow();
         } else {
-          throw new Error("表格引号后必须紧跟分隔符或换行。");
+          throw inputError("toolTableAfterQuote", "表格引号后必须紧跟分隔符或换行。");
         }
       } else if (char === '"' && value.length === 0) {
         quoted = true;
@@ -67,12 +68,12 @@
         if (source[index + 1] === "\n") index++;
         pushRow();
       } else if (char === '"') {
-        throw new Error("未加引号的表格字段中不能出现双引号。");
+        throw inputError("toolTableUnexpectedQuote", "未加引号的表格字段中不能出现双引号。");
       } else {
         value += char;
       }
     }
-    if (quoted) throw new Error("表格输入的引号未闭合。");
+    if (quoted) throw inputError("toolTableUnclosedQuote", "表格输入的引号未闭合。");
     if (afterQuote || row.length > 0 || value !== "" || rows.length === 0) {
       row.push(value);
       pushRow();
@@ -116,7 +117,7 @@
     const formulaCells = formulaCellCount(rows);
     return {
       rows: rows.length,
-      columns: rows[0]?.length || 0,
+      columns: rows.reduce((width, row) => Math.max(width, row.length), 0),
       formulaCells,
       ...(formulaCells > 0
         ? {
@@ -163,8 +164,7 @@
     const lines = ["<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "<rows>"];
     for (const row of padded.slice(1)) {
       lines.push("  <row>");
-      headers.forEach((header, index) => {
-        const tag = tags[index];
+      tags.forEach((tag, index) => {
         lines.push(`    <${tag}>${xmlEscape(row[index])}</${tag}>`);
       });
       lines.push("  </row>");
@@ -207,36 +207,30 @@
     return lines.join("\n");
   }
 
-  function run(input, { mode = "csvToMarkdown", delimiter = "," } = {}) {
-    const normalizedInput = String(input).replace(/^\uFEFF/, "");
-    if (mode === "csvToMarkdown" || mode === "tsvToMarkdown") {
-      const actualDelimiter = mode === "tsvToMarkdown" ? "\t" : delimiter;
-      const rows = parseDelimited(normalizedInput, actualDelimiter);
-      return { output: toMarkdown(rows), metadata: metadata(rows) };
-    }
-    if (mode === "csvToTsv" || mode === "tsvToCsv") {
-      const fromDelimiter = mode === "csvToTsv" ? "," : "\t";
-      const rows = parseDelimited(normalizedInput, fromDelimiter);
-      const output = mode === "csvToTsv"
-        ? rows.map((row) => row.map(tsvEscape).join("\t")).join("\n")
-        : rows.map((row) => row.map(csvEscape).join(",")).join("\n");
-      return { output, metadata: metadata(rows) };
-    }
-    if (/^(csv|tsv)To(?:Json|Xml|Mysql|Php)$/.test(mode)) {
-      const sourceKind = mode.startsWith("tsv") ? "tsv" : "csv";
-      const rows = parseDelimited(normalizedInput, sourceKind === "tsv" ? "\t" : ",");
-      const target = mode.slice(mode.indexOf("To") + 2).toLowerCase();
-      const outputs = { json: toJson, xml: toXml, mysql: toMysql, php: toPhp };
-      return {
-        output: outputs[target](rows),
-        metadata: metadata(rows, {
-          warning: target === "mysql"
-            ? message("toolSqlWarning", "SQL 输出是已转义文本；请使用参数化查询。")
-            : undefined,
-        }),
-      };
-    }
-    throw new Error("未知的表格转换模式。");
+  const outputs = {
+    Markdown: toMarkdown,
+    Csv: (rows) => rows.map((row) => row.map(csvEscape).join(",")).join("\n"),
+    Tsv: (rows) => rows.map((row) => row.map(tsvEscape).join("\t")).join("\n"),
+    Json: toJson,
+    Xml: toXml,
+    Mysql: toMysql,
+    Php: toPhp,
+  };
+
+  function run(input, { mode = "csvToMarkdown", delimiter = ",", includePreview = false } = {}) {
+    const match = /^(csv|tsv)To(Markdown|Csv|Tsv|Json|Xml|Mysql|Php)$/.exec(mode);
+    if (!match) throw new Error("未知的表格转换模式。");
+    const [, source, target] = match;
+    if (source === target.toLowerCase()) throw new Error("未知的表格转换模式。");
+    const rows = parseDelimited(input, source === "tsv" ? "\t" : target === "Markdown" ? delimiter : ",");
+    const result = {
+      output: outputs[target](rows),
+      metadata: metadata(rows, target === "Mysql"
+        ? { warning: message("toolSqlWarning", "SQL 输出是已转义文本；请使用参数化查询。") }
+        : {}),
+    };
+    if (includePreview) result.preview = rows.slice(0, 201).map((row) => row.slice(0, 100));
+    return result;
   }
 
   globalThis.BrowserToolboxTableTool = Object.freeze({

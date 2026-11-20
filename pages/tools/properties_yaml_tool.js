@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // 配置转换只在本地运行；路径树使用 Map，避免特殊键改变对象原型。
 import {
+  CST,
   Document,
   isAlias,
   isMap,
   isScalar,
   isSeq,
+  Lexer,
   LineCounter,
   parseDocument,
 } from "../../vendor/yaml.js";
@@ -44,13 +46,18 @@ function unescapeProperty(text, line) {
 function parseProperties(input) {
   const physical = input.replace(/^\uFEFF/, "").split(/\r\n|\r|\n/);
   const entries = [];
+  let commentLines = 0;
   let logical = "";
   let startLine = 1;
   let continued = false;
   for (let i = 0; i < physical.length; i++) {
     const part = physical[i].replace(/^[ \t\f]+/, "");
     if (!continued) {
-      if (!part || /^[#!]/.test(part)) continue;
+      if (!part) continue;
+      if (/^[#!]/.test(part)) {
+        commentLines++;
+        continue;
+      }
       startLine = i + 1;
     }
     const slashCount = part.match(/\\+$/)?.[0].length || 0;
@@ -76,7 +83,7 @@ function parseProperties(input) {
     logical = "";
     continued = false;
   }
-  return entries;
+  return { entries, commentLines };
 }
 
 function parsePath(key, line) {
@@ -109,8 +116,8 @@ function parsePath(key, line) {
 }
 
 function propertiesToYaml(input, indent) {
-  const entries = parseProperties(input);
-  if (!entries.length) return { output: "", count: 0 };
+  const { entries, commentLines } = parseProperties(input);
+  if (!entries.length) return { output: "", count: 0, commentLines };
   let root;
   let nodes = 0;
   const branch = (part, line) => ({
@@ -161,7 +168,18 @@ function propertiesToYaml(input, indent) {
     return result;
   };
   const document = new Document(materialize(root), { version: "1.2" });
-  return { output: document.toString({ indent, lineWidth: 0 }), count: entries.length };
+  return { output: document.toString({ indent, lineWidth: 0 }), count: entries.length, commentLines };
+}
+
+function yamlCommentLines(input) {
+  let count = 0;
+  let scalar = false;
+  for (const token of new Lexer().lex(input)) {
+    // 标量令牌之后是完整的值，其中的 #（包括块标量内容）属于数据。
+    if (!scalar && CST.tokenType(token) === "comment") count++;
+    scalar = token === CST.SCALAR;
+  }
+  return count;
 }
 
 function escapeProperty(text, key = false) {
@@ -178,7 +196,7 @@ function escapeProperty(text, key = false) {
     if (escaped) result += escaped;
     else if ((char === " " && (key || index === 0)) || (key && /[=:#!]/.test(char))) {
       result += `\\${char}`;
-    } else if (/[\x00-\x1f\x7f]/.test(char) || orphanSurrogate) {
+    } else if (code <= 0x1f || code === 0x7f || orphanSurrogate) {
       // 孤立代理项必须写成转义，避免 UTF-8 下载时被替换成其他字符。
       result += `\\u${char.charCodeAt(0).toString(16).padStart(4, "0")}`;
     } else result += char;
@@ -253,7 +271,7 @@ function yamlToProperties(input) {
     output.push(line);
   };
   walk(document.contents, "", 0);
-  return { output: output.join("\n") + "\n", count: output.length };
+  return { output: output.join("\n") + "\n", count: output.length, commentLines: yamlCommentLines(input) };
 }
 
 function lineCount(value) {
@@ -267,7 +285,7 @@ export function run(input, { direction = "propertiesToYaml", indent = 2 } = {}) 
   if (!["propertiesToYaml", "yamlToProperties"].includes(direction)) fail("toolInvalid");
   if (![2, 4].includes(Number(indent))) fail("toolInvalid");
   const result = !input.trim()
-    ? { output: "", count: 0 }
+    ? { output: "", count: 0, commentLines: 0 }
     : direction === "propertiesToYaml"
     ? propertiesToYaml(input, Number(indent))
     : yamlToProperties(input);
@@ -276,6 +294,7 @@ export function run(input, { direction = "propertiesToYaml", indent = 2 } = {}) 
     output: result.output,
     metadata: {
       count: result.count,
+      commentLines: result.commentLines,
       inputLines: lineCount(input),
       outputLines: lineCount(result.output),
     },

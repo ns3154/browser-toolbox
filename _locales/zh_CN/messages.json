@@ -1349,7 +1349,7 @@
     "description": "配置互转工具文案"
   },
   "toolConfigDirection": {
-    "message": "转换方向",
+    "message": "方向",
     "description": "配置互转工具文案"
   },
   "toolConfigSwap": {
@@ -1501,7 +1501,7 @@
     "description": "时间工具分区标题"
   },
   "toolTimeCurrentLocal": {
-    "message": "现在的当地时间为：",
+    "message": "当前当地时间",
     "description": "时间工具标签"
   },
   "toolTimeCurrentUnix": {
@@ -1525,7 +1525,7 @@
     "description": "时间工具分区标题"
   },
   "toolTimeFiletime": {
-    "message": "Windows FILETIME 转换",
+    "message": "Windows FILETIME",
     "description": "时间工具分区标题"
   },
   "toolTimeWorldClock": {
@@ -1869,11 +1869,11 @@
     "description": "JSON 字节长度"
   },
   "toolJsonObject": {
-    "message": "JSON 对象",
+    "message": "对象",
     "description": "JSON 根类型"
   },
   "toolJsonArray": {
-    "message": "JSON 数组",
+    "message": "数组",
     "description": "JSON 根类型"
   },
   "toolJsonValue": {
@@ -1889,19 +1889,19 @@
     "description": "JSON 响应式布局提示"
   },
   "toolTimezone": {
-    "message": "时区",
+    "message": "目标时区",
     "description": "工具时区选项"
   },
   "toolIndent2": {
-    "message": "2 个空格",
+    "message": "2 空格",
     "description": "工具缩进选项"
   },
   "toolIndent4": {
-    "message": "4 个空格",
+    "message": "4 空格",
     "description": "工具缩进选项"
   },
   "toolIndent8": {
-    "message": "8 个空格",
+    "message": "8 空格",
     "description": "工具缩进选项"
   },
   "toolIndentTab": {
@@ -2037,15 +2037,15 @@
     "description": "ID 选项"
   },
   "toolCount1": {
-    "message": "1 个值",
+    "message": "1 个",
     "description": "ID 数量选项"
   },
   "toolCount5": {
-    "message": "5 个值",
+    "message": "5 个",
     "description": "ID 数量选项"
   },
   "toolCount10": {
-    "message": "10 个值",
+    "message": "10 个",
     "description": "ID 数量选项"
   },
   "toolLength12": {
@@ -2265,7 +2265,7 @@
     "description": "格式化器排序选项"
   },
   "toolKeepOrder": {
-    "message": "原始",
+    "message": "保持原序",
     "description": "格式化器顺序选项"
   },
   "toolSortAscending": {
@@ -2297,11 +2297,11 @@
     "description": "展开 JSON 节点"
   },
   "toolCollapseAll": {
-    "message": "折叠全部节点",
+    "message": "全部折叠",
     "description": "折叠全部 JSON 节点"
   },
   "toolExpandAll": {
-    "message": "展开全部节点",
+    "message": "全部展开",
     "description": "展开全部 JSON 节点"
   },
   "toolJsonNoResult": {
@@ -4506,5 +4506,398 @@
   },
   "keyboardCommandsLink": {
     "message": "查看全部命令"
+  },
+  "toolWorkbenchNavigation": {
+    "message": "工具导航"
+  },
+  "toolWorkbenchView": {
+    "message": "视图"
+  },
+  "toolWorkbenchFileError": {
+    "message": "无法读取此文件。"
+  },
+  "toolWorkbenchInputLimit": {
+    "message": "输入超过此工具的本地大小限制。"
+  },
+  "toolWorkbenchLines": {
+    "message": "{count} 行"
+  },
+  "toolConversionResult": {
+    "message": "转换结果"
+  },
+  "toolCopyAll": {
+    "message": "复制全部"
+  },
+  "toolCopyRow": {
+    "message": "复制此行"
+  },
+  "toolJsonKeySort": {
+    "message": "键排序"
+  },
+  "toolJsonLiveCheck": {
+    "message": "粘贴即实时校验"
+  },
+  "toolJsonLiveCheckShort": {
+    "message": "实时校验"
+  },
+  "toolJsonExpandEscaped": {
+    "message": "展开转义"
+  },
+  "toolJsonSource": {
+    "message": "原文"
+  },
+  "toolJsonTree": {
+    "message": "树形"
+  },
+  "toolJsonTreeLabel": {
+    "message": "JSON 树"
+  },
+  "toolJsonFieldCount": {
+    "message": "{count} 个字段"
+  },
+  "toolJsonItemCount": {
+    "message": "{count} 项"
+  },
+  "toolJsonTreeLimited": {
+    "message": "树形预览已达显示上限。切换到原文可查看完整结果。"
+  },
+  "toolJsonCursor": {
+    "message": "行 {line}，列 {column}"
+  },
+  "toolJsonCharacterCount": {
+    "message": "{count} 字符"
+  },
+  "toolJsonStringType": {
+    "message": "字符串"
+  },
+  "toolJsonNumberType": {
+    "message": "数字"
+  },
+  "toolJsonBooleanType": {
+    "message": "布尔值"
+  },
+  "toolJsonNullType": {
+    "message": "空值"
+  },
+  "toolJsonValid": {
+    "message": "JSON 有效"
+  },
+  "toolJsonValidDuplicates": {
+    "message": "JSON 有效 · {count} 个重复键"
+  },
+  "toolJsonErrorPosition": {
+    "message": "JSON 无效 · 第 {line} 行，第 {column} 列"
+  },
+  "toolJsonBudget": {
+    "message": "JSON 超过本地解析上限。"
+  },
+  "toolJsonRepairNone": {
+    "message": "未找到可逆修复的乱码。"
+  },
+  "toolConfigForward": {
+    "message": "Properties → YAML"
+  },
+  "toolConfigReverse": {
+    "message": "YAML → Properties"
+  },
+  "toolConfigNameProperties": {
+    "message": "Properties"
+  },
+  "toolConfigNameYaml": {
+    "message": "YAML"
+  },
+  "toolConfigShortHint": {
+    "message": "点号自动分层 · 转换不保留注释"
+  },
+  "toolConfigRefill": {
+    "message": "回填并反向"
+  },
+  "toolConfigStats": {
+    "message": "已解析 {count} 项键值 · 已略去 {comments} 行注释"
+  },
+  "toolConfigExampleComment": {
+    "message": "Spring 服务基础配置"
+  },
+  "toolTableHint": {
+    "message": "支持 RFC 引号与多行字段"
+  },
+  "toolTableSource": {
+    "message": "源码"
+  },
+  "toolTablePreview": {
+    "message": "表格预览"
+  },
+  "toolTablePreviewLimited": {
+    "message": "预览显示 {rows} 行数据、{columns} 列。源码保留完整结果。"
+  },
+  "toolTableDimensions": {
+    "message": "{rows} 行数据 · {columns} 列"
+  },
+  "toolTableFormulaCount": {
+    "message": "检测到 {count} 个公式前缀。"
+  },
+  "toolTableLimit": {
+    "message": "表格的行数或单元格数超过本地上限。"
+  },
+  "toolTableAfterQuote": {
+    "message": "结束引号后需要分隔符或换行。"
+  },
+  "toolTableUnexpectedQuote": {
+    "message": "未加引号的字段中不能包含双引号。"
+  },
+  "toolTableUnclosedQuote": {
+    "message": "存在未闭合的引号。"
+  },
+  "toolDiffUnified": {
+    "message": "逐行对比"
+  },
+  "toolDiffSideBySide": {
+    "message": "并排对比"
+  },
+  "toolDiffOnlyChanges": {
+    "message": "仅看变更"
+  },
+  "toolDiffSwap": {
+    "message": "交换两侧"
+  },
+  "toolDiffCollapseInput": {
+    "message": "收起输入"
+  },
+  "toolDiffExpandInput": {
+    "message": "展开输入"
+  },
+  "toolDiffOriginal": {
+    "message": "原始文本"
+  },
+  "toolDiffModified": {
+    "message": "修改后文本"
+  },
+  "toolDiffOldLine": {
+    "message": "原行"
+  },
+  "toolDiffNewLine": {
+    "message": "新行"
+  },
+  "toolDiffContents": {
+    "message": "内容对比"
+  },
+  "toolDiffCopy": {
+    "message": "复制差异"
+  },
+  "toolDiffChanges": {
+    "message": "共 {count} 处变更"
+  },
+  "toolDiffAdded": {
+    "message": "+{count} 新增"
+  },
+  "toolDiffRemoved": {
+    "message": "−{count} 删除"
+  },
+  "toolDiffStats": {
+    "message": "原始 {left} 行 · 修改后 {right} 行 · 输出 {count} 行"
+  },
+  "toolDiffMethod": {
+    "message": "逐行 LCS 对比"
+  },
+  "toolDiffLineLimit": {
+    "message": "每侧最多支持 {max} 行文本对比。"
+  },
+  "toolTimeUnixSeconds": {
+    "message": "Unix 秒"
+  },
+  "toolTimeUnixMillis": {
+    "message": "Unix 毫秒"
+  },
+  "toolTimeClickCopy": {
+    "message": "点击数值复制"
+  },
+  "toolTimeInput": {
+    "message": "输入时间"
+  },
+  "toolTimeAuto": {
+    "message": "自动识别"
+  },
+  "toolTimeAutoHint": {
+    "message": "自动识别格式"
+  },
+  "toolTimeParseMode": {
+    "message": "输入解析方式"
+  },
+  "toolTimeValueLabel": {
+    "message": "输入值（时间戳 / 日期 / FILETIME）"
+  },
+  "toolTimeInputHint": {
+    "message": "支持 10/13 位 Unix、ISO 8601、本地日期与 Windows FILETIME。"
+  },
+  "toolTimeFillNow": {
+    "message": "填入当前时间"
+  },
+  "toolTimeAllFormats": {
+    "message": "多格式同步输出"
+  },
+  "toolTimeIsoUtc": {
+    "message": "ISO 8601 (UTC)"
+  },
+  "toolTimeUtcHint": {
+    "message": "标准零时区"
+  },
+  "toolTimeTargetValue": {
+    "message": "目标时区时间"
+  },
+  "toolTimeSystemZone": {
+    "message": "本地系统时区"
+  },
+  "toolTimeSecondsValue": {
+    "message": "Unix 时间戳（秒）"
+  },
+  "toolTimeMillisValue": {
+    "message": "Unix 时间戳（毫秒）"
+  },
+  "toolTimeSecondsHint": {
+    "message": "秒级"
+  },
+  "toolTimeMillisHint": {
+    "message": "毫秒级"
+  },
+  "toolTimeFiletimeHint": {
+    "message": "自 1601 年起 · 100 ns 单位"
+  },
+  "toolTimeInputWorld": {
+    "message": "输入时间对应的全球时区"
+  },
+  "toolTimeSameOffset": {
+    "message": "目标时区与本地无时差"
+  },
+  "toolTimeAhead": {
+    "message": "目标时区比本地早 {offset}"
+  },
+  "toolTimeBehind": {
+    "message": "目标时区比本地晚 {offset}"
+  },
+  "toolTimeParsedSeconds": {
+    "message": "已识别为 Unix 秒时间戳"
+  },
+  "toolTimeParsedMillis": {
+    "message": "已识别为 Unix 毫秒时间戳"
+  },
+  "toolTimeParsedFiletime": {
+    "message": "已识别为 Windows FILETIME"
+  },
+  "toolTimeParsedIso": {
+    "message": "已识别为 ISO 8601"
+  },
+  "toolTimeParsedLocal": {
+    "message": "已识别为本地日期时间"
+  },
+  "toolTimeInvalidInput": {
+    "message": "无法解析此时间。请检查输入值或解析方式。"
+  },
+  "toolTimeIntl": {
+    "message": "本地 Intl 时区换算"
+  },
+  "toolZoneUtc": {
+    "message": "UTC"
+  },
+  "toolZoneShanghai": {
+    "message": "上海"
+  },
+  "toolZoneNewYork": {
+    "message": "纽约"
+  },
+  "toolZoneSanFrancisco": {
+    "message": "旧金山"
+  },
+  "toolZoneLondon": {
+    "message": "伦敦"
+  },
+  "toolZoneTokyo": {
+    "message": "东京"
+  },
+  "toolZoneFrankfurt": {
+    "message": "法兰克福"
+  },
+  "toolZoneSingapore": {
+    "message": "新加坡"
+  },
+  "toolGenerateParameters": {
+    "message": "生成参数"
+  },
+  "toolGenerateResult": {
+    "message": "生成结果"
+  },
+  "toolIdType": {
+    "message": "ID 类型"
+  },
+  "toolIdCount": {
+    "message": "生成数量"
+  },
+  "toolIdResultCount": {
+    "message": "{count} 个"
+  },
+  "toolCount20": {
+    "message": "20 个"
+  },
+  "toolIdUuidDetail": {
+    "message": "36 个字符 · 122 位随机"
+  },
+  "toolIdUlidDetail": {
+    "message": "26 位时间有序编码"
+  },
+  "toolIdSnowflakeDetail": {
+    "message": "64 位时间戳型整数"
+  },
+  "toolIdNanoidDetail": {
+    "message": "21 位 URL 安全短串"
+  },
+  "toolIdStats": {
+    "message": "{length} 字符 · {bits} 位随机"
+  },
+  "toolIdCopyHint": {
+    "message": "点击任意行单独复制"
+  },
+  "toolIdRegenerate": {
+    "message": "重新生成"
+  },
+  "toolPasswordLength": {
+    "message": "密码长度"
+  },
+  "toolPasswordComposition": {
+    "message": "字符组成"
+  },
+  "toolPasswordSymbols": {
+    "message": "包含特殊符号"
+  },
+  "toolPasswordExclusions": {
+    "message": "排除 0/O、1/l/I 等易混淆字符。"
+  },
+  "toolPasswordResultLength": {
+    "message": "{count} 位随机密码"
+  },
+  "toolPasswordRegenerate": {
+    "message": "换一组"
+  },
+  "toolPasswordAlternatives": {
+    "message": "备选密码"
+  },
+  "toolPasswordCopyHint": {
+    "message": "点击任意一行直接复制"
+  },
+  "toolPasswordEntropy": {
+    "message": "{strength} · 约 {bits} 位理论熵（{size} 个字符）"
+  },
+  "toolPasswordStrength1": {
+    "message": "弱"
+  },
+  "toolPasswordStrength2": {
+    "message": "中等"
+  },
+  "toolPasswordStrength3": {
+    "message": "较强"
+  },
+  "toolPasswordStrength4": {
+    "message": "强"
+  },
+  "toolPasswordMemoryOnly": {
+    "message": "扩展仅在当前页面内存中保留密码"
   }
 }

@@ -96,6 +96,34 @@ context("BrowserToolbox local tool implementations", () => {
     const password = BrowserToolboxGeneratorTools.generatePassword({ length: 24, symbols: false });
     assert.equal(24, password.output.length);
     assert.isTrue(/^[0-9A-Za-z]+$/.test(password.output));
+    assert.equal(57, password.metadata.charsetSize);
+    assert.equal(79, BrowserToolboxGeneratorTools.generatePassword({ length: 64 }).metadata.charsetSize);
+    assert.equal(20, BrowserToolboxGeneratorTools.generateId({ count: 20 }).output.split("\n").length);
+  });
+
+  should("自动识别时间格式并保留 FILETIME 精度，手动模式支持纪元与短时间戳", () => {
+    const { parseInput } = BrowserToolboxTimeTool;
+    const seconds = parseInput("1795149000");
+    assert.equal("seconds", seconds.kind);
+    assert.equal(1795149000000, seconds.milliseconds);
+    assert.equal("milliseconds", parseInput("1795149000000").kind);
+    assert.equal("iso", parseInput("2026-11-20T04:30:00Z").kind);
+    assert.equal("local", parseInput("2026-11-20 12:30:00").kind);
+    const precise = BigInt(seconds.filetime) + 5n;
+    assert.equal(String(precise), parseInput(String(precise)).filetime);
+    assert.equal("1601-01-01T00:00:00.000Z", new Date(parseInput("0", "filetime").milliseconds).toISOString());
+    assert.equal(1000, parseInput("1", "seconds").milliseconds);
+    assert.throwsError(() => parseInput("2026-02-30T00:00:00Z"));
+  });
+
+  should("保留 JSON 语法错误的实际行列号", () => {
+    let position;
+    try {
+      BrowserToolboxJsonTool.run(' {\n  "a": "bad\\q"\n}');
+    } catch (error) {
+      position = [error.line, error.column];
+    }
+    assert.equal([2, 13], position);
   });
 
   should("parse quoted tables and expose every implementation through the static loader", () => {
@@ -113,6 +141,10 @@ context("BrowserToolbox local tool implementations", () => {
     assert.equal({ a: "1", a_2: "2" }, JSON.parse(duplicateHeaders.output)[0]);
     const formula = BrowserToolboxTableTool.run("name\n=SUM(A1)", { mode: "csvToTsv" });
     assert.equal(1, formula.metadata.formulaCells);
+    const preview = BrowserToolboxTableTool.run('name\tnote\nA\t"line 1\nline 2"', {
+      mode: "tsvToCsv", includePreview: true,
+    });
+    assert.equal([["name", "note"], ["A", "line 1\nline 2"]], preview.preview);
     let malformed = false;
     try {
       BrowserToolboxTableTool.parseDelimited('name,note\n"bad"x,value', ",");

@@ -1,7 +1,8 @@
 // ID 和密码工具：随机源固定使用 Web Crypto，不记录或上传生成结果。
 (function () {
   const runtime = globalThis.BrowserToolboxToolRuntime;
-  const UUID_HEX = "0123456789abcdef";
+  const PASSWORD_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
+  const PASSWORD_SYMBOLS = "!@#$%^&*()-_=+[]{}:,.?";
 
   function uuid() {
     if (crypto.randomUUID) return crypto.randomUUID();
@@ -72,8 +73,7 @@
 
   function generatePassword({ length = 20, symbols = true } = {}) {
     const safeLength = Math.min(256, Math.max(8, Number(length) || 20));
-    const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789" +
-      (symbols ? "!@#$%^&*()-_=+[]{}:,.?" : "");
+    const alphabet = PASSWORD_ALPHABET + (symbols ? PASSWORD_SYMBOLS : "");
     let output = "";
     const limit = 256 - (256 % alphabet.length);
     while (output.length < safeLength) {
@@ -83,12 +83,13 @@
         if (output.length === safeLength) break;
       }
     }
-    return { output, metadata: { length: safeLength, symbols } };
+    return { output, metadata: { length: safeLength, symbols, charsetSize: alphabet.length } };
   }
 
   globalThis.BrowserToolboxGeneratorTools = Object.freeze({
     generateId,
     generatePassword,
+    PASSWORD_SYMBOLS,
     uuid,
     ulid,
     snowflake,

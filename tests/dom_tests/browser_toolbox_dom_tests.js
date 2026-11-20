@@ -1,3 +1,7 @@
+import { markDiffPair } from "../../pages/tools/diff_workspace.js";
+import { renderTablePreview } from "../../pages/tools/table_workspace.js";
+import { liveResult, segments } from "../../pages/tools/workbench_view.js";
+
 context("BrowserToolbox DOM integration", () => {
   async function loadMarkup(path) {
     const response = await fetch(new URL(path, import.meta.url));
@@ -65,22 +69,55 @@ context("BrowserToolbox DOM integration", () => {
     assert.isTrue(Boolean(commandCenter.querySelector("#command-center-status[role=status]")));
   });
 
-  should("keep each utility on a standalone page with its own result affordances", async () => {
+  should("在独立工作台提供真实的工具目录入口，并保留编码转换双结果", async () => {
     const tools = await loadMarkup("../../pages/tools/index.html");
-    assert.isTrue(Boolean(tools.querySelector("[data-tool-page='true']")));
-    assert.isTrue(tools.querySelector("#tool-back") === null);
-    assert.isTrue(tools.querySelector("#tool-settings") === null);
-    assert.isTrue(Boolean(tools.querySelector(".browser-toolbox-result-heading #tool-copy")));
-    assert.isTrue(tools.querySelector(".browser-toolbox-tool-actions #tool-copy") === null);
-    assert.isTrue(Boolean(tools.querySelector("#json-result-tree")));
-    assert.isTrue(Boolean(tools.querySelector("#diff-result-list")));
-    assert.isTrue(Boolean(tools.querySelector("#codec-output")));
-    assert.isTrue(tools.querySelector("#tool-picker") === null);
-    assert.isTrue(tools.querySelector("#tool-catalog") === null);
-    assert.isTrue(Boolean(tools.querySelector("#tool-input")));
-    assert.isTrue(Boolean(tools.querySelector("#tool-input-right")));
-    assert.isTrue(Boolean(tools.querySelector("#tool-file-trigger")));
-    assert.isTrue(Boolean(tools.querySelector("#tool-file-name")));
+    const template = tools.querySelector("#tool-workbench-template").content;
+    assert.isTrue(Boolean(template.querySelector("[data-tool-page='true']")));
+    assert.equal("../mouse_options.html#toolsOverview", template.querySelector("[data-i18n='allTools']").getAttribute("href"));
+    assert.isTrue(Boolean(template.querySelector(".workbench-foot #tool-status[role='status']")));
+    assert.isTrue(template.querySelector("#tool-run") === null);
+    for (const selector of ["#codec-output", "#codec-decode-output", "#tool-input", "#tool-file-trigger"]) {
+      assert.isTrue(Boolean(tools.querySelector(`main ${selector}`)));
+    }
+  });
+
+  should("更新分段控件的按下状态，只在值改变时执行回调", () => {
+    const values = [];
+    const control = segments("test", "测试", [["left", "左"], ["right", "右"]], "left", (value) => values.push(value));
+    control.buttons.get("left").click();
+    control.buttons.get("right").click();
+    assert.equal(["right"], values);
+    assert.equal("right", control.value);
+    assert.equal("false", control.buttons.get("left").getAttribute("aria-pressed"));
+    assert.equal("true", control.buttons.get("right").getAttribute("aria-pressed"));
+  });
+
+  should("按原文展示表格内容，只用文本和 mark 表示行内差异", () => {
+    const table = document.createElement("div");
+    renderTablePreview(table, [["header"], ["<strong>literal</strong>"]], { rows: 2, columns: 1 });
+    assert.equal("col", table.querySelector("th").scope);
+    assert.equal("<strong>literal</strong>", table.querySelector("td").textContent);
+    assert.isTrue(table.querySelector("strong") === null);
+    const [before, after] = markDiffPair("name = item01 <b>", "name = item02 <b>");
+    assert.equal("1", before.querySelector("mark").textContent);
+    assert.equal("2", after.querySelector("mark").textContent);
+    assert.equal("name = item02 <b>", after.textContent);
+    assert.isTrue(after.querySelector("b") === null);
+  });
+
+  should("忽略旧转换的结果，只把最新一次绘制到界面", async () => {
+    let resolve;
+    let value = 1;
+    const shown = [];
+    const refresh = liveResult(() => value === 1 ? new Promise((finish) => resolve = finish) : value,
+      (result) => shown.push(result), (error) => { throw error; });
+    const first = refresh();
+    await Promise.resolve();
+    value = 2;
+    const second = refresh();
+    resolve(1);
+    await Promise.all([first, second]);
+    assert.equal([2], shown);
   });
 
   should("render formatted source as text without creating executable DOM", () => {

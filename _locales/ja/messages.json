@@ -1029,7 +1029,7 @@
     "message": "設定 Spring アプリケーション"
   },
   "toolConfigDirection": {
-    "message": "変換方向"
+    "message": "方向"
   },
   "toolConfigSwap": {
     "message": "入れ替え"
@@ -1143,7 +1143,7 @@
     "message": "Unix タイムスタンプとは"
   },
   "toolTimeCurrentLocal": {
-    "message": "現在のローカル時刻："
+    "message": "現在の現地時刻"
   },
   "toolTimeCurrentUnix": {
     "message": "現在の Unix タイムスタンプ："
@@ -1161,7 +1161,7 @@
     "message": "ローカル日時から Unix タイムスタンプへ"
   },
   "toolTimeFiletime": {
-    "message": "Windows FILETIME 変換"
+    "message": "Windows FILETIME"
   },
   "toolTimeWorldClock": {
     "message": "世界時計"
@@ -1419,10 +1419,10 @@
     "message": "長さ"
   },
   "toolJsonObject": {
-    "message": "JSON オブジェクト"
+    "message": "オブジェクト"
   },
   "toolJsonArray": {
-    "message": "JSON 配列"
+    "message": "配列"
   },
   "toolJsonValue": {
     "message": "JSON 値"
@@ -1434,16 +1434,16 @@
     "message": "狭い画面ではタイトルが折り返され、ツールバーは横にスクロールできます"
   },
   "toolTimezone": {
-    "message": "タイムゾーン"
+    "message": "変換先タイムゾーン"
   },
   "toolIndent2": {
-    "message": "スペース 2 個"
+    "message": "2 スペース"
   },
   "toolIndent4": {
-    "message": "スペース 4 個"
+    "message": "4 スペース"
   },
   "toolIndent8": {
-    "message": "スペース 8 個"
+    "message": "8 スペース"
   },
   "toolIndentTab": {
     "message": "タブ"
@@ -1740,10 +1740,10 @@
     "message": "ノードを展開"
   },
   "toolCollapseAll": {
-    "message": "すべてのノードを折りたたむ"
+    "message": "すべて折りたたむ"
   },
   "toolExpandAll": {
-    "message": "すべてのノードを展開"
+    "message": "すべて展開"
   },
   "toolJsonNoResult": {
     "message": "整形済みの JSON がありません"
@@ -3660,5 +3660,398 @@
   },
   "keyboardCommandsLink": {
     "message": "すべてのコマンドを表示"
+  },
+  "toolWorkbenchNavigation": {
+    "message": "ツールのナビゲーション"
+  },
+  "toolWorkbenchView": {
+    "message": "表示"
+  },
+  "toolWorkbenchFileError": {
+    "message": "ファイルを読み込めません。"
+  },
+  "toolWorkbenchInputLimit": {
+    "message": "入力がこのツールのローカル上限を超えています。"
+  },
+  "toolWorkbenchLines": {
+    "message": "{count} 行"
+  },
+  "toolConversionResult": {
+    "message": "変換結果"
+  },
+  "toolCopyAll": {
+    "message": "すべてコピー"
+  },
+  "toolCopyRow": {
+    "message": "この行をコピー"
+  },
+  "toolJsonKeySort": {
+    "message": "キーの順序"
+  },
+  "toolJsonLiveCheck": {
+    "message": "貼り付け時に即時検証"
+  },
+  "toolJsonLiveCheckShort": {
+    "message": "即時検証"
+  },
+  "toolJsonExpandEscaped": {
+    "message": "エスケープを展開"
+  },
+  "toolJsonSource": {
+    "message": "ソース"
+  },
+  "toolJsonTree": {
+    "message": "ツリー"
+  },
+  "toolJsonTreeLabel": {
+    "message": "JSON ツリー"
+  },
+  "toolJsonFieldCount": {
+    "message": "{count} フィールド"
+  },
+  "toolJsonItemCount": {
+    "message": "{count} 項目"
+  },
+  "toolJsonTreeLimited": {
+    "message": "ツリーの表示上限に達しました。全体はソースで確認できます。"
+  },
+  "toolJsonCursor": {
+    "message": "{line} 行、{column} 列"
+  },
+  "toolJsonCharacterCount": {
+    "message": "{count} 文字"
+  },
+  "toolJsonStringType": {
+    "message": "文字列"
+  },
+  "toolJsonNumberType": {
+    "message": "数値"
+  },
+  "toolJsonBooleanType": {
+    "message": "真偽値"
+  },
+  "toolJsonNullType": {
+    "message": "null"
+  },
+  "toolJsonValid": {
+    "message": "有効な JSON"
+  },
+  "toolJsonValidDuplicates": {
+    "message": "有効な JSON · 重複キー {count} 個"
+  },
+  "toolJsonErrorPosition": {
+    "message": "無効な JSON · {line} 行、{column} 列"
+  },
+  "toolJsonBudget": {
+    "message": "JSON がローカル解析の上限を超えています。"
+  },
+  "toolJsonRepairNone": {
+    "message": "可逆的に修復できる文字化けは見つかりませんでした。"
+  },
+  "toolConfigForward": {
+    "message": "Properties → YAML"
+  },
+  "toolConfigReverse": {
+    "message": "YAML → Properties"
+  },
+  "toolConfigNameProperties": {
+    "message": "Properties"
+  },
+  "toolConfigNameYaml": {
+    "message": "YAML"
+  },
+  "toolConfigShortHint": {
+    "message": "ドットで階層化 · コメントは省略"
+  },
+  "toolConfigRefill": {
+    "message": "結果を使って反転"
+  },
+  "toolConfigStats": {
+    "message": "解析した項目 {count} 件 · 省略したコメント {comments} 行"
+  },
+  "toolConfigExampleComment": {
+    "message": "Spring サービスの基本設定"
+  },
+  "toolTableHint": {
+    "message": "RFC 形式の引用符と複数行フィールドに対応"
+  },
+  "toolTableSource": {
+    "message": "ソース"
+  },
+  "toolTablePreview": {
+    "message": "表のプレビュー"
+  },
+  "toolTablePreviewLimited": {
+    "message": "プレビューはデータ {rows} 行・{columns} 列まで表示します。全体はソースで確認できます。"
+  },
+  "toolTableDimensions": {
+    "message": "データ {rows} 行 · {columns} 列"
+  },
+  "toolTableFormulaCount": {
+    "message": "数式の接頭辞を {count} 件検出しました。"
+  },
+  "toolTableLimit": {
+    "message": "表の行数またはセル数がローカル上限を超えています。"
+  },
+  "toolTableAfterQuote": {
+    "message": "閉じ引用符の後には区切り文字または改行が必要です。"
+  },
+  "toolTableUnexpectedQuote": {
+    "message": "引用符で囲まれていないフィールドに二重引用符は使えません。"
+  },
+  "toolTableUnclosedQuote": {
+    "message": "フィールドの閉じ引用符がありません。"
+  },
+  "toolDiffUnified": {
+    "message": "行ごとに比較"
+  },
+  "toolDiffSideBySide": {
+    "message": "左右に並べる"
+  },
+  "toolDiffOnlyChanges": {
+    "message": "変更のみ"
+  },
+  "toolDiffSwap": {
+    "message": "左右を入れ替え"
+  },
+  "toolDiffCollapseInput": {
+    "message": "入力欄を閉じる"
+  },
+  "toolDiffExpandInput": {
+    "message": "入力欄を開く"
+  },
+  "toolDiffOriginal": {
+    "message": "元のテキスト"
+  },
+  "toolDiffModified": {
+    "message": "変更後のテキスト"
+  },
+  "toolDiffOldLine": {
+    "message": "元の行"
+  },
+  "toolDiffNewLine": {
+    "message": "新しい行"
+  },
+  "toolDiffContents": {
+    "message": "行の内容"
+  },
+  "toolDiffCopy": {
+    "message": "差分をコピー"
+  },
+  "toolDiffChanges": {
+    "message": "変更 {count} か所"
+  },
+  "toolDiffAdded": {
+    "message": "+{count} 追加"
+  },
+  "toolDiffRemoved": {
+    "message": "−{count} 削除"
+  },
+  "toolDiffStats": {
+    "message": "元 {left} 行 · 変更後 {right} 行 · 出力 {count} 行"
+  },
+  "toolDiffMethod": {
+    "message": "行単位の LCS 比較"
+  },
+  "toolDiffLineLimit": {
+    "message": "片側につき {max} 行まで比較できます。"
+  },
+  "toolTimeUnixSeconds": {
+    "message": "Unix 秒"
+  },
+  "toolTimeUnixMillis": {
+    "message": "Unix ミリ秒"
+  },
+  "toolTimeClickCopy": {
+    "message": "値をクリックしてコピー"
+  },
+  "toolTimeInput": {
+    "message": "入力日時"
+  },
+  "toolTimeAuto": {
+    "message": "自動判定"
+  },
+  "toolTimeAutoHint": {
+    "message": "形式を自動判定"
+  },
+  "toolTimeParseMode": {
+    "message": "入力形式"
+  },
+  "toolTimeValueLabel": {
+    "message": "入力値（タイムスタンプ / 日付 / FILETIME）"
+  },
+  "toolTimeInputHint": {
+    "message": "10 桁・13 桁の Unix、ISO 8601、ローカル日時、Windows FILETIME に対応。"
+  },
+  "toolTimeFillNow": {
+    "message": "現在時刻を入力"
+  },
+  "toolTimeAllFormats": {
+    "message": "複数形式を同時表示"
+  },
+  "toolTimeIsoUtc": {
+    "message": "ISO 8601 (UTC)"
+  },
+  "toolTimeUtcHint": {
+    "message": "UTC オフセット 0"
+  },
+  "toolTimeTargetValue": {
+    "message": "変換先の時刻"
+  },
+  "toolTimeSystemZone": {
+    "message": "システムのタイムゾーン"
+  },
+  "toolTimeSecondsValue": {
+    "message": "Unix タイムスタンプ（秒）"
+  },
+  "toolTimeMillisValue": {
+    "message": "Unix タイムスタンプ（ミリ秒）"
+  },
+  "toolTimeSecondsHint": {
+    "message": "秒単位"
+  },
+  "toolTimeMillisHint": {
+    "message": "ミリ秒単位"
+  },
+  "toolTimeFiletimeHint": {
+    "message": "1601 年起点 · 100 ns 単位"
+  },
+  "toolTimeInputWorld": {
+    "message": "入力日時の各タイムゾーン"
+  },
+  "toolTimeSameOffset": {
+    "message": "変換先とローカルの時差なし"
+  },
+  "toolTimeAhead": {
+    "message": "変換先はローカルより {offset} 進んでいます"
+  },
+  "toolTimeBehind": {
+    "message": "変換先はローカルより {offset} 遅れています"
+  },
+  "toolTimeParsedSeconds": {
+    "message": "Unix 秒として解析"
+  },
+  "toolTimeParsedMillis": {
+    "message": "Unix ミリ秒として解析"
+  },
+  "toolTimeParsedFiletime": {
+    "message": "Windows FILETIME として解析"
+  },
+  "toolTimeParsedIso": {
+    "message": "ISO 8601 として解析"
+  },
+  "toolTimeParsedLocal": {
+    "message": "ローカル日時として解析"
+  },
+  "toolTimeInvalidInput": {
+    "message": "日時を解析できません。入力値または形式を確認してください。"
+  },
+  "toolTimeIntl": {
+    "message": "Intl によるローカル時刻変換"
+  },
+  "toolZoneUtc": {
+    "message": "UTC"
+  },
+  "toolZoneShanghai": {
+    "message": "上海"
+  },
+  "toolZoneNewYork": {
+    "message": "ニューヨーク"
+  },
+  "toolZoneSanFrancisco": {
+    "message": "サンフランシスコ"
+  },
+  "toolZoneLondon": {
+    "message": "ロンドン"
+  },
+  "toolZoneTokyo": {
+    "message": "東京"
+  },
+  "toolZoneFrankfurt": {
+    "message": "フランクフルト"
+  },
+  "toolZoneSingapore": {
+    "message": "シンガポール"
+  },
+  "toolGenerateParameters": {
+    "message": "生成設定"
+  },
+  "toolGenerateResult": {
+    "message": "生成結果"
+  },
+  "toolIdType": {
+    "message": "ID の種類"
+  },
+  "toolIdCount": {
+    "message": "生成数"
+  },
+  "toolIdResultCount": {
+    "message": "{count} 個"
+  },
+  "toolCount20": {
+    "message": "20 個"
+  },
+  "toolIdUuidDetail": {
+    "message": "36 文字 · 乱数 122 ビット"
+  },
+  "toolIdUlidDetail": {
+    "message": "時刻で整列できる 26 文字"
+  },
+  "toolIdSnowflakeDetail": {
+    "message": "時刻ベースの 64 ビット整数"
+  },
+  "toolIdNanoidDetail": {
+    "message": "URL 安全な 21 文字"
+  },
+  "toolIdStats": {
+    "message": "{length} 文字 · 乱数 {bits} ビット"
+  },
+  "toolIdCopyHint": {
+    "message": "行をクリックしてコピー"
+  },
+  "toolIdRegenerate": {
+    "message": "再生成"
+  },
+  "toolPasswordLength": {
+    "message": "パスワードの長さ"
+  },
+  "toolPasswordComposition": {
+    "message": "文字の種類"
+  },
+  "toolPasswordSymbols": {
+    "message": "記号を含める"
+  },
+  "toolPasswordExclusions": {
+    "message": "0/O や 1/l/I など紛らわしい文字を除外します。"
+  },
+  "toolPasswordResultLength": {
+    "message": "{count} 文字のランダムパスワード"
+  },
+  "toolPasswordRegenerate": {
+    "message": "生成し直す"
+  },
+  "toolPasswordAlternatives": {
+    "message": "予備のパスワード"
+  },
+  "toolPasswordCopyHint": {
+    "message": "行をクリックしてコピー"
+  },
+  "toolPasswordEntropy": {
+    "message": "{strength} · 理論エントロピー約 {bits} ビット（{size} 文字種）"
+  },
+  "toolPasswordStrength1": {
+    "message": "弱い"
+  },
+  "toolPasswordStrength2": {
+    "message": "普通"
+  },
+  "toolPasswordStrength3": {
+    "message": "やや強い"
+  },
+  "toolPasswordStrength4": {
+    "message": "強い"
+  },
+  "toolPasswordMemoryOnly": {
+    "message": "パスワードはこのページのメモリ内にのみ保持します"
   }
 }

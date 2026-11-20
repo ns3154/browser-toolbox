@@ -25,6 +25,9 @@ context("BrowserToolbox static tool registry", () => {
     assert.equal("developer", registry.get("config.convert").categoryId);
     assert.equal(["json.format", "text.diff", "codec.transform"], registry.DEFAULT_CONTEXT_MENU_TOOL_IDS);
     assert.equal("password.generate", registry.DEFAULT_ACTION_TOOL_IDS[5]);
+    const count = registry.get("id.generate").controls.find((item) => item.key === "count");
+    assert.equal(["1", "5", "10", "20"], count.options.map(([id]) => id));
+    assert.equal("toolCount20", count.options.at(-1)[1]);
   });
 
   should("allow every eligible action and context menu tool", () => {

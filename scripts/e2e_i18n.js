@@ -158,13 +158,10 @@ try {
 
     await tool.goto(`${extensionBase}/pages/tools/index.html?tool=time.convert`);
     await assertLocale(tool, locale);
-    await tool.waitForSelector("#time-unix-unit[aria-label]");
+    await tool.waitForSelector("#time-zone[aria-label]");
     for (const [selector, key] of [
-      ["#time-unix-unit", "toolTimeUnit"],
-      ["#time-local-unit", "toolTimeUnit"],
-      ["#time-unix-output", "toolTimeLocalOutput"],
-      ["#time-local-output", "toolTimeUnixOutput"],
-      ["#time-filetime-output", "toolTimeFiletimeOutput"],
+      ["#time-zone", "toolTimezone"],
+      ['[data-segment="time-parse"]', "toolTimeParseMode"],
     ]) {
       assert(
         await tool.$eval(selector, (node) => node.getAttribute("aria-label")) ===
@@ -178,14 +175,32 @@ try {
         .split(/\s+/).map((id) => document.getElementById(id)?.textContent || "").join(" ")),
     );
     assert(
-      timestampLabels[0].includes(catalog.toolTimeCurrentUnix.message) &&
-        timestampLabels[0].includes(catalog.toolTimeSecondsLabel.message) &&
-        timestampLabels[1].includes(catalog.toolTimeMillisecondsLabel.message) &&
+      timestampLabels[0].includes(catalog.toolTimeUnixSeconds.message) &&
+        timestampLabels[1].includes(catalog.toolTimeUnixMillis.message) &&
         timestampLabels[0] !== timestampLabels[1],
       "当前时间戳的秒和毫秒应有不同且本地化的无障碍名称",
     );
     await checkWidth(tool, "time", 1280, locale);
     await checkWidth(tool, "time", 390, locale);
+
+    for (const [id, key] of [
+      ["config.convert", "toolConfigConvert"],
+      ["table.convert", "toolTableConvert"],
+      ["text.diff", "toolTextDiff"],
+      ["id.generate", "toolIdGenerate"],
+      ["password.generate", "toolPasswordGenerate"],
+    ]) {
+      await tool.goto(`${extensionBase}/pages/tools/index.html?tool=${id}`);
+      await tool.waitForSelector('body[data-tool-ready="true"]');
+      await assertLocale(tool, locale);
+      assert(await tool.title() === catalog[key].message, `${locale} 工具标题不一致：${id}`);
+      assert(
+        await tool.$eval(".workbench-breadcrumb a", (link) => link.textContent) === catalog.allTools.message,
+        `${locale} 面包屑未翻译：${id}`,
+      );
+      await checkWidth(tool, id, 1280, locale);
+      await checkWidth(tool, id, 390, locale);
+    }
 
     await tool.goto(`${extensionBase}/pages/onboarding.html`);
     await assertLocale(tool, locale);

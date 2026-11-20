@@ -24,7 +24,7 @@ context("BrowserToolbox Properties 与 YAML 互转", () => {
       'server:\n  port: "8080"\n  servlet:\n    context-path: /api\nspring:\n  application:\n    name: demo-app\n  profiles:\n    active: dev\napp:\n  title: 浏览器工具箱\n  features:\n    - json\n    - yaml\n  timeout: "30000"\n';
     const result = run(source);
     assert.equal(expected, result.output);
-    assert.equal({ count: 8, inputLines: 8, outputLines: 15 }, result.metadata);
+    assert.equal({ count: 8, commentLines: 0, inputLines: 8, outputLines: 15 }, result.metadata);
     assert.equal(source + "\n", properties(expected));
   });
 
@@ -63,6 +63,12 @@ context("BrowserToolbox Properties 与 YAML 互转", () => {
     const source = "a=one\\\r\n   two\\\n\t#three\nb=C:\\\\tmp\\\\\nc=end\\";
     assert.equal({ a: "onetwo#three", b: "C:\\tmp\\", c: "end" }, parse(yaml(source)));
     assert.equal({ a: "tail\\joined" }, parse(yaml("a=tail\\\\\\\n joined")));
+  });
+
+  should("统计 Properties 和 YAML 实际略去的注释，区分续行和标量中的井号", () => {
+    assert.equal(2, run("# comment\na=first\\\n  # data\n! comment\nb=value").metadata.commentLines);
+    const source = '# header\na: "# quoted" # inline\nb: |-\n  # block data\n# end\n';
+    assert.equal(3, run(source, { direction: "yamlToProperties" }).metadata.commentLines);
   });
 
   should("正确解码 Unicode、代理对及控制字符，并拒绝损坏的转义", () => {

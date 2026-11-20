@@ -4506,5 +4506,398 @@
   },
   "keyboardCommandsLink": {
     "message": "查看全部命令"
+  },
+  "toolWorkbenchNavigation": {
+    "message": "工具導覽"
+  },
+  "toolWorkbenchView": {
+    "message": "檢視"
+  },
+  "toolWorkbenchFileError": {
+    "message": "無法讀取此檔案。"
+  },
+  "toolWorkbenchInputLimit": {
+    "message": "輸入超過此工具的本機大小上限。"
+  },
+  "toolWorkbenchLines": {
+    "message": "{count} 行"
+  },
+  "toolConversionResult": {
+    "message": "轉換結果"
+  },
+  "toolCopyAll": {
+    "message": "複製全部"
+  },
+  "toolCopyRow": {
+    "message": "複製此行"
+  },
+  "toolJsonKeySort": {
+    "message": "鍵排序"
+  },
+  "toolJsonLiveCheck": {
+    "message": "貼上即時驗證"
+  },
+  "toolJsonLiveCheckShort": {
+    "message": "即時驗證"
+  },
+  "toolJsonExpandEscaped": {
+    "message": "展開跳脫"
+  },
+  "toolJsonSource": {
+    "message": "原文"
+  },
+  "toolJsonTree": {
+    "message": "樹狀"
+  },
+  "toolJsonTreeLabel": {
+    "message": "JSON 樹"
+  },
+  "toolJsonFieldCount": {
+    "message": "{count} 個欄位"
+  },
+  "toolJsonItemCount": {
+    "message": "{count} 項"
+  },
+  "toolJsonTreeLimited": {
+    "message": "樹狀預覽已達顯示上限。切換至原文可檢視完整結果。"
+  },
+  "toolJsonCursor": {
+    "message": "行 {line}，欄 {column}"
+  },
+  "toolJsonCharacterCount": {
+    "message": "{count} 字元"
+  },
+  "toolJsonStringType": {
+    "message": "字串"
+  },
+  "toolJsonNumberType": {
+    "message": "數字"
+  },
+  "toolJsonBooleanType": {
+    "message": "布林值"
+  },
+  "toolJsonNullType": {
+    "message": "空值"
+  },
+  "toolJsonValid": {
+    "message": "JSON 有效"
+  },
+  "toolJsonValidDuplicates": {
+    "message": "JSON 有效 · {count} 個重複鍵"
+  },
+  "toolJsonErrorPosition": {
+    "message": "JSON 無效 · 第 {line} 行，第 {column} 欄"
+  },
+  "toolJsonBudget": {
+    "message": "JSON 超過本機解析上限。"
+  },
+  "toolJsonRepairNone": {
+    "message": "未找到可逆修復的亂碼。"
+  },
+  "toolConfigForward": {
+    "message": "Properties → YAML"
+  },
+  "toolConfigReverse": {
+    "message": "YAML → Properties"
+  },
+  "toolConfigNameProperties": {
+    "message": "Properties"
+  },
+  "toolConfigNameYaml": {
+    "message": "YAML"
+  },
+  "toolConfigShortHint": {
+    "message": "點號自動分層 · 轉換不保留註解"
+  },
+  "toolConfigRefill": {
+    "message": "回填並反向"
+  },
+  "toolConfigStats": {
+    "message": "已解析 {count} 項鍵值 · 已略去 {comments} 行註解"
+  },
+  "toolConfigExampleComment": {
+    "message": "Spring 服務基本設定"
+  },
+  "toolTableHint": {
+    "message": "支援 RFC 引號與多行欄位"
+  },
+  "toolTableSource": {
+    "message": "原始碼"
+  },
+  "toolTablePreview": {
+    "message": "表格預覽"
+  },
+  "toolTablePreviewLimited": {
+    "message": "預覽顯示 {rows} 行資料、{columns} 欄。原始碼保留完整結果。"
+  },
+  "toolTableDimensions": {
+    "message": "{rows} 行資料 · {columns} 欄"
+  },
+  "toolTableFormulaCount": {
+    "message": "偵測到 {count} 個公式前綴。"
+  },
+  "toolTableLimit": {
+    "message": "表格行數或儲存格數超過本機上限。"
+  },
+  "toolTableAfterQuote": {
+    "message": "結束引號後須接分隔符號或換行。"
+  },
+  "toolTableUnexpectedQuote": {
+    "message": "未加引號的欄位不能包含雙引號。"
+  },
+  "toolTableUnclosedQuote": {
+    "message": "有未閉合的引號。"
+  },
+  "toolDiffUnified": {
+    "message": "逐行比對"
+  },
+  "toolDiffSideBySide": {
+    "message": "並排比對"
+  },
+  "toolDiffOnlyChanges": {
+    "message": "只看變更"
+  },
+  "toolDiffSwap": {
+    "message": "交換兩側"
+  },
+  "toolDiffCollapseInput": {
+    "message": "收合輸入"
+  },
+  "toolDiffExpandInput": {
+    "message": "展開輸入"
+  },
+  "toolDiffOriginal": {
+    "message": "原始文字"
+  },
+  "toolDiffModified": {
+    "message": "修改後文字"
+  },
+  "toolDiffOldLine": {
+    "message": "原行"
+  },
+  "toolDiffNewLine": {
+    "message": "新行"
+  },
+  "toolDiffContents": {
+    "message": "內容比對"
+  },
+  "toolDiffCopy": {
+    "message": "複製差異"
+  },
+  "toolDiffChanges": {
+    "message": "共 {count} 處變更"
+  },
+  "toolDiffAdded": {
+    "message": "+{count} 新增"
+  },
+  "toolDiffRemoved": {
+    "message": "−{count} 刪除"
+  },
+  "toolDiffStats": {
+    "message": "原始 {left} 行 · 修改後 {right} 行 · 輸出 {count} 行"
+  },
+  "toolDiffMethod": {
+    "message": "逐行 LCS 比對"
+  },
+  "toolDiffLineLimit": {
+    "message": "每側最多支援 {max} 行文字比對。"
+  },
+  "toolTimeUnixSeconds": {
+    "message": "Unix 秒"
+  },
+  "toolTimeUnixMillis": {
+    "message": "Unix 毫秒"
+  },
+  "toolTimeClickCopy": {
+    "message": "點選數值複製"
+  },
+  "toolTimeInput": {
+    "message": "輸入時間"
+  },
+  "toolTimeAuto": {
+    "message": "自動辨識"
+  },
+  "toolTimeAutoHint": {
+    "message": "自動辨識格式"
+  },
+  "toolTimeParseMode": {
+    "message": "輸入解析方式"
+  },
+  "toolTimeValueLabel": {
+    "message": "輸入值（時間戳記 / 日期 / FILETIME）"
+  },
+  "toolTimeInputHint": {
+    "message": "支援 10/13 位 Unix、ISO 8601、本機日期及 Windows FILETIME。"
+  },
+  "toolTimeFillNow": {
+    "message": "填入目前時間"
+  },
+  "toolTimeAllFormats": {
+    "message": "多格式同步輸出"
+  },
+  "toolTimeIsoUtc": {
+    "message": "ISO 8601 (UTC)"
+  },
+  "toolTimeUtcHint": {
+    "message": "標準零時區"
+  },
+  "toolTimeTargetValue": {
+    "message": "目標時區時間"
+  },
+  "toolTimeSystemZone": {
+    "message": "本機系統時區"
+  },
+  "toolTimeSecondsValue": {
+    "message": "Unix 時間戳記（秒）"
+  },
+  "toolTimeMillisValue": {
+    "message": "Unix 時間戳記（毫秒）"
+  },
+  "toolTimeSecondsHint": {
+    "message": "秒級"
+  },
+  "toolTimeMillisHint": {
+    "message": "毫秒級"
+  },
+  "toolTimeFiletimeHint": {
+    "message": "自 1601 年起 · 100 ns 單位"
+  },
+  "toolTimeInputWorld": {
+    "message": "輸入時間對應的全球時區"
+  },
+  "toolTimeSameOffset": {
+    "message": "目標時區與本機無時差"
+  },
+  "toolTimeAhead": {
+    "message": "目標時區比本機早 {offset}"
+  },
+  "toolTimeBehind": {
+    "message": "目標時區比本機晚 {offset}"
+  },
+  "toolTimeParsedSeconds": {
+    "message": "已辨識為 Unix 秒時間戳記"
+  },
+  "toolTimeParsedMillis": {
+    "message": "已辨識為 Unix 毫秒時間戳記"
+  },
+  "toolTimeParsedFiletime": {
+    "message": "已辨識為 Windows FILETIME"
+  },
+  "toolTimeParsedIso": {
+    "message": "已辨識為 ISO 8601"
+  },
+  "toolTimeParsedLocal": {
+    "message": "已辨識為本機日期時間"
+  },
+  "toolTimeInvalidInput": {
+    "message": "無法解析此時間。請檢查輸入值或解析方式。"
+  },
+  "toolTimeIntl": {
+    "message": "本機 Intl 時區換算"
+  },
+  "toolZoneUtc": {
+    "message": "UTC"
+  },
+  "toolZoneShanghai": {
+    "message": "上海"
+  },
+  "toolZoneNewYork": {
+    "message": "紐約"
+  },
+  "toolZoneSanFrancisco": {
+    "message": "舊金山"
+  },
+  "toolZoneLondon": {
+    "message": "倫敦"
+  },
+  "toolZoneTokyo": {
+    "message": "東京"
+  },
+  "toolZoneFrankfurt": {
+    "message": "法蘭克福"
+  },
+  "toolZoneSingapore": {
+    "message": "新加坡"
+  },
+  "toolGenerateParameters": {
+    "message": "產生參數"
+  },
+  "toolGenerateResult": {
+    "message": "產生結果"
+  },
+  "toolIdType": {
+    "message": "ID 類型"
+  },
+  "toolIdCount": {
+    "message": "產生數量"
+  },
+  "toolIdResultCount": {
+    "message": "{count} 個"
+  },
+  "toolCount20": {
+    "message": "20 個"
+  },
+  "toolIdUuidDetail": {
+    "message": "36 個字元 · 122 位元隨機"
+  },
+  "toolIdUlidDetail": {
+    "message": "26 位時間排序編碼"
+  },
+  "toolIdSnowflakeDetail": {
+    "message": "64 位元時間戳記整數"
+  },
+  "toolIdNanoidDetail": {
+    "message": "21 位 URL 安全短字串"
+  },
+  "toolIdStats": {
+    "message": "{length} 字元 · {bits} 位元隨機"
+  },
+  "toolIdCopyHint": {
+    "message": "點選任一行即可複製"
+  },
+  "toolIdRegenerate": {
+    "message": "重新產生"
+  },
+  "toolPasswordLength": {
+    "message": "密碼長度"
+  },
+  "toolPasswordComposition": {
+    "message": "字元組成"
+  },
+  "toolPasswordSymbols": {
+    "message": "包含特殊符號"
+  },
+  "toolPasswordExclusions": {
+    "message": "排除 0/O、1/l/I 等容易混淆的字元。"
+  },
+  "toolPasswordResultLength": {
+    "message": "{count} 位隨機密碼"
+  },
+  "toolPasswordRegenerate": {
+    "message": "換一組"
+  },
+  "toolPasswordAlternatives": {
+    "message": "備選密碼"
+  },
+  "toolPasswordCopyHint": {
+    "message": "點選任一行即可複製"
+  },
+  "toolPasswordEntropy": {
+    "message": "{strength} · 約 {bits} 位元理論熵（{size} 個字元）"
+  },
+  "toolPasswordStrength1": {
+    "message": "弱"
+  },
+  "toolPasswordStrength2": {
+    "message": "中等"
+  },
+  "toolPasswordStrength3": {
+    "message": "較強"
+  },
+  "toolPasswordStrength4": {
+    "message": "強"
+  },
+  "toolPasswordMemoryOnly": {
+    "message": "擴充功能僅在目前頁面的記憶體中保留密碼"
   }
 }
