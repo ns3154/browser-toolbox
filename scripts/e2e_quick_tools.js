@@ -394,6 +394,7 @@ async function testWorkbenchGeometry(page, tool) {
           );
         }).map((control) => control.textContent);
       return {
+        viewport: document.documentElement.clientWidth,
         document: document.documentElement.scrollWidth,
         body: document.body.scrollWidth,
         footerClear: [...document.querySelectorAll(".workbench-panes, .diff-list, .json-tree, .table-preview-scroll")]
@@ -405,7 +406,7 @@ async function testWorkbenchGeometry(page, tool) {
       };
     }, width >= 1280);
     assert(
-      geometry.document === width && geometry.body === width &&
+      geometry.document === geometry.viewport && geometry.body === geometry.viewport &&
         geometry.singleToolbar && geometry.footerClear && geometry.clipped.length === 0 &&
         geometry.compactHeight.every((height) => height === 28) &&
         (width < 1280 || geometry.toolbarHeight.every((height) => height === 32)),

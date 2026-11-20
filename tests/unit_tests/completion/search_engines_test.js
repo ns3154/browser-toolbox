@@ -3,6 +3,14 @@ import "../../../background_scripts/bg_utils.js";
 import * as Engines from "../../../background_scripts/completion/search_engines.js";
 import "../../../background_scripts/completion/completers.js";
 
+context("在线联想传输", () => {
+  should("所有内置联想适配器均使用 HTTPS", () => {
+    for (const Engine of Engines.list) {
+      assert.equal("https:", new URL(new Engine().getUrl(["synthetic", "query"])).protocol);
+    }
+  });
+});
+
 context("Amazon completion", () => {
   should("parses results", () => {
     const response = JSON.stringify({

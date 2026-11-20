@@ -559,6 +559,15 @@
   border: 0;
 }
 .workbench-field .segmented button { flex: 1 1 0; padding-inline: 3px; }
+.tool-workbench [data-segment="time-parse"] {
+  flex-wrap: wrap;
+  height: auto;
+  min-height: var(--control-height);
+}
+.tool-workbench [data-segment="time-parse"] button {
+  min-width: max-content;
+  min-height: calc(var(--control-height) - 6px);
+}
 .workbench-field-label { padding: 0; color: var(--bt-muted); font-size: 12px; font-weight: 650; }
 legend.workbench-field-label { margin-block-end: 8px; }
 .workbench-help, .time-calendar { color: var(--workbench-caption); font-size: 12px; }

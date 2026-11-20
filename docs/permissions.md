@@ -5,7 +5,7 @@
 - `<all_urls>`：在用户允许的网页上运行键盘和鼠标输入模块。浏览器内置页面仍受平台限制。
 - `tabs`：执行用户触发的标签页、窗口和 URL 操作。
 - `bookmarks`、`history`、`sessions`：保留 Vimium 的 Vomnibar、历史、书签和恢复标签能力。
-- `storage`：保存配置和本地指针资源；不上传任何数据。
+- `storage`：保存配置和本地指针资源。设置可通过浏览器原生同步存储在设备之间同步，详见[隐私说明](../PRIVACY.md)。
 - `scripting`、`webNavigation`：保留上游内容脚本注入和 URL 状态同步行为。
 - `favicon`、`search`：保留上游图标和用户主动搜索行为。
 - `contextMenus`：为用户主动配置的本地工具提供原生选中文本右键入口；菜单只传递短期一次性令牌，不上传页面内容。
