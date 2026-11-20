@@ -660,7 +660,7 @@
     "description": "手势期间原生菜单抑制"
   },
   "privacyImmutable": {
-    "message": "遥测、远程配置和后台网络访问永久关闭。",
+    "message": "扩展不使用远程配置，也不连接项目服务器。",
     "description": "不可变隐私状态"
   },
   "tabs": {
@@ -3269,7 +3269,7 @@
     "description": "备份范围"
   },
   "privacyNetwork": {
-    "message": "只有用户主动发起的导航、搜索和本地扩展页面可能产生网络活动；项目不会连接服务器。",
+    "message": "提交搜索时，查询会发送给所选搜索引擎。使用支持联想的自定义搜索规则时，输入的搜索词可能在提交前通过 HTTPS 发送给相应的联想服务。",
     "description": "网络隐私"
   },
   "licenseGpl": {
@@ -3297,7 +3297,7 @@
     "description": "存储分区"
   },
   "privacyStorage": {
-    "message": "设置保存在浏览器存储中。启用的自定义指针只保存在本地，不同步、不上传。",
+    "message": "设置保存在浏览器存储中，可通过浏览器的原生同步服务在设备间同步。自定义指针图片仅保存在本机。",
     "description": "存储隐私"
   },
   "security": {
@@ -3313,7 +3313,7 @@
     "description": "项目章程隐私"
   },
   "securityBoundary": {
-    "message": "浏览器工具箱把浏览器数据和用户输入留在本地浏览器内，不加载远程代码，也不信任网页直接调用高权限动作。",
+    "message": "本地工具在浏览器内处理输入。扩展不加载远程代码，网页无法直接调用扩展的高权限操作。",
     "description": "安全边界"
   },
   "securityImport": {

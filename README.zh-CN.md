@@ -189,13 +189,13 @@
 - 官方版本永久免费、无广告、无账户、无订阅、无付费功能。
 - 不加入遥测、设备指纹、安装来源统计、远程配置或崩溃上报。
 - 本地工具、手势路径、页面内容和配置默认在浏览器本地处理，不上传到项目服务器。
-- 只有用户主动打开网页、主动执行搜索或主动打开项目链接时才可能产生相应网络活动；搜索词只会在用户明确执行搜索命令时发送给所选搜索引擎。
+- 提交搜索时，查询会发送给所选搜索引擎。使用支持联想的自定义搜索规则时，输入的搜索词可能在提交前通过 HTTPS 发送给相应的联想服务。扩展更新和设置同步由浏览器负责。
 - 不加载远程 JavaScript、远程字体或 CDN 运行时代码。
 - 扩展权限的逐项说明见 [`docs/permissions.md`](docs/permissions.md)，隐私政策见 [`PRIVACY.md`](PRIVACY.md)，第三方声明见 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)。
 
 ## 项目状态、许可证与反馈
 
-当前版本处于兼容性、无障碍和预发布验收阶段。自动化测试不会替代 Windows、Edge、Chrome Stable、认证态网站、屏幕阅读器或 Chrome Web Store 的独立验收。
+项目仍在进行兼容性和无障碍验证。自动化测试不会替代 Windows、Edge、Chrome Stable、认证态网站、屏幕阅读器或 Chrome Web Store 的独立验收。
 
 新功能代码遵循 [GPL-3.0-or-later](LICENSE)；从 Vimium 保留或修改的文件继续保留原始 MIT 版权和许可证说明。项目背景和边界见 [`PROJECT_CHARTER.md`](PROJECT_CHARTER.md)，贡献方式见 [`CONTRIBUTING.md`](CONTRIBUTING.md)。
 

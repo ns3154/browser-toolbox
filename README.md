@@ -238,9 +238,9 @@ and other modules. Built-in profiles include:
   configuration, or crash reporting.
 - Local tools, gesture paths, page content, and settings are processed in the browser and are not
   uploaded to a project server.
-- Network activity is limited to user-initiated navigation, explicit searches, project links, and
-  browser extension updates. Search terms are sent to the selected search engine only when the user
-  explicitly runs a search command.
+- Submitting a search sends the query to the selected search engine. Custom search rules that
+  support suggestions may send search terms to the suggestion service over HTTPS before submission.
+  The browser handles extension updates and built-in settings sync.
 - The extension does not load remote JavaScript, remote fonts, or CDN runtime code.
 - See [`docs/permissions.md`](docs/permissions.md) for each permission,
   [`PRIVACY.md`](PRIVACY.md) for the privacy policy, and
@@ -248,7 +248,7 @@ and other modules. Built-in profiles include:
 
 ## Project status, license, and feedback
 
-The current version is in compatibility, accessibility, and pre-release acceptance. Automated tests
+Compatibility and accessibility verification are ongoing. Automated tests
 do not replace independent acceptance on Windows, Edge, Chrome Stable, authenticated sites, screen
 readers, or the Chrome Web Store.
 

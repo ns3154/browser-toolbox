@@ -660,7 +660,7 @@
     "description": "Context menu suppression during gesture sessions"
   },
   "privacyImmutable": {
-    "message": "Telemetry, remote configuration, and background network access are permanently disabled.",
+    "message": "The extension does not use remote configuration or contact project servers.",
     "description": "Immutable privacy status"
   },
   "tabs": {
@@ -3269,7 +3269,7 @@
     "description": "Backup scope"
   },
   "privacyNetwork": {
-    "message": "Only user-initiated navigation, search, and local extension pages may cause network activity. No project server is contacted.",
+    "message": "Submitting a search sends the query to the selected search engine. When a custom search rule supports suggestions, the extension may send search terms to that suggestion service over HTTPS before submission.",
     "description": "Network privacy"
   },
   "licenseGpl": {
@@ -3297,7 +3297,7 @@
     "description": "Storage section"
   },
   "privacyStorage": {
-    "message": "Settings are stored in browser storage. Custom pointer assets, if enabled, remain in local storage and are not synchronized or uploaded.",
+    "message": "The browser stores settings and can sync them across devices through its built-in sync service. Custom pointer images stay on this device.",
     "description": "Storage privacy"
   },
   "security": {
@@ -3313,7 +3313,7 @@
     "description": "Project charter privacy"
   },
   "securityBoundary": {
-    "message": "Browser Toolbox keeps browser data and user input in the local browser. It does not load remote code or trust web pages to invoke privileged actions.",
+    "message": "Local tools process input in the browser. The extension does not load remote code or let web pages invoke privileged actions directly.",
     "description": "Security boundary"
   },
   "securityImport": {

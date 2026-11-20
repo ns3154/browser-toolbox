@@ -498,7 +498,7 @@
     "message": "Controlar el menú nativo para gestos con el botón derecho"
   },
   "privacyImmutable": {
-    "message": "La telemetría, la configuración remota y el acceso a la red en segundo plano están desactivados permanentemente."
+    "message": "La extensión no usa configuración remota ni se conecta a servidores del proyecto."
   },
   "tabs": {
     "message": "Pestañas"
@@ -2480,7 +2480,7 @@
     "message": "Las exportaciones solo incluyen ajustes. Nunca incluyen contenido de páginas, historial, marcadores, gestos temporales ni recursos remotos."
   },
   "privacyNetwork": {
-    "message": "Solo la navegación, las búsquedas y las páginas locales de la extensión iniciadas por el usuario pueden generar actividad de red. No se contacta con servidores del proyecto."
+    "message": "Al ejecutar una búsqueda, la consulta se envía al motor elegido. Si una regla de búsqueda personalizada ofrece sugerencias, los términos escritos pueden enviarse al servicio de sugerencias por HTTPS antes de ejecutar la búsqueda."
   },
   "licenseGpl": {
     "message": "GPL-3.0-or-later"
@@ -2501,7 +2501,7 @@
     "message": "Almacenamiento local"
   },
   "privacyStorage": {
-    "message": "Los ajustes se guardan en el almacenamiento del navegador. Los recursos de punteros personalizados permanecen en el almacenamiento local y no se sincronizan ni se suben."
+    "message": "Los ajustes se guardan en el navegador y se pueden sincronizar entre dispositivos mediante su servicio de sincronización. Las imágenes de punteros personalizados se guardan solo en este dispositivo."
   },
   "security": {
     "message": "Seguridad"
@@ -2513,7 +2513,7 @@
     "message": "El proyecto no incorpora telemetría, cuentas, anuncios, funciones de pago, configuración remota ni recopilación de datos en segundo plano."
   },
   "securityBoundary": {
-    "message": "Browser Toolbox mantiene los datos del navegador y las entradas en el navegador local. No carga código remoto ni permite que las páginas invoquen directamente acciones privilegiadas."
+    "message": "Las herramientas locales procesan las entradas en el navegador. La extensión no carga código remoto ni permite que las páginas web invoquen directamente acciones privilegiadas."
   },
   "securityImport": {
     "message": "Los ajustes importados se analizan, validan, previsualizan y confirman antes de guardarse. Nunca se ejecutan los archivos importados como HTML o scripts."
