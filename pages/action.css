@@ -1,31 +1,28 @@
-/* 根元素不接管滚动，才能让弹窗主体成为吸顶与吸底的滚动容器。 */
+/* 由视口滚动，避免弹窗初始视口高度反过来限制自身尺寸。 */
 html {
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
-/* 动作弹窗使用主题语义令牌，并由自身滚动容器保留吸顶与吸底区域。 */
+/* 动作弹窗使用主题语义令牌，内容高度由浏览器按可用空间确定。 */
 body.browser-toolbox-action-page {
   box-sizing: border-box;
   width: min(400px, 100vw);
   min-width: 0;
   max-width: 400px;
-  max-height: 600px;
-  max-height: min(600px, 100vh);
   height: auto;
   margin: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
   background: var(--bt-surface-card);
   color: var(--bt-text);
   font: 13px/1.45 -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC",
     "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
 }
 
-.browser-toolbox-action-page::-webkit-scrollbar {
+html::-webkit-scrollbar {
   width: 5px;
 }
-.browser-toolbox-action-page::-webkit-scrollbar-thumb {
+html::-webkit-scrollbar-thumb {
   border-radius: 5px;
   background: var(--bt-border-strong);
 }

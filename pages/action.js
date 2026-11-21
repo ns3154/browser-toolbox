@@ -116,7 +116,7 @@ export const ActionPage = {
   },
 
   initScrollBoundaries() {
-    const scroller = document.body;
+    const scroller = document.scrollingElement || document.documentElement;
     const header = document.querySelector(".browser-toolbox-action-brand");
     const footer = document.querySelector(".browser-toolbox-action-footer");
     const shell = document.querySelector(".browser-toolbox-action-shell");
@@ -129,7 +129,7 @@ export const ActionPage = {
         canScroll && scroller.scrollTop + scroller.clientHeight < scroller.scrollHeight - 1,
       );
     };
-    scroller.addEventListener("scroll", update, { passive: true });
+    document.addEventListener("scroll", update, { passive: true });
     document.defaultView?.addEventListener("resize", update, { passive: true });
     if (globalThis.ResizeObserver) {
       const observer = new ResizeObserver(update);

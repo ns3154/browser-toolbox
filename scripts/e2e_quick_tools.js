@@ -218,6 +218,141 @@ async function clickDocumentButton(page, action) {
   await page.click(`.browser-toolbox-document-toolbar [data-document-action="${action}"]`);
 }
 
+async function testNativeActionPopup(browser, id, baseUrl) {
+  const fixture = await browser.newPage();
+  const controller = await browser.newPage();
+  let popupSession;
+  try {
+    await fixture.goto(`${baseUrl}/html`, { waitUntil: "load" });
+    await controller.goto(`chrome-extension://${id}/pages/mouse_options.html`, { waitUntil: "load" });
+    await fixture.bringToFront();
+    const popupTarget = browser.waitForTarget((target) =>
+      target.url() === `chrome-extension://${id}/pages/action.html`
+    );
+    await controller.evaluate(() => chrome.action.openPopup());
+    popupSession = await (await popupTarget).createCDPSession();
+
+    // 原生动作弹窗不总是暴露为 Puppeteer Page，直接读取其独立的 CDP 目标。
+    const evaluatePopup = async (fn) => {
+      const result = await popupSession.send("Runtime.evaluate", {
+        expression: `(${fn})()`,
+        returnByValue: true,
+        awaitPromise: true,
+      });
+      if (result.exceptionDetails) throw new Error(result.exceptionDetails.text);
+      return result.result.value;
+    };
+    await waitFor(() => evaluatePopup(() =>
+      getComputedStyle(document.querySelector("#browser-toolbox-controls")).display !== "none" &&
+      getComputedStyle(document.querySelector("#browser-toolbox-enhancement-summary")).display !== "none" &&
+      document.querySelectorAll("#browser-toolbox-tool-buttons [data-tool-id]").length > 0
+    ).catch(() => false));
+    // 浏览器可能在异步内容渲染后才调整原生弹窗尺寸。
+    await waitFor(() => evaluatePopup(() => innerHeight >= 250), 3000).catch(() => {});
+    const initial = await evaluatePopup(() => {
+      const header = document.querySelector(".browser-toolbox-action-brand").getBoundingClientRect();
+      const footer = document.querySelector(".browser-toolbox-action-footer").getBoundingClientRect();
+      return {
+        width: innerWidth,
+        height: innerHeight,
+        headerTop: header.top,
+        headerBottom: header.bottom,
+        footerTop: footer.top,
+        footerBottom: footer.bottom,
+        contentHeight: document.scrollingElement.scrollHeight,
+      };
+    });
+    assert(initial.width >= 300 && initial.height >= 250 &&
+      initial.headerTop >= -1 && initial.footerBottom <= initial.height + 1 &&
+      initial.footerTop - initial.headerBottom >= 100,
+      `工具栏原生弹窗应展开并显示可操作内容：${JSON.stringify(initial)}`);
+
+    // 模拟内容超过可用高度，验证实际滚轮和吸顶吸底，而非仅检查 CSS 属性。
+    await evaluatePopup(() => {
+      const shell = document.querySelector(".browser-toolbox-action-shell");
+      const filler = document.createElement("div");
+      filler.style.height = "800px";
+      filler.style.order = "4";
+      shell.insertBefore(filler, document.querySelector(".browser-toolbox-action-footer"));
+    });
+    await popupSession.send("Input.dispatchMouseEvent", {
+      type: "mouseWheel", x: Math.floor(initial.width / 2),
+      y: Math.floor(initial.height / 2), deltaX: 0, deltaY: 600,
+    });
+    await waitFor(() => evaluatePopup(() => document.scrollingElement.scrollTop > 1));
+    await evaluatePopup(() => globalThis.scrollTo(0, document.scrollingElement.scrollHeight));
+    await waitFor(() => evaluatePopup(() =>
+      document.querySelector(".browser-toolbox-action-brand").classList.contains("has-scroll-top") &&
+      !document.querySelector(".browser-toolbox-action-footer").classList.contains("has-scroll-bottom")
+    ));
+    const scrolled = await evaluatePopup(() => {
+      const header = document.querySelector(".browser-toolbox-action-brand").getBoundingClientRect();
+      const footer = document.querySelector(".browser-toolbox-action-footer").getBoundingClientRect();
+      const button = document.querySelector("#browser-toolbox-all-tools").getBoundingClientRect();
+      return {
+        top: document.scrollingElement.scrollTop,
+        height: innerHeight,
+        headerTop: header.top,
+        footerBottom: footer.bottom,
+        button: { x: button.x + button.width / 2, y: button.y + button.height / 2 },
+      };
+    });
+    assert(scrolled.top > 0 && Math.abs(scrolled.headerTop) <= 1 &&
+      scrolled.footerBottom <= scrolled.height + 1 && scrolled.button.y < scrolled.height,
+      `原生弹窗滚动后头尾和入口应仍然可见：${JSON.stringify(scrolled)}`);
+    const toolsTarget = browser.waitForTarget((target) =>
+      target.url().includes("/pages/mouse_options.html#toolsOverview")
+    );
+    for (const type of ["mousePressed", "mouseReleased"]) {
+      await popupSession.send("Input.dispatchMouseEvent", {
+        type, ...scrolled.button, button: "left", clickCount: 1,
+      }).catch((error) => {
+        // 松开鼠标后弹窗可能立即关闭并断开目标。
+        if (type !== "mouseReleased") throw error;
+      });
+    }
+    const openedTools = await toolsTarget;
+    await (await openedTools.page())?.close();
+    await popupSession.detach().catch(() => {});
+    popupSession = null;
+    await waitFor(() => !browser.targets().some((target) =>
+      target.url() === `chrome-extension://${id}/pages/action.html`
+    ));
+
+    await fixture.goto("about:blank", { waitUntil: "load" });
+    await fixture.bringToFront();
+    const restrictedTarget = browser.waitForTarget((target) =>
+      target.url() === `chrome-extension://${id}/pages/action.html`
+    );
+    await controller.evaluate(() => chrome.action.openPopup());
+    popupSession = await (await restrictedTarget).createCDPSession();
+    await waitFor(() => evaluatePopup(() =>
+      getComputedStyle(document.querySelector("#not-enabled-error")).display !== "none"
+    ).catch(() => false));
+    await waitFor(() => evaluatePopup(() => innerHeight >= 200), 3000).catch(() => {});
+    const restricted = await evaluatePopup(() => {
+      const header = document.querySelector(".browser-toolbox-action-brand").getBoundingClientRect();
+      const footer = document.querySelector(".browser-toolbox-action-footer").getBoundingClientRect();
+      return {
+        height: innerHeight,
+        headerBottom: header.bottom,
+        footerTop: footer.top,
+        footerBottom: footer.bottom,
+        helpDisabled: document.querySelector("#browser-toolbox-open-help").disabled,
+      };
+    });
+    assert(restricted.height >= 200 && restricted.footerBottom <= restricted.height + 1 &&
+      restricted.footerTop - restricted.headerBottom >= 80 && restricted.helpDisabled,
+      `受限页面的原生弹窗也应展开并保留入口：${JSON.stringify(restricted)}`);
+    await evaluatePopup(() => globalThis.close());
+    console.log(`原生动作弹窗：${JSON.stringify({ initial, scrolled, restricted })}`);
+  } finally {
+    await popupSession?.detach().catch(() => {});
+    await controller.close().catch(() => {});
+    await fixture.close().catch(() => {});
+  }
+}
+
 async function testActionPopup(browser, id, baseUrl) {
   const fixture = await browser.newPage();
   const action = await browser.newPage();
@@ -1022,6 +1157,8 @@ async function main() {
     browser.on("targetcreated", closeOnboarding);
     browser.on("targetchanged", closeOnboarding);
     const id = await extensionId(browser);
+    await runStage(browser, "工具栏原生弹窗", () => testNativeActionPopup(browser, id, baseUrl));
+    if (Deno.env.get("BROWSER_TOOLBOX_E2E_NATIVE_POPUP_ONLY") === "true") return;
     await runStage(browser, "工具设置", () => testSettings(browser, id));
     await runStage(browser, "动作弹窗", () => testActionPopup(browser, id, baseUrl));
     await runStage(browser, "七个 V3 工具工作台", () => testWorkbenchPages(browser, id));

@@ -1384,25 +1384,25 @@ async function testActionControls(browser, id, fixture, errors) {
       const title = document.querySelector("#browser-toolbox-current-site-title");
       title.title = title.dataset.originalTitle;
       title.textContent = title.dataset.originalText;
-      document.body.scrollTop = 0;
+      document.scrollingElement.scrollTop = 0;
     });
     await sleep(100);
     console.log("动作页初始滚动状态：", await action.evaluate(() => ({
-      top: document.body.scrollTop, height: document.body.scrollHeight,
-      client: document.body.clientHeight, windowTop: scrollY,
+      top: document.scrollingElement.scrollTop, height: document.scrollingElement.scrollHeight,
+      client: document.scrollingElement.clientHeight, windowTop: scrollY,
       documentTop: document.documentElement.scrollTop,
       header: document.querySelector(".browser-toolbox-action-brand").className,
       footer: document.querySelector(".browser-toolbox-action-footer").className,
     })));
     await waitFor(() => action.evaluate(() =>
-      document.body.scrollHeight > document.body.clientHeight &&
+      document.scrollingElement.scrollHeight > document.scrollingElement.clientHeight &&
       document.querySelector(".browser-toolbox-action-footer").classList.contains("has-scroll-bottom")
     ));
-    await action.evaluate(() => { document.body.scrollTop = document.body.scrollHeight; });
+    await action.evaluate(() => { document.scrollingElement.scrollTop = document.scrollingElement.scrollHeight; });
     await sleep(100);
     console.log("动作页滚动状态：", await action.evaluate(() => ({
-      top: document.body.scrollTop, height: document.body.scrollHeight,
-      client: document.body.clientHeight, windowTop: scrollY,
+      top: document.scrollingElement.scrollTop, height: document.scrollingElement.scrollHeight,
+      client: document.scrollingElement.clientHeight, windowTop: scrollY,
       documentTop: document.documentElement.scrollTop,
       header: document.querySelector(".browser-toolbox-action-brand").className,
       footer: document.querySelector(".browser-toolbox-action-footer").className,
