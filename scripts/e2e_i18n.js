@@ -39,7 +39,7 @@ async function newPage() {
 async function assertLocale(page, locale) {
   await page.waitForFunction(
     (expected) => document.documentElement.lang === expected && document.body.innerText.length > 30,
-    { timeout: 10000 },
+    { polling: 50, timeout: 10000 },
     locale.replaceAll("_", "-"),
   );
 }
@@ -70,6 +70,25 @@ async function checkWidth(page, label, width, locale) {
         }).map((button) => button.textContent),
     );
     assert(clippedButtons.length === 0, `${locale}/${width} 按钮文字溢出：${clippedButtons}`);
+  }
+  if (label === "password.generate") {
+    const layout = await page.$$eval(
+      '[data-segment="password-length"] button',
+      (buttons) => ({
+        count: buttons.length,
+        clipped: buttons.filter((button) => {
+          const bounds = button.getBoundingClientRect();
+          const range = document.createRange();
+          range.selectNodeContents(button);
+          return !bounds.width || !bounds.height || [...range.getClientRects()].some((text) =>
+            text.left < bounds.left - 1 || text.right > bounds.right + 1 ||
+            text.top < bounds.top - 1 || text.bottom > bounds.bottom + 1
+          );
+        }).map((button) => button.textContent),
+      }),
+    );
+    assert(layout.count === 4 && layout.clipped.length === 0,
+      `${locale}/${width} 密码长度按钮异常：${JSON.stringify(layout)}`);
   }
   if (["zh_TW", "ja", "es"].includes(locale) ||
     label === "action" && [320, 360, 400].includes(width)) {
@@ -214,6 +233,7 @@ try {
       );
       await checkWidth(tool, id, 1280, locale);
       await checkWidth(tool, id, 390, locale);
+      if (id === "password.generate") await checkWidth(tool, id, 320, locale);
     }
 
     await tool.goto(`${extensionBase}/pages/onboarding.html`);
@@ -378,9 +398,11 @@ try {
       { timeout: 10000 },
     );
     await frame.waitForFunction(
-      (tag) => document.documentElement.lang === tag,
-      {},
+      (tag, label) => document.documentElement.lang === tag &&
+        document.querySelector("#close")?.getAttribute("aria-label") === label,
+      { polling: 50, timeout: 10000 },
       locale.replaceAll("_", "-"),
+      catalog.close.message,
     );
     assert(
       await frame.$eval("#close", (node) => node.getAttribute("aria-label")) ===
