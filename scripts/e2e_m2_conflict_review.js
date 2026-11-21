@@ -269,6 +269,7 @@ try {
   trace("在第二个独立合成配置中实际导入候选");
   browser = await launch("import-profile");
   const clean = await ready();
+  await clean.page.$eval("button[data-section='backupAbout']", (button) => button.click());
   await (await clean.page.$("#import-settings")).uploadFile(candidatePath);
   await clean.page.waitForFunction(() => document.querySelector("#import-preview-dialog")?.open);
   await clean.page.$eval("#import-preview-confirm", (element) => element.click());

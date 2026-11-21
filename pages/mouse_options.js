@@ -1816,7 +1816,7 @@
           ).replace("$1", String(view.revision));
           return;
         }
-        await configuration.request(action, input);
+        if (action !== "preview") await configuration.request(action, input);
         const summary = await configuration.request("preview");
         const conflict = ["CONFIGURATION_EXTERNAL_CONFLICT", "CONFIGURATION_RECOVERY_CONFLICT"]
           .includes(summary.code);
@@ -1840,6 +1840,9 @@
           observationStatus.textContent = message(
             captureMessages[summary.captureStatus] || "conflictObservationNotCaptured",
           );
+          if (summary.captureStatus === "saved" && !observationSelect.options.length) {
+            await withObservationBusy(loadObservations);
+          }
         }
         if (action !== "preview" && settings) {
           const snapshot = await settingsService.load(registry);

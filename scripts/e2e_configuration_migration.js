@@ -638,6 +638,15 @@ try {
       !await options.$("#configuration-incoming") && !await options.$("#configuration-committed"),
     "存在冲突时仍显示不安全的写入选择或缺少导出范围说明",
   );
+  assert(
+    await options.evaluate(() =>
+      document.querySelector("#conflict-observation-select").selectedOptions[0]?.dataset.status ===
+        "saved" &&
+      !document.querySelector("#conflict-observation-export").disabled &&
+      !document.querySelector("#conflict-observation-review").disabled
+    ),
+    "检查配置后应自动列出已保存的观察，并启用导出和复核入口",
+  );
   const beforeConflictExport = await options.evaluate(async () => ({
     local: await chrome.storage.local.get(null),
     sync: await chrome.storage.sync.get(null),
