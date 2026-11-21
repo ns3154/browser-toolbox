@@ -29,19 +29,14 @@
 
       <section id="browser-toolbox-controls" class="browser-toolbox-action-section browser-toolbox-site-card"
         style="display: none" aria-labelledby="browser-toolbox-current-site-title">
+        <div class="browser-toolbox-site-heading-row">
+          <h2 id="browser-toolbox-current-site-title" data-i18n="currentSite">Current site</h2>
+          <span id="browser-toolbox-site-badge" class="browser-toolbox-site-badge" aria-live="polite"
+            data-i18n="active">Active</span>
+        </div>
         <div class="browser-toolbox-site-main">
-          <div class="browser-toolbox-site-copy">
-            <div class="browser-toolbox-section-heading">
-              <div class="browser-toolbox-site-heading-row">
-                <span class="browser-toolbox-section-kicker" data-i18n="currentSite">Current site</span>
-                <h2 id="browser-toolbox-current-site-title" data-i18n="currentSite">Current site</h2>
-                <span id="browser-toolbox-site-badge" class="browser-toolbox-site-badge" aria-live="polite"
-                  data-i18n="active">Active</span>
-              </div>
-            </div>
-            <p id="browser-toolbox-site-status" class="browser-toolbox-site-status"
-              aria-live="polite"></p>
-          </div>
+          <p id="browser-toolbox-site-status" class="browser-toolbox-site-status"
+            aria-live="polite"></p>
           <button id="browser-toolbox-manage-site" class="browser-toolbox-secondary-button"
             type="button"
             data-i18n="manageCurrentSite" hidden>Manage this site</button>
@@ -67,16 +62,16 @@
       <section id="browser-toolbox-session-controls"
         class="browser-toolbox-action-section browser-toolbox-session-controls"
         style="display: none" aria-labelledby="browser-toolbox-session-title">
-        <div>
+        <div class="browser-toolbox-session-heading-row">
           <h2 id="browser-toolbox-session-title"
             data-i18n="sessionAllSites">All sites this session</h2>
-          <p id="browser-toolbox-session-status" class="browser-toolbox-session-status"
-            role="status" aria-live="polite"
-            data-i18n="sessionScopeHint">Temporary switches affect all sites.</p>
+          <button id="browser-toolbox-disable-session" class="browser-toolbox-secondary-button"
+            type="button"
+            data-i18n="disableForSession">Pause all sites</button>
         </div>
-        <button id="browser-toolbox-disable-session" class="browser-toolbox-secondary-button"
-          type="button"
-          data-i18n="disableForSession">Pause all sites</button>
+        <p id="browser-toolbox-session-status" class="browser-toolbox-session-status"
+          role="status" aria-live="polite"
+          data-i18n="sessionScopeHint">Temporary switches affect all sites.</p>
       </section>
 
       <section id="browser-toolbox-enhancement-summary" class="browser-toolbox-action-section"
@@ -90,40 +85,40 @@
         </div>
         <div class="browser-toolbox-enhancement-grid">
           <label class="browser-toolbox-enhancement-card browser-toolbox-enhancement-card-compact">
-            <span class="browser-toolbox-enhancement-icon browser-toolbox-enhancement-icon-keyboard" aria-hidden="true" data-toolbox-icon="keyboard"></span>
+            <span class="browser-toolbox-enhancement-top"><span class="browser-toolbox-enhancement-icon browser-toolbox-enhancement-icon-keyboard" aria-hidden="true" data-toolbox-icon="keyboard"></span>
+              <span class="browser-toolbox-switch"><input id="browser-toolbox-toggle-keyboard" type="checkbox"><i></i></span></span>
             <span class="browser-toolbox-enhancement-copy">
               <strong data-i18n="keyboard">Keyboard</strong>
               <small data-i18n="actionKeyboardSummary">Vimium keyboard navigation</small>
               <em class="browser-toolbox-module-status" data-module="keyboard" data-i18n="enabled">Enabled</em>
             </span>
-            <span class="browser-toolbox-switch"><input id="browser-toolbox-toggle-keyboard" type="checkbox"><i></i></span>
           </label>
           <label class="browser-toolbox-enhancement-card browser-toolbox-enhancement-card-featured">
-            <span class="browser-toolbox-enhancement-icon browser-toolbox-enhancement-icon-mouse" aria-hidden="true" data-toolbox-icon="mouse"></span>
+            <span class="browser-toolbox-enhancement-top"><span class="browser-toolbox-enhancement-icon browser-toolbox-enhancement-icon-mouse" aria-hidden="true" data-toolbox-icon="mouse"></span>
+              <span class="browser-toolbox-switch"><input id="browser-toolbox-toggle-mouse" type="checkbox"><i></i></span></span>
             <span class="browser-toolbox-enhancement-copy">
               <strong data-i18n="mouseGestures">Mouse Gestures</strong>
               <small data-i18n="actionMouseSummary">Hold right-click and draw a path</small>
               <em class="browser-toolbox-module-status" data-module="mouse" data-i18n="enabled">Enabled</em>
             </span>
-            <span class="browser-toolbox-switch"><input id="browser-toolbox-toggle-mouse" type="checkbox"><i></i></span>
           </label>
           <label class="browser-toolbox-enhancement-card browser-toolbox-enhancement-card-compact">
-            <span class="browser-toolbox-enhancement-icon browser-toolbox-enhancement-icon-drag" aria-hidden="true" data-toolbox-icon="drag"></span>
+            <span class="browser-toolbox-enhancement-top"><span class="browser-toolbox-enhancement-icon browser-toolbox-enhancement-icon-drag" aria-hidden="true" data-toolbox-icon="drag"></span>
+              <span class="browser-toolbox-switch"><input id="browser-toolbox-toggle-drag" type="checkbox"><i></i></span></span>
             <span class="browser-toolbox-enhancement-copy">
               <strong data-i18n="superDrag">Super Drag</strong>
               <small data-i18n="actionSuperDragSummary">Drag links, images, or text to act</small>
               <em class="browser-toolbox-module-status" data-module="superDrag" data-i18n="enabled">Enabled</em>
             </span>
-            <span class="browser-toolbox-switch"><input id="browser-toolbox-toggle-drag" type="checkbox"><i></i></span>
           </label>
           <label class="browser-toolbox-enhancement-card browser-toolbox-enhancement-card-compact">
-            <span class="browser-toolbox-enhancement-icon browser-toolbox-enhancement-icon-wheel" aria-hidden="true" data-toolbox-icon="wheel"></span>
+            <span class="browser-toolbox-enhancement-top"><span class="browser-toolbox-enhancement-icon browser-toolbox-enhancement-icon-wheel" aria-hidden="true" data-toolbox-icon="wheel"></span>
+              <span class="browser-toolbox-switch"><input id="browser-toolbox-toggle-wheel" type="checkbox"><i></i></span></span>
             <span class="browser-toolbox-enhancement-copy">
               <strong data-i18n="wheelRocker">Wheel &amp; Rocker</strong>
               <small data-i18n="actionWheelSummary">Switch tabs with wheel or rocker</small>
               <em class="browser-toolbox-module-status" data-module="wheel" data-i18n="enabled">Enabled</em>
             </span>
-            <span class="browser-toolbox-switch"><input id="browser-toolbox-toggle-wheel" type="checkbox"><i></i></span>
           </label>
         </div>
       </section>

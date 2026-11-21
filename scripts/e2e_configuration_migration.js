@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // 同一合成 profile、同一加载路径和固定 ID 连续升级；只报告版本、字段名、容量及结果。
 import puppeteer from "npm:puppeteer";
+import { assertSafeTestBrowser } from "./test_browser_safety.js";
+
+assertSafeTestBrowser({ headless: Deno.env.get("BROWSER_TOOLBOX_E2E_HEADLESS") !== "false" });
 import * as path from "@std/path";
 import { copy } from "@std/fs";
 import { readManifest } from "./release_artifacts.js";

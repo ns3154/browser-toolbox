@@ -2,6 +2,8 @@
 // 只加载独立合成 profile；同一 CFT 的冻结提示与新提示执行相同实际按键和 DOM 操作。
 import puppeteer from "npm:puppeteer";
 import * as path from "@std/path";
+import { assertSafeTestBrowser } from "./test_browser_safety.js";
+assertSafeTestBrowser({ headless: Deno.env.get("BROWSER_TOOLBOX_HINTS_KEEP_OPEN") !== "true" });
 
 const executablePath = Deno.env.get("PUPPETEER_EXECUTABLE_PATH") || puppeteer.executablePath();
 const compatPath = Deno.env.get("BROWSER_TOOLBOX_HINTS_COMPAT_PATH");

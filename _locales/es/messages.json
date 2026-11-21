@@ -4065,5 +4065,11 @@
   },
   "toolPasswordMemoryOnly": {
     "message": "La extensión conserva las contraseñas solo en la memoria de esta página"
+  },
+  "actionScopeSessionPaused": {
+    "message": "Sesión pausada"
+  },
+  "actionScopeSiteDisabled": {
+    "message": "Inactivo aquí"
   }
 }

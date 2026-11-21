@@ -4065,5 +4065,11 @@
   },
   "toolPasswordMemoryOnly": {
     "message": "パスワードはこのページのメモリ内にのみ保持します"
+  },
+  "actionScopeSessionPaused": {
+    "message": "一時停止中"
+  },
+  "actionScopeSiteDisabled": {
+    "message": "サイト無効"
   }
 }

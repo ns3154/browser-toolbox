@@ -2,6 +2,8 @@
 // 相同合成文本在两个独立 CFT 里走真实查找 HUD 与按键；不使用模拟 DOM 代替可见结果。
 import puppeteer from "npm:puppeteer";
 import * as path from "@std/path";
+import { assertSafeTestBrowser } from "./test_browser_safety.js";
+assertSafeTestBrowser({ headless: Deno.env.get("BROWSER_TOOLBOX_FIND_KEEP_OPEN") !== "true" });
 const executablePath = Deno.env.get("PUPPETEER_EXECUTABLE_PATH") || puppeteer.executablePath();
 const compatPath = Deno.env.get("BROWSER_TOOLBOX_FIND_COMPAT_PATH");
 const canaryPath = Deno.env.get("BROWSER_TOOLBOX_E2E_EXTENSION_PATH");

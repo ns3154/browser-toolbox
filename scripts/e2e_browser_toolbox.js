@@ -21,6 +21,10 @@ const extensionPath = Deno.env.get("BROWSER_TOOLBOX_E2E_EXTENSION_PATH") ||
 const executablePath = Deno.env.get("PUPPETEER_EXECUTABLE_PATH") ||
   puppeteer.executablePath();
 const headless = Deno.env.get("BROWSER_TOOLBOX_E2E_HEADLESS") === "false" ? false : "new";
+if ((!headless || Deno.env.get("BROWSER_TOOLBOX_E2E_BROWSER_URL")) &&
+  Deno.env.get("BROWSER_TOOLBOX_ALLOW_HEADED_TESTS") !== "true") {
+  throw new Error("有头测试或外部浏览器连接须先获得用户明确授权。");
+}
 const settingsKey = "browserToolboxSettings";
 const moduleRegistry = globalThis.BrowserToolboxModuleRegistry;
 const pngBytes = Uint8Array.from(
@@ -1324,6 +1328,126 @@ async function testActionControls(browser, id, fixture, errors) {
         (element) => getComputedStyle(element).display !== "none",
       )
     );
+    for (const width of [320, 360, 400]) {
+      await action.setViewport({ width, height: 800 });
+      const layout = await action.evaluate(() => {
+        const positions = (selector) => [...document.querySelector(selector).children]
+          .map((item) => item.getBoundingClientRect())
+          .filter((item) => item.width > 0 && item.height > 0)
+          .sort((left, right) => left.top - right.top || left.left - right.left)
+          .slice(0, 2).map((item) => ({ left: item.left, right: item.right, top: item.top }));
+        const clipped = [...document.querySelectorAll(
+          ".browser-toolbox-enhancement-copy strong, .browser-toolbox-tool-card-copy strong, " +
+            ".browser-toolbox-footer-link > span:last-child",
+        )].filter((element) => {
+          const parent = element.closest(".browser-toolbox-enhancement-card, .browser-toolbox-tool-card, .browser-toolbox-footer-link");
+          const bounds = (element.closest(".browser-toolbox-enhancement-copy, .browser-toolbox-tool-card-copy") || parent)
+            .getBoundingClientRect();
+          const range = document.createRange();
+          range.selectNodeContents(element);
+          return [...range.getClientRects()].some((rect) => rect.left < bounds.left - 1 ||
+            rect.right > bounds.right + 1 || rect.top < bounds.top - 1 || rect.bottom > bounds.bottom + 1);
+        }).map((element) => element.textContent.trim());
+        return {
+          enhancements: positions(".browser-toolbox-enhancement-grid"),
+          tools: positions("#browser-toolbox-tool-buttons"),
+          documentWidth: document.documentElement.scrollWidth,
+          availableWidth: document.documentElement.clientWidth,
+          clipped,
+        };
+      });
+      for (const [name, items] of [["模块", layout.enhancements], ["工具", layout.tools]]) {
+        assert(items.length === 2 && Math.abs(items[0].top - items[1].top) < 1 &&
+          items[1].left >= items[0].right, `${width}px 弹窗${name}未按双列排列`);
+      }
+      assert(layout.documentWidth <= layout.availableWidth + 1, `${width}px 弹窗横向溢出`);
+      if (width <= 360) assert(layout.clipped.length === 0, `${width}px 弹窗文字越界：${layout.clipped}`);
+      const screenshot = Deno.env.get("BROWSER_TOOLBOX_E2E_POPUP_SCREENSHOT");
+      if (screenshot && width === 320) await action.screenshot({ path: screenshot });
+    }
+    await action.setViewport({ width: 320, height: 480 });
+    const hostname = "console.cloud.enterprise-production.long-name.example.com";
+    const longTitle = await action.evaluate((value) => {
+      const title = document.querySelector("#browser-toolbox-current-site-title");
+      title.dataset.originalTitle = title.title;
+      title.dataset.originalText = title.textContent;
+      title.textContent = value;
+      title.title = value;
+      return { full: title.title, clipped: title.scrollWidth > title.clientWidth,
+        overflow: getComputedStyle(title).textOverflow };
+    }, hostname);
+    assert(longTitle.full === hostname && longTitle.clipped && longTitle.overflow === "ellipsis",
+      `长域名应单行省略并保留完整提示：${JSON.stringify(longTitle)}`);
+    await action.evaluate(() => {
+      const title = document.querySelector("#browser-toolbox-current-site-title");
+      title.title = title.dataset.originalTitle;
+      title.textContent = title.dataset.originalText;
+      document.body.scrollTop = 0;
+    });
+    await sleep(100);
+    console.log("动作页初始滚动状态：", await action.evaluate(() => ({
+      top: document.body.scrollTop, height: document.body.scrollHeight,
+      client: document.body.clientHeight, windowTop: scrollY,
+      documentTop: document.documentElement.scrollTop,
+      header: document.querySelector(".browser-toolbox-action-brand").className,
+      footer: document.querySelector(".browser-toolbox-action-footer").className,
+    })));
+    await waitFor(() => action.evaluate(() =>
+      document.body.scrollHeight > document.body.clientHeight &&
+      document.querySelector(".browser-toolbox-action-footer").classList.contains("has-scroll-bottom")
+    ));
+    await action.evaluate(() => { document.body.scrollTop = document.body.scrollHeight; });
+    await sleep(100);
+    console.log("动作页滚动状态：", await action.evaluate(() => ({
+      top: document.body.scrollTop, height: document.body.scrollHeight,
+      client: document.body.clientHeight, windowTop: scrollY,
+      documentTop: document.documentElement.scrollTop,
+      header: document.querySelector(".browser-toolbox-action-brand").className,
+      footer: document.querySelector(".browser-toolbox-action-footer").className,
+    })));
+    await waitFor(() => action.evaluate(() =>
+      document.querySelector(".browser-toolbox-action-brand").classList.contains("has-scroll-top") &&
+      !document.querySelector(".browser-toolbox-action-footer").classList.contains("has-scroll-bottom")
+    ));
+    const sticky = await action.evaluate(() => {
+      const header = document.querySelector(".browser-toolbox-action-brand").getBoundingClientRect();
+      const footer = document.querySelector(".browser-toolbox-action-footer").getBoundingClientRect();
+      return { header: header.top, footer: footer.bottom, height: innerHeight };
+    });
+    assert(sticky.header >= -1 && sticky.header <= 1 && sticky.footer <= sticky.height + 1,
+      `滚动时头尾应保持在弹窗内：${JSON.stringify(sticky)}`);
+    await action.setViewport({ width: 360, height: 600 });
+    for (const scheme of ["light", "dark"]) {
+      await action.emulateMediaFeatures([{ name: "prefers-color-scheme", value: scheme }]);
+      for (const theme of ["sage-mist", "cobalt", "paper-ink", "slate"]) {
+        await action.evaluate((name) => { document.documentElement.dataset.btTheme = name; }, theme);
+        await action.keyboard.press("Tab");
+        await action.focus("#browser-toolbox-toggle-keyboard");
+        const focus = await action.$eval("#browser-toolbox-toggle-keyboard", (input) => {
+          const card = input.closest(".browser-toolbox-enhancement-card");
+          const bounds = card.getBoundingClientRect();
+          const style = getComputedStyle(card);
+          return { visible: input.matches(":focus-visible"), outline: style.outlineStyle,
+            width: parseFloat(style.outlineWidth), left: bounds.left, right: bounds.right,
+            viewport: document.body.clientWidth };
+        });
+        assert(focus.visible && focus.outline !== "none" && focus.width === 2 &&
+          focus.left >= 2 && focus.right <= focus.viewport - 2,
+          `${theme}/${scheme} 瓦片焦点框不完整：${JSON.stringify(focus)}`);
+        if (theme === "slate" && scheme === "dark") {
+          const colors = await action.$eval("#browser-toolbox-toggle-keyboard + i", (track) => ({
+            track: getComputedStyle(track).backgroundColor,
+            knob: getComputedStyle(track, "::after").backgroundColor,
+          }));
+          assert(colors.track !== colors.knob, `深色 slate 开启滑块颜色无对比：${JSON.stringify(colors)}`);
+          const screenshot = Deno.env.get("BROWSER_TOOLBOX_E2E_POPUP_DARK_SCREENSHOT");
+          if (screenshot) await action.screenshot({ path: screenshot });
+        }
+      }
+    }
+    await action.emulateMediaFeatures([{ name: "prefers-color-scheme", value: "light" }]);
+    await action.evaluate(() => { document.documentElement.dataset.btTheme = "sage-mist"; });
+    await action.setViewport({ width: 1280, height: 800 });
     const initial = await action.evaluate(() => ({
       wheel: document.querySelector("#browser-toolbox-toggle-wheel").checked,
       label:
@@ -1472,6 +1596,15 @@ async function testActionControls(browser, id, fixture, errors) {
         badgeColor: document.querySelector("#browser-toolbox-site-badge")
           ? getComputedStyle(document.querySelector("#browser-toolbox-site-badge")).color
           : "",
+        dangerColor: (() => {
+          const probe = document.createElement("span");
+          probe.style.color = "var(--bt-danger)";
+          document.body.append(probe);
+          const color = getComputedStyle(probe).color;
+          probe.remove();
+          return color;
+        })(),
+        scope: document.querySelector(".browser-toolbox-section-count")?.textContent.trim(),
         pausedByScope: document.querySelector("#browser-toolbox-enhancement-summary")?.classList
           .contains("is-paused-by-scope") || false,
         disabledStatuses: [...document.querySelectorAll(
@@ -1483,7 +1616,8 @@ async function testActionControls(browser, id, fixture, errors) {
       return JSON.stringify(state.session) === JSON.stringify({ enabled: false }) &&
         /Inactive|已停用/.test(state.badge) &&
         state.badgeDisabled === true &&
-        (state.badgeColor === "rgb(190, 18, 60)" || state.badgeColor === "rgb(251, 113, 133)") &&
+        state.badgeColor === state.dangerColor &&
+        /Session paused|会话已暂停/.test(state.scope || "") &&
         state.pausedByScope &&
         /Restore this session|恢复本次会话/.test(state.buttonText || "") &&
         state.buttonDisabled === false && state.toggles.every((toggle) =>
@@ -4002,6 +4136,17 @@ async function main() {
     options = await openOptions(browser, id, errors);
     console.log("E2E: 扩展页面已加载");
     const stage = (name, task) => runStage(browser, name, task);
+    if (Deno.env.get("BROWSER_TOOLBOX_E2E_ACTION_ONLY") === "true") {
+      await stage("动作页受限页面", () => testActionRestrictedPage(browser, id, errors));
+      await resetSettings(options);
+      await patchSettings(options, { general: { language: "en" } });
+      fixture = await createPage(browser, errors);
+      await fixture.goto(`${base127}/fixture.html`, { waitUntil: "load" });
+      await stage("动作页双列布局与会话开关", () => testActionControls(browser, id, fixture, errors));
+      assert(errors.length === 0, `E2E 页面错误：${errors.join("；")}`);
+      console.log("动作页专项 E2E 通过。");
+      return;
+    }
     await stage("动作页受限页面", () => testActionRestrictedPage(browser, id, errors));
     await stage("无障碍测试初始化", () => resetSettings(options));
     await stage("设置页键盘和无障碍语义", () => testOptionsAccessibility(options));

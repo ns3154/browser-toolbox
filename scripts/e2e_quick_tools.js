@@ -9,6 +9,9 @@ const extensionPath = Deno.env.get("BROWSER_TOOLBOX_E2E_EXTENSION_PATH") ||
 const executablePath = Deno.env.get("PUPPETEER_EXECUTABLE_PATH") ||
   puppeteer.executablePath();
 const headless = Deno.env.get("BROWSER_TOOLBOX_E2E_HEADLESS") !== "false";
+if (!headless && Deno.env.get("BROWSER_TOOLBOX_ALLOW_HEADED_TESTS") !== "true") {
+  throw new Error("有头测试须先获得用户明确授权；常规测试只使用无头浏览器。");
+}
 
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
@@ -111,7 +114,7 @@ async function freePort(excludedPort = 0) {
   }
 }
 
-async function startBrowser(excludedPort) {
+export async function startBrowser(excludedPort) {
   const port = await freePort(excludedPort);
   const userDataDir = await Deno.makeTempDir({ prefix: "browser-toolbox-quick-tools-profile-" });
   const process = new Deno.Command(executablePath, {
@@ -301,13 +304,13 @@ async function testActionPopup(browser, id, baseUrl) {
     const narrow = await action.evaluate(() => ({
       width: innerWidth,
       scrollWidth: document.documentElement.scrollWidth,
-      singleColumn: getComputedStyle(document.querySelector(".browser-toolbox-enhancement-grid")).gridTemplateColumns.split(" ").length === 1,
+      doubleColumn: getComputedStyle(document.querySelector(".browser-toolbox-enhancement-grid")).gridTemplateColumns.split(" ").length === 2,
       brandTitleLines: Math.round(document.querySelector(".browser-toolbox-brand-copy h1").getBoundingClientRect().height / parseFloat(getComputedStyle(document.querySelector(".browser-toolbox-brand-copy h1")).lineHeight)),
       siteTitleLines: Math.round(document.querySelector("#browser-toolbox-current-site-title").getBoundingClientRect().height / parseFloat(getComputedStyle(document.querySelector("#browser-toolbox-current-site-title")).lineHeight)),
       enhancementCopyWidths: [...document.querySelectorAll(".browser-toolbox-enhancement-copy")].map((element) => Math.round(element.getBoundingClientRect().width)),
     }));
     assert(
-      narrow.scrollWidth <= narrow.width && narrow.singleColumn &&
+      narrow.scrollWidth <= narrow.width && narrow.doubleColumn &&
         narrow.brandTitleLines === 1 && narrow.siteTitleLines === 1 &&
         narrow.enhancementCopyWidths.every((width) => width >= 120),
       `动作弹窗窄屏布局不应横向溢出或逐字换行：${JSON.stringify(narrow)}`,

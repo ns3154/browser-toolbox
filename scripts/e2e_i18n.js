@@ -1,12 +1,12 @@
 #!/usr/bin/env -S deno run -A
-// 连接独立 Chrome for Testing，验证真实扩展的语言保存、重开、工具操作和内容页帮助。
-import puppeteer from "npm:puppeteer";
+// 复用快捷工具测试的独立无头浏览器，避免连接或抢占用户的现有窗口。
+import { startBrowser } from "./e2e_quick_tools.js";
 
-const browserURL = Deno.env.get("BROWSER_TOOLBOX_E2E_BROWSER_URL");
-if (!browserURL) {
-  throw new Error("请指定独立 Chrome for Testing 的 BROWSER_TOOLBOX_E2E_BROWSER_URL");
+if (Deno.env.get("BROWSER_TOOLBOX_E2E_HEADLESS") === "false" ||
+  Deno.env.get("BROWSER_TOOLBOX_E2E_BROWSER_URL")) {
+  throw new Error("多语言测试只允许自行启动独立无头浏览器，不接受有头或外部连接。");
 }
-const browser = await puppeteer.connect({ browserURL, protocolTimeout: 20000 });
+const { browser, process: chromeProcess, userDataDir } = await startBrowser(0);
 const errors = [];
 const evidence = new URL(
   Deno.env.get("BROWSER_TOOLBOX_E2E_EVIDENCE_URL") ||
@@ -71,11 +71,19 @@ async function checkWidth(page, label, width, locale) {
     );
     assert(clippedButtons.length === 0, `${locale}/${width} 按钮文字溢出：${clippedButtons}`);
   }
-  if (["zh_TW", "ja", "es"].includes(locale)) {
+  if (["zh_TW", "ja", "es"].includes(locale) ||
+    label === "action" && [320, 360, 400].includes(width)) {
     if (label === "settings" && width < 500) {
       await page.$eval("[data-panel='general']", (node) => node.scrollIntoView());
     }
-    await page.screenshot({ path: new URL(`${locale}-${label}-${width}.png`, evidence).pathname });
+    const screenshot = { path: new URL(`${locale}-${label}-${width}.png`, evidence).pathname };
+    if (label === "action") {
+      const size = await page.evaluate(() => ({
+        width: innerWidth, height: Math.ceil(document.body.getBoundingClientRect().height),
+      }));
+      screenshot.clip = { x: 0, y: 0, width: size.width, height: size.height };
+    }
+    await page.screenshot(screenshot);
   }
   return geometry;
 }
@@ -143,20 +151,26 @@ try {
     await tool.bringToFront();
     await tool.goto(`${extensionBase}/pages/tools/index.html?tool=json.format`);
     await assertLocale(tool, locale);
+    await tool.waitForSelector('body[data-tool-ready="true"]');
     await tool.waitForSelector("#tool-input");
     assert(
       await tool.$eval("#tool-input", (node) => node.placeholder) ===
         catalog.toolJsonInputHint.message,
       "JSON 输入提示语言不一致",
     );
-    await tool.type("#tool-input", '{"b":2,"a":"local"}');
+    await tool.$eval("#tool-input", (input) => {
+      input.value = '{"b":2,"a":"local"}';
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    });
     await tool.waitForFunction(() =>
       document.querySelector("#json-result-tree")?.textContent.includes("local")
     );
+    console.log(`JSON 工具通过：${locale}`);
     await checkWidth(tool, "json", 1280, locale);
     await checkWidth(tool, "json", 390, locale);
 
     await tool.goto(`${extensionBase}/pages/tools/index.html?tool=time.convert`);
+    console.log(`检查时间工具：${locale}`);
     await assertLocale(tool, locale);
     await tool.waitForSelector("#time-zone[aria-label]");
     for (const [selector, key] of [
@@ -212,15 +226,144 @@ try {
     await checkWidth(tool, "onboarding", 1280, locale);
     await checkWidth(tool, "onboarding", 390, locale);
 
-    await action.bringToFront();
+    await content.goto(`http://127.0.0.1:${fixture.addr.port}/`, { waitUntil: "networkidle0" });
+    console.log(`检查动作弹窗：${locale}`);
+    await content.bringToFront();
     await action.goto(`${extensionBase}/pages/action.html`);
     await assertLocale(action, locale);
+    await action.waitForFunction(() =>
+      getComputedStyle(document.querySelector("#browser-toolbox-enhancement-summary")).display !== "none",
+      { polling: 50, timeout: 10000 },
+    );
     assert(
       await action.$eval("[data-i18n='quickTools']", (node) => node.textContent) ===
         catalog.quickTools.message,
       "弹窗页语言不一致",
     );
     await checkWidth(action, "action", 440, locale);
+    const popupWidths = [];
+    for (const width of [320, 360, 400]) {
+      await checkWidth(action, "action", width, locale);
+      const grid = await action.$eval("#browser-toolbox-tool-buttons", (element) => {
+        const cards = [...element.children].map((item) => item.getBoundingClientRect())
+          .filter((item) => item.width > 0 && item.height > 0);
+        return cards.slice(0, 2).map((item) => ({ left: item.left, right: item.right, top: item.top }));
+      });
+      assert(grid.length === 2 && Math.abs(grid[0].top - grid[1].top) < 1 &&
+        grid[1].left >= grid[0].right, `${locale}/${width} 快捷工具未按双列排列`);
+      const enhancements = await action.$eval(".browser-toolbox-enhancement-grid", (element) => {
+        const cards = [...element.children].map((item) => item.getBoundingClientRect())
+          .filter((item) => item.width > 0 && item.height > 0)
+          .sort((left, right) => left.top - right.top || left.left - right.left);
+        return cards.slice(0, 2).map((item) => ({ left: item.left, right: item.right, top: item.top }));
+      });
+      assert(enhancements.length === 2 && Math.abs(enhancements[0].top - enhancements[1].top) < 1 &&
+        enhancements[1].left >= enhancements[0].right, `${locale}/${width} 浏览增强未按双列排列`);
+      {
+        const clipped = await action.$$eval(
+          ".browser-toolbox-enhancement-copy strong, .browser-toolbox-tool-card-copy strong, " +
+            ".browser-toolbox-footer-link > span:last-child, .browser-toolbox-session-heading-row h2, " +
+            ".browser-toolbox-site-status, .browser-toolbox-session-status, " +
+            ".browser-toolbox-secondary-button, .browser-toolbox-section-heading h2, .browser-toolbox-text-link",
+          (nodes) => nodes.filter((node) => {
+            const bounds = node.getBoundingClientRect();
+            if (bounds.width === 0 || bounds.height === 0) return false;
+            const range = document.createRange();
+            range.selectNodeContents(node);
+            return [...range.getClientRects()].some((rect) => rect.left < bounds.left - 1 ||
+              rect.right > bounds.right + 1 || rect.top < bounds.top - 1 || rect.bottom > bounds.bottom + 1);
+          }).map((node) => node.textContent.trim()),
+        );
+        assert(clipped.length === 0, `${locale}/${width} 弹窗文字越界：${clipped}`);
+      }
+      const geometry = await action.evaluate(() => {
+        const visible = (node) => {
+          const rect = node.getBoundingClientRect();
+          return rect.width > 0 && rect.height > 0 && getComputedStyle(node).visibility !== "hidden";
+        };
+        const collisions = [];
+        for (const selector of [
+          ".browser-toolbox-action-brand", ".browser-toolbox-site-heading-row",
+          ".browser-toolbox-site-main", ".browser-toolbox-session-heading-row",
+          "#browser-toolbox-tools .browser-toolbox-section-heading",
+          ".browser-toolbox-enhancement-grid", "#browser-toolbox-tool-buttons",
+          ".browser-toolbox-action-footer",
+        ]) {
+          const nodes = [...document.querySelector(selector).children].filter(visible);
+          for (let left = 0; left < nodes.length; left++) {
+            for (let right = left + 1; right < nodes.length; right++) {
+              const a = nodes[left].getBoundingClientRect(), b = nodes[right].getBoundingClientRect();
+              if (Math.min(a.right, b.right) - Math.max(a.left, b.left) > 1 &&
+                Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 1) {
+                collisions.push(`${selector}: ${nodes[left].textContent.trim()} / ${nodes[right].textContent.trim()}`);
+              }
+            }
+          }
+        }
+        const brokenWords = [];
+        for (const element of document.querySelectorAll(
+          ".browser-toolbox-enhancement-copy strong, .browser-toolbox-tool-card-copy strong, " +
+            ".browser-toolbox-footer-link > span:last-child, .browser-toolbox-session-status, " +
+            ".browser-toolbox-site-status, .browser-toolbox-secondary-button, " +
+            ".browser-toolbox-session-heading-row h2, .browser-toolbox-section-heading h2, .browser-toolbox-text-link",
+        )) {
+          if (!visible(element)) continue;
+          const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+          while (walker.nextNode()) {
+            const node = walker.currentNode;
+            for (const match of node.data.matchAll(/[A-Za-zÀ-ÖØ-öø-ÿ]+/g)) {
+              const range = document.createRange();
+              range.setStart(node, match.index);
+              range.setEnd(node, match.index + match[0].length);
+              if (range.getClientRects().length > 1) brokenWords.push(match[0]);
+            }
+          }
+        }
+        return { collisions, brokenWords, height: document.body.scrollHeight,
+          viewport: innerWidth, documentWidth: document.documentElement.clientWidth,
+          bodyWidth: document.body.getBoundingClientRect().width, bodyClientWidth: document.body.clientWidth,
+          copyWidths: [...document.querySelectorAll(".browser-toolbox-enhancement-copy")]
+            .map((node) => node.getBoundingClientRect().width) };
+      });
+      assert(geometry.collisions.length === 0, `${locale}/${width} 控件碰撞：${geometry.collisions}`);
+      assert(geometry.brokenWords.length === 0, `${locale}/${width} 单词被从中间拆开：${geometry.brokenWords}`);
+      assert(geometry.copyWidths.every((value) => value >= 126), `${locale}/${width} 瓦片文案宽度不足：${JSON.stringify(geometry)}`);
+      if (width >= 360) assert(geometry.height <= 600, `${locale}/${width} 常规弹窗超过 600px：${geometry.height}`);
+      const longHostname = "console.cloud.enterprise-production.long-name.example.com";
+      const longTitle = await action.evaluate((hostname) => {
+        const title = document.querySelector("#browser-toolbox-current-site-title");
+        const original = { text: title.textContent, title: title.title };
+        title.textContent = hostname;
+        title.title = hostname;
+        const result = { title: title.title, clipped: title.scrollWidth > title.clientWidth,
+          overflow: getComputedStyle(title).textOverflow };
+        title.textContent = original.text;
+        title.title = original.title;
+        return result;
+      }, longHostname);
+      assert(longTitle.title === longHostname && longTitle.clipped && longTitle.overflow === "ellipsis",
+        `${locale}/${width} 长域名应保留完整提示并单行省略：${JSON.stringify(longTitle)}`);
+      await action.$eval("#browser-toolbox-disable-session", (button) => button.click());
+      await action.waitForFunction((expected) => {
+        const button = document.querySelector("#browser-toolbox-disable-session");
+        return !button.disabled &&
+          document.querySelector(".browser-toolbox-section-count").textContent === expected &&
+          document.querySelector("#browser-toolbox-enhancement-summary").classList.contains("is-paused-by-scope");
+      }, { timeout: 10000 }, catalog.actionScopeSessionPaused.message);
+      if (locale === "zh_CN" && width === 360) {
+        const bounds = await action.$eval("body", (body) => body.getBoundingClientRect().height);
+        await action.screenshot({ path: new URL("zh_CN-session-paused-360.png", evidence).pathname,
+          clip: { x: 0, y: 0, width, height: Math.ceil(bounds) } });
+      }
+      await action.$eval("#browser-toolbox-disable-session", (button) => button.click());
+      await action.waitForFunction(() => {
+        const button = document.querySelector("#browser-toolbox-disable-session");
+        return !button.disabled &&
+          !document.querySelector("#browser-toolbox-enhancement-summary").classList.contains("is-paused-by-scope") &&
+          /^\d\/4$/.test(document.querySelector(".browser-toolbox-section-count").textContent);
+      }, { timeout: 10000 });
+      popupWidths.push(width);
+    }
 
     await content.goto(`http://127.0.0.1:${fixture.addr.port}/`);
     await content.bringToFront();
@@ -255,6 +398,7 @@ try {
       timeAccessibility: true,
       onboarding: true,
       action: true,
+      popupWidths,
       contentHelp: true,
     });
     console.log(`通过：${locale} 保存与重开、JSON 操作、弹窗页、网页内帮助、宽窄屏布局。`);
@@ -286,4 +430,7 @@ try {
 } finally {
   await fixture.shutdown();
   browser.disconnect();
+  try { chromeProcess.kill("SIGTERM"); } catch (_) { /* 浏览器可能已自行退出。 */ }
+  await chromeProcess.status.catch(() => {});
+  await Deno.remove(userDataDir, { recursive: true }).catch(() => {});
 }

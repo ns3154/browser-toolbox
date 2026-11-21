@@ -4911,5 +4911,11 @@
   },
   "toolPasswordMemoryOnly": {
     "message": "扩展仅在当前页面内存中保留密码"
+  },
+  "actionScopeSessionPaused": {
+    "message": "会话已暂停"
+  },
+  "actionScopeSiteDisabled": {
+    "message": "此站点已停用"
   }
 }

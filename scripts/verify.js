@@ -34,6 +34,15 @@ const report = {
   stages: [],
 };
 const executable = Deno.env.get("PUPPETEER_EXECUTABLE_PATH") || puppeteer.executablePath();
+const headedOnlyScripts = new Set([
+  "scripts/e2e_vomnibar_canary.js",
+  "scripts/e2e_marks_canary.js",
+  "scripts/e2e_ui_canary.js",
+  "scripts/e2e_help_canary.js",
+  "scripts/e2e_settings_canary.js",
+  "scripts/e2e_new_tab_canary.js",
+]);
+class HeadedTestSkipped extends Error {}
 
 async function stage(name, action) {
   console.log(`\n验证阶段：${name}`);
@@ -46,6 +55,11 @@ async function stage(name, action) {
       durationMs: Math.round(performance.now() - start),
     });
   } catch (error) {
+    if (error instanceof HeadedTestSkipped) {
+      console.log(`${name} 跳过：${error.message}`);
+      report.stages.push({ name, status: "skipped", reason: error.message });
+      return;
+    }
     console.error(`${name} 失败：${error.message}`);
     report.stages.push({
       name,
@@ -57,6 +71,10 @@ async function stage(name, action) {
 }
 
 async function run(args, env = {}, timeoutMs = 600000) {
+  const headedScript = args.find((argument) => headedOnlyScripts.has(argument));
+  if (headedScript && Deno.env.get("BROWSER_TOOLBOX_ALLOW_HEADED_TESTS") !== "true") {
+    throw new HeadedTestSkipped(`按用户要求不启动有头专项：${headedScript}`);
+  }
   const child = new Deno.Command(Deno.execPath(), {
     args,
     cwd: root,

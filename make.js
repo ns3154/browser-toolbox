@@ -176,6 +176,7 @@ async function testDom() {
 
   const files = ["dom_tests.html"];
   const browser = await puppeteer.launch({
+    headless: true,
     args: Deno.env.get("CI") === "true" ? ["--no-sandbox"] : [],
   });
   let success = true;

@@ -5,6 +5,10 @@ import * as path from "@std/path";
 // deno-lint-ignore no-import-prefix no-unversioned-import
 import puppeteer from "npm:puppeteer";
 
+if (Deno.env.get("BROWSER_TOOLBOX_ALLOW_HEADED_TESTS") !== "true") {
+  throw new Error("原生焦点专项须先获得用户明确授权；常规测试只使用无头浏览器。");
+}
+
 const executablePath = Deno.env.get("PUPPETEER_EXECUTABLE_PATH");
 const extension = Deno.env.get("BROWSER_TOOLBOX_E2E_EXTENSION_PATH");
 const reportPath = Deno.env.get("BROWSER_TOOLBOX_FOCUS_REPORT");

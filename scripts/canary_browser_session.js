@@ -119,6 +119,9 @@ export async function launchCanaryBrowser({
   previousSession,
 }) {
   const positioned = positionOptions(launchOptions), options = positioned.options;
+  if (options.headless === false && Deno.env.get("BROWSER_TOOLBOX_ALLOW_HEADED_TESTS") !== "true") {
+    throw new Error("原生有头专项已停止：须先获得用户明确授权，常规测试只使用无头浏览器。");
+  }
   const queue = Deno.env.get("BROWSER_TOOLBOX_CUA_LAUNCH_QUEUE");
   if (!queue) {
     const browser = await puppeteer.launch(options), child = browser.process();

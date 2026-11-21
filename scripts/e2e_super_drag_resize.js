@@ -2,6 +2,9 @@
 // 使用本地合成页面和独立浏览器验证尺寸调整不会触发超级拖拽。
 // deno-lint-ignore no-import-prefix no-unversioned-import
 import puppeteer from "npm:puppeteer";
+import { assertSafeTestBrowser } from "./test_browser_safety.js";
+
+assertSafeTestBrowser({ headless: Deno.env.get("BROWSER_TOOLBOX_E2E_HEADLESS") !== "false" });
 import * as path from "@std/path";
 
 const root = path.resolve(path.dirname(path.fromFileUrl(import.meta.url)), "..");

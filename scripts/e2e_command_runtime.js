@@ -2,6 +2,9 @@
 // 所有页面和 profile 均为合成数据；使用真实 sender、浏览器文档和后台终止验证权限与副作用。
 import puppeteer from "npm:puppeteer";
 import * as path from "@std/path";
+import { assertSafeTestBrowser } from "./test_browser_safety.js";
+
+assertSafeTestBrowser({ headless: Deno.env.get("BROWSER_TOOLBOX_E2E_HEADLESS") !== "false" });
 
 const root = path.resolve(path.dirname(path.fromFileUrl(import.meta.url)), "..");
 const extensionPath = Deno.env.get("BROWSER_TOOLBOX_E2E_EXTENSION_PATH") ||

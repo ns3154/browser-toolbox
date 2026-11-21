@@ -3,6 +3,9 @@
 // deno-lint-ignore no-import-prefix no-unversioned-import
 import puppeteer from "npm:puppeteer";
 import * as path from "@std/path";
+import { assertSafeTestBrowser } from "./test_browser_safety.js";
+
+assertSafeTestBrowser({ headless: Deno.env.get("BROWSER_TOOLBOX_E2E_HEADLESS") !== "false" });
 
 const root = path.resolve(path.dirname(path.fromFileUrl(import.meta.url)), "..");
 const extension = Deno.env.get("BROWSER_TOOLBOX_E2E_EXTENSION_PATH") ||

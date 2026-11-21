@@ -11,6 +11,9 @@ const reportPath = Deno.env.get("BROWSER_TOOLBOX_UI_REPORT");
 const keepOpen = Deno.env.get("BROWSER_TOOLBOX_UI_KEEP_OPEN") === "true";
 const group = Deno.env.get("BROWSER_TOOLBOX_UI_GROUP") || "both";
 const externalBrowserUrl = Deno.env.get("BROWSER_TOOLBOX_UI_BROWSER_URL");
+if (externalBrowserUrl && Deno.env.get("BROWSER_TOOLBOX_ALLOW_HEADED_TESTS") !== "true") {
+  throw new Error("外部有头浏览器专项须先获得用户明确授权，常规测试不得连接现有窗口。");
+}
 const preparationPath = Deno.env.get("BROWSER_TOOLBOX_UI_PREPARATION_REPORT");
 const focusHandshakeDir = Deno.env.get("BROWSER_TOOLBOX_UI_FOCUS_HANDSHAKE_DIR");
 const runId = crypto.randomUUID();

@@ -35,6 +35,7 @@ export const ActionPage = {
     globalThis.BrowserToolboxTheme?.watchTheme?.(document);
     BrowserToolboxI18n.apply(document);
     this.renderIcons();
+    this.initScrollBoundaries();
     // Is it possible for the current tab's URL to change while this action popup is open?
     const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
     const activeTab = tabs[0];
@@ -112,6 +113,30 @@ export const ActionPage = {
       });
       slot.replaceChildren(icon);
     }
+  },
+
+  initScrollBoundaries() {
+    const scroller = document.body;
+    const header = document.querySelector(".browser-toolbox-action-brand");
+    const footer = document.querySelector(".browser-toolbox-action-footer");
+    const shell = document.querySelector(".browser-toolbox-action-shell");
+    if (!scroller || !header || !footer || !shell) return;
+    const update = () => {
+      const canScroll = scroller.scrollHeight > scroller.clientHeight + 1;
+      header.classList.toggle("has-scroll-top", canScroll && scroller.scrollTop > 1);
+      footer.classList.toggle(
+        "has-scroll-bottom",
+        canScroll && scroller.scrollTop + scroller.clientHeight < scroller.scrollHeight - 1,
+      );
+    };
+    scroller.addEventListener("scroll", update, { passive: true });
+    document.defaultView?.addEventListener("resize", update, { passive: true });
+    if (globalThis.ResizeObserver) {
+      const observer = new ResizeObserver(update);
+      observer.observe(scroller);
+      observer.observe(shell);
+    }
+    update();
   },
 
   initUtilityControls(activeTab) {
@@ -269,12 +294,15 @@ export const ActionPage = {
         siteBadge.textContent = BrowserToolboxI18n.message(pageEnabled ? "active" : "inactive");
         siteBadge.classList.toggle("is-disabled", !pageEnabled);
       }
+      container.classList.toggle("is-site-disabled", !pageEnabled);
       const enhancementSummary = document.querySelector("#browser-toolbox-enhancement-summary");
+      const sessionPaused = repository.sessionOverrides?.enabled === false;
       if (enhancementSummary) {
-        // 站点停用或会话暂停时置灰模块开关区，提示作用范围已接管
-        const pausedByScope = repository.sessionOverrides?.enabled === false || !pageEnabled;
+        // 站点停用或会话暂停时置灰模块开关区，提示作用范围已接管。
+        const pausedByScope = sessionPaused || !pageEnabled;
         enhancementSummary.classList.toggle("is-paused-by-scope", pausedByScope);
       }
+      let enabledCount = 0;
       for (const [selector, moduleName] of controls) {
         const input = document.querySelector(selector);
         if (!input) continue;
@@ -283,6 +311,7 @@ export const ActionPage = {
           ? effectiveModules.wheel !== false && effectiveModules.rocker !== false
           : effectiveModules[moduleName] !== false;
         input.checked = enabled;
+        if (enabled) enabledCount++;
         const statusLabel = input.closest(".browser-toolbox-enhancement-card")?.querySelector(
           ".browser-toolbox-module-status",
         );
@@ -290,6 +319,16 @@ export const ActionPage = {
           statusLabel.textContent = BrowserToolboxI18n.message(enabled ? "enabled" : "disabled");
           statusLabel.classList.toggle("is-disabled", !enabled);
         }
+      }
+      const count = enhancementSummary?.querySelector(".browser-toolbox-section-count");
+      if (count) {
+        count.textContent = sessionPaused
+          ? BrowserToolboxI18n.message("actionScopeSessionPaused")
+          : !pageEnabled
+          ? BrowserToolboxI18n.message("actionScopeSiteDisabled")
+          : `${enabledCount}/${controls.length}`;
+        count.classList.toggle("is-session-paused", sessionPaused);
+        count.classList.toggle("is-site-disabled", !sessionPaused && !pageEnabled);
       }
     };
     renderStatus(settings);
@@ -369,13 +408,7 @@ export const ActionPage = {
       const description = document.createElement("small");
       description.textContent = BrowserToolboxI18n.message(descriptor.descriptionKey);
       copy.append(title, description);
-      const arrow = document.createElement("span");
-      arrow.className = "browser-toolbox-tool-card-arrow";
-      arrow.setAttribute("aria-hidden", "true");
-      arrow.append(globalThis.BrowserToolboxToolIcons.createIcon("chevron", {
-        className: "browser-toolbox-tool-card-arrow-icon",
-      }));
-      button.append(icon, copy, arrow);
+      button.append(icon, copy);
       button.title = BrowserToolboxI18n.message(descriptor.descriptionKey);
       button.addEventListener("click", async () => {
         const invocation = BrowserToolboxCommandInvocation.createInvocation(

@@ -2,6 +2,8 @@
 // 冻结旧 Visual 与独立 Visual 在原生 CFT 中执行相同按键，选区、焦点和复制均取实际结果。
 import puppeteer from "npm:puppeteer";
 import * as path from "@std/path";
+import { assertSafeTestBrowser } from "./test_browser_safety.js";
+assertSafeTestBrowser({ headless: Deno.env.get("BROWSER_TOOLBOX_VISUAL_KEEP_OPEN") !== "true" });
 
 const executablePath = Deno.env.get("PUPPETEER_EXECUTABLE_PATH") || puppeteer.executablePath();
 const compatPath = Deno.env.get("BROWSER_TOOLBOX_VISUAL_COMPAT_PATH");

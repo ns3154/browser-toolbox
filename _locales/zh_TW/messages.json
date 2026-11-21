@@ -4911,5 +4911,11 @@
   },
   "toolPasswordMemoryOnly": {
     "message": "擴充功能僅在目前頁面的記憶體中保留密碼"
+  },
+  "actionScopeSessionPaused": {
+    "message": "工作階段已暫停"
+  },
+  "actionScopeSiteDisabled": {
+    "message": "此站點已停用"
   }
 }

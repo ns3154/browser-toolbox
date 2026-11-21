@@ -5,6 +5,9 @@ import * as path from "@std/path";
 // deno-lint-ignore no-import-prefix no-unversioned-import
 import puppeteer from "npm:puppeteer";
 import { buildArtifacts } from "./release_artifacts.js";
+import { assertSafeTestBrowser } from "./test_browser_safety.js";
+
+assertSafeTestBrowser({ headless: Deno.env.get("BROWSER_TOOLBOX_RECOVERY_HEADLESS") !== "false" });
 
 const executablePath = Deno.env.get("PUPPETEER_EXECUTABLE_PATH");
 const reportPath = Deno.env.get("BROWSER_TOOLBOX_RECOVERY_DIAGNOSTICS_REPORT");
@@ -42,7 +45,7 @@ try {
   ).join("");
   browser = await puppeteer.launch({
     executablePath,
-    headless: Deno.env.get("BROWSER_TOOLBOX_RECOVERY_HEADLESS") === "true",
+    headless: Deno.env.get("BROWSER_TOOLBOX_RECOVERY_HEADLESS") !== "false",
     userDataDir: profile,
     defaultViewport: { width: 1280, height: 800 },
     ignoreDefaultArgs: ["--disable-extensions"],

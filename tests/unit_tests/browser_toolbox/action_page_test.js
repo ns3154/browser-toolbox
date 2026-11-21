@@ -57,6 +57,8 @@ context("BrowserToolbox action page", () => {
     settings.siteRules.push({ pattern: "https://example.com/*", modules: { mouse: false } });
     await ActionPage.init();
     const button = document.querySelector("#browser-toolbox-disable-session");
+    const scope = document.querySelector(".browser-toolbox-section-count");
+    assert.equal("3/4", scope.textContent);
     button.click();
     await flushEvents();
     assert.equal({ enabled: false }, repository.sessionOverrides);
@@ -65,6 +67,8 @@ context("BrowserToolbox action page", () => {
     );
     assert.isFalse(button.disabled);
     assert.isTrue(document.querySelector("#browser-toolbox-toggle-keyboard").disabled);
+    assert.equal(BrowserToolboxI18n.message("actionScopeSessionPaused"), scope.textContent);
+    assert.equal(BrowserToolboxI18n.message("inactive"), document.querySelector("#browser-toolbox-site-badge").textContent);
     button.click();
     await flushEvents();
     assert.equal({}, repository.sessionOverrides);
@@ -72,6 +76,19 @@ context("BrowserToolbox action page", () => {
     assert.isFalse(repository.getEffectiveSettings("https://example.com/").effectiveModules.mouse);
     assert.isFalse(document.querySelector("#browser-toolbox-toggle-keyboard").disabled);
     assert.isTrue(document.querySelector("#browser-toolbox-toggle-keyboard").checked);
+    assert.equal("3/4", scope.textContent);
+  });
+
+  should("distinguish a saved disabled site from a paused session", async () => {
+    settings.siteRules.push({ pattern: "https://example.com/*", modules: { enabled: false } });
+    await ActionPage.init();
+    const scope = document.querySelector(".browser-toolbox-section-count");
+    assert.equal(BrowserToolboxI18n.message("actionScopeSiteDisabled"), scope.textContent);
+    assert.isTrue(document.querySelector("#browser-toolbox-controls").classList.contains("is-site-disabled"));
+    document.querySelector("#browser-toolbox-disable-session").click();
+    await flushEvents();
+    assert.equal(BrowserToolboxI18n.message("actionScopeSessionPaused"), scope.textContent);
+    assert.equal(BrowserToolboxI18n.message("inactive"), document.querySelector("#browser-toolbox-site-badge").textContent);
   });
 
   should("restore a legacy pause from a restricted page and keep all tools working", async () => {
@@ -123,6 +140,14 @@ context("BrowserToolbox action page", () => {
     assert.isFalse(created[0].url.includes("private"));
     assert.isFalse(created[0].url.includes("password"));
     assert.isFalse(created[0].url.includes("secret"));
+  });
+
+  should("retain the complete hostname for a long site title", () => {
+    const hostname = "console.cloud.enterprise-production.example.com";
+    ActionPage.initSiteShortcut({ url: `https://${hostname}/path` });
+    const title = document.querySelector("#browser-toolbox-current-site-title");
+    assert.equal(hostname, title.textContent);
+    assert.equal(hostname, title.title);
   });
 
   should("hide the site shortcut for unsupported or invalid URLs", () => {

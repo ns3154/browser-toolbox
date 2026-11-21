@@ -1,199 +1,90 @@
-:root {
-  --padding: 15px;
+/* 根元素不接管滚动，才能让弹窗主体成为吸顶与吸底的滚动容器。 */
+html {
+  overflow: hidden;
 }
 
-body {
-  /* This will be the size of the toolbar action popup. */
-  width: 600px;
-  height: 300px;
-  display: flex;
-  flex-direction: column;
-}
-
-.browser-toolbox-tools-panel {
-  padding: 10px var(--padding);
-  border-bottom: 1px solid #cbd5e1;
-}
-
-.browser-toolbox-tools-panel h1 {
-  margin: 4px 0 6px;
-}
-
-.browser-toolbox-tool-note {
-  margin: 4px 0 8px;
-  color: #64748b;
-}
-
-.browser-toolbox-tool-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-h1 {
-  font-size: 18px;
-}
-
-#not-enabled-error, #firefox-missing-permissions-error {
-  padding: var(--padding);
-}
-
-#browser-toolbox-controls {
-  border-bottom: 1px solid #cbd5e1;
-  margin-bottom: 12px;
-  padding: 10px var(--padding);
-}
-
-#browser-toolbox-controls h1,
-#browser-toolbox-controls h2 {
-  margin: 4px 0 8px;
-  font-size: 15px;
-}
-
-.browser-toolbox-action-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px;
-}
-
-.browser-toolbox-action-buttons {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 0;
-}
-
-.browser-toolbox-action-buttons a {
-  cursor: pointer;
-  color: var(--bt-accent);
-}
-
-.browser-toolbox-action-buttons button {
-  cursor: pointer;
-}
-
-.browser-toolbox-tool-list {
-  display: grid;
-  gap: 6px;
-  margin: 8px 0 14px;
-}
-
-.browser-toolbox-tool-option {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-}
-
-.browser-toolbox-tool-option span {
-  display: grid;
-  gap: 2px;
-}
-
-.browser-toolbox-tool-option small {
-  color: #64748b;
-}
-
-/* 快捷工具动作页的视觉层：通过语义主题令牌统一适配多套预设主题。 */
+/* 动作弹窗使用主题语义令牌，并由自身滚动容器保留吸顶与吸底区域。 */
 body.browser-toolbox-action-page {
-  --toolbox-action-bg: var(--bt-bg);
-  --toolbox-surface: var(--bt-surface-card);
-  --toolbox-surface-muted: var(--bt-surface-subtle);
-  --toolbox-crystal-bg: var(--bt-crystal-bg);
-  --toolbox-crystal-border: var(--bt-crystal-border);
-  --toolbox-ink: var(--bt-text);
-  --toolbox-muted: var(--bt-muted);
-  --toolbox-subtle: var(--bt-subtle);
-  --toolbox-line: var(--bt-border-subtle);
-  --toolbox-blue: var(--bt-accent);
-  --toolbox-blue-strong: var(--bt-accent-strong);
-  --toolbox-blue-soft: var(--bt-accent-soft);
-  --toolbox-green: var(--bt-success);
-  --toolbox-green-soft: var(--bt-success-soft);
-  --toolbox-radius-sm: 8px;
-  --toolbox-radius-md: 12px;
-  --toolbox-radius-lg: 15px;
   box-sizing: border-box;
   width: min(400px, 100vw);
   min-width: 0;
   max-width: 400px;
-  min-height: 0;
+  max-height: 600px;
+  max-height: min(600px, 100vh);
   height: auto;
+  margin: 0;
   overflow-x: hidden;
   overflow-y: auto;
-  background: var(--toolbox-surface);
-  color: var(--toolbox-ink);
-  font: 13px/1.45 -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+  overscroll-behavior: contain;
+  background: var(--bt-surface-card);
+  color: var(--bt-text);
+  font: 13px/1.45 -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+}
+
+.browser-toolbox-action-page::-webkit-scrollbar {
+  width: 5px;
+}
+.browser-toolbox-action-page::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background: var(--bt-border-strong);
+}
+.browser-toolbox-action-page * {
+  box-sizing: border-box;
 }
 
 .browser-toolbox-action-page .browser-toolbox-action-shell {
-  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   width: 100%;
   min-width: 0;
-  min-height: 0;
-  gap: 0;
   padding: 0;
-  background: var(--toolbox-surface);
+  background: var(--bt-surface-card);
 }
 
 .browser-toolbox-action-page .browser-toolbox-action-brand {
-  display: flex;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  order: 1;
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) 28px;
   align-items: center;
-  gap: 10px;
-  min-height: 42px;
-  padding: 2px 2px 8px;
-  border: 0;
-}
-
-.browser-toolbox-action-page .browser-toolbox-brand-mark {
-  display: grid;
-  flex: 0 0 34px;
-  width: 34px;
-  height: 34px;
-  place-items: center;
-  border-radius: 11px;
-  background: var(--toolbox-blue-soft);
-}
-
-.browser-toolbox-action-page .browser-toolbox-brand-mark img {
-  width: 25px;
-  height: 25px;
-}
-
-.browser-toolbox-action-page .browser-toolbox-brand-copy {
-  display: grid;
+  gap: 8px;
   min-width: 0;
-  gap: 1px;
+  min-height: 38px;
+  padding: 5px 14px;
+  border-bottom: 1px solid var(--bt-border-subtle);
+  background: var(--bt-surface-card);
 }
 
+.browser-toolbox-action-page .browser-toolbox-action-brand.has-scroll-top {
+  box-shadow: 0 3px 8px rgb(0 0 0 / 12%);
+}
+
+.browser-toolbox-action-page .browser-toolbox-brand-mark,
+.browser-toolbox-action-page .browser-toolbox-brand-mark img {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+.browser-toolbox-action-page .browser-toolbox-brand-copy {
+  min-width: 0;
+}
 .browser-toolbox-action-page .browser-toolbox-brand-copy h1 {
+  min-width: 0;
   margin: 0;
-  color: var(--toolbox-ink);
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: -.01em;
-}
-
-.browser-toolbox-action-page .browser-toolbox-running {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  color: var(--toolbox-green);
-  font-size: 11px;
+  overflow: hidden;
+  color: var(--bt-text);
+  font-size: 13px;
   font-weight: 600;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-
-.browser-toolbox-action-page .browser-toolbox-running i,
-.browser-toolbox-action-page .browser-toolbox-site-badge::before {
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: currentColor;
-  content: "";
+.browser-toolbox-action-page .browser-toolbox-running {
+  display: none;
 }
-
 .browser-toolbox-action-page .browser-toolbox-ui-icon {
   display: block;
   width: 16px;
@@ -204,135 +95,191 @@ body.browser-toolbox-action-page {
   stroke-linejoin: round;
   stroke-width: 1.75;
 }
-
-/* 顶部极简品牌栏（DOM 与视觉均排第 1 位） */
-.browser-toolbox-action-page .browser-toolbox-action-brand {
-  order: 1;
-  box-sizing: border-box;
-  display: grid;
-  grid-template-columns: 26px minmax(0, 1fr) 28px;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  min-width: 0;
-  padding: 9px 14px 8px;
-  border-bottom: 1px solid var(--toolbox-line);
-  background: var(--toolbox-surface);
-}
-
-.browser-toolbox-action-page .browser-toolbox-brand-mark {
-  flex: 0 0 26px;
-  width: 26px;
-  height: 26px;
-  border-radius: 7px;
-  background: var(--toolbox-blue-soft);
-}
-
-.browser-toolbox-action-page .browser-toolbox-brand-mark img {
-  width: 19px;
-  height: 19px;
-}
-
-.browser-toolbox-action-page .browser-toolbox-brand-copy {
-  display: flex;
-  align-items: baseline;
-  gap: 7px;
-  min-width: 0;
-}
-
-.browser-toolbox-action-page .browser-toolbox-brand-copy h1 {
-  margin: 0;
-  min-width: 0;
-  overflow: hidden;
-  color: var(--toolbox-ink);
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: -0.015em;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.browser-toolbox-action-page .browser-toolbox-running {
-  display: none;
-}
-
 .browser-toolbox-action-page .browser-toolbox-icon-button {
   display: grid;
-  flex: 0 0 30px;
-  width: 30px;
-  height: 30px;
-  margin-left: auto;
+  width: 28px;
+  height: 28px;
   place-items: center;
   border: 1px solid transparent;
   border-radius: 8px;
-  color: var(--toolbox-muted);
-  font-size: 0;
+  color: var(--bt-muted);
   text-decoration: none;
-  transition: background-color 0.14s ease, color 0.14s ease, border-color 0.14s ease;
+}
+.browser-toolbox-action-page .browser-toolbox-icon-button:hover {
+  border-color: var(--bt-border-subtle);
+  background: var(--bt-surface-subtle);
+  color: var(--bt-accent);
 }
 
-.browser-toolbox-action-page .browser-toolbox-icon-button:hover,
-.browser-toolbox-action-page .browser-toolbox-icon-button:focus-visible {
-  border-color: var(--toolbox-line);
-  background: var(--toolbox-surface-muted);
-  color: var(--toolbox-blue);
-}
-
-/* 统一的作用域状态控制区：本页站点规则（上层）与全部网站会话暂停（下层）自然融为一体 */
 .browser-toolbox-action-page .browser-toolbox-action-section {
-  box-sizing: border-box;
-  padding: 10px 14px;
+  min-width: 0;
   border: 0;
-  border-bottom: 1px solid var(--toolbox-line);
-  border-radius: 0;
-  background: var(--toolbox-surface);
-  box-shadow: none;
 }
-
 .browser-toolbox-action-page #browser-toolbox-controls {
   order: 2;
-  margin: 10px 14px 0;
-  padding: 10px 12px;
-  border: 1px solid var(--toolbox-line);
-  border-bottom: 0;
-  border-radius: 12px 12px 0 0;
-  background: var(--toolbox-surface-muted);
+  margin: 8px 14px 0;
+  padding: 8px 11px;
+  border: 1px solid var(--bt-border-subtle);
+  border-radius: 8px;
+  background: var(--bt-surface-subtle);
 }
-
-.browser-toolbox-action-page .browser-toolbox-site-main {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  min-width: 0;
+.browser-toolbox-action-page #browser-toolbox-controls.is-site-disabled {
+  border-color: color-mix(in srgb, var(--bt-danger) 30%, var(--bt-border-subtle));
 }
-
-.browser-toolbox-action-page .browser-toolbox-site-copy {
-  min-width: 0;
-  flex: 1 1 auto;
-}
-
 .browser-toolbox-action-page .browser-toolbox-site-heading-row {
   display: flex;
   align-items: center;
   gap: 7px;
   min-width: 0;
 }
+.browser-toolbox-action-page #browser-toolbox-current-site-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  color: var(--bt-text);
+  font-size: 13.5px;
+  font-weight: 650;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.browser-toolbox-action-page .browser-toolbox-site-badge {
+  flex: 0 0 auto;
+  padding: 3.5px 8px;
+  border: 1px solid color-mix(in srgb, var(--bt-success) 26%, transparent);
+  border-radius: 999px;
+  background: var(--bt-success-soft);
+  color: var(--bt-success);
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+.browser-toolbox-action-page .browser-toolbox-site-badge.is-disabled {
+  border-color: color-mix(in srgb, var(--bt-danger) 30%, transparent);
+  background: var(--bt-danger-soft);
+  color: var(--bt-danger);
+}
+.browser-toolbox-action-page .browser-toolbox-site-main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px 10px;
+  min-width: 0;
+  margin-top: 5px;
+}
+.browser-toolbox-action-page .browser-toolbox-site-status {
+  flex: 1 1 145px;
+  min-width: 0;
+  margin: 0;
+  color: var(--bt-muted);
+  font-size: 11px;
+  line-height: 1.35;
+  overflow-wrap: break-word;
+  line-break: strict;
+}
+.browser-toolbox-action-page #browser-toolbox-manage-site {
+  min-height: 27px;
+  margin-left: auto;
+  padding: 4px 10px;
+}
+
+.browser-toolbox-action-page .browser-toolbox-session-controls {
+  order: 2;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  margin: 5px 14px 0;
+  padding: 7px 11px;
+  border: 1px dashed var(--bt-border);
+  border-left: 3px solid var(--bt-border-strong);
+  border-radius: 8px;
+  background: var(--bt-surface-card);
+}
+.browser-toolbox-action-page .browser-toolbox-session-controls.is-session-paused {
+  border-style: solid;
+  border-color: var(--bt-warning-border);
+  border-left: 3px solid var(--bt-warning-text);
+  background: var(--bt-warning-bg);
+}
+.browser-toolbox-action-page .browser-toolbox-session-heading-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px 10px;
+  min-width: 0;
+}
+.browser-toolbox-action-page .browser-toolbox-session-heading-row h2 {
+  flex: 1 1 95px;
+  min-width: 0;
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+.browser-toolbox-action-page .browser-toolbox-session-heading-row button {
+  margin-left: auto;
+}
+.browser-toolbox-action-page .browser-toolbox-session-status {
+  width: 100%;
+  margin: 0;
+  color: var(--bt-muted);
+  font-size: 11px;
+  line-height: 1.34;
+  overflow-wrap: break-word;
+  line-break: strict;
+}
+.browser-toolbox-action-page .is-session-paused .browser-toolbox-session-status {
+  color: var(--bt-warning-text);
+}
+.browser-toolbox-action-page .browser-toolbox-secondary-button,
+.browser-toolbox-action-page .browser-toolbox-primary-button {
+  flex: 0 0 auto;
+  min-height: 27px;
+  padding: 4px 10px;
+  border: 1px solid var(--bt-border);
+  border-radius: 8px;
+  background: var(--bt-surface-card);
+  box-shadow: none;
+  color: var(--bt-text);
+  cursor: pointer;
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 550;
+  text-shadow: none;
+  white-space: nowrap;
+}
+.browser-toolbox-action-page .browser-toolbox-secondary-button:hover {
+  border-color: var(--bt-accent);
+  color: var(--bt-accent-strong);
+}
+.browser-toolbox-action-page .browser-toolbox-primary-button,
+.browser-toolbox-action-page .is-session-paused .browser-toolbox-secondary-button {
+  border-color: var(--bt-accent);
+  background: var(--bt-accent);
+  color: var(--bt-accent-contrast);
+}
+.browser-toolbox-action-page .browser-toolbox-secondary-button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
 
 .browser-toolbox-action-page .browser-toolbox-restricted-card {
   order: 2;
-  box-sizing: border-box;
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  margin: 10px 14px 0;
-  padding: 10px 12px;
+  margin: 8px 14px 0;
+  padding: 8px 11px;
   border: 1px solid var(--bt-warning-border);
-  border-radius: 11px;
+  border-radius: 8px;
   background: var(--bt-warning-bg);
-  box-shadow: none;
+  color: var(--bt-warning-text);
 }
-
+.browser-toolbox-action-page:has(.browser-toolbox-restricted-card[style*="block"]) .browser-toolbox-session-controls {
+  order: 3;
+}
 .browser-toolbox-action-page .browser-toolbox-restricted-icon {
   display: grid;
   flex: 0 0 24px;
@@ -341,299 +288,128 @@ body.browser-toolbox-action-page {
   place-items: center;
   border-radius: 7px;
   background: color-mix(in srgb, var(--bt-warning-text) 14%, transparent);
-  color: var(--bt-warning-text);
   font-weight: 700;
 }
-
 .browser-toolbox-action-page .browser-toolbox-restricted-card h2 {
   margin: 0 0 3px;
-  color: var(--bt-warning-text);
   font-size: 12.5px;
 }
-
 .browser-toolbox-action-page .browser-toolbox-restricted-card p {
   margin: 0 0 4px;
-  color: var(--bt-warning-text);
-  opacity: 0.85;
   font-size: 11px;
+  line-height: 1.35;
 }
 
-/* 保持 DOM 顺序兼容测试的同时，用 CSS order 将模块开关排在本地工具之上 */
+/* DOM 次序保持兼容，视觉次序依次为作用域、增强、工具及导航。 */
 .browser-toolbox-action-page #browser-toolbox-enhancement-summary {
   order: 3;
-  padding: 10px 14px 8px;
+  padding: 10px 14px 0;
 }
-
 .browser-toolbox-action-page #browser-toolbox-tools {
   order: 4;
-  padding: 9px 14px 10px;
-  border-bottom: 0;
+  padding: 10px 14px 6px;
 }
-
 .browser-toolbox-action-page .browser-toolbox-section-heading {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 4px 10px;
   min-width: 0;
 }
-
 .browser-toolbox-action-page .browser-toolbox-section-heading > div {
-  flex: 1 1 auto;
   min-width: 0;
 }
-
 .browser-toolbox-action-page .browser-toolbox-section-kicker {
   display: none;
 }
-
-.browser-toolbox-action-page .browser-toolbox-section-heading h1,
 .browser-toolbox-action-page .browser-toolbox-section-heading h2 {
   margin: 0;
-  min-width: 0;
-  overflow: hidden;
-  color: var(--toolbox-ink);
-  font-size: 14px;
+  color: var(--bt-muted);
+  font-size: 11px;
   font-weight: 600;
-  letter-spacing: -0.015em;
   line-height: 1.3;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
-
-.browser-toolbox-action-page #browser-toolbox-enhancement-summary .browser-toolbox-section-heading h2,
-.browser-toolbox-action-page #browser-toolbox-tools .browser-toolbox-section-heading h2 {
-  color: var(--toolbox-muted);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-}
-
-.browser-toolbox-action-page .browser-toolbox-site-badge,
 .browser-toolbox-action-page .browser-toolbox-section-count {
-  display: inline-flex;
-  align-items: center;
-  flex: 0 0 auto;
-  gap: 4px;
-  padding: 3px 8px;
-  border-radius: 999px;
-  background: rgb(255 255 255 / 72%);
-  color: var(--toolbox-green);
-  font-size: 10.5px;
-  font-weight: 600;
-}
-
-.browser-toolbox-action-page .browser-toolbox-site-badge.is-disabled {
-  background: #fff1f2;
-  color: #be123c;
-}
-
-.browser-toolbox-action-page .browser-toolbox-section-count {
-  min-width: auto;
-  padding: 0;
-  background: transparent;
-  color: var(--toolbox-subtle);
-  font-weight: 500;
-}
-
-.browser-toolbox-action-page .browser-toolbox-site-status {
-  min-height: 0;
-  margin: 3px 0 0;
-  color: var(--toolbox-muted);
+  color: var(--bt-subtle);
   font-size: 11px;
-  line-height: 1.35;
-  text-wrap: pretty;
 }
-
-.browser-toolbox-action-page .browser-toolbox-session-controls {
-  order: 2;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  margin: 0 14px 4px;
-  padding: 8px 12px;
-  border: 1px solid var(--toolbox-line);
-  border-radius: 0 0 12px 12px;
-  background: var(--toolbox-crystal-bg);
+.browser-toolbox-action-page .browser-toolbox-section-count.is-session-paused {
+  color: var(--bt-warning-text);
 }
-
-.browser-toolbox-action-page:has(#browser-toolbox-controls[style*="none"]) .browser-toolbox-session-controls {
-  margin-top: 8px;
-  border-radius: 12px;
+.browser-toolbox-action-page .browser-toolbox-section-count.is-site-disabled {
+  color: var(--bt-danger);
 }
-
-.browser-toolbox-action-page .browser-toolbox-session-controls.is-session-paused {
-  border-color: var(--bt-warning-border);
-  background: var(--bt-warning-bg);
-}
-
-.browser-toolbox-action-page .browser-toolbox-session-controls > div {
-  min-width: 0;
-  flex: 1 1 auto;
-}
-
-.browser-toolbox-action-page .browser-toolbox-session-controls .browser-toolbox-secondary-button {
-  border-color: var(--bt-border);
-  background: var(--toolbox-surface);
-}
-
-.browser-toolbox-action-page .browser-toolbox-session-controls.is-session-paused .browser-toolbox-secondary-button {
-  border-color: var(--toolbox-blue);
-  background: var(--toolbox-blue);
-  color: var(--bt-accent-contrast);
-}
-
-.browser-toolbox-action-page .browser-toolbox-session-controls h2 {
-  margin: 0;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.browser-toolbox-action-page .browser-toolbox-session-status {
-  margin: 1px 0 0;
-  color: var(--toolbox-muted);
-  font-size: 10.5px;
-  line-height: 1.35;
-  text-wrap: pretty;
-}
-
-.browser-toolbox-action-page .browser-toolbox-secondary-button,
-.browser-toolbox-action-page .browser-toolbox-primary-button {
-  box-sizing: border-box;
-  flex: 0 0 auto;
-  min-height: 28px;
-  padding: 4px 10px;
-  border: 1px solid var(--bt-border);
-  border-radius: var(--toolbox-radius-sm);
-  background: var(--toolbox-surface);
-  box-shadow: none;
-  color: var(--toolbox-ink);
-  cursor: pointer;
-  font: inherit;
-  font-size: 11.5px;
-  font-weight: 550;
-  text-shadow: none;
-  white-space: nowrap;
-  transition: background-color 0.14s ease, border-color 0.14s ease, color 0.14s ease;
-}
-
-.browser-toolbox-action-page #browser-toolbox-controls .browser-toolbox-secondary-button {
-  border-color: var(--bt-border);
-  background: var(--toolbox-surface);
-}
-
-.browser-toolbox-action-page .browser-toolbox-primary-button {
-  border-color: var(--toolbox-blue);
-  background: var(--toolbox-blue);
-  color: #ffffff;
-}
-
-.browser-toolbox-action-page .browser-toolbox-secondary-button:hover,
-.browser-toolbox-action-page .browser-toolbox-secondary-button:focus-visible {
-  border-color: var(--toolbox-blue);
-  background: var(--toolbox-surface);
-  color: var(--toolbox-blue);
-}
-
-.browser-toolbox-action-page .browser-toolbox-secondary-button:disabled {
-  cursor: default;
-  opacity: 0.65;
-}
-
-.browser-toolbox-action-page .browser-toolbox-primary-button:hover,
-.browser-toolbox-action-page .browser-toolbox-primary-button:focus-visible {
-  background: var(--toolbox-blue-strong);
-}
-
-/* 输入增强模块：无边框 2×2 轻量控制矩阵，用空间与悬停区隔于下方工具入口 */
 .browser-toolbox-action-page .browser-toolbox-enhancement-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  column-gap: 8px;
-  row-gap: 2px;
-  margin-top: 5px;
-  transition: opacity 0.15s ease;
+  gap: 6px;
+  margin-top: 6px;
 }
-
 .browser-toolbox-action-page #browser-toolbox-enhancement-summary.is-paused-by-scope .browser-toolbox-enhancement-grid {
-  opacity: 0.46;
+  opacity: 0.52;
 }
-
-.browser-toolbox-action-page .browser-toolbox-enhancement-card,
-.browser-toolbox-action-page .browser-toolbox-enhancement-card-featured {
+.browser-toolbox-action-page .browser-toolbox-enhancement-card {
   position: relative;
-  display: grid;
-  grid-template-columns: 16px minmax(0, 1fr) 30px;
-  align-items: center;
-  gap: 7px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 5px;
   min-width: 0;
-  min-height: 34px;
-  padding: 5px 7px;
-  border: 0;
-  border-bottom: 0;
+  min-height: 49px;
+  padding: 7px 10px;
+  border: 1px solid var(--bt-border-subtle);
   border-radius: 8px;
-  background: transparent;
-  box-shadow: none;
+  background: var(--bt-surface-card);
   cursor: pointer;
-  transition: background-color 0.14s ease;
 }
-
 .browser-toolbox-action-page .browser-toolbox-enhancement-card {
   order: 2;
 }
-
 .browser-toolbox-action-page .browser-toolbox-enhancement-card-featured {
   order: 1;
 }
-
-.browser-toolbox-action-page .browser-toolbox-enhancement-card:hover,
-.browser-toolbox-action-page .browser-toolbox-enhancement-card:focus-within {
-  background: var(--toolbox-surface-muted);
+.browser-toolbox-action-page .browser-toolbox-enhancement-card:has(input:checked) {
+  border-color: color-mix(in srgb, var(--bt-accent) 26%, var(--bt-border-subtle));
+  background: var(--bt-surface-subtle);
 }
-
-.browser-toolbox-action-page .browser-toolbox-enhancement-card:hover .browser-toolbox-enhancement-icon,
-.browser-toolbox-action-page .browser-toolbox-enhancement-card:focus-within .browser-toolbox-enhancement-icon {
-  color: var(--toolbox-blue);
+.browser-toolbox-action-page .browser-toolbox-enhancement-card:has(input:checked) .browser-toolbox-enhancement-icon {
+  color: var(--bt-accent);
 }
-
-.browser-toolbox-action-page .browser-toolbox-enhancement-icon,
-.browser-toolbox-action-page .browser-toolbox-enhancement-icon-mouse,
-.browser-toolbox-action-page .browser-toolbox-enhancement-icon-drag,
-.browser-toolbox-action-page .browser-toolbox-enhancement-icon-wheel,
-.browser-toolbox-action-page .browser-toolbox-enhancement-card-featured .browser-toolbox-enhancement-icon {
-  display: grid;
-  width: 18px;
-  height: 18px;
-  place-items: center;
-  border-radius: 0;
-  background: transparent;
-  color: var(--toolbox-muted);
-  font-size: 0;
+.browser-toolbox-action-page .browser-toolbox-enhancement-card:not(:has(input:checked)) .browser-toolbox-enhancement-copy {
+  color: var(--bt-muted);
 }
-
-.browser-toolbox-action-page .browser-toolbox-enhancement-icon .browser-toolbox-ui-icon,
-.browser-toolbox-action-page .browser-toolbox-enhancement-card-featured .browser-toolbox-ui-icon {
-  width: 16px;
-  height: 16px;
-}
-
-.browser-toolbox-action-page .browser-toolbox-enhancement-copy {
+.browser-toolbox-action-page .browser-toolbox-enhancement-top {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.browser-toolbox-action-page .browser-toolbox-enhancement-icon {
+  display: grid;
+  width: 15px;
+  height: 15px;
+  place-items: center;
+  color: var(--bt-muted);
+}
+.browser-toolbox-action-page .browser-toolbox-enhancement-icon .browser-toolbox-ui-icon {
+  width: 15px;
+  height: 15px;
+}
+.browser-toolbox-action-page .browser-toolbox-enhancement-copy {
+  display: block;
+  width: 100%;
   min-width: 0;
-  overflow: hidden;
 }
-
 .browser-toolbox-action-page .browser-toolbox-enhancement-copy strong {
-  overflow: hidden;
-  color: var(--toolbox-ink);
+  display: block;
   font-size: 12.5px;
-  font-weight: 500;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-weight: 550;
+  line-height: 1.24;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
-
-/* 保留副文案与状态给辅助技术及既有读取逻辑，默认不堆积多行噪音 */
 .browser-toolbox-action-page .browser-toolbox-enhancement-copy small,
 .browser-toolbox-action-page .browser-toolbox-module-status,
 .browser-toolbox-action-page .browser-toolbox-tool-card-copy small,
@@ -648,15 +424,12 @@ body.browser-toolbox-action-page {
   clip-path: inset(50%);
   white-space: nowrap;
 }
-
 .browser-toolbox-action-page .browser-toolbox-switch {
   position: relative;
   display: block;
   width: 32px;
   height: 18px;
-  margin-top: 0;
 }
-
 .browser-toolbox-action-page .browser-toolbox-switch input {
   position: absolute;
   z-index: 1;
@@ -667,15 +440,12 @@ body.browser-toolbox-action-page {
   opacity: 0;
   cursor: pointer;
 }
-
 .browser-toolbox-action-page .browser-toolbox-switch i {
   position: absolute;
   inset: 0;
   border-radius: 999px;
-  background: #cbd5e1;
-  transition: background 0.15s ease;
+  background: var(--bt-border-strong);
 }
-
 .browser-toolbox-action-page .browser-toolbox-switch i::after {
   position: absolute;
   top: 3px;
@@ -686,229 +456,189 @@ body.browser-toolbox-action-page {
   background: #ffffff;
   box-shadow: 0 1px 2px rgb(15 23 42 / 22%);
   content: "";
-  transition: transform 0.15s ease;
 }
-
 .browser-toolbox-action-page .browser-toolbox-switch input:checked + i {
-  background: var(--toolbox-blue);
+  background: var(--bt-accent);
 }
-
 .browser-toolbox-action-page .browser-toolbox-switch input:checked + i::after {
   transform: translateX(14px);
+  background: var(--bt-accent-contrast);
 }
 
-/* 本地工具：清爽 2 列高频动作入口 */
 .browser-toolbox-action-page .browser-toolbox-text-link {
-  color: var(--toolbox-blue);
+  color: var(--bt-accent-strong);
   font-size: 11px;
   font-weight: 500;
   text-decoration: none;
 }
-
 .browser-toolbox-action-page .browser-toolbox-text-link:hover {
   text-decoration: underline;
 }
-
 .browser-toolbox-action-page .browser-toolbox-tool-buttons {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 6px;
   margin-top: 6px;
 }
-
 .browser-toolbox-action-page .browser-toolbox-tool-card {
   display: grid;
-  grid-template-columns: 16px minmax(0, 1fr) 12px;
+  grid-template-columns: 15px minmax(0, 1fr);
   align-items: center;
   gap: 7px;
   min-width: 0;
   min-height: 34px;
-  padding: 6px 9px;
-  border: 1px solid var(--toolbox-line);
-  border-radius: 9px;
-  background: var(--toolbox-surface-muted);
+  padding: 5px 9px;
+  border: 1px solid var(--bt-border-subtle);
+  border-radius: 8px;
+  background: var(--bt-surface-card);
   box-shadow: none;
-  color: var(--toolbox-ink);
+  color: var(--bt-text);
   cursor: pointer;
   text-align: left;
   text-shadow: none;
-  transition: border-color 0.14s ease, color 0.14s ease, background-color 0.14s ease;
 }
-
 .browser-toolbox-action-page .browser-toolbox-tool-card:hover,
 .browser-toolbox-action-page .browser-toolbox-tool-card:focus-visible {
-  border-color: var(--toolbox-blue);
-  background: var(--toolbox-blue-soft);
-  color: var(--toolbox-blue);
+  border-color: var(--bt-accent);
+  background: var(--bt-accent-soft);
+  color: var(--bt-accent-strong);
 }
-
 .browser-toolbox-action-page .browser-toolbox-tool-icon {
   width: 15px;
   height: 15px;
-  padding: 0;
-  box-sizing: border-box;
-  border-radius: 0;
-  background: transparent;
-  color: var(--toolbox-blue);
+  color: var(--bt-accent);
 }
-
-.browser-toolbox-action-page .browser-toolbox-tool-card:hover .browser-toolbox-tool-icon,
-.browser-toolbox-action-page .browser-toolbox-tool-card:focus-visible .browser-toolbox-tool-icon {
-  color: var(--toolbox-blue);
-}
-
 .browser-toolbox-action-page .browser-toolbox-tool-card-copy {
-  display: flex;
-  align-items: center;
+  display: block;
   min-width: 0;
-  overflow: hidden;
 }
-
 .browser-toolbox-action-page .browser-toolbox-tool-card-copy strong {
-  overflow: hidden;
+  display: block;
   font-size: 12px;
   font-weight: 500;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  line-height: 1.24;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
-.browser-toolbox-action-page .browser-toolbox-tool-card-arrow {
-  display: grid;
-  place-items: center;
-  color: var(--toolbox-subtle);
-  font-size: 0;
-}
-
-.browser-toolbox-action-page .browser-toolbox-tool-card-arrow-icon {
-  width: 12px;
-  height: 12px;
-  transform: rotate(-90deg);
-}
-
-/* 桌面级单行快捷工具条（占高度小、与上方网格自然衔接） */
 .browser-toolbox-action-page .browser-toolbox-action-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
   order: 5;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 4px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3px 6px;
   margin-top: auto;
-  padding: 6px 10px 7px;
-  border-top: 1px solid var(--toolbox-line);
-  background: var(--toolbox-surface-muted);
+  padding: 6px 12px;
+  border-top: 1px solid var(--bt-border-subtle);
+  background: var(--bt-surface-subtle);
 }
-
+.browser-toolbox-action-page .browser-toolbox-action-footer.has-scroll-bottom {
+  box-shadow: 0 -3px 8px rgb(0 0 0 / 12%);
+}
 .browser-toolbox-action-page .browser-toolbox-footer-link {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  gap: 6px;
   min-width: 0;
   min-height: 28px;
-  gap: 4px;
-  padding: 4px 4px;
+  padding: 3.5px 8px;
   border: 1px solid transparent;
   border-radius: 7px;
   background: transparent;
   box-shadow: none;
-  color: var(--toolbox-muted);
+  color: var(--bt-muted);
   cursor: pointer;
   font: inherit;
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 500;
-  text-align: center;
+  line-height: 1.2;
+  text-align: left;
   text-decoration: none;
   text-shadow: none;
-  white-space: nowrap;
-  transition: background-color 0.14s ease, color 0.14s ease;
 }
-
-.browser-toolbox-action-page .browser-toolbox-footer-link:hover,
+.browser-toolbox-action-page .browser-toolbox-footer-link > span:last-child {
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+.browser-toolbox-action-page .browser-toolbox-footer-link:hover:not(:disabled),
 .browser-toolbox-action-page .browser-toolbox-footer-link:focus-visible {
-  background: var(--toolbox-surface);
-  color: var(--toolbox-blue);
+  background: var(--bt-surface-card);
+  color: var(--bt-accent-strong);
+}
+.browser-toolbox-action-page .browser-toolbox-footer-link:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.browser-toolbox-action-page .browser-toolbox-footer-icon {
+  display: grid;
+  flex: 0 0 14px;
+  width: 14px;
+  height: 14px;
+  place-items: center;
+}
+.browser-toolbox-action-page .browser-toolbox-footer-icon .browser-toolbox-ui-icon {
+  width: 14px;
+  height: 14px;
+}
+.browser-toolbox-action-page :is(button, a, select, summary):focus-visible,
+.browser-toolbox-action-page .browser-toolbox-enhancement-card:has(input:focus-visible) {
+  outline: 2px solid var(--bt-accent);
+  outline-offset: 2px;
+}
+.browser-toolbox-action-page .browser-toolbox-switch input:focus-visible {
   outline: none;
 }
 
-.browser-toolbox-action-page .browser-toolbox-footer-icon {
-  display: grid;
-  place-items: center;
-  font-size: 0;
-}
-
-.browser-toolbox-action-page .browser-toolbox-footer-icon .browser-toolbox-ui-icon {
-  width: 15px;
-  height: 15px;
-}
-
-.browser-toolbox-action-page :is(button, a, input, select, summary):focus-visible {
-  outline: 2px solid var(--toolbox-blue);
-  outline-offset: 2px;
-}
-
-@media (prefers-color-scheme: dark) {
-  .browser-toolbox-action-page .browser-toolbox-site-badge {
-    background: var(--bt-success-soft);
-  }
-
-  .browser-toolbox-action-page .browser-toolbox-site-badge.is-disabled {
-    background: var(--bt-danger-soft);
-    color: var(--bt-danger);
-  }
-
-  .browser-toolbox-action-page #browser-toolbox-controls .browser-toolbox-secondary-button,
-  .browser-toolbox-action-page .browser-toolbox-session-controls .browser-toolbox-secondary-button {
-    background: color-mix(in srgb, var(--bt-surface) 78%, transparent);
-  }
-
-  .browser-toolbox-action-page .browser-toolbox-switch i {
-    background: var(--bt-border-strong);
-  }
-
-  .browser-toolbox-action-page .browser-toolbox-tool-card:hover,
-  .browser-toolbox-action-page .browser-toolbox-tool-card:focus-visible {
-    background: var(--toolbox-blue-soft);
-  }
-
-  .browser-toolbox-action-page .browser-toolbox-restricted-card {
-    border-color: var(--bt-warning-border);
-    background: var(--bt-warning-bg);
-  }
-
-  .browser-toolbox-action-page .browser-toolbox-restricted-card h2 {
-    color: var(--bt-warning-text);
-  }
-
-  .browser-toolbox-action-page .browser-toolbox-restricted-card p {
-    color: var(--bt-warning-text);
-    opacity: 0.85;
-  }
-}
-
 @media (max-width: 360px) {
-  /* 窄屏下模块与工具网格退化为单列，避免文案列被挤压或逐字折行。 */
-  .browser-toolbox-action-page .browser-toolbox-enhancement-grid,
-  .browser-toolbox-action-page .browser-toolbox-tool-buttons {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 340px) {
   .browser-toolbox-action-page .browser-toolbox-action-brand,
   .browser-toolbox-action-page #browser-toolbox-enhancement-summary,
   .browser-toolbox-action-page #browser-toolbox-tools {
     padding-left: 12px;
     padding-right: 12px;
   }
-
   .browser-toolbox-action-page #browser-toolbox-controls,
   .browser-toolbox-action-page .browser-toolbox-session-controls,
   .browser-toolbox-action-page .browser-toolbox-restricted-card {
     margin-left: 12px;
     margin-right: 12px;
   }
+  .browser-toolbox-action-page .browser-toolbox-enhancement-card {
+    min-height: 48px;
+    padding: 6.5px 8px;
+  }
+  .browser-toolbox-action-page .browser-toolbox-tool-card {
+    gap: 6px;
+    padding: 5px 8px;
+  }
 }
-
+@media (max-width: 340px) {
+  /* 窄屏出现滚动条时，保留瓦片文案的完整可用宽度。 */
+  .browser-toolbox-action-page #browser-toolbox-enhancement-summary {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .browser-toolbox-action-page #browser-toolbox-manage-site {
+    padding: 3.5px 8px;
+    font-size: 11px;
+  }
+  .browser-toolbox-action-page .browser-toolbox-session-heading-row h2 {
+    font-size: 11.5px;
+  }
+  .browser-toolbox-action-page .browser-toolbox-enhancement-copy strong {
+    font-size: 12px;
+  }
+  .browser-toolbox-action-page .browser-toolbox-tool-card-copy strong {
+    font-size: 11.5px;
+  }
+}
 @media (max-width: 260px) {
-  /* Chrome 动作弹窗会按内容重新测量这个宽度，避免浏览器缩放把可读区域压成窄缝。 */
+  /* 极端缩放时保留 Chrome 动作弹窗的最小可读宽度。 */
   body.browser-toolbox-action-page {
     width: 316px;
     min-width: 316px;

@@ -4,6 +4,10 @@ import * as path from "@std/path";
 import puppeteer from "npm:puppeteer";
 import { launchCanaryBrowser, resolveCanaryExtensionId } from "./canary_browser_session.js";
 
+if (Deno.env.get("BROWSER_TOOLBOX_ALLOW_HEADED_TESTS") !== "true") {
+  throw new Error("设置页原生有头专项须先获得用户明确授权；常规测试只使用无头浏览器。");
+}
+
 const executablePath = Deno.env.get("PUPPETEER_EXECUTABLE_PATH");
 const current = Deno.env.get("BROWSER_TOOLBOX_E2E_EXTENSION_PATH");
 const compatible = Deno.env.get("BROWSER_TOOLBOX_SETTINGS_COMPAT_PATH");

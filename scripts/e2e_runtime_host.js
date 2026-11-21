@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // 仅使用本地合成页面和独立 CFT。旧构建与当前构建复用同一性能与行为探针。
 import puppeteer from "npm:puppeteer";
+import { assertSafeTestBrowser } from "./test_browser_safety.js";
+
+assertSafeTestBrowser({ headless: Deno.env.get("BROWSER_TOOLBOX_E2E_HEADLESS") !== "false" });
 import * as path from "@std/path";
 
 const root = path.resolve(path.dirname(path.fromFileUrl(import.meta.url)), "..");

@@ -4911,5 +4911,11 @@
   },
   "toolPasswordMemoryOnly": {
     "message": "The extension keeps passwords in this page’s memory only"
+  },
+  "actionScopeSessionPaused": {
+    "message": "Session paused"
+  },
+  "actionScopeSiteDisabled": {
+    "message": "Disabled on site"
   }
 }
