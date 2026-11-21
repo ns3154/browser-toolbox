@@ -244,20 +244,78 @@ async function testPlan(plan, extension) {
   }
   await page.click("#save");
   await waitForSave(page);
-  const conflict = await page.evaluate(() => ({
+  const preferred = await page.evaluate(() => ({
     response: globalThis.__syntheticSaveResponses.at(-1),
     draft: document.querySelector('[name="scrollStepSize"]').value,
   }));
-  const afterConflict = await worker.evaluate(async () =>
-    (await BrowserToolboxConfigurationWriterInstance.read()).keyboard.scrollStepSize
-  );
+  const afterSave = await worker.evaluate(async () => {
+    const writer = BrowserToolboxConfigurationWriterInstance;
+    const keyboard = (await writer.read()).keyboard;
+    const archives = (await writer.listCompatibilityConflictObservations()).filter((item) => item.status === "field-archive");
+    const records = await Promise.all(archives.map((item) => writer.exportCompatibilityConflictObservation(item.key)));
+    return { keyboard, records };
+  });
   check(
     plan,
-    "同字段并发保存报告冲突并保留外部值和草稿",
-    conflict.response?.ok === false &&
-      conflict.response?.code === "browser-toolbox-settings-conflict" &&
-      conflict.draft === "85" && afterConflict === 88,
+    "同字段以本次保存为准，保留未知规则并归档原字段",
+    preferred.response?.ok === true && preferred.draft === "85" &&
+      afterSave.keyboard.scrollStepSize === 85 &&
+      afterSave.keyboard.exclusionRules[0]?.futurePolicy?.enabled === false &&
+      afterSave.records.some((item) => item.fields.some((field) =>
+        field.path === "/keyboard/scrollStepSize" && field.committed.value === 88)),
   );
+  if (plan === 1) {
+    const maintenance = await browser.newPage();
+    await maintenance.goto(`chrome-extension://${id}/pages/mouse_options.html#general`);
+    await maintenance.waitForFunction(() => document.querySelector("main")?.dataset.settingsReady === "true",
+      { polling: 50, timeout: 30000 });
+    await maintenance.$eval("#conflict-observation-refresh", (button) => {
+      button.closest("details").open = true;
+      button.click();
+    });
+    await maintenance.waitForFunction(() =>
+      document.querySelector('#conflict-observation-select option[data-status="field-archive"]'),
+      { polling: 50, timeout: 15000 });
+    const key = await maintenance.$eval('#conflict-observation-select option[data-status="field-archive"]',
+      (option) => option.value);
+    await maintenance.select("#conflict-observation-select", key);
+    const controls = await maintenance.evaluate(() => ({
+      exportEnabled: !document.querySelector("#conflict-observation-export").disabled,
+      reviewDisabled: document.querySelector("#conflict-observation-review").disabled,
+      label: document.querySelector("#conflict-observation-select").selectedOptions[0].textContent,
+    }));
+    const maintenanceCdp = await maintenance.target().createCDPSession();
+    await maintenanceCdp.send("Page.setDownloadBehavior", { behavior: "allow", downloadPath: downloads });
+    await maintenance.$eval("#conflict-observation-export", (button) => button.click());
+    const archiveFile = path.join(downloads, "browser-toolbox-saved-conflict-observation.json");
+    await until(async () => {
+      try { return (await Deno.stat(archiveFile)).isFile; } catch (_) { return false; }
+    }, "字段归档未导出");
+    const archiveData = JSON.parse(await Deno.readTextFile(archiveFile));
+    check(plan, "维护页明确区分字段归档，并可导出原值", controls.exportEnabled && controls.reviewDisabled &&
+      controls.label && archiveData.kind === "m2-field-archive" &&
+      archiveData.fields.some((field) => field.committed.value === 88) &&
+      !JSON.stringify(archiveData).includes("futurePolicy"));
+
+    const hudBefore = await maintenance.$eval("#global-show-hud", (element) => element.checked);
+    await maintenance.evaluate(() => chrome.storage.sync.set({ keyMappings: "map external scrollUp" }));
+    const marker = await maintenance.evaluate(() => BrowserToolboxConfigurationClientInstance.request("preview"));
+    if (marker.code !== "CONFIGURATION_EXTERNAL_CONFLICT" || marker.captureStatus !== "unsupported") {
+      throw new Error("未建立未知规则的阻断标记");
+    }
+    await maintenance.$eval("#global-show-hud", (element) => element.click());
+    await until(() => maintenance.$eval("#save-settings", (element) => !element.disabled), "维护页未记录用户修改");
+    await maintenance.$eval("#save-settings", (element) => element.click());
+    await until(async () => {
+      const current = await maintenance.evaluate(() => BrowserToolboxConfigurationClientInstance.read());
+      return current.keyboard.keyMappings === "map external scrollUp" &&
+        current.keyboard.exclusionRules[0]?.futurePolicy?.enabled === false &&
+        current.toolboxSource.value.general.showHud !== hudBefore;
+    }, "未知规则不变时，用户的无关设置仍无法保存");
+    const resolved = await maintenance.evaluate(() => BrowserToolboxConfigurationClientInstance.request("preview"));
+    check(plan, "未知规则不变时可保存其他设置并保留最新外部字段", resolved.code === null);
+    await maintenance.close();
+  }
 
   await page.reload();
   await page.bringToFront();
@@ -501,7 +559,7 @@ async function testPlan(plan, extension) {
     value: document.querySelector('[name="scrollStepSize"]').value,
     enabled: !document.querySelector("#save").disabled,
   }));
-  let importConflict = false;
+  let importPreferred = false;
   if (sameDraft.value === "107" && sameDraft.enabled) {
     await page.click("#save");
     await waitForSave(page);
@@ -509,11 +567,9 @@ async function testPlan(plan, extension) {
     const value = await worker.evaluate(async () =>
       (await BrowserToolboxConfigurationWriterInstance.read()).keyboard.scrollStepSize
     );
-    importConflict = response?.ok === false &&
-      response?.code === "browser-toolbox-settings-conflict" &&
-      value === 108;
+    importPreferred = response?.ok === true && value === 107;
   }
-  check(plan, "导入和草稿修改同一字段时保留双方并报告冲突", importConflict);
+  check(plan, "导入后保存草稿时以用户修改为准", importPreferred);
 
   if (plan === 1) {
     await page.reload();

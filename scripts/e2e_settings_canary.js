@@ -456,7 +456,7 @@ try {
           .getPropertyValue("--settings-canary-css").trim() === "preserved"
       ), "用户 CSS 未在重载后生效");
   });
-  await check("两页同一字段冲突保留草稿，异字段提交可合并", async () => {
+  await check("两页同字段以本次保存为准，异字段提交可合并", async () => {
     const other = await open("options");
     await ready(other, currentPlan, true);
     await setField(other, scroll, "83");
@@ -464,16 +464,10 @@ try {
     await click(options, "#save");
     await until(async () => (await read()).keyboard.scrollStepSize === 85, "第一页面保存未完成");
     await click(other, "#save");
-    await other.waitForFunction(
-      (selector) =>
-        document.querySelector(selector).textContent.includes("keyboard.scrollStepSize"),
-      { polling: 50 },
-      status,
-    );
+    await until(async () => (await read()).keyboard.scrollStepSize === 83, "第二页面保存未采用用户修改");
     assert(
-      await value(other, scroll) === "83" && (await read()).keyboard.scrollStepSize === 85 &&
-        !(await other.$eval("#save", (el) => el.disabled)),
-      "冲突后草稿或已保存值丢失",
+      await value(other, scroll) === "83" && (await read()).keyboard.scrollStepSize === 83,
+      "同字段保存没有应用用户的值",
     );
     await other.reload();
     await ready(other, currentPlan, true);

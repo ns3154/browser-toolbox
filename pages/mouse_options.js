@@ -1587,15 +1587,16 @@
     let observationBusy = false;
     let activeReview = null;
     const updateObservationButtons = () => {
-      const available = ["saved", "archived"].includes(
-        observationSelect.selectedOptions[0]?.dataset.status,
+      const status = observationSelect.selectedOptions[0]?.dataset.status;
+      const available = ["saved", "archived", "field-archive"].includes(
+        status,
       );
       observationRefresh.disabled = observationBusy;
       observationCapture.disabled = observationBusy;
       observationSelect.disabled = observationBusy ||
         ![...observationSelect.options].some((option) => !option.disabled && option.value);
       observationExport.disabled = observationBusy || !available;
-      observationReview.disabled = observationBusy || !available;
+      observationReview.disabled = observationBusy || !available || status === "field-archive";
       const groups = [...reviewFields.querySelectorAll("fieldset")];
       for (const group of groups) group.disabled = observationBusy;
       reviewExport.disabled = observationBusy || !activeReview || !groups.length ||
@@ -1621,6 +1622,7 @@
         const labels = {
           saved: "conflictObservationSaved",
           archived: "conflictObservationArchived",
+          "field-archive": "conflictObservationFieldArchive",
           unsupported: "conflictObservationUnsupported",
           quota: "conflictObservationQuotaMarker",
           invalid: "conflictObservationInvalid",
@@ -1633,7 +1635,7 @@
         option.textContent = message(labels[item.status]) + time;
         option.value = item.key;
         option.dataset.status = item.status;
-        option.disabled = !["saved", "archived"].includes(item.status);
+        option.disabled = !["saved", "archived", "field-archive"].includes(item.status);
         observationSelect.append(option);
       }
       const first = [...observationSelect.options].find((option) => !option.disabled);

@@ -2936,6 +2936,9 @@
   "conflictObservationArchived": {
     "message": "Observación archivada"
   },
+  "conflictObservationFieldArchive": {
+    "message": "Campos archivados (solo exportación)"
+  },
   "conflictSearchDefaultNote": {
     "message": "Tras elegir la regla actual de Google, puedes recuperar el guardado. La observación se conserva; si la configuración cambia de nuevo, la recuperación se detiene."
   },

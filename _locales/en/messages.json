@@ -3782,6 +3782,9 @@
   "conflictObservationArchived": {
     "message": "Archived observation"
   },
+  "conflictObservationFieldArchive": {
+    "message": "Archived fields (export only)"
+  },
   "conflictSearchDefaultNote": {
     "message": "After choosing the current Google rule, you can restore saving. The observation is kept; recovery stops if the configuration changes again."
   },

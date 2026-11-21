@@ -2976,19 +2976,27 @@ context("配置持久提交、配额与冲突", () => {
     assert.equal(beforeWrites, h.writes.length);
   });
 
-  should("规范 local 优先于同步和旧标识，关闭工具箱同步仍保留键盘 sync", async () => {
+  should("规范 local 优先于同步和旧标识，保留两处原文及键盘同步", async () => {
     const local = clone(BrowserToolboxSettingsSchema.DEFAULT_SETTINGS);
     local.general.browserSyncEnabled = false;
     const h = harness({
       local: { browserToolboxSettings: local, openKeyMouseSettings: { schemaVersion: 0 } },
     });
     const writer = h.create();
+    const syncBefore = clone(h.storage.sync.values.browserToolboxSettings);
     const view = await writer.read();
     assert.equal("local", view.toolboxSource.area);
     await writer.commit({ legacyPatch: { keyMappings: "map x scrollUp" } });
     assert.equal("map x scrollUp", h.storage.sync.values.keyMappings);
-    assert.isFalse(Object.hasOwn(h.storage.sync.values, "browserToolboxSettings"));
+    assert.equal(syncBefore, h.storage.sync.values.browserToolboxSettings);
     assert.isTrue(Object.hasOwn(h.storage.local.values, "openKeyMouseSettings"));
+  });
+
+  should("唯一工具箱原文损坏时不把它当作默认配置", async () => {
+    const h = harness({ sync: { browserToolboxSettings: "无法解释的原始内容" } });
+    await rejects(h.create().read(), "INVALID_CONFIGURATION_RECOVERY");
+    assert.equal("无法解释的原始内容", h.storage.sync.values.browserToolboxSettings);
+    assert.isFalse(Object.hasOwn(h.storage.local.values, config.KEYS.state));
   });
 
   should("仅旧标识迁移到 schema 9 后仍保留原旧键", async () => {
@@ -3004,6 +3012,8 @@ context("配置持久提交、配额与冲突", () => {
     const view = await h.create().read();
     assert.equal(9, view.toolboxSource.value.schemaVersion);
     assert.equal("goBack", view.toolboxSource.value.mouse.bindings[0].commandName);
+    assert.isFalse(Object.hasOwn(view.toolboxSource.value, "gestureBindings"));
+    assert.equal("goBack", h.storage.local.values[config.KEYS.legacyBackup].gestureBindings[0].commandName);
     assert.isTrue(Object.hasOwn(h.storage.local.values, "openKeyMouseSettings"));
   });
 
@@ -3124,7 +3134,7 @@ context("配置持久提交、配额与冲突", () => {
     assert.isFalse(Object.hasOwn(h.storage.local.values, config.KEYS.backup));
   });
 
-  should("两个页面不同字段修改可合并，同一字段冲突不覆盖", async () => {
+  should("两个页面不同字段修改可合并，同一字段以本次用户保存为准", async () => {
     const h = harness();
     const writer = h.create();
     const baseline = await writer.read();
@@ -3141,14 +3151,379 @@ context("配置持久提交、配额与冲突", () => {
     const result = await writer.read();
     assert.equal("map a scrollDown", result.keyboard.keyMappings);
     assert.equal("x: https://example.invalid/?q=%s 合成", result.keyboard.searchEngines);
-    await rejects(
-      writer.commit({
-        legacyPatch: { keyMappings: "map a scrollUp" },
+    const latest = await writer.commit({
+      legacyPatch: { keyMappings: "map a scrollUp" },
+      baseline: { keyboard: baseline.keyboard },
+    });
+    assert.equal("map a scrollUp", latest.keyboard.keyMappings);
+    assert.equal("x: https://example.invalid/?q=%s 合成", latest.keyboard.searchEngines);
+  });
+
+  should("用户保存同一字段时保留原值归档，并以本次修改为准", async () => {
+    const h = harness();
+    const writer = h.create();
+    const baseline = await writer.read();
+    await writer.commit({
+      legacyPatch: { keyMappings: "map a scrollDown", searchEngines: "x: https://example.invalid/?q=%s" },
+      baseline: { keyboard: baseline.keyboard },
+    });
+    const result = await writer.commit({
+      legacyPatch: { keyMappings: "map b scrollUp", searchEngines: baseline.keyboard.searchEngines },
+      baseline: { keyboard: baseline.keyboard },
+    });
+    assert.equal("map b scrollUp", result.keyboard.keyMappings);
+    assert.equal("x: https://example.invalid/?q=%s", result.keyboard.searchEngines);
+    const archives = (await writer.listCompatibilityConflictObservations()).filter((item) => item.status === "archived");
+    assert.isTrue(archives.length > 0);
+    const archived = await writer.exportCompatibilityConflictObservation(archives[0].key);
+    assert.equal("map a scrollDown", archived.committed.keyboard.keyMappings);
+    assert.equal("map b scrollUp", (await h.create().read()).keyboard.keyMappings);
+  });
+
+  should("无关旧规则含未知字段时，仅归档冲突键并保留未知规则", async () => {
+    const h = harness();
+    const writer = h.create();
+    await writer.read();
+    const rules = [{ pattern: "https://example.invalid/*", passKeys: "j", futurePolicy: { keep: true } }];
+    await writer.commit({ legacyPatch: { exclusionRules: rules } });
+    const baseline = await writer.read();
+    await writer.commit({
+      legacyPatch: { scrollStepSize: 88 },
+      baseline: { keyboard: baseline.keyboard },
+    });
+    const saved = await writer.commit({
+      legacyPatch: { scrollStepSize: 85 },
+      baseline: { keyboard: baseline.keyboard },
+    });
+    assert.equal(85, saved.keyboard.scrollStepSize);
+    assert.equal(rules, saved.keyboard.exclusionRules);
+    const [archive] = (await writer.listCompatibilityConflictObservations()).filter((item) => item.status === "field-archive");
+    const exported = await writer.exportCompatibilityConflictObservation(archive.key);
+    assert.equal(88, exported.fields[0].committed.value);
+    assert.equal(85, exported.fields[0].observed.value);
+    assert.isFalse(JSON.stringify(exported).includes("futurePolicy"));
+  });
+
+  should("旧规则未知字段未变化时，仅归档已知冲突字段并允许用户保存", async () => {
+    const h = harness();
+    const writer = h.create();
+    await writer.read();
+    const rules = [{ pattern: "https://example.invalid/*", passKeys: "j", futurePolicy: { keep: true } }];
+    await writer.commit({ legacyPatch: { exclusionRules: rules } });
+    const baseline = await writer.read();
+    await h.storage.sync.set({ keyMappings: "map external scrollUp" });
+    const pending = await writer.preview();
+    assert.equal("CONFIGURATION_EXTERNAL_CONFLICT", pending.code);
+    assert.equal("unsupported", pending.captureStatus);
+    const saved = await writer.commit({
+      legacyPatch: { keyMappings: "map mine scrollDown" },
+      baseline: { keyboard: baseline.keyboard },
+    });
+    assert.equal("map mine scrollDown", saved.keyboard.keyMappings);
+    assert.equal(rules, saved.keyboard.exclusionRules);
+    assert.equal(null, (await writer.preview()).code);
+    const archive = (await writer.listCompatibilityConflictObservations()).find((item) => item.status === "field-archive");
+    const exported = await writer.exportCompatibilityConflictObservation(archive.key);
+    assert.equal("map external scrollUp", exported.fields[0].observed.value);
+    assert.isFalse(JSON.stringify(exported).includes("futurePolicy"));
+  });
+
+  should("未知规则本身也变化时不猜测来源或覆盖它", async () => {
+    const h = harness();
+    const writer = h.create();
+    await writer.read();
+    const rules = [{ pattern: "https://example.invalid/*", passKeys: "j", futurePolicy: { keep: true } }];
+    await writer.commit({ legacyPatch: { exclusionRules: rules } });
+    const baseline = await writer.read();
+    const external = clone(rules);
+    external[0].futurePolicy.keep = false;
+    await h.storage.sync.set({ keyMappings: "map external scrollUp", exclusionRules: external });
+    assert.equal("CONFIGURATION_EXTERNAL_CONFLICT", (await writer.preview()).code);
+    await rejects(writer.commit({
+      legacyPatch: { keyMappings: "map mine scrollDown" },
+      baseline: { keyboard: baseline.keyboard },
+    }));
+    assert.equal(external, h.storage.sync.values.exclusionRules);
+    assert.equal("map external scrollUp", h.storage.sync.values.keyMappings);
+  });
+
+  should("用户保存时自动处理外部观察，只覆盖本次实际修改并归档两份原配置", async () => {
+    const h = harness();
+    const writer = h.create();
+    const baseline = await writer.read();
+    const externalSearch = "x: https://example.invalid/?q=%s";
+    await h.storage.sync.set({ keyMappings: "map external scrollUp", searchEngines: externalSearch });
+    assert.equal("CONFIGURATION_EXTERNAL_CONFLICT", (await writer.preview()).code);
+    const result = await writer.commit({
+      legacyPatch: {
+        keyMappings: "map mine scrollDown",
+        searchEngines: baseline.keyboard.searchEngines,
+        smoothScroll: !baseline.keyboard.smoothScroll,
+      },
+      baseline: { keyboard: baseline.keyboard },
+    });
+    assert.equal("map mine scrollDown", result.keyboard.keyMappings);
+    assert.equal(externalSearch, result.keyboard.searchEngines);
+    assert.equal(!baseline.keyboard.smoothScroll, result.keyboard.smoothScroll);
+    assert.equal(null, (await writer.preview()).code);
+    const archives = (await writer.listCompatibilityConflictObservations()).filter((item) => item.status === "archived");
+    assert.isTrue(archives.length > 0);
+    const archived = await writer.exportCompatibilityConflictObservation(archives[0].key);
+    assert.equal(baseline.keyboard.keyMappings, archived.committed.keyboard.keyMappings);
+    assert.equal("map external scrollUp", archived.observed.keyboard.keyMappings);
+    const restarted = await h.create().read();
+    assert.equal("map mine scrollDown", restarted.keyboard.keyMappings);
+    assert.equal(externalSearch, restarted.keyboard.searchEngines);
+  });
+
+  should("多条观察之后来源再次变化时，用户保存保留每份观察和最新未修改字段", async () => {
+    const h = harness();
+    const writer = h.create();
+    const baseline = await writer.read();
+    await h.storage.sync.set({ keyMappings: "map first scrollUp" });
+    assert.equal("CONFIGURATION_EXTERNAL_CONFLICT", (await writer.preview()).code);
+    await h.storage.sync.set({ keyMappings: "map second scrollUp" });
+    await writer.captureCurrentCompatibilityConflict();
+    await h.storage.sync.set({ keyMappings: "map latest scrollUp" });
+    const result = await writer.commit({
+      legacyPatch: { keyMappings: baseline.keyboard.keyMappings, smoothScroll: !baseline.keyboard.smoothScroll },
+      baseline: { keyboard: baseline.keyboard },
+    });
+    assert.equal("map latest scrollUp", result.keyboard.keyMappings);
+    assert.equal(!baseline.keyboard.smoothScroll, result.keyboard.smoothScroll);
+    const archives = (await writer.listCompatibilityConflictObservations()).filter((item) => item.status === "archived");
+    const values = await Promise.all(archives.map((item) => writer.exportCompatibilityConflictObservation(item.key)));
+    for (const value of ["map first scrollUp", "map second scrollUp", "map latest scrollUp"]) {
+      assert.isTrue(values.some((item) => item.observed.keyboard.keyMappings === value));
+    }
+    assert.equal(null, (await writer.preview()).code);
+  });
+
+  should("工具箱嵌套字段与键盘数组按实际修改合并，未修改的外部值保留", async () => {
+    const h = harness();
+    const writer = h.create();
+    const baseline = await writer.read();
+    const outside = clone(baseline.toolboxSource.value);
+    outside.general.theme = "paper-ink";
+    outside.general.showHud = !outside.general.showHud;
+    const remoteRules = [{ pattern: "https://external.invalid/*", passKeys: "j" }];
+    await h.storage.sync.set({ browserToolboxSettings: outside, exclusionRules: remoteRules });
+    assert.equal("CONFIGURATION_EXTERNAL_CONFLICT", (await writer.preview()).code);
+    const draft = clone(baseline.toolboxSource.value);
+    draft.general.theme = "cobalt";
+    draft.mouse.enabled = !draft.mouse.enabled;
+    const chosenRules = [{ pattern: "https://mine.invalid/*", passKeys: "" }];
+    const saved = await writer.commit({
+      legacyPatch: { exclusionRules: chosenRules },
+      toolbox: draft,
+      baseline: { keyboard: baseline.keyboard, toolbox: baseline.toolboxSource.value },
+    });
+    assert.equal("cobalt", saved.toolboxSource.value.general.theme);
+    assert.equal(outside.general.showHud, saved.toolboxSource.value.general.showHud);
+    assert.equal(draft.mouse.enabled, saved.toolboxSource.value.mouse.enabled);
+    assert.equal([...remoteRules, ...chosenRules], saved.keyboard.exclusionRules);
+    const [archive] = (await writer.listCompatibilityConflictObservations()).filter((item) => item.status === "archived");
+    const savedObservation = await writer.exportCompatibilityConflictObservation(archive.key);
+    assert.equal(remoteRules, savedObservation.observed.keyboard.exclusionRules);
+    assert.equal("paper-ink", savedObservation.observed.toolbox.general.theme);
+  });
+
+  should("同一规则列表中用户编辑一项时保留外部新增和其他项的修改", async () => {
+    const h = harness();
+    const writer = h.create();
+    await writer.read();
+    const original = [
+      { pattern: "https://one.invalid/*", passKeys: "j" },
+      { pattern: "https://two.invalid/*", passKeys: "k" },
+    ];
+    await writer.commit({ legacyPatch: { exclusionRules: original } });
+    const baseline = await writer.read();
+    const external = clone(original);
+    external[1].passKeys = "h";
+    external.push({ pattern: "https://remote.invalid/*", passKeys: "u" });
+    await h.storage.sync.set({ exclusionRules: external });
+    assert.equal("CONFIGURATION_EXTERNAL_CONFLICT", (await writer.preview()).code);
+    const draft = clone(original);
+    draft[0].passKeys = "n";
+    const result = await writer.commit({
+      legacyPatch: { exclusionRules: draft },
+      baseline: { keyboard: baseline.keyboard },
+    });
+    assert.equal([
+      { pattern: "https://one.invalid/*", passKeys: "n" },
+      { pattern: "https://two.invalid/*", passKeys: "h" },
+      { pattern: "https://remote.invalid/*", passKeys: "u" },
+    ], result.keyboard.exclusionRules);
+  });
+
+  should("有稳定标识的手势列表按项目合并并保留外部新增", async () => {
+    const h = harness();
+    const writer = h.create();
+    const baseline = await writer.read();
+    const outside = clone(baseline.toolboxSource.value);
+    outside.mouse.bindings[1].enabled = !outside.mouse.bindings[1].enabled;
+    outside.mouse.bindings.push({ id: "remote-binding", enabled: true, pattern: ["U", "L", "D"], commandName: "goBack", options: {} });
+    await h.storage.sync.set({ browserToolboxSettings: outside });
+    assert.equal("CONFIGURATION_EXTERNAL_CONFLICT", (await writer.preview()).code);
+    const draft = clone(baseline.toolboxSource.value);
+    draft.mouse.bindings[0].enabled = !draft.mouse.bindings[0].enabled;
+    const result = await writer.commit({
+      toolbox: draft,
+      baseline: { toolbox: baseline.toolboxSource.value },
+    });
+    assert.equal(draft.mouse.bindings[0].enabled, result.toolboxSource.value.mouse.bindings[0].enabled);
+    assert.equal(outside.mouse.bindings[1].enabled, result.toolboxSource.value.mouse.bindings[1].enabled);
+    assert.isTrue(result.toolboxSource.value.mouse.bindings.some((item) => item.id === "remote-binding"));
+  });
+
+  should("工具列表的不同增删可合并，手势方向数组仍整体处理", async () => {
+    const h = harness();
+    const writer = h.create();
+    const baseline = await writer.read();
+    const outside = clone(baseline.toolboxSource.value);
+    outside.tools.contextMenu.toolIds.push("config.convert");
+    await h.storage.sync.set({ browserToolboxSettings: outside });
+    assert.equal("CONFIGURATION_EXTERNAL_CONFLICT", (await writer.preview()).code);
+    const draft = clone(baseline.toolboxSource.value);
+    draft.tools.contextMenu.toolIds = draft.tools.contextMenu.toolIds.filter((id) => id !== "text.diff");
+    const result = await writer.commit({
+      toolbox: draft,
+      baseline: { toolbox: baseline.toolboxSource.value },
+    });
+    assert.isFalse(result.toolboxSource.value.tools.contextMenu.toolIds.includes("text.diff"));
+    assert.isTrue(result.toolboxSource.value.tools.contextMenu.toolIds.includes("config.convert"));
+    const conflicts = [];
+    const pattern = config.merge(["L", "U"], ["R", "U"], ["L", "D"],
+      "toolbox.mouse.bindings[example].pattern", conflicts, true);
+    assert.equal(["R", "U"], pattern);
+    assert.equal(1, conflicts.length);
+  });
+
+  should("归档中途终止后仍可重新发现冲突，保留新旧配置", async () => {
+    for (const stopAt of ["user-save-archive", "user-save-archived"]) {
+      const h = harness();
+      const initial = h.create();
+      const baseline = await initial.read();
+      await h.storage.sync.set({ keyMappings: "map external scrollUp" });
+      assert.equal("CONFIGURATION_EXTERNAL_CONFLICT", (await initial.preview()).code);
+      const stopped = Object.assign(new Error("合成终止"), { simulatedTermination: true });
+      const writer = h.create({ afterStep: (stage) => { if (stage === stopAt) throw stopped; } });
+      await rejects(writer.commit({
+        legacyPatch: { keyMappings: "map mine scrollDown" },
         baseline: { keyboard: baseline.keyboard },
-      }),
-      "browser-toolbox-settings-conflict",
-    );
-    assert.equal("map a scrollDown", h.storage.sync.values.keyMappings);
+      }));
+      assert.equal("map external scrollUp", h.storage.sync.values.keyMappings);
+      const restarted = h.create();
+      assert.equal("CONFIGURATION_EXTERNAL_CONFLICT", (await restarted.preview()).code);
+      assert.equal(baseline.keyboard.keyMappings, (await restarted.read()).keyboard.keyMappings);
+      assert.isTrue((await restarted.listCompatibilityConflictObservations()).some((item) => item.status === "archived"));
+    }
+  });
+
+  should("归档后或提交途中出现较新的同步内容时不能覆盖新值", async () => {
+    for (const changeAt of ["user-save-archive", "user-save-archived", 0]) {
+      const h = harness();
+      const initial = h.create();
+      const baseline = await initial.read();
+      await h.storage.sync.set({ keyMappings: "map external scrollUp" });
+      assert.equal("CONFIGURATION_EXTERNAL_CONFLICT", (await initial.preview()).code);
+      let changed = false;
+      const writer = h.create({
+        afterStep: async (stage) => {
+          if (stage === changeAt && !changed) {
+            changed = true;
+            await h.storage.sync.set({ keyMappings: "map latest scrollDown" });
+          }
+        },
+      });
+      await rejects(writer.commit({
+        legacyPatch: { keyMappings: "map mine scrollDown" },
+        baseline: { keyboard: baseline.keyboard },
+      }));
+      assert.isTrue(changed);
+      assert.equal("map latest scrollDown", h.storage.sync.values.keyMappings);
+      assert.isTrue((await h.create().listCompatibilityConflictObservations()).some((item) => item.status === "archived"));
+    }
+  });
+
+  should("用户优先保存的事务中断后可完整恢复，归档仍可导出", async () => {
+    for (const stopAt of [0, 1, 2]) {
+      const h = harness();
+      const initial = h.create();
+      const baseline = await initial.read();
+      const externalSearch = "x: https://example.invalid/?q=%s";
+      await h.storage.sync.set({ keyMappings: "map external scrollUp", searchEngines: externalSearch });
+      assert.equal("CONFIGURATION_EXTERNAL_CONFLICT", (await initial.preview()).code);
+      const stopped = Object.assign(new Error("合成终止"), { simulatedTermination: true });
+      const writer = h.create({ afterStep: (stage) => { if (stage === stopAt) throw stopped; } });
+      await rejects(writer.commit({
+        legacyPatch: { keyMappings: "map mine scrollDown", searchEngines: baseline.keyboard.searchEngines },
+        baseline: { keyboard: baseline.keyboard },
+      }));
+      const restarted = h.create();
+      const saved = await restarted.read();
+      assert.equal("map mine scrollDown", saved.keyboard.keyMappings);
+      assert.equal(externalSearch, saved.keyboard.searchEngines);
+      assert.equal(null, (await restarted.preview()).code);
+      const [archive] = (await restarted.listCompatibilityConflictObservations()).filter((item) => item.status === "archived");
+      const original = await restarted.exportCompatibilityConflictObservation(archive.key);
+      assert.equal("map external scrollUp", original.observed.keyboard.keyMappings);
+    }
+  });
+
+  should("没有编辑基线、观察损坏或空间不足时，用户保存不能覆盖外部值", async () => {
+    for (const scenario of ["no-baseline", "invalid-observation", "quota", "dual-area", "invalid-area"]) {
+      const h = harness();
+      const writer = h.create();
+      const baseline = await writer.read();
+      await h.storage.sync.set({ keyMappings: "map external scrollUp" });
+      if (scenario === "dual-area") {
+        const local = clone(baseline.toolboxSource.value);
+        local.general.showHud = !local.general.showHud;
+        await h.storage.local.set({ browserToolboxSettings: local });
+      }
+      if (scenario === "invalid-area") {
+        await h.storage.local.set({ browserToolboxSettings: "无法解释的原始内容" });
+      }
+      assert.equal("CONFIGURATION_EXTERNAL_CONFLICT", (await writer.preview()).code);
+      const [item] = await writer.listCompatibilityConflictObservations();
+      if (scenario === "invalid-observation") h.storage.local.values[item.key].recordDigest = "0".repeat(64);
+      if (scenario === "quota") h.storage.local.QUOTA_BYTES = 1;
+      const input = { legacyPatch: { keyMappings: "map mine scrollDown" } };
+      if (scenario !== "no-baseline") input.baseline = { keyboard: baseline.keyboard };
+      if (["dual-area", "invalid-area"].includes(scenario)) {
+        input.toolbox = clone(baseline.toolboxSource.value);
+        input.toolbox.general.theme = "cobalt";
+        input.baseline.toolbox = baseline.toolboxSource.value;
+      }
+      const localBefore = clone(h.storage.local.values.browserToolboxSettings);
+      const syncBefore = clone(h.storage.sync.values.browserToolboxSettings);
+      await rejects(writer.commit(input));
+      assert.equal("map external scrollUp", h.storage.sync.values.keyMappings);
+      assert.equal(localBefore, h.storage.local.values.browserToolboxSettings);
+      assert.equal(syncBefore, h.storage.sync.values.browserToolboxSettings);
+      assert.isTrue(Object.hasOwn(h.storage.local.values, item.key));
+    }
+  });
+
+  should("本地和同步工具箱原文不同时，保存键盘字段不会改写任一份", async () => {
+    for (const localValue of ["无法解释的原始内容", { ...clone(BrowserToolboxSettingsSchema.DEFAULT_SETTINGS), general: { ...clone(BrowserToolboxSettingsSchema.DEFAULT_SETTINGS.general), showHud: false } }]) {
+      const h = harness();
+      const writer = h.create();
+      const baseline = await writer.read();
+      await h.storage.local.set({ browserToolboxSettings: localValue });
+      await h.storage.sync.set({ keyMappings: "map external scrollUp" });
+      assert.equal("CONFIGURATION_EXTERNAL_CONFLICT", (await writer.preview()).code);
+      const localBefore = clone(h.storage.local.values.browserToolboxSettings);
+      const syncBefore = clone(h.storage.sync.values.browserToolboxSettings);
+      const result = await writer.commit({
+        legacyPatch: { keyMappings: "map mine scrollDown" },
+        baseline: { keyboard: baseline.keyboard },
+      });
+      assert.equal("map mine scrollDown", result.keyboard.keyMappings);
+      assert.equal(localBefore, h.storage.local.values.browserToolboxSettings);
+      assert.equal(syncBefore, h.storage.sync.values.browserToolboxSettings);
+    }
   });
 
   should("外部旧设备来源不明时保留双方，冲突选择暂不写入", async () => {
@@ -3329,7 +3704,7 @@ context("配置持久提交、配额与冲突", () => {
     return { h, writer, before, item, review };
   }
 
-  should("旧默认搜索规则升级时保留原值，保存其他设置不写入缺失的同步键", async () => {
+  should("旧默认搜索规则升级为新默认，归档原值且不写入缺失的同步键", async () => {
     const oldDefault = "bd: https://www.baidu.com/s?wd=%s 百度";
     const h = harness();
     const oldWriter = h.create({
@@ -3340,38 +3715,85 @@ context("配置持久提交、配额与冲突", () => {
     h.writes.length = 0;
     const writer = h.create();
     assert.equal(null, (await writer.preview()).code);
-    assert.equal(oldDefault, (await writer.read()).keyboard.searchEngines);
-    assert.equal(0, (await writer.listCompatibilityConflictObservations()).length);
+    assert.equal(Settings.defaultOptions.searchEngines, (await writer.read()).keyboard.searchEngines);
+    const [archive] = await writer.listCompatibilityConflictObservations();
+    assert.equal("archived", archive.status);
+    const archived = await writer.exportCompatibilityConflictObservation(archive.key);
+    assert.equal(oldDefault, archived.committed.keyboard.searchEngines);
     const saved = await writer.commit({ legacyPatch: { smoothScroll: false } });
     assert.equal(false, saved.keyboard.smoothScroll);
-    assert.equal(oldDefault, saved.keyboard.searchEngines);
+    assert.equal(Settings.defaultOptions.searchEngines, saved.keyboard.searchEngines);
     assert.equal(original.toolboxSource, saved.toolboxSource);
     assert.isFalse(Object.hasOwn(h.storage.sync.values, "searchEngines"));
     assert.isFalse(h.writes.some((write) => write.name === "sync" && write.keys.includes("searchEngines")));
-    assert.equal(oldDefault, (await h.create().read()).keyboard.searchEngines);
-    const changed = await h.create().commit({
-      legacyPatch: { searchEngines: Settings.defaultOptions.searchEngines },
-    });
-    assert.equal(Settings.defaultOptions.searchEngines, changed.keyboard.searchEngines);
     assert.equal(Settings.defaultOptions.searchEngines, (await h.create().read()).keyboard.searchEngines);
+    const changed = await h.create().commit({
+      legacyPatch: { searchEngines: oldDefault },
+    });
+    assert.equal(oldDefault, changed.keyboard.searchEngines);
+    assert.equal(oldDefault, (await h.create().read()).keyboard.searchEngines);
+    assert.equal(oldDefault, h.storage.sync.values.searchEngines);
   });
 
-  should("已经保存的旧默认误报在升级后自动归档并保留百度和其他配置", async () => {
+  should("已经保存的旧默认误报在升级后自动归档并采用新默认", async () => {
     const { h, before, item } = await searchDefaultConflictFixture();
     delete h.storage.sync.values.searchEngines;
     const syncBefore = clone(h.storage.sync.values);
     const writer = h.create();
     assert.equal(null, (await writer.preview()).code);
     const recovered = await writer.read();
-    assert.equal(before.keyboard.searchEngines, recovered.keyboard.searchEngines);
+    assert.equal(Settings.defaultOptions.searchEngines, recovered.keyboard.searchEngines);
     assert.equal(before.toolboxSource, recovered.toolboxSource);
     assert.equal(syncBefore, h.storage.sync.values);
     const [archive] = await writer.listCompatibilityConflictObservations();
     assert.equal("archived", archive.status);
     assert.equal(item.key.replace("m2-observation:", "m2-archive:"), archive.key);
+    assert.equal(before.keyboard.searchEngines,
+      (await writer.exportCompatibilityConflictObservation(archive.key)).committed.keyboard.searchEngines);
     const saved = await writer.commit({ legacyPatch: { smoothScroll: false } });
-    assert.equal(before.keyboard.searchEngines, saved.keyboard.searchEngines);
+    assert.equal(Settings.defaultOptions.searchEngines, saved.keyboard.searchEngines);
     assert.isFalse(Object.hasOwn(h.storage.sync.values, "searchEngines"));
+  });
+
+  should("旧默认误报遇到无关未知规则时仅备份搜索字段并自动升级", async () => {
+    const h = harness();
+    const oldDefault = "bd: https://www.baidu.com/s?wd=%s 百度";
+    const old = h.create({ defaults: () => ({ ...Settings.defaultOptions, searchEngines: oldDefault }) });
+    await old.read();
+    const rules = [{ pattern: "https://example.invalid/*", passKeys: "j", futurePolicy: { keep: true } }];
+    await old.commit({ legacyPatch: { exclusionRules: rules } });
+    h.storage.sync.values.searchEngines = Settings.defaultOptions.searchEngines;
+    const prior = h.create();
+    const pending = await prior.preview();
+    assert.equal("CONFIGURATION_EXTERNAL_CONFLICT", pending.code);
+    assert.equal("unsupported", pending.captureStatus);
+    delete h.storage.sync.values.searchEngines;
+    const next = h.create();
+    const current = await next.read();
+    assert.equal(Settings.defaultOptions.searchEngines, current.keyboard.searchEngines);
+    assert.equal(rules, current.keyboard.exclusionRules);
+    assert.equal(null, (await next.preview()).code);
+    const archived = (await next.listCompatibilityConflictObservations()).find((item) => item.status === "field-archive");
+    const backup = await next.exportCompatibilityConflictObservation(archived.key);
+    assert.equal(oldDefault, backup.fields[0].committed.value);
+    assert.isFalse(JSON.stringify(backup).includes("futurePolicy"));
+  });
+
+  should("旧默认直接升级时遇到无关未知规则，仍采用新版默认并备份旧字段", async () => {
+    const h = harness();
+    const oldDefault = "bd: https://www.baidu.com/s?wd=%s 百度";
+    const old = h.create({ defaults: () => ({ ...Settings.defaultOptions, searchEngines: oldDefault }) });
+    await old.read();
+    const rules = [{ pattern: "https://example.invalid/*", passKeys: "j", futurePolicy: { keep: true } }];
+    await old.commit({ legacyPatch: { exclusionRules: rules } });
+    const next = h.create();
+    const current = await next.read();
+    assert.equal(Settings.defaultOptions.searchEngines, current.keyboard.searchEngines);
+    assert.equal(rules, current.keyboard.exclusionRules);
+    assert.equal(null, (await next.preview()).code);
+    const archived = (await next.listCompatibilityConflictObservations()).find((item) => item.status === "field-archive");
+    const backup = await next.exportCompatibilityConflictObservation(archived.key);
+    assert.equal(oldDefault, backup.fields[0].committed.value);
   });
 
   should("自动兼容不吞掉明确同步值、其他变更或额外观察", async () => {
@@ -3438,22 +3860,21 @@ context("配置持久提交、配额与冲突", () => {
     const incoming = "x: https://example.invalid/?q=%s";
     await h.create({ defaults: () => ({ ...Settings.defaultOptions, searchEngines: oldDefault }) }).read();
     let changed = false;
-    const writer = h.create({
-      afterStep: async (stage) => {
+    const writer = h.create();
+    await writer.read();
+    writer.afterStep = async (stage) => {
         if (stage === 0 && !changed) {
           changed = true;
           await h.storage.sync.set({ searchEngines: incoming });
         }
-      },
-    });
-    await writer.read();
+      };
     await rejects(writer.commit({ legacyPatch: { smoothScroll: false } }));
     assert.isTrue(changed);
     assert.equal(incoming, h.storage.sync.values.searchEngines);
     assert.equal("CONFIGURATION_RECOVERY_CONFLICT", (await h.create().preview()).code);
   });
 
-  should("自动归档或无关设置提交中断后仍能恢复原值", async () => {
+  should("自动迁移或无关设置提交中断后保留旧值归档并恢复新默认", async () => {
     for (const stage of ["search-default-auto-archive", "search-default-auto-archived"]) {
       const { h, before } = await searchDefaultConflictFixture();
       delete h.storage.sync.values.searchEngines;
@@ -3463,24 +3884,62 @@ context("配置持久提交、配额与冲突", () => {
       await rejects(reader.read());
       const restarted = h.create();
       assert.equal(null, (await restarted.preview()).code);
-      assert.equal(before.keyboard.searchEngines, (await restarted.read()).keyboard.searchEngines);
+      assert.equal(Settings.defaultOptions.searchEngines, (await restarted.read()).keyboard.searchEngines);
       assert.equal(syncBefore, h.storage.sync.values);
       assert.isTrue((await restarted.listCompatibilityConflictObservations()).some((entry) =>
         entry.status === "archived"
       ));
+      assert.equal("bd: https://www.baidu.com/s?wd=%s 百度", before.keyboard.searchEngines);
     }
     for (const stage of [0, 1]) {
       const h = harness();
       const oldDefault = "bd: https://www.baidu.com/s?wd=%s 百度";
       await h.create({ defaults: () => ({ ...Settings.defaultOptions, searchEngines: oldDefault }) }).read();
       const stopped = Object.assign(new Error("合成终止"), { simulatedTermination: true });
-      const writer = h.create({ afterStep: (current) => { if (current === stage) throw stopped; } });
+      const writer = h.create();
       await writer.read();
+      writer.afterStep = (current) => { if (current === stage) throw stopped; };
       await rejects(writer.commit({ legacyPatch: { smoothScroll: false } }));
       const restarted = h.create();
       assert.equal(null, (await restarted.preview()).code);
-      assert.equal(oldDefault, (await restarted.read()).keyboard.searchEngines);
+      assert.equal(Settings.defaultOptions.searchEngines, (await restarted.read()).keyboard.searchEngines);
       assert.isFalse(Object.hasOwn(h.storage.sync.values, "searchEngines"));
+    }
+  });
+
+  should("旧版未完成的百度默认事务先恢复，再采用新版默认并保留归档", async () => {
+    for (const stage of [0, 1]) {
+      const h = harness();
+      const oldDefault = "bd: https://www.baidu.com/s?wd=%s 百度";
+      const old = h.create({ defaults: () => ({ ...Settings.defaultOptions, searchEngines: oldDefault }) });
+      await old.read();
+      const stopped = Object.assign(new Error("合成终止"), { simulatedTermination: true });
+      old.afterStep = (current) => { if (current === stage) throw stopped; };
+      await rejects(old.commit({ legacyPatch: { smoothScroll: false } }));
+      const next = h.create();
+      const current = await next.read();
+      assert.equal(false, current.keyboard.smoothScroll);
+      assert.equal(Settings.defaultOptions.searchEngines, current.keyboard.searchEngines);
+      assert.equal(null, (await next.preview()).code);
+      assert.isFalse(Object.hasOwn(h.storage.sync.values, "searchEngines"));
+      const [archive] = (await next.listCompatibilityConflictObservations()).filter((item) => item.status === "archived");
+      assert.equal(oldDefault, (await next.exportCompatibilityConflictObservation(archive.key)).committed.keyboard.searchEngines);
+    }
+  });
+
+  should("自动切换新版默认事务中断后可恢复，并能导出旧值", async () => {
+    for (const stage of [0, 1]) {
+      const h = harness();
+      const oldDefault = "bd: https://www.baidu.com/s?wd=%s 百度";
+      await h.create({ defaults: () => ({ ...Settings.defaultOptions, searchEngines: oldDefault }) }).read();
+      const stopped = Object.assign(new Error("合成终止"), { simulatedTermination: true });
+      const migrating = h.create({ afterStep: (current) => { if (current === stage) throw stopped; } });
+      await rejects(migrating.read());
+      const restarted = h.create();
+      assert.equal(Settings.defaultOptions.searchEngines, (await restarted.read()).keyboard.searchEngines);
+      assert.equal(null, (await restarted.preview()).code);
+      const [archive] = (await restarted.listCompatibilityConflictObservations()).filter((item) => item.status === "archived");
+      assert.equal(oldDefault, (await restarted.exportCompatibilityConflictObservation(archive.key)).committed.keyboard.searchEngines);
     }
   });
 

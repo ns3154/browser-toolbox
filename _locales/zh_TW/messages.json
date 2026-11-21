@@ -3782,6 +3782,9 @@
   "conflictObservationArchived": {
     "message": "已封存的觀察"
   },
+  "conflictObservationFieldArchive": {
+    "message": "已封存的欄位（僅可匯出）"
+  },
   "conflictSearchDefaultNote": {
     "message": "確認使用目前的 Google 規則後，即可恢復儲存。原觀察會保留；若設定再次變更，仍會停止復原。"
   },

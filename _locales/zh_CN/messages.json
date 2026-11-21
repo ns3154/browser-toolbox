@@ -3782,6 +3782,9 @@
   "conflictObservationArchived": {
     "message": "已归档的观察"
   },
+  "conflictObservationFieldArchive": {
+    "message": "已归档的字段（仅可导出）"
+  },
   "conflictSearchDefaultNote": {
     "message": "确认使用当前的 Google 规则后，可恢复保存。原观察会留存；如果配置又发生变化，仍会停止恢复。"
   },

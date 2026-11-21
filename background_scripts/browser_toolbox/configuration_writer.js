@@ -203,10 +203,54 @@
     return { peakBytes, peakItems, syncWrites };
   }
 
-  // 三方合并按字段进行；数组是完整配置值，同一字段双方修改时返回路径而非配置正文。
-  function merge(baseline, incoming, current, path = "settings", conflicts = []) {
+  function mergeIdentifiedArray(baseline, incoming, current, path, conflicts) {
+    const arrays = [baseline, incoming, current];
+    const stringLists = ["toolbox.tools.pinnedIds", "toolbox.tools.contextMenu.toolIds"];
+    const stringIdentity = stringLists.includes(path) && arrays.every((items) =>
+      items.every((item) => typeof item === "string" && item.length > 0) && new Set(items).size === items.length
+    );
+    const identity = ["id", "pattern"].find((key) => arrays.every((items) => {
+      const values = items.map((item) => record(item) && item[key]);
+      return values.every((value) => typeof value === "string" && value.length > 0) &&
+        new Set(values).size === values.length;
+    }));
+    if (!identity && !stringIdentity) return null;
+    const idOf = (item) => stringIdentity ? item : item[identity];
+    const ids = arrays.map((items) => items.map(idOf));
+    const maps = arrays.map((items) => new Map(items.map((item) => [idOf(item), item])));
+    const all = new Set(ids.flat());
+    const merged = new Map();
+    for (const id of all) {
+      const value = merge(maps[0].get(id), maps[1].get(id), maps[2].get(id), `${path}[${id}]`, conflicts, true);
+      if (value !== undefined) merged.set(id, value);
+    }
+    const baselineOrder = ids[0].filter((id) => maps[1].has(id));
+    const incomingOrder = ids[1].filter((id) => maps[0].has(id));
+    const reordered = !equal(baselineOrder, incomingOrder);
+    const order = (reordered ? ids[1] : ids[2]).filter((id) => merged.has(id));
+    const other = reordered ? ids[2] : ids[1];
+    for (let index = 0; index < other.length; index++) {
+      const id = other[index];
+      if (!merged.has(id) || order.includes(id)) continue;
+      const next = other.slice(index + 1).find((candidate) => order.includes(candidate));
+      if (next !== undefined) order.splice(order.indexOf(next), 0, id);
+      else {
+        const prior = other.slice(0, index).reverse().find((candidate) => order.includes(candidate));
+        if (prior === undefined) order.push(id);
+        else order.splice(order.indexOf(prior) + 1, 0, id);
+      }
+    }
+    return order.map((id) => merged.get(id));
+  }
+
+  // 用户明确保存时按稳定身份合并对象列表；无法识别身份的数组仍作为整体值。
+  function merge(baseline, incoming, current, path = "settings", conflicts = [], preferIncoming = false) {
     if (equal(incoming, baseline)) return clone(current);
     if (equal(current, baseline) || equal(incoming, current)) return clone(incoming);
+    if (preferIncoming && [baseline, incoming, current].every(Array.isArray)) {
+      const identified = mergeIdentifiedArray(baseline, incoming, current, path, conflicts);
+      if (identified) return identified;
+    }
     if (record(baseline) && record(incoming) && record(current)) {
       const result = {};
       for (
@@ -225,13 +269,14 @@
           current[key],
           `${path}.${key}`,
           conflicts,
+          preferIncoming,
         );
         if (value !== undefined) result[key] = value;
       }
       return result;
     }
     conflicts.push(path);
-    return clone(current);
+    return clone(preferIncoming ? incoming : current);
   }
 
   async function createGeneration(snapshot, operationId, revision) {
@@ -446,11 +491,14 @@
         }
         if (selected) break;
       }
+      if (!selected && [syncToolbox, localToolbox].some((values) =>
+        [KEYS.toolbox, KEYS.legacyToolbox].some((key) => Object.hasOwn(values, key))
+      )) throw error("INVALID_CONFIGURATION_RECOVERY");
       const keyboard = this.validateKeyboard(
         Object.assign(clone(this.defaults()), this.migrateLegacy(clone(syncKeyboard))),
       );
       const legacyImplicitSearch = await this.usesLegacyImplicitSearch(syncKeyboard);
-      if (legacyImplicitSearch) keyboard.searchEngines = OLD_SEARCH_DEFAULT;
+      if (legacyImplicitSearch === "pending") keyboard.searchEngines = OLD_SEARCH_DEFAULT;
       const toolbox = this.cleanToolbox(
         this.validateToolbox(this.migrateToolbox(selected?.value || {})),
       );
@@ -489,14 +537,15 @@
           state.afterSnapshot?.keyboard?.searchEngines === OLD_SEARCH_DEFAULT &&
           state.committedIndex?.fields?.searchEngines?.digest === expectedDigest) {
           const committed = await this.loadCommitted(state, stored[KEYS.index]);
-          return !this.generationFailure && committed?.keyboard?.searchEngines === OLD_SEARCH_DEFAULT;
+          return !this.generationFailure && committed?.keyboard?.searchEngines === OLD_SEARCH_DEFAULT
+            ? "committed" : false;
         }
         // 未完成的本机事务沿用前后均一致的旧规则，才能在重启时安全恢复。
         return ["PREPARED", "APPLYING", "RECOVERING"].includes(state.phase) &&
           state.beforeSnapshot?.keyboard?.searchEngines === OLD_SEARCH_DEFAULT &&
           state.afterSnapshot?.keyboard?.searchEngines === OLD_SEARCH_DEFAULT &&
           state.beforeIndex?.fields?.searchEngines?.digest === expectedDigest &&
-          state.afterIndex?.fields?.searchEngines?.digest === expectedDigest;
+          state.afterIndex?.fields?.searchEngines?.digest === expectedDigest ? "pending" : false;
       } catch (_) {
         // 证据不完整时不猜测；既有冲突检测继续保护原配置。
         return false;
@@ -712,12 +761,14 @@
       const saved = clone(input);
       if (
         !record(saved) || saved.formatVersion !== FORMAT_VERSION ||
-        !["m2-conflict-observation", "m2-conflict-marker"].includes(saved.kind) ||
+        !["m2-conflict-observation", "m2-conflict-marker", "m2-field-archive"].includes(saved.kind) ||
         typeof saved.capturedAt !== "string" || !Number.isFinite(Date.parse(saved.capturedAt)) ||
         typeof saved.recordDigest !== "string" || !/^[a-f0-9]{64}$/.test(saved.recordDigest)
       ) throw error("INVALID_CONFIGURATION_RECOVERY");
       const expected = saved.kind === "m2-conflict-observation"
         ? ["capturedAt", "committed", "formatVersion", "kind", "observed", "recordDigest"]
+        : saved.kind === "m2-field-archive"
+        ? ["capturedAt", "fields", "formatVersion", "kind", "recordDigest"]
         : ["capturedAt", "formatVersion", "kind", "reason", "recordDigest"];
       if (!equal(Object.keys(saved).sort(), expected)) {
         throw error("INVALID_CONFIGURATION_RECOVERY");
@@ -727,6 +778,31 @@
       if (saved.kind === "m2-conflict-marker") {
         if (!["unsupported", "quota"].includes(saved.reason)) {
           throw error("INVALID_CONFIGURATION_RECOVERY");
+        }
+      } else if (saved.kind === "m2-field-archive") {
+        if (!Array.isArray(saved.fields) || !saved.fields.length || saved.fields.length > MAX_CONFLICT_REVIEW_FIELDS) {
+          throw error("INVALID_CONFIGURATION_RECOVERY");
+        }
+        const seen = new Set();
+        for (const field of saved.fields) {
+          if (!record(field) || !equal(Object.keys(field).sort(), ["committed", "observed", "path"]) ||
+            typeof field.path !== "string" || !field.path.startsWith("/keyboard/") ||
+            seen.has(field.path) || !this.keyboardKeys.includes(field.path.slice("/keyboard/".length))) {
+            throw error("INVALID_CONFIGURATION_RECOVERY");
+          }
+          seen.add(field.path);
+          const name = field.path.slice("/keyboard/".length);
+          for (const item of [field.committed, field.observed]) {
+            if (!record(item) || !equal(Object.keys(item).sort(), ["present", "value"]) || item.present !== true) {
+              throw error("INVALID_CONFIGURATION_RECOVERY");
+            }
+            const keyboard = { ...clone(this.defaults()), [name]: clone(item.value) };
+            this.validateKeyboard(keyboard);
+            if (name === "exclusionRules") assertLegacyProjectionCompatible(keyboard);
+          }
+        }
+        if (encode(saved.fields).length > MAX_CONFLICT_REVIEW_BYTES) {
+          throw error("CONFIGURATION_CONFLICT_REVIEW_TOO_LARGE");
         }
       } else {
         this.validateCompatibilityObservation(saved.committed);
@@ -745,6 +821,7 @@
             throw error("INVALID_CONFIGURATION_RECOVERY");
           }
           const saved = await this.inspectCompatibilityConflictObservation(values[key]);
+          if (saved.kind === "m2-field-archive") throw error("INVALID_CONFIGURATION_RECOVERY");
           if (saved.kind === "m2-conflict-marker") {
             if (saved.reason === "quota" || status !== "quota") status = saved.reason;
           }
@@ -869,9 +946,14 @@
               throw error("INVALID_CONFIGURATION_RECOVERY");
             }
             const saved = await this.inspectCompatibilityConflictObservation(values[key]);
+            if (saved.kind === "m2-field-archive" && !key.startsWith(M2_CONFLICT_ARCHIVE_PREFIX)) {
+              throw error("INVALID_CONFIGURATION_RECOVERY");
+            }
             result.push({
               key,
-              status: saved.kind === "m2-conflict-marker"
+              status: saved.kind === "m2-field-archive" && key.startsWith(M2_CONFLICT_ARCHIVE_PREFIX)
+                ? "field-archive"
+                : saved.kind === "m2-conflict-marker"
                 ? saved.reason
                 : key.startsWith(M2_CONFLICT_ARCHIVE_PREFIX) ? "archived" : "saved",
               capturedAt: saved.capturedAt,
@@ -892,7 +974,8 @@
         const saved = await this.inspectCompatibilityConflictObservation(
           (await this.storage.local.get(key))[key],
         );
-        if (saved.kind !== "m2-conflict-observation") {
+        if (!["m2-conflict-observation", "m2-field-archive"].includes(saved.kind) ||
+          saved.kind === "m2-field-archive" && !key.startsWith(M2_CONFLICT_ARCHIVE_PREFIX)) {
           throw error(
             saved.reason === "quota"
               ? "CONFIGURATION_BACKUP_QUOTA"
@@ -946,84 +1029,46 @@
         this.defaults().searchEngines === NEW_SEARCH_DEFAULT;
     }
 
-    async archiveImplicitSearchDefaultConflict({ state, index, conflictKeys, committed }) {
+    async migrateImplicitSearchDefault(previous, committed, source = null) {
+      const keys = previous.conflictKeys || [];
       if (
-        state?.phase !== "COMMITTED" || state.code || !committed || this.generationFailure ||
-        !equal(index, state.committedIndex) || conflictKeys.length !== 1 ||
-        !this.validCompatibilityConflictKey(conflictKeys[0])
+        previous.transitionPending || previous.state?.phase !== "COMMITTED" || previous.state.code ||
+        !equal(previous.index, previous.state.committedIndex) || !committed || this.generationFailure ||
+        keys.length > 1
       ) return false;
-      const key = conflictKeys[0];
-      let saved;
-      let removed = false;
-      const archiveKey = M2_CONFLICT_ARCHIVE_PREFIX + key.slice(M2_CONFLICT_CAPTURE_PREFIX.length);
+      let archived;
       try {
-        saved = await this.inspectCompatibilityConflictObservation(
-          (await this.storage.local.get(key))[key],
-        );
-        if (!this.isSearchDefaultConflict(saved)) return false;
-        const source = await this.source();
+        source ||= await this.source();
+        if (source.legacyImplicitSearch !== "committed" ||
+          source.keyboard.searchEngines !== NEW_SEARCH_DEFAULT ||
+          committed.keyboard.searchEngines !== OLD_SEARCH_DEFAULT) return false;
         const asObservation = (value) => ({
-          keyboard: value.keyboard,
-          toolbox: value.toolbox,
-          area: value.area,
+          keyboard: clone(value.keyboard), toolbox: clone(value.toolbox), area: value.area,
         });
-        const oldDefaultSource = asObservation(source);
-        const newDefaultSource = clone(oldDefaultSource);
-        newDefaultSource.keyboard.searchEngines = NEW_SEARCH_DEFAULT;
-        if (
-          !source.legacyImplicitSearch || !equal(asObservation(committed), saved.committed) ||
-          !equal(oldDefaultSource, saved.committed) || !equal(newDefaultSource, saved.observed)
-        ) return false;
-        const local = await this.storage.local.get(null);
-        if (Object.hasOwn(local, archiveKey) && !equal(local[archiveKey], saved)) return false;
-        if (!Object.hasOwn(local, archiveKey)) {
-          const addedBytes = itemBytes(archiveKey, saved);
-          const owned = Object.entries(local).filter(([name]) =>
-            name.startsWith(CHUNK_PREFIX) || name.startsWith(ROLLBACK_BACKUP_PREFIX) ||
-            name.startsWith(IMPORT_BACKUP_PREFIX) || name.startsWith(TRANSITION_RECORD_PREFIX) ||
-            name === ROLLBACK_JOURNAL_KEY || name === SYNC_PUBLISH_JOURNAL_KEY ||
-            Object.values(KEYS).includes(name) && name !== KEYS.toolbox
-          ).reduce((total, [name, value]) => total + itemBytes(name, value), addedBytes);
-          const used = typeof this.storage.local.getBytesInUse === "function"
-            ? await this.storage.local.getBytesInUse(null)
-            : Object.entries(local).reduce((total, [name, value]) => total + itemBytes(name, value), 0);
-          if (owned > MAX_BACKUP_BYTES ||
-            used + addedBytes > (this.storage.local.QUOTA_BYTES || 10 * 1024 * 1024)) return false;
-          await this.storage.local.set({ [archiveKey]: saved });
+        const oldSource = asObservation(source);
+        oldSource.keyboard.searchEngines = OLD_SEARCH_DEFAULT;
+        if (!equal(oldSource, asObservation(committed))) return false;
+        if (keys.length) {
+          if (!this.validCompatibilityConflictKey(keys[0])) return false;
+          const saved = await this.inspectCompatibilityConflictObservation(
+            (await this.storage.local.get(keys[0]))[keys[0]],
+          );
+          const onlyUnsupportedMarker = saved.kind === "m2-conflict-marker" && saved.reason === "unsupported";
+          if (!onlyUnsupportedMarker && (!this.isSearchDefaultConflict(saved) ||
+            !equal(saved.committed, asObservation(committed)) ||
+            !equal(saved.observed, asObservation(source)))) return false;
         }
-        const verify = async (active) => {
-          const latest = await this.storage.local.get([
-            key, archiveKey, KEYS.state, KEYS.index, ROLLBACK_JOURNAL_KEY,
-            SYNC_PUBLISH_JOURNAL_KEY,
-          ]);
-          const current = await this.source();
-          if (
-            !equal(latest[archiveKey], saved) ||
-            (active ? !equal(latest[key], saved) : Object.hasOwn(latest, key)) ||
-            !equal(latest[KEYS.state], state) || !equal(latest[KEYS.index], index) ||
-            Object.hasOwn(latest, ROLLBACK_JOURNAL_KEY) ||
-            Object.hasOwn(latest, SYNC_PUBLISH_JOURNAL_KEY) ||
-            !equal(await this.compatibilityConflictKeys(), active ? [key] : []) ||
-            !current.legacyImplicitSearch || !equal(current.raw, source.raw) ||
-            !equal(asObservation(current), saved.committed)
-          ) throw error("CONFIGURATION_EXTERNAL_CONFLICT");
-        };
-        // 先完整保留观察，再确认来源未变化，最后解除该条精确误报的阻断。
-        await this.afterStep("search-default-auto-archive", { key, archiveKey });
-        await verify(true);
-        await this.storage.local.remove(key);
-        removed = true;
-        await this.afterStep("search-default-auto-archived", { key, archiveKey });
-        await verify(false);
+        const plan = { nextKeyboard: source.keyboard, nextToolbox: source.toolbox, conflicts: [] };
+        archived = await this.archiveUserSaveObservations(previous, committed, source, plan, {
+          legacySearchMigration: true,
+        });
+        // 升级仅发布新的本机默认快照，不补写原本缺失的同步键。
+        await this.commitInternal({}, source, previous, { localOnly: true, beforeSnapshot: committed });
+        this.dirty = true;
         return true;
       } catch (failure) {
         if (failure?.simulatedTermination) throw failure;
-        if (removed && saved) {
-          const latest = await this.storage.local.get([key, archiveKey]);
-          if (!Object.hasOwn(latest, key) && equal(latest[archiveKey], saved)) {
-            await this.storage.local.set({ [key]: saved });
-          }
-        }
+        if (archived) await this.restoreUserSaveObservations(previous, archived.originals, archived.archives);
         return false;
       }
     }
@@ -1333,8 +1378,8 @@
     }
 
     async readInternal({ reconcile = true } = {}) {
-      const { state, index, transitionPending, conflictPending, conflictKeys } = await this
-        .recover();
+      const previous = await this.recover();
+      const { state, index, transitionPending, conflictPending, conflictKeys } = previous;
       let snapshot = await this.loadGuardedCommitted({ state, index, conflictPending });
       if (transitionPending) {
         // 未接入的迁移记录存在时只提供完整快照，不能用旧来源触发新一轮写入。
@@ -1350,9 +1395,9 @@
         if (!snapshot || this.generationFailure) {
           throw error(this.generationFailure || "CONFIGURATION_UNAVAILABLE");
         }
-        if (await this.archiveImplicitSearchDefaultConflict({
-          state, index, conflictKeys, committed: snapshot,
-        })) return await this.readInternal({ reconcile });
+        if (await this.migrateImplicitSearchDefault(previous, snapshot)) {
+          return await this.readInternal({ reconcile });
+        }
         this.lastSnapshot = snapshot;
         this.dirty = true;
         this.lastReadCode = state?.phase === "ABORTED" && state.code
@@ -1435,6 +1480,9 @@
       if (!snapshot) {
         const result = await this.commitInternal({}, source, { state, index });
         return result;
+      }
+      if (await this.migrateImplicitSearchDefault(previous, snapshot, source)) {
+        return await this.readInternal({ reconcile });
       }
       // 不覆盖原恢复记录；追加观察或标记，并在没有安全解锁协议时持续阻止后续提交。
       if (reconcile && !equal(this.snapshot(source, snapshot.revision), snapshot)) {
@@ -1600,12 +1648,7 @@
       return { peakBytes, peakItems, syncWrites, ownedBytes, requiredBytes };
     }
 
-    async commitInternal(
-      input,
-      source,
-      previous,
-      { backupBeforeImport = false, localOnly = false, beforeSnapshot = null } = {},
-    ) {
+    planCommit(input, source, { backupBeforeImport = false, preferIncoming = false } = {}) {
       const conflicts = [];
       const baseline = input.baseline || {};
       const patch = input.legacyPatch || {};
@@ -1633,6 +1676,7 @@
           source.keyboard[key],
           `keyboard.${key}`,
           conflicts,
+          preferIncoming,
         );
       }
       let nextToolbox = source.toolbox;
@@ -1646,15 +1690,250 @@
           source.toolbox,
           "toolbox",
           conflicts,
+          preferIncoming,
         );
       }
-      if (conflicts.length) {
+      if (conflicts.length && !preferIncoming) {
         throw error("browser-toolbox-settings-conflict", {
           conflicts: [{ name: "BrowserToolbox", paths: conflicts, truncated: false }],
         });
       }
       this.validateKeyboard(nextKeyboard);
       this.validateToolbox(nextToolbox);
+      return { nextKeyboard, nextToolbox, conflicts };
+    }
+
+    hasExplicitUserEdits(input) {
+      if (!record(input) || !record(input.baseline)) return false;
+      const patch = input.legacyPatch || {};
+      if (!record(patch) || Object.keys(patch).some((key) => !this.keyboardKeys.includes(key))) {
+        return false;
+      }
+      const baseline = input.baseline;
+      const keys = Object.keys(patch);
+      if (keys.length && (!record(baseline.keyboard) || keys.some((key) => !Object.hasOwn(baseline.keyboard, key)))) {
+        return false;
+      }
+      try {
+        const keyboard = clone(this.defaults());
+        for (const key of keys) keyboard[key] = clone(baseline.keyboard[key]);
+        this.validateKeyboard(keyboard);
+        let changed = keys.some((key) => !equal(patch[key], baseline.keyboard[key]));
+        if (input.toolbox !== undefined) {
+          if (!record(baseline.toolbox)) return false;
+          const before = this.cleanToolbox(this.validateToolbox(this.migrateToolbox(clone(baseline.toolbox))));
+          const after = this.cleanToolbox(this.validateToolbox(this.migrateToolbox(clone(input.toolbox))));
+          changed ||= !equal(before, after);
+        }
+        return changed;
+      } catch (_) {
+        return false;
+      }
+    }
+
+    hasAmbiguousPhysicalToolbox(source) {
+      const syncValue = source.raw.syncToolbox[KEYS.toolbox];
+      const localValue = source.raw.localToolbox[KEYS.toolbox];
+      const syncPresent = Object.hasOwn(source.raw.syncToolbox, KEYS.toolbox);
+      const localPresent = Object.hasOwn(source.raw.localToolbox, KEYS.toolbox);
+      return syncPresent && !record(syncValue) || localPresent && !record(localValue) ||
+        syncPresent && localPresent && !equal(syncValue, localValue);
+    }
+
+    assertPhysicalToolboxWritable(source, plan) {
+      const toolboxChanges = !equal(plan.nextToolbox, source.toolbox) ||
+        (plan.nextToolbox.general?.browserSyncEnabled === false ? "local" : "sync") !== source.area;
+      if (toolboxChanges && this.hasAmbiguousPhysicalToolbox(source)) {
+        // 两处有不同原始配置时，本次不能清理未被观察到的另一处。
+        throw error("CONFIGURATION_CONFLICT_REVIEW_REQUIRED");
+      }
+    }
+
+    async archiveUserSaveObservations(previous, committed, source, plan, { legacySearchMigration = false } = {}) {
+      const keys = previous.conflictKeys || [];
+      if (
+        previous.transitionPending || previous.state?.phase !== "COMMITTED" || previous.state.code ||
+        !equal(previous.index, previous.state.committedIndex) || !committed || this.generationFailure
+      ) throw error("CONFIGURATION_EXTERNAL_CONFLICT");
+      const asObservation = (value) => ({
+        keyboard: clone(value.keyboard),
+        toolbox: clone(value.toolbox),
+        area: value.area,
+      });
+      const committedObservation = asObservation(committed);
+      const sourceObservation = asObservation(source);
+      const local = await this.storage.local.get(null);
+      let unsupportedMarker = false;
+      if (keys.length) {
+        this.assertPhysicalToolboxWritable(source, plan);
+        if (keys.length === 1 && this.validCompatibilityConflictKey(keys[0])) {
+          const item = await this.inspectCompatibilityConflictObservation(local[keys[0]]);
+          unsupportedMarker = item.kind === "m2-conflict-marker" && item.reason === "unsupported";
+        }
+        if (!unsupportedMarker) {
+          this.validateCompatibilityObservation(committedObservation);
+          this.validateCompatibilityObservation(sourceObservation);
+        }
+      }
+      const originals = {};
+      const archives = {};
+      const savedObservations = [];
+      for (const key of keys) {
+        if (!this.validCompatibilityConflictKey(key)) throw error("INVALID_CONFIGURATION_RECOVERY");
+        const saved = await this.inspectCompatibilityConflictObservation(local[key]);
+        if (!(unsupportedMarker && saved.kind === "m2-conflict-marker") &&
+          (saved.kind !== "m2-conflict-observation" || !equal(saved.committed, committedObservation))) {
+          throw error("CONFIGURATION_CONFLICT_REVIEW_REQUIRED");
+        }
+        originals[key] = saved;
+        savedObservations.push(saved);
+        const archiveKey = M2_CONFLICT_ARCHIVE_PREFIX + key.slice(M2_CONFLICT_CAPTURE_PREFIX.length);
+        if (Object.hasOwn(local, archiveKey) && !equal(local[archiveKey], saved)) {
+          throw error("CONFIGURATION_EXTERNAL_CONFLICT");
+        }
+        archives[archiveKey] = saved;
+      }
+      if (!keys.length || !savedObservations.some((item) => equal(item.observed, sourceObservation))) {
+        // 来源已再次变化时单独保留最新观察；页面并发则保留本次写入前后的配置。
+        const observed = keys.length || legacySearchMigration ? sourceObservation : {
+          keyboard: clone(plan.nextKeyboard),
+          toolbox: clone(plan.nextToolbox),
+          area: plan.nextToolbox.general?.browserSyncEnabled === false ? "local" : "sync",
+        };
+        const before = keys.length || legacySearchMigration ? committedObservation : sourceObservation;
+        let body;
+        if (unsupportedMarker) {
+          if (!equal(committedObservation.toolbox, sourceObservation.toolbox) ||
+            committedObservation.area !== sourceObservation.area) {
+            throw error("CONFIGURATION_CONFLICT_REVIEW_REQUIRED");
+          }
+          const fields = compareCompatibilityObservation(committedObservation, sourceObservation).fields;
+          if (!fields.length || fields.some((field) =>
+            !field.path.startsWith("/keyboard/") ||
+            !this.keyboardKeys.includes(field.path.slice("/keyboard/".length))
+          )) throw error("CONFIGURATION_CONFLICT_REVIEW_REQUIRED");
+          // 未知规则保持原样；只备份能够验证的实际键盘差异。
+          body = { formatVersion: FORMAT_VERSION, kind: "m2-field-archive", capturedAt: new Date().toISOString(), fields };
+        } else try {
+          this.validateCompatibilityObservation(before);
+          this.validateCompatibilityObservation(observed);
+          body = {
+            formatVersion: FORMAT_VERSION,
+            kind: "m2-conflict-observation",
+            capturedAt: new Date().toISOString(),
+            committed: before,
+            observed,
+          };
+        } catch (failure) {
+          if (keys.length || failure?.code !== "UNSUPPORTED_CONFIGURATION_FIELDS") throw failure;
+          // 无关未知字段不能复制进备份；只归档可验证的键盘冲突字段。
+          const paths = legacySearchMigration ? ["keyboard.searchEngines"] : [...new Set(plan.conflicts)];
+          const fields = paths.map((path) => {
+            if (!path.startsWith("keyboard.") || !this.keyboardKeys.includes(path.slice("keyboard.".length))) {
+              throw failure;
+            }
+            const name = path.slice("keyboard.".length);
+            return {
+              path: `/keyboard/${name}`,
+              committed: cell(legacySearchMigration ? committed.keyboard : source.keyboard, name),
+              observed: cell(legacySearchMigration ? source.keyboard : plan.nextKeyboard, name),
+            };
+          });
+          body = {
+            formatVersion: FORMAT_VERSION,
+            kind: "m2-field-archive",
+            capturedAt: new Date().toISOString(),
+            fields,
+          };
+        }
+        const saved = { ...body, recordDigest: await digest(body) };
+        await this.inspectCompatibilityConflictObservation(saved);
+        const archiveKey = `${M2_CONFLICT_ARCHIVE_PREFIX}${crypto.randomUUID()}`;
+        if (Object.hasOwn(local, archiveKey)) throw error("CONFIGURATION_EXTERNAL_CONFLICT");
+        archives[archiveKey] = saved;
+      }
+      const additions = Object.fromEntries(Object.entries(archives).filter(([key]) => !Object.hasOwn(local, key)));
+      const addedBytes = Object.entries(additions).reduce((total, [key, value]) => total + itemBytes(key, value), 0);
+      const owned = Object.entries(local).filter(([name]) =>
+        name.startsWith(CHUNK_PREFIX) || name.startsWith(ROLLBACK_BACKUP_PREFIX) ||
+        name.startsWith(IMPORT_BACKUP_PREFIX) || name.startsWith(TRANSITION_RECORD_PREFIX) ||
+        name === ROLLBACK_JOURNAL_KEY || name === SYNC_PUBLISH_JOURNAL_KEY ||
+        Object.values(KEYS).includes(name) && name !== KEYS.toolbox
+      ).reduce((total, [name, value]) => total + itemBytes(name, value), addedBytes);
+      if (owned > MAX_BACKUP_BYTES) throw error("CONFIGURATION_BACKUP_QUOTA");
+      const used = typeof this.storage.local.getBytesInUse === "function"
+        ? await this.storage.local.getBytesInUse(null)
+        : Object.entries(local).reduce((total, [name, value]) => total + itemBytes(name, value), 0);
+      if (used + addedBytes > (this.storage.local.QUOTA_BYTES || 10 * 1024 * 1024)) {
+        throw error("CONFIGURATION_LOCAL_QUOTA");
+      }
+      const verify = async (active, archived) => {
+        const latest = await this.storage.local.get([
+          ...keys, ...Object.keys(archives), KEYS.state, KEYS.index, ROLLBACK_JOURNAL_KEY,
+          SYNC_PUBLISH_JOURNAL_KEY,
+        ]);
+        if (
+          !equal(latest[KEYS.state], previous.state) || !equal(latest[KEYS.index], previous.index) ||
+          Object.hasOwn(latest, ROLLBACK_JOURNAL_KEY) || Object.hasOwn(latest, SYNC_PUBLISH_JOURNAL_KEY) ||
+          !equal(await this.compatibilityConflictKeys(), active ? keys : []) ||
+          !equal((await this.source()).raw, source.raw)
+        ) throw error("CONFIGURATION_EXTERNAL_CONFLICT");
+        for (const [key, value] of Object.entries(originals)) {
+          if (active ? !equal(latest[key], value) : Object.hasOwn(latest, key)) {
+            throw error("CONFIGURATION_EXTERNAL_CONFLICT");
+          }
+        }
+        for (const [key, value] of Object.entries(archives)) {
+          if (archived ? !equal(latest[key], value) :
+            Object.hasOwn(local, key) ? !equal(latest[key], value) : Object.hasOwn(latest, key)) {
+            throw error("CONFIGURATION_EXTERNAL_CONFLICT");
+          }
+        }
+      };
+      await verify(true, false);
+      if (Object.keys(additions).length) await this.storage.local.set(additions);
+      await this.afterStep(legacySearchMigration ? "search-default-auto-archive" : "user-save-archive", {
+        keys, archives: Object.keys(archives),
+      });
+      await verify(true, true);
+      if (keys.length) await this.storage.local.remove(keys);
+      try {
+        await this.afterStep(legacySearchMigration ? "search-default-auto-archived" : "user-save-archived", {
+          keys, archives: Object.keys(archives),
+        });
+        await verify(false, true);
+      } catch (failure) {
+        if (!failure?.simulatedTermination) await this.restoreUserSaveObservations(previous, originals, archives);
+        throw failure;
+      }
+      return { originals, archives };
+    }
+
+    async restoreUserSaveObservations(previous, originals, archives) {
+      const keys = Object.keys(originals);
+      if (!keys.length) return;
+      const latest = await this.storage.local.get([KEYS.state, KEYS.index, ...keys, ...Object.keys(archives)]);
+      if (!equal(latest[KEYS.state], previous.state) || !equal(latest[KEYS.index], previous.index)) return;
+      if (Object.entries(archives).some(([key, value]) => !equal(latest[key], value))) return;
+      const missing = Object.fromEntries(Object.entries(originals).filter(([key]) => !Object.hasOwn(latest, key)));
+      if (Object.keys(missing).length) await this.storage.local.set(missing);
+    }
+
+    async commitInternal(
+      input,
+      source,
+      previous,
+      {
+        backupBeforeImport = false,
+        localOnly = false,
+        beforeSnapshot = null,
+        preferIncoming = false,
+      } = {},
+    ) {
+      const { nextKeyboard, nextToolbox } = this.planCommit(input, source, {
+        backupBeforeImport,
+        preferIncoming,
+      });
       const revision = (previous.state?.committedIndex?.revision || previous.index?.revision || 0) +
         1;
       const operationId = crypto.randomUUID();
@@ -1687,10 +1966,6 @@
         nextKeyboard,
         this.defaults(),
       );
-      if (source.legacyImplicitSearch && nextKeyboard.searchEngines === OLD_SEARCH_DEFAULT) {
-        // 未修改旧规则时保留同步键缺失，避免保存无关设置时改写用户同步数据。
-        delete targetKeyboard.searchEngines;
-      }
       const rawKeyboard = Object.fromEntries(
         Object.entries(source.raw.syncKeyboard).filter(([key]) =>
           this.keyboardKeys.includes(key) || key === "settingsVersion"
@@ -1699,14 +1974,16 @@
       if (!localOnly) addStep("sync", rawKeyboard, targetKeyboard);
       const targetArea = afterSnapshot.area;
       const otherArea = targetArea === "sync" ? "local" : "sync";
-      if (!localOnly) addStep(
+      const writeToolbox = !localOnly && !this.hasAmbiguousPhysicalToolbox(source) && (previous.state?.phase !== "COMMITTED" ||
+        !equal(nextToolbox, source.toolbox) || targetArea !== source.area);
+      if (writeToolbox) addStep(
         targetArea,
         Object.hasOwn(source.raw[`${targetArea}Toolbox`], KEYS.toolbox)
           ? { [KEYS.toolbox]: source.raw[`${targetArea}Toolbox`][KEYS.toolbox] }
           : {},
         { [KEYS.toolbox]: nextToolbox },
       );
-      if (!localOnly) addStep(
+      if (writeToolbox) addStep(
         otherArea,
         Object.hasOwn(source.raw[`${otherArea}Toolbox`], KEYS.toolbox)
           ? { [KEYS.toolbox]: source.raw[`${otherArea}Toolbox`][KEYS.toolbox] }
@@ -1868,20 +2145,41 @@
 
     async commitQueued(input, backupBeforeImport = false) {
       await this.readInternal();
-      if (this.dirty && this.lastReadCode) {
-        throw error(this.lastReadCode, { conflicts: ["keyboardGeneration"] });
-      }
       const previous = await this.recover();
       if (previous.state?.code) {
         throw error(previous.state.code, { conflicts: previous.state.conflicts || [] });
       }
+      const explicitEdits = !backupBeforeImport && this.hasExplicitUserEdits(input);
+      if (this.dirty && this.lastReadCode &&
+        !(previous.conflictPending && explicitEdits && this.lastReadCode === "CONFIGURATION_EXTERNAL_CONFLICT")) {
+        throw error(this.lastReadCode, { conflicts: ["keyboardGeneration"] });
+      }
+      if (previous.transitionPending) throw error("CONFIGURATION_TRANSITION_PENDING");
       const source = await this.source();
       const committed = await this.loadCommitted(previous.state, previous.index);
       if (this.generationFailure) throw error(this.generationFailure);
-      if (committed && !equal(this.snapshot(source, committed.revision), committed)) {
+      if (!previous.conflictPending && committed && !equal(this.snapshot(source, committed.revision), committed)) {
         throw error("CONFIGURATION_EXTERNAL_CONFLICT", { conflicts: ["keyboard", "toolbox"] });
       }
-      return this.commitInternal(input, source, previous, { backupBeforeImport });
+      const plan = this.planCommit(input, source, { backupBeforeImport, preferIncoming: explicitEdits });
+      this.assertPhysicalToolboxWritable(source, plan);
+      let archived;
+      if (previous.conflictPending || plan.conflicts.length) {
+        archived = await this.archiveUserSaveObservations(previous, committed, source, plan);
+      }
+      try {
+        // 仅覆盖用户相对于页面基线修改过的字段，未改字段沿用本次重读的来源。
+        return await this.commitInternal(input, source, previous, {
+          backupBeforeImport,
+          preferIncoming: explicitEdits,
+          beforeSnapshot: previous.conflictPending ? committed : null,
+        });
+      } catch (failure) {
+        if (archived && !failure?.simulatedTermination) {
+          await this.restoreUserSaveObservations(previous, archived.originals, archived.archives);
+        }
+        throw failure;
+      }
     }
 
     commit(input) {

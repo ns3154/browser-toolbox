@@ -386,20 +386,20 @@ try {
     merged.keyboard.scrollStepSize === 83 && merged.keyboard.keyMappings === "map z scrollUp",
     "两页面修改不同字段未保留双方",
   );
-  const conflict = await second.evaluate(async ({ baseline }) => {
-    try {
-      await BrowserToolboxConfigurationClientInstance.commit({
-        legacyPatch: { keyMappings: "map z scrollDown" },
-        baseline,
-      });
-      return false;
-    } catch (error) {
-      return error.code === "browser-toolbox-settings-conflict";
-    }
+  const preferred = await second.evaluate(async ({ baseline }) => {
+    return await BrowserToolboxConfigurationClientInstance.commit({
+      legacyPatch: { keyMappings: "map z scrollDown" },
+      baseline,
+    });
   }, { baseline: { keyboard: stale.keyboard } });
-  assert(conflict, "两个页面修改同一字段未提示冲突");
+  assert(preferred.keyboard.keyMappings === "map z scrollDown" && preferred.keyboard.scrollStepSize === 83,
+    "同字段未采用本次用户保存或丢失其他页面的设置");
+  const archives = (await request("list-conflict-observations")).filter((item) => item.status === "archived");
+  assert(archives.length > 0, "同字段保存前未归档原设置");
+  const prior = await request("export-conflict-observation", { key: archives[0].key });
+  assert(prior.committed.keyboard.keyMappings === "map z scrollUp", "归档未保留被替换的原值");
   await second.close();
-  check("实际两个设置页面字段合并与同字段冲突");
+  check("实际两个设置页面不同字段合并，同字段以本次保存为准并归档原值");
 
   report.currentStep = "选择当前后台";
   const browserClient = await browser.target().createCDPSession();

@@ -2936,6 +2936,9 @@
   "conflictObservationArchived": {
     "message": "保存済みの観察記録（解決済み）"
   },
+  "conflictObservationFieldArchive": {
+    "message": "保存済みの項目（エクスポートのみ）"
+  },
   "conflictSearchDefaultNote": {
     "message": "現在の Google のルールを選ぶと、保存を再開できます。観察記録は保持され、設定が再び変わった場合は復旧を停止します。"
   },

@@ -306,6 +306,47 @@ try {
   await browser.close();
   browser = null;
 
+  trace("验证真实设置页按本次修改处理已有同步冲突");
+  browser = await launch("user-save-conflict-profile");
+  const preferred = await ready();
+  const initial = await request(preferred.page, "read");
+  const externalRule = "x: https://example.invalid/?q=%s 外部";
+  await preferred.page.evaluate((rule) => chrome.storage.sync.set({
+    keyMappings: "map r scrollUp",
+    searchEngines: rule,
+  }), externalRule);
+  const pending = await request(preferred.page, "preview");
+  assert(pending.value?.code === "CONFIGURATION_EXTERNAL_CONFLICT", "未建立真实同步观察");
+  await preferred.page.$eval("#key-mappings", (element) => {
+    element.value = "map m scrollDown";
+    element.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  await until(() => preferred.page.$eval("#save-settings", (element) => !element.disabled), "用户修改未形成草稿");
+  await preferred.page.$eval("#save-settings", (element) => element.click());
+  await until(async () => {
+    const current = await request(preferred.page, "read");
+    return current.ok && current.value.keyboard.keyMappings === "map m scrollDown" &&
+      current.value.keyboard.searchEngines === externalRule;
+  }, "用户保存未覆盖本次修改或丢失未修改的外部字段");
+  const afterPreferred = await request(preferred.page, "preview");
+  assert(afterPreferred.value.code === null, "用户保存后冲突仍阻止后续保存");
+  const preservedList = await request(preferred.page, "list-conflict-observations");
+  const preserved = preservedList.value.find((item) => item.status === "archived");
+  assert(preserved, "用户保存前未保留原观察");
+  const preservedRecord = await request(preferred.page, "export-conflict-observation", { key: preserved.key });
+  assert(preservedRecord.value.committed.keyboard.keyMappings === initial.value.keyboard.keyMappings &&
+    preservedRecord.value.observed.keyboard.keyMappings === "map r scrollUp", "归档未保留两份原值");
+  check("真实设置页仅覆盖本次修改，保留外部字段和两份原值");
+  await browser.close();
+  browser = await launch("user-save-conflict-profile");
+  const preferredRestart = await ready();
+  const persisted = await request(preferredRestart.page, "read");
+  assert(persisted.ok && persisted.value.keyboard.keyMappings === "map m scrollDown" &&
+    persisted.value.keyboard.searchEngines === externalRule, "重启后用户保存或外部字段丢失");
+  check("用户优先的配置重启后仍然完整");
+  await browser.close();
+  browser = null;
+
   trace("验证已知搜索默认值冲突的显式恢复");
   browser = await launch("search-default-profile");
   const search = await ready();
@@ -384,8 +425,13 @@ try {
     const preview = await request(automatic.page, "preview");
     const current = await request(automatic.page, "read");
     return preview.ok && preview.value.code === null &&
-      current.ok && current.value.keyboard.searchEngines === oldRule;
-  }, "缺失的旧默认搜索键未自动兼容");
+      current.ok && current.value.keyboard.searchEngines === newRule;
+  }, "缺失的旧默认搜索键未自动采用新版默认");
+  const autoArchives = (await request(automatic.page, "list-conflict-observations")).value;
+  const autoArchive = autoArchives.find((item) => item.status === "archived");
+  assert(autoArchive, "升级旧默认前未归档原配置");
+  const archivedOld = await request(automatic.page, "export-conflict-observation", { key: autoArchive.key });
+  assert(archivedOld.value.committed.keyboard.searchEngines === oldRule, "旧搜索规则未保留在归档中");
   const syncBeforeAutomaticSave = await automatic.page.evaluate(() => chrome.storage.sync.get(null));
   assert(!Object.hasOwn(syncBeforeAutomaticSave, "searchEngines"), "旧默认键不应被补写");
   await automatic.page.reload({ waitUntil: "load" });
@@ -401,19 +447,19 @@ try {
   await until(async () => {
     const current = await request(automatic.page, "read");
     return current.ok && current.value.toolboxSource.value.general.showHud !== priorAutomaticHud &&
-      current.value.keyboard.searchEngines === oldRule;
+      current.value.keyboard.searchEngines === newRule;
   }, "自动兼容后无法通过设置页保存");
   const syncAfterAutomaticSave = await automatic.page.evaluate(() => chrome.storage.sync.get(null));
   assert(!Object.hasOwn(syncAfterAutomaticSave, "searchEngines"), "保存无关设置时补写了搜索同步键");
-  check("旧默认搜索键自动兼容，设置页保存不改写搜索同步键");
+  check("旧默认迁移到新版默认并保留归档，设置页保存不改写搜索同步键");
   await browser.close();
   browser = await launch("search-default-auto-profile");
   const restartedAutomatic = await ready();
   const afterRestart = await request(restartedAutomatic.page, "read");
-  assert(afterRestart.ok && afterRestart.value.keyboard.searchEngines === oldRule &&
+  assert(afterRestart.ok && afterRestart.value.keyboard.searchEngines === newRule &&
     !Object.hasOwn(await restartedAutomatic.page.evaluate(() => chrome.storage.sync.get(null)), "searchEngines"),
     "自动兼容结果重启后不一致");
-  check("自动兼容重启后保留旧规则");
+  check("自动迁移重启后保留新版默认");
   report.status = "passed";
 } catch (failure) {
   report.status = "failed";

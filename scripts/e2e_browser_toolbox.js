@@ -1328,6 +1328,8 @@ async function testActionControls(browser, id, fixture, errors) {
         (element) => getComputedStyle(element).display !== "none",
       )
     );
+    // 无头浏览器会暂停后台标签的布局回调；初始化已记录目标站点后再激活动作页。
+    if (headless) await action.bringToFront();
     for (const width of [320, 360, 400]) {
       await action.setViewport({ width, height: 800 });
       const layout = await action.evaluate(() => {
@@ -1468,6 +1470,7 @@ async function testActionControls(browser, id, fixture, errors) {
       initial.footerEntries === 4 && !initial.legacyDetails,
       "动作页应显示四个底部入口并移除旧版 Vimium 站点详情面板",
     );
+    if (headless) await fixture.bringToFront();
     await action.evaluate(() => document.querySelector("#browser-toolbox-open-help").click()).catch(
       () => {},
     );
