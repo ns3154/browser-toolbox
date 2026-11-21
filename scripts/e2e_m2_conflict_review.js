@@ -136,6 +136,7 @@ try {
     ),
     checked: document.querySelectorAll('#conflict-review input[type="radio"]:checked').length,
     exportDisabled: document.querySelector("#conflict-review-export").disabled,
+    specialRecoveryHidden: document.querySelector("#conflict-search-default-recover").hidden,
     injectedNodes:
       document.querySelectorAll("#conflict-review img, #conflict-review script").length,
     text: document.querySelector("#conflict-review-fields").textContent,
@@ -154,6 +155,7 @@ try {
     assert(review.paths.includes(expected), `缺少差异 ${expected}`);
   }
   assert(review.checked === 0 && review.exportDisabled, "未选择全部差异时可导出");
+  assert(review.specialRecoveryHidden, "其他冲突不应出现搜索默认值恢复入口");
   assert(
     review.injectedNodes === 0 && !review.executed && review.text.includes("<img src=x"),
     "观察文本被当成 HTML",
@@ -238,7 +240,7 @@ try {
   const other = await browser.newPage();
   await other.goto(`chrome-extension://${id}/pages/options.html`);
   const denied = await Promise.all(
-    ["review-conflict-observation", "prepare-conflict-candidate"].map((action) =>
+    ["review-conflict-observation", "prepare-conflict-candidate", "recover-search-default-conflict"].map((action) =>
       request(other, action, { key })
     ),
   );
@@ -253,7 +255,7 @@ try {
   await frame.waitForSelector("#conflict-observation-review");
   const frameDenied = await frame.evaluate(async (key) =>
     await Promise.all(
-      ["review-conflict-observation", "prepare-conflict-candidate"].map((action) =>
+      ["review-conflict-observation", "prepare-conflict-candidate", "recover-search-default-conflict"].map((action) =>
         chrome.runtime.sendMessage({
           handler: "browserToolbox.configuration",
           action,
@@ -299,6 +301,74 @@ try {
     "候选意外启用本机指针",
   );
   check("候选通过现有预览和后台队列导入独立配置");
+  await browser.close();
+  browser = null;
+
+  trace("验证已知搜索默认值冲突的显式恢复");
+  browser = await launch("search-default-profile");
+  const search = await ready();
+  const oldRule = "bd: https://www.baidu.com/s?wd=%s 百度";
+  const newRule = "g: https://google.com/search?q=%s Google";
+  const seed = await request(search.page, "commit", { legacyPatch: { searchEngines: oldRule } });
+  assert(seed.ok, "未能建立旧搜索规则");
+  await search.page.evaluate(() => chrome.storage.sync.remove("searchEngines"));
+  const searchConflict = await request(search.page, "preview");
+  assert(searchConflict.value?.code === "CONFIGURATION_EXTERNAL_CONFLICT", "未触发搜索冲突");
+  const syncBeforeRecovery = await search.page.evaluate(() => chrome.storage.sync.get(null));
+  await search.page.evaluate(() => {
+    document.querySelector("#conflict-observation-refresh").closest("details").open = true;
+  });
+  await search.page.$eval("#conflict-observation-refresh", (element) => element.click());
+  await until(
+    () => search.page.$eval("#conflict-observation-review", (element) => !element.disabled),
+    "搜索冲突观察未列出",
+  );
+  await search.page.$eval("#conflict-observation-review", (element) => element.click());
+  await until(
+    () => search.page.$eval("#conflict-search-default-recover", (element) => !element.hidden),
+    "未出现搜索恢复入口",
+  );
+  assert(
+    await search.page.$eval("#conflict-search-default-recover", (element) => element.disabled),
+    "尚未选择当前值时可以恢复",
+  );
+  await search.page.$eval('#conflict-review-fields input[value="observed"]', (element) => element.click());
+  await until(
+    () => search.page.$eval("#conflict-search-default-recover", (element) => !element.disabled),
+    "选择当前值后不能恢复",
+  );
+  await search.page.$eval("#conflict-search-default-recover", (element) => element.click());
+  await until(async () => {
+    const result = await request(search.page, "preview");
+    return result.ok && result.value.code === null;
+  }, "搜索默认冲突未解除");
+  await until(
+    () => search.page.evaluate((rule) =>
+      !document.querySelector(".browser-toolbox-main").hasAttribute("inert") &&
+      document.querySelector("#search-engines").value === rule, newRule),
+    "恢复后表单未刷新到 Google 规则",
+  );
+  const recovered = await request(search.page, "read");
+  const archives = await request(search.page, "list-conflict-observations");
+  assert(recovered.value.keyboard.searchEngines === newRule, "未采用用户选择的 Google 规则");
+  assert(archives.value.length === 1 && archives.value[0].status === "archived", "原观察未归档");
+  assert(
+    JSON.stringify(await search.page.evaluate(() => chrome.storage.sync.get(null))) ===
+      JSON.stringify(syncBeforeRecovery),
+    "恢复期间改写了同步数据",
+  );
+  const nextSave = await request(search.page, "commit", { legacyPatch: { smoothScroll: false } });
+  assert(nextSave.ok && nextSave.value.keyboard.searchEngines === newRule, "恢复后仍不能正常保存");
+  const priorHud = await search.page.$eval("#global-show-hud", (element) => element.checked);
+  await search.page.$eval("#global-show-hud", (element) => element.click());
+  await until(() => search.page.$eval("#save-settings", (element) => !element.disabled), "页面未记录新草稿");
+  await search.page.$eval("#save-settings", (element) => element.click());
+  await until(async () => {
+    const current = await request(search.page, "read");
+    return current.ok && current.value.toolboxSource.value.general.showHud !== priorHud &&
+      current.value.keyboard.searchEngines === newRule;
+  }, "恢复后从设置页保存失败或覆盖搜索规则");
+  check("搜索默认变化需显式选择，保留观察且可再次保存");
   report.status = "passed";
 } catch (failure) {
   report.status = "failed";

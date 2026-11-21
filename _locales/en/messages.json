@@ -3779,6 +3779,18 @@
   "conflictReviewNote": {
     "message": "These are locally saved observations and may omit newer sync changes, unknown fields, or unsaved drafts. There is no trusted common baseline: choose every difference; arrays are selected as a whole. The candidate backup excludes local pointer assets and disables the pointer on import. Exporting it does not write settings or release conflict protection."
   },
+  "conflictObservationArchived": {
+    "message": "Archived observation"
+  },
+  "conflictSearchDefaultNote": {
+    "message": "After choosing the current Google rule, you can restore saving. The observation is kept; recovery stops if the configuration changes again."
+  },
+  "conflictSearchDefaultRecover": {
+    "message": "Use Google and restore saving"
+  },
+  "conflictSearchDefaultRecovered": {
+    "message": "Saving is available again. The original observation was archived."
+  },
   "conflictReviewExport": {
     "message": "Export candidate backup"
   },

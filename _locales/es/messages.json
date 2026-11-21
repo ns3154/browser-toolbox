@@ -2933,6 +2933,18 @@
   "conflictReviewNote": {
     "message": "Son observaciones guardadas en este dispositivo y pueden omitir cambios de sincronización recientes, campos desconocidos o borradores. No hay una base común fiable: elige cada diferencia; las listas se eligen completas. La copia candidata no incluye recursos locales del puntero y lo desactiva al importar. Exportarla no modifica los ajustes ni libera la protección del conflicto."
   },
+  "conflictObservationArchived": {
+    "message": "Observación archivada"
+  },
+  "conflictSearchDefaultNote": {
+    "message": "Tras elegir la regla actual de Google, puedes recuperar el guardado. La observación se conserva; si la configuración cambia de nuevo, la recuperación se detiene."
+  },
+  "conflictSearchDefaultRecover": {
+    "message": "Usar Google y recuperar el guardado"
+  },
+  "conflictSearchDefaultRecovered": {
+    "message": "Ya puedes guardar. La observación original se ha archivado."
+  },
   "conflictReviewExport": {
     "message": "Exportar copia candidata"
   },

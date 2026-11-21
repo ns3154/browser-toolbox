@@ -48,6 +48,9 @@ const allowed = [
     text: 'fetch(chrome.runtime.getURL("content_scripts/vimium.css"))',
   },
   // 站点规则中的 URL 是匹配数据，不是网络调用；保持文件和文本双重精确匹配，避免放宽真正的网络审计。
+  // 版本迁移只比较历史及当前搜索规则的完整文本，不发起网络请求。
+  { file: "background_scripts/browser_toolbox/configuration_writer.js", text: 'const OLD_SEARCH_DEFAULT = "bd: https://www.baidu.com/s?wd=%s 百度";' },
+  { file: "background_scripts/browser_toolbox/configuration_writer.js", text: 'const NEW_SEARCH_DEFAULT = "g: https://google.com/search?q=%s Google";' },
   { file: "lib/browser_toolbox/settings_schema.js", text: "https://docs.google.com/*" },
   { file: "lib/browser_toolbox/settings_schema.js", text: "https://*.notion.so/*" },
   { file: "lib/browser_toolbox/settings_schema.js", text: "https://stackblitz.com/*" },

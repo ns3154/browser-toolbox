@@ -1582,10 +1582,14 @@
     const reviewPanel = document.querySelector("#conflict-review");
     const reviewFields = document.querySelector("#conflict-review-fields");
     const reviewExport = document.querySelector("#conflict-review-export");
+    const searchDefaultNote = document.querySelector("#conflict-search-default-note");
+    const searchDefaultRecover = document.querySelector("#conflict-search-default-recover");
     let observationBusy = false;
     let activeReview = null;
     const updateObservationButtons = () => {
-      const available = observationSelect.selectedOptions[0]?.dataset.status === "saved";
+      const available = ["saved", "archived"].includes(
+        observationSelect.selectedOptions[0]?.dataset.status,
+      );
       observationRefresh.disabled = observationBusy;
       observationCapture.disabled = observationBusy;
       observationSelect.disabled = observationBusy ||
@@ -1596,10 +1600,15 @@
       for (const group of groups) group.disabled = observationBusy;
       reviewExport.disabled = observationBusy || !activeReview || !groups.length ||
         groups.some((group) => !group.querySelector('input[type="radio"]:checked'));
+      searchDefaultRecover.disabled = observationBusy || !activeReview?.searchDefaultRecoveryAvailable ||
+        groups.length !== 1 ||
+        groups[0].querySelector('input[type="radio"]:checked')?.value !== "observed";
     };
     const clearReview = () => {
       activeReview = null;
       reviewPanel.hidden = true;
+      searchDefaultNote.hidden = true;
+      searchDefaultRecover.hidden = true;
       reviewFields.replaceChildren();
       updateObservationButtons();
     };
@@ -1611,6 +1620,7 @@
       for (const item of records) {
         const labels = {
           saved: "conflictObservationSaved",
+          archived: "conflictObservationArchived",
           unsupported: "conflictObservationUnsupported",
           quota: "conflictObservationQuotaMarker",
           invalid: "conflictObservationInvalid",
@@ -1623,7 +1633,7 @@
         option.textContent = message(labels[item.status]) + time;
         option.value = item.key;
         option.dataset.status = item.status;
-        option.disabled = item.status !== "saved";
+        option.disabled = !["saved", "archived"].includes(item.status);
         observationSelect.append(option);
       }
       const first = [...observationSelect.options].find((option) => !option.disabled);
@@ -1726,11 +1736,54 @@
           }
           reviewFields.append(group);
         });
-        activeReview = { key, recordDigest: review.recordDigest };
+        activeReview = {
+          key,
+          recordDigest: review.recordDigest,
+          searchDefaultRecoveryAvailable: review.searchDefaultRecoveryAvailable === true,
+        };
+        searchDefaultNote.hidden = searchDefaultRecover.hidden =
+          !activeReview.searchDefaultRecoveryAvailable;
         reviewPanel.hidden = false;
         observationStatus.textContent = message(
           review.fields.length ? "conflictReviewChoose" : "conflictReviewNoChanges",
         );
+      }));
+    searchDefaultRecover.addEventListener("click", () =>
+      withObservationBusy(async () => {
+        if (draft?.isDirty || operationInProgress) {
+          observationStatus.textContent = message("configurationSaveFirst");
+          return;
+        }
+        if (!activeReview?.searchDefaultRecoveryAvailable ||
+          reviewFields.querySelector('input[type="radio"]:checked')?.value !== "observed") {
+          throw new Error("INVALID_CONFIGURATION_CONFLICT_CHOICES");
+        }
+        setOperationBusy(true);
+        try {
+          const result = await configuration.request("recover-search-default-conflict", {
+            key: activeReview.key,
+            recordDigest: activeReview.recordDigest,
+          });
+          if (settings) {
+            vimiumSettings.source()._settings = schema.clone(result.keyboard);
+            vimiumSettings.source().configurationRevision = result.revision;
+            repository.settings = schema.clone(result.toolboxSource.value);
+            repository.storageArea = result.toolboxSource.area;
+            const snapshot = settingsService.capture({ saveBaseline: true });
+            settings = snapshot.settings;
+            markSettingsSaved(settings);
+            writeForm();
+            applySettingsLocale();
+          }
+          await loadObservations();
+          await maintainConfiguration("preview");
+          const current = await configuration.request("preview");
+          if (current.code) throw Object.assign(new Error(current.code), { code: current.code });
+          configurationStatus.textContent = message("conflictSearchDefaultRecovered");
+          observationStatus.textContent = message("conflictSearchDefaultRecovered");
+        } finally {
+          setOperationBusy(false);
+        }
       }));
     reviewFields.addEventListener("change", updateObservationButtons);
     reviewExport.addEventListener("click", () =>
@@ -1840,7 +1893,7 @@
           observationStatus.textContent = message(
             captureMessages[summary.captureStatus] || "conflictObservationNotCaptured",
           );
-          if (summary.captureStatus === "saved" && !observationSelect.options.length) {
+          if (summary.captureStatus === "saved") {
             await withObservationBusy(loadObservations);
           }
         }

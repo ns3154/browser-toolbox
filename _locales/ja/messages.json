@@ -2933,6 +2933,18 @@
   "conflictReviewNote": {
     "message": "この端末に保存した観測には、最新の同期変更、不明な項目、未保存の下書きが含まれない場合があります。信頼できる共通基準がないため、各差分を選択してください。配列は全体で選択します。候補バックアップにはローカルのポインター画像が含まれず、インポート時にポインターは無効になります。エクスポートしても設定は書き込まれず、競合保護も解除されません。"
   },
+  "conflictObservationArchived": {
+    "message": "保存済みの観察記録（解決済み）"
+  },
+  "conflictSearchDefaultNote": {
+    "message": "現在の Google のルールを選ぶと、保存を再開できます。観察記録は保持され、設定が再び変わった場合は復旧を停止します。"
+  },
+  "conflictSearchDefaultRecover": {
+    "message": "Google を使って保存を再開"
+  },
+  "conflictSearchDefaultRecovered": {
+    "message": "保存を再開しました。元の観察記録は保管されています。"
+  },
   "conflictReviewExport": {
     "message": "候補バックアップをエクスポート"
   },

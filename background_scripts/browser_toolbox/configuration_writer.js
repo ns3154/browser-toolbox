@@ -16,6 +16,9 @@
   const IMPORT_BACKUP_PREFIX = "browserToolboxConfigurationImportBackup:";
   const TRANSITION_RECORD_PREFIX = "browserToolboxKeyboardTransition:";
   const M2_CONFLICT_CAPTURE_PREFIX = `${TRANSITION_RECORD_PREFIX}m2-observation:`;
+  const M2_CONFLICT_ARCHIVE_PREFIX = `${TRANSITION_RECORD_PREFIX}m2-archive:`;
+  const OLD_SEARCH_DEFAULT = "bd: https://www.baidu.com/s?wd=%s 百度";
+  const NEW_SEARCH_DEFAULT = "g: https://google.com/search?q=%s Google";
   const ROLLBACK_JOURNAL_KEY = "browserToolboxKeyboardRollbackJournal";
   const SYNC_PUBLISH_JOURNAL_KEY = "browserToolboxKeyboardSyncPublishJournal";
   const MAX_CHUNK_BYTES = 7 * 1024;
@@ -726,6 +729,14 @@
         );
     }
 
+    validCompatibilityObservationKey(key) {
+      if (this.validCompatibilityConflictKey(key)) return true;
+      return typeof key === "string" && key.startsWith(M2_CONFLICT_ARCHIVE_PREFIX) &&
+        /^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/.test(
+          key.slice(M2_CONFLICT_ARCHIVE_PREFIX.length),
+        );
+    }
+
     async saveCompatibilityConflictObservation(committed, source, { forceMarker = false } = {}) {
       const asObservation = (snapshot) => ({
         keyboard: clone(snapshot.keyboard),
@@ -807,18 +818,29 @@
 
     listCompatibilityConflictObservations() {
       return this.enqueue(async () => {
-        const keys = await this.compatibilityConflictKeys();
+        const area = this.storage.local;
+        const names = typeof area.getKeys === "function"
+          ? await area.getKeys()
+          : Object.keys(await area.get(null));
+        const keys = names.filter((name) =>
+          name.startsWith(M2_CONFLICT_CAPTURE_PREFIX) || name.startsWith(M2_CONFLICT_ARCHIVE_PREFIX)
+        ).sort((left, right) =>
+          Number(left.startsWith(M2_CONFLICT_ARCHIVE_PREFIX)) -
+            Number(right.startsWith(M2_CONFLICT_ARCHIVE_PREFIX)) || left.localeCompare(right)
+        );
         const values = await this.storage.local.get(keys);
         const result = [];
         for (const key of keys) {
           try {
-            if (!this.validCompatibilityConflictKey(key)) {
+            if (!this.validCompatibilityObservationKey(key)) {
               throw error("INVALID_CONFIGURATION_RECOVERY");
             }
             const saved = await this.inspectCompatibilityConflictObservation(values[key]);
             result.push({
               key,
-              status: saved.kind === "m2-conflict-marker" ? saved.reason : "saved",
+              status: saved.kind === "m2-conflict-marker"
+                ? saved.reason
+                : key.startsWith(M2_CONFLICT_ARCHIVE_PREFIX) ? "archived" : "saved",
               capturedAt: saved.capturedAt,
             });
           } catch (_) {
@@ -831,7 +853,9 @@
 
     exportCompatibilityConflictObservation(key) {
       return this.enqueue(async () => {
-        if (!this.validCompatibilityConflictKey(key)) throw error("INVALID_CONFIGURATION_RECOVERY");
+        if (!this.validCompatibilityObservationKey(key)) {
+          throw error("INVALID_CONFIGURATION_RECOVERY");
+        }
         const saved = await this.inspectCompatibilityConflictObservation(
           (await this.storage.local.get(key))[key],
         );
@@ -858,7 +882,7 @@
     }
 
     async readCompatibilityConflictReview(key, expectedDigest, selections) {
-      if (!this.validCompatibilityConflictKey(key)) throw error("INVALID_CONFIGURATION_RECOVERY");
+      if (!this.validCompatibilityObservationKey(key)) throw error("INVALID_CONFIGURATION_RECOVERY");
       const saved = await this.inspectCompatibilityConflictObservation(
         (await this.storage.local.get(key))[key],
       );
@@ -879,17 +903,127 @@
       return { saved, ...result };
     }
 
+    // 仅识别这次版本默认值变化；无法证明来源时仍须由用户选择当前值。
+    isSearchDefaultConflict(saved) {
+      if (saved?.kind !== "m2-conflict-observation") return false;
+      const fields = compareCompatibilityObservation(saved.committed, saved.observed).fields;
+      return fields.length === 1 && fields[0].path === "/keyboard/searchEngines" &&
+        fields[0].committed.present && fields[0].committed.value === OLD_SEARCH_DEFAULT &&
+        fields[0].observed.present && fields[0].observed.value === NEW_SEARCH_DEFAULT &&
+        this.defaults().searchEngines === NEW_SEARCH_DEFAULT;
+    }
+
     reviewCompatibilityConflictObservation(key) {
       return this.enqueue(async () => {
         const { saved, fields } = await this.readCompatibilityConflictReview(key);
         return {
           recordDigest: saved.recordDigest,
           fields,
+          searchDefaultRecoveryAvailable: this.validCompatibilityConflictKey(key) &&
+            this.isSearchDefaultConflict(saved),
           writeAllowed: false,
           releaseAllowed: false,
           lineageVerified: false,
           pointInTimeVerified: false,
         };
+      });
+    }
+
+    // 只接受当前观察值，不写同步键；原观察先归档，异常和重启仍保留保护证据。
+    recoverSearchDefaultConflict(key, recordDigest) {
+      return this.enqueue(async () => {
+        if (typeof recordDigest !== "string" || !/^[a-f0-9]{64}$/.test(recordDigest)) {
+          throw error("INVALID_CONFIGURATION_CONFLICT_CHOICES");
+        }
+        const { saved } = await this.readCompatibilityConflictReview(key, recordDigest);
+        if (!this.isSearchDefaultConflict(saved)) {
+          throw error("CONFIGURATION_CONFLICT_REVIEW_REQUIRED");
+        }
+        const previous = await this.recover();
+        if (
+          previous.transitionPending || !previous.conflictPending ||
+          !equal(previous.conflictKeys, [key]) || previous.state?.phase !== "COMMITTED" ||
+          previous.state.code || !equal(previous.index, previous.state.committedIndex)
+        ) throw error("CONFIGURATION_EXTERNAL_CONFLICT");
+        const committed = await this.loadCommitted(previous.state, previous.index);
+        if (!committed || this.generationFailure) {
+          throw error(this.generationFailure || "CONFIGURATION_UNAVAILABLE");
+        }
+        const source = await this.source();
+        const asObservation = (snapshot) => ({
+          keyboard: snapshot.keyboard,
+          toolbox: snapshot.toolbox,
+          area: snapshot.area,
+        });
+        if (
+          !equal(asObservation(committed), saved.committed) ||
+          !equal(asObservation(source), saved.observed)
+        ) throw error("CONFIGURATION_EXTERNAL_CONFLICT");
+        const archiveKey = M2_CONFLICT_ARCHIVE_PREFIX + key.slice(M2_CONFLICT_CAPTURE_PREFIX.length);
+        const local = await this.storage.local.get(null);
+        const archived = Object.hasOwn(local, archiveKey);
+        if (archived && !equal(local[archiveKey], saved)) {
+          throw error("CONFIGURATION_EXTERNAL_CONFLICT");
+        }
+        if (!archived) {
+          const addedBytes = itemBytes(archiveKey, saved);
+          const owned = Object.entries(local).filter(([name]) =>
+            name.startsWith(CHUNK_PREFIX) || name.startsWith(ROLLBACK_BACKUP_PREFIX) ||
+            name.startsWith(IMPORT_BACKUP_PREFIX) || name.startsWith(TRANSITION_RECORD_PREFIX) ||
+            name === ROLLBACK_JOURNAL_KEY || name === SYNC_PUBLISH_JOURNAL_KEY ||
+            Object.values(KEYS).includes(name) && name !== KEYS.toolbox
+          ).reduce((total, [name, value]) => total + itemBytes(name, value), addedBytes);
+          if (owned > MAX_BACKUP_BYTES) throw error("CONFIGURATION_BACKUP_QUOTA");
+          const used = typeof this.storage.local.getBytesInUse === "function"
+            ? await this.storage.local.getBytesInUse(null)
+            : Object.entries(local).reduce((total, [name, value]) => total + itemBytes(name, value), 0);
+          if (used + addedBytes > (this.storage.local.QUOTA_BYTES || 10 * 1024 * 1024)) {
+            throw error("CONFIGURATION_LOCAL_QUOTA");
+          }
+          await this.storage.local.set({ [archiveKey]: saved });
+        }
+        const verify = async (active) => {
+          const latest = await this.storage.local.get([
+            key, archiveKey, KEYS.state, KEYS.index, ROLLBACK_JOURNAL_KEY,
+            SYNC_PUBLISH_JOURNAL_KEY,
+          ]);
+          if (
+            !equal(latest[archiveKey], saved) ||
+            (active ? !equal(latest[key], saved) : Object.hasOwn(latest, key)) ||
+            !equal(latest[KEYS.state], previous.state) ||
+            !equal(latest[KEYS.index], previous.index) ||
+            Object.hasOwn(latest, ROLLBACK_JOURNAL_KEY) ||
+            Object.hasOwn(latest, SYNC_PUBLISH_JOURNAL_KEY) ||
+            !equal(await this.compatibilityConflictKeys(), active ? [key] : []) ||
+            !equal((await this.source()).raw, source.raw)
+          ) throw error("CONFIGURATION_EXTERNAL_CONFLICT");
+        };
+        await this.afterStep("search-default-archive", { key, archiveKey });
+        await verify(true);
+        await this.storage.local.remove(key);
+        try {
+          await this.afterStep("search-default-archived", { key, archiveKey });
+          await verify(false);
+          const result = await this.commitInternal({}, source, previous, {
+            localOnly: true,
+            beforeSnapshot: committed,
+          });
+          // 重新读取来源，避免恢复过程中观察到的更新被当作已处理。
+          this.dirty = true;
+          await this.readInternal();
+          if (this.lastReadCode) throw error(this.lastReadCode);
+          return result;
+        } catch (failure) {
+          if (!failure?.simulatedTermination) {
+            const latest = await this.storage.local.get([key, archiveKey, KEYS.state]);
+            if (
+              !Object.hasOwn(latest, key) && equal(latest[archiveKey], saved) &&
+              equal(latest[KEYS.state], previous.state)
+            ) await this.storage.local.set({ [key]: saved });
+          }
+          this.dirty = true;
+          throw failure;
+        }
       });
     }
 
@@ -1343,7 +1477,12 @@
       return { peakBytes, peakItems, syncWrites, ownedBytes, requiredBytes };
     }
 
-    async commitInternal(input, source, previous, { backupBeforeImport = false } = {}) {
+    async commitInternal(
+      input,
+      source,
+      previous,
+      { backupBeforeImport = false, localOnly = false, beforeSnapshot = null } = {},
+    ) {
       const conflicts = [];
       const baseline = input.baseline || {};
       const patch = input.legacyPatch || {};
@@ -1430,17 +1569,17 @@
           this.keyboardKeys.includes(key) || key === "settingsVersion"
         ),
       );
-      addStep("sync", rawKeyboard, targetKeyboard);
+      if (!localOnly) addStep("sync", rawKeyboard, targetKeyboard);
       const targetArea = afterSnapshot.area;
       const otherArea = targetArea === "sync" ? "local" : "sync";
-      addStep(
+      if (!localOnly) addStep(
         targetArea,
         Object.hasOwn(source.raw[`${targetArea}Toolbox`], KEYS.toolbox)
           ? { [KEYS.toolbox]: source.raw[`${targetArea}Toolbox`][KEYS.toolbox] }
           : {},
         { [KEYS.toolbox]: nextToolbox },
       );
-      addStep(
+      if (!localOnly) addStep(
         otherArea,
         Object.hasOwn(source.raw[`${otherArea}Toolbox`], KEYS.toolbox)
           ? { [KEYS.toolbox]: source.raw[`${otherArea}Toolbox`][KEYS.toolbox] }
@@ -1460,7 +1599,7 @@
         beforeIndex,
         afterIndex: generation.index,
         committedIndex: beforeIndex,
-        beforeSnapshot: this.snapshot(source, revision - 1),
+        beforeSnapshot: beforeSnapshot || this.snapshot(source, revision - 1),
         afterSnapshot,
         code: null,
         sourceVersion: source.sourceVersion,
@@ -2472,6 +2611,7 @@
     IMPORT_BACKUP_PREFIX,
     TRANSITION_RECORD_PREFIX,
     M2_CONFLICT_CAPTURE_PREFIX,
+    M2_CONFLICT_ARCHIVE_PREFIX,
     ROLLBACK_JOURNAL_KEY,
     SYNC_PUBLISH_JOURNAL_KEY,
     MAX_CHUNK_BYTES,

@@ -1273,6 +1273,7 @@ const sendRequestHandlers = {
         "capture-conflict-observation",
         "review-conflict-observation",
         "prepare-conflict-candidate",
+        "recover-search-default-conflict",
       ].includes(action) &&
       senderUrl !== chrome.runtime.getURL("pages/mouse_options.html")
     ) return { ok: false, code: "PERMISSION_DENIED" };
@@ -1295,6 +1296,8 @@ const sendRequestHandlers = {
           input.recordDigest,
           input.choices,
         );
+      } else if (action === "recover-search-default-conflict") {
+        value = await writer.recoverSearchDefaultConflict(input.key, input.recordDigest);
       } else if (action === "commit") value = await writer.commit(input);
       else if (action === "import") value = await writer.importConfiguration(input);
       else if (action === "list-import-backups") value = await writer.listImportBackups();

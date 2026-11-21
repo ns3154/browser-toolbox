@@ -3779,6 +3779,18 @@
   "conflictReviewNote": {
     "message": "這兩份內容是本機儲存的觀測，可能不含最新同步變更、未知欄位或未儲存草稿。沒有可信的共同基準，請逐項選擇；陣列以整體選擇。匯出的候選備份不含本機指標資源，匯入後指標會停用。產生備份不會寫入設定或解除衝突保護。"
   },
+  "conflictObservationArchived": {
+    "message": "已封存的觀察"
+  },
+  "conflictSearchDefaultNote": {
+    "message": "確認使用目前的 Google 規則後，即可恢復儲存。原觀察會保留；若設定再次變更，仍會停止復原。"
+  },
+  "conflictSearchDefaultRecover": {
+    "message": "使用 Google 並恢復儲存"
+  },
+  "conflictSearchDefaultRecovered": {
+    "message": "已恢復儲存，原觀察已封存。"
+  },
   "conflictReviewExport": {
     "message": "匯出候選備份"
   },

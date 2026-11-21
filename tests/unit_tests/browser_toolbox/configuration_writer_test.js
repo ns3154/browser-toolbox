@@ -3312,6 +3312,111 @@ context("配置持久提交、配额与冲突", () => {
     assert.equal(committed.keyboard.keyMappings, h.storage.sync.values.keyMappings);
   });
 
+  async function searchDefaultConflictFixture(options = {}) {
+    const oldDefault = "bd: https://www.baidu.com/s?wd=%s 百度";
+    const h = harness();
+    const oldWriter = h.create({
+      defaults: () => ({ ...Settings.defaultOptions, searchEngines: oldDefault }),
+    });
+    const before = await oldWriter.read();
+    assert.isFalse(Object.hasOwn(h.storage.sync.values, "searchEngines"));
+    const writer = h.create(options);
+    assert.equal("CONFIGURATION_EXTERNAL_CONFLICT", (await writer.preview()).code);
+    const [item] = await writer.listCompatibilityConflictObservations();
+    const review = await writer.reviewCompatibilityConflictObservation(item.key);
+    return { h, writer, before, item, review };
+  }
+
+  should("用户选当前 Google 规则后仅更新本机代次并保留可导出的原观察", async () => {
+    const { h, writer, before, item, review } = await searchDefaultConflictFixture();
+    assert.isTrue(review.searchDefaultRecoveryAvailable);
+    assert.equal(["/keyboard/searchEngines"], review.fields.map((field) => field.path));
+    const syncBefore = clone(h.storage.sync.values);
+    const writesBefore = h.writes.length;
+    const recovered = await writer.recoverSearchDefaultConflict(item.key, review.recordDigest);
+    assert.equal(Settings.defaultOptions.searchEngines, recovered.keyboard.searchEngines);
+    assert.equal(before.toolboxSource, recovered.toolboxSource);
+    assert.equal(syncBefore, h.storage.sync.values);
+    assert.isFalse(h.writes.slice(writesBefore).some((entry) => entry.name === "sync"));
+    assert.equal(null, (await h.create().preview()).code);
+    const [archive] = await writer.listCompatibilityConflictObservations();
+    assert.equal("archived", archive.status);
+    const saved = await writer.exportCompatibilityConflictObservation(archive.key);
+    assert.equal(before.keyboard.searchEngines, saved.committed.keyboard.searchEngines);
+    assert.equal(Settings.defaultOptions.searchEngines, saved.observed.keyboard.searchEngines);
+    assert.isFalse((await writer.reviewCompatibilityConflictObservation(archive.key))
+      .searchDefaultRecoveryAvailable);
+    const changed = await writer.commit({ legacyPatch: { smoothScroll: false } });
+    assert.equal(false, changed.keyboard.smoothScroll);
+    assert.equal(Settings.defaultOptions.searchEngines, changed.keyboard.searchEngines);
+  });
+
+  should("搜索默认冲突的来源变化、额外观察和摘要变化均不能解除保护", async () => {
+    for (const scenario of ["search", "other-field", "extra-observation", "digest", "quota"]) {
+      const { h, writer, item, review } = await searchDefaultConflictFixture();
+      const syncBefore = clone(h.storage.sync.values);
+      if (scenario === "search") await h.storage.sync.set({ searchEngines: "x: https://example.invalid/?q=%s" });
+      if (scenario === "other-field") await h.storage.sync.set({ keyMappings: "map a scrollUp" });
+      if (scenario === "extra-observation") await writer.captureCurrentCompatibilityConflict();
+      if (scenario === "quota") h.storage.local.QUOTA_BYTES = 1;
+      const expectedSync = clone(h.storage.sync.values);
+      const digest = scenario === "digest" ? "0".repeat(64) : review.recordDigest;
+      await rejects(writer.recoverSearchDefaultConflict(item.key, digest));
+      assert.equal(expectedSync, h.storage.sync.values);
+      assert.isTrue(Object.hasOwn(h.storage.local.values, item.key));
+      assert.equal("CONFIGURATION_EXTERNAL_CONFLICT", (await h.create().preview()).code);
+      if (!["search", "other-field"].includes(scenario)) assert.equal(syncBefore, expectedSync);
+    }
+  });
+
+  should("搜索默认恢复中的中断不会丢失观察或覆盖同步值", async () => {
+    for (const stage of ["search-default-archive", "search-default-archived", 0, 1]) {
+      const stopped = Object.assign(new Error("合成终止"), { simulatedTermination: true });
+      const { h, writer, item, review } = await searchDefaultConflictFixture({
+        afterStep: (current) => {
+          if (current === stage) throw stopped;
+        },
+      });
+      const beforeSync = clone(h.storage.sync.values);
+      await rejects(writer.recoverSearchDefaultConflict(item.key, review.recordDigest));
+      const reader = h.create();
+      const preview = await reader.preview();
+      assert.equal(beforeSync, h.storage.sync.values);
+      const records = await reader.listCompatibilityConflictObservations();
+      assert.isTrue(records.some((entry) => entry.status === "archived"));
+      if (stage === "search-default-archive" || stage === "search-default-archived") {
+        assert.equal("CONFIGURATION_EXTERNAL_CONFLICT", preview.code);
+        assert.isTrue(records.some((entry) => entry.status === "saved"));
+      } else {
+        assert.equal(null, preview.code);
+        assert.equal(Settings.defaultOptions.searchEngines, (await reader.read()).keyboard.searchEngines);
+      }
+    }
+  });
+
+  should("搜索默认恢复期间同步内容变化时保留新内容并阻止继续保存", async () => {
+    for (const stage of ["search-default-archive", "search-default-archived", 0]) {
+      const test = { h: null };
+      const fixture = await searchDefaultConflictFixture({
+        afterStep: async (current) => {
+          if (current === stage) await test.h.storage.sync.set({ keyMappings: "map newer scrollUp" });
+        },
+      });
+      const { h, writer, item, review } = fixture;
+      test.h = h;
+      await rejects(writer.recoverSearchDefaultConflict(item.key, review.recordDigest));
+      assert.equal("map newer scrollUp", h.storage.sync.values.keyMappings);
+      const reader = h.create();
+      const preview = await reader.preview();
+      assert.isTrue(Boolean(preview.code));
+      await rejects(reader.commit({ legacyPatch: { smoothScroll: false } }));
+      assert.equal("map newer scrollUp", h.storage.sync.values.keyMappings);
+      assert.isTrue((await reader.listCompatibilityConflictObservations()).some((entry) =>
+        entry.status === "archived"
+      ));
+    }
+  });
+
   async function reviewObservationFixture() {
     const h = harness({ sync: { keyMappings: "map base scrollDown", smoothScroll: true } });
     const writer = h.create();

@@ -3779,6 +3779,18 @@
   "conflictReviewNote": {
     "message": "这两份内容是本机保存的观察，可能不含最新同步变化、未知字段或未保存草稿。没有可信共同基线，请逐项选择；数组按整体选择。导出的候选备份不包含本机指针资源，导入后指针将被禁用。生成备份不会写入配置或解除冲突保护。"
   },
+  "conflictObservationArchived": {
+    "message": "已归档的观察"
+  },
+  "conflictSearchDefaultNote": {
+    "message": "确认使用当前的 Google 规则后，可恢复保存。原观察会留存；如果配置又发生变化，仍会停止恢复。"
+  },
+  "conflictSearchDefaultRecover": {
+    "message": "使用 Google 并恢复保存"
+  },
+  "conflictSearchDefaultRecovered": {
+    "message": "已恢复保存，原观察已归档。"
+  },
   "conflictReviewExport": {
     "message": "导出候选备份"
   },
