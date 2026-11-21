@@ -3320,12 +3320,169 @@ context("配置持久提交、配额与冲突", () => {
     });
     const before = await oldWriter.read();
     assert.isFalse(Object.hasOwn(h.storage.sync.values, "searchEngines"));
+    // 显式同步值可能来自其他设备，仍应保留人工复核流程。
+    h.storage.sync.values.searchEngines = Settings.defaultOptions.searchEngines;
     const writer = h.create(options);
     assert.equal("CONFIGURATION_EXTERNAL_CONFLICT", (await writer.preview()).code);
     const [item] = await writer.listCompatibilityConflictObservations();
     const review = await writer.reviewCompatibilityConflictObservation(item.key);
     return { h, writer, before, item, review };
   }
+
+  should("旧默认搜索规则升级时保留原值，保存其他设置不写入缺失的同步键", async () => {
+    const oldDefault = "bd: https://www.baidu.com/s?wd=%s 百度";
+    const h = harness();
+    const oldWriter = h.create({
+      defaults: () => ({ ...Settings.defaultOptions, searchEngines: oldDefault }),
+    });
+    const original = await oldWriter.read();
+    assert.isFalse(Object.hasOwn(h.storage.sync.values, "searchEngines"));
+    h.writes.length = 0;
+    const writer = h.create();
+    assert.equal(null, (await writer.preview()).code);
+    assert.equal(oldDefault, (await writer.read()).keyboard.searchEngines);
+    assert.equal(0, (await writer.listCompatibilityConflictObservations()).length);
+    const saved = await writer.commit({ legacyPatch: { smoothScroll: false } });
+    assert.equal(false, saved.keyboard.smoothScroll);
+    assert.equal(oldDefault, saved.keyboard.searchEngines);
+    assert.equal(original.toolboxSource, saved.toolboxSource);
+    assert.isFalse(Object.hasOwn(h.storage.sync.values, "searchEngines"));
+    assert.isFalse(h.writes.some((write) => write.name === "sync" && write.keys.includes("searchEngines")));
+    assert.equal(oldDefault, (await h.create().read()).keyboard.searchEngines);
+    const changed = await h.create().commit({
+      legacyPatch: { searchEngines: Settings.defaultOptions.searchEngines },
+    });
+    assert.equal(Settings.defaultOptions.searchEngines, changed.keyboard.searchEngines);
+    assert.equal(Settings.defaultOptions.searchEngines, (await h.create().read()).keyboard.searchEngines);
+  });
+
+  should("已经保存的旧默认误报在升级后自动归档并保留百度和其他配置", async () => {
+    const { h, before, item } = await searchDefaultConflictFixture();
+    delete h.storage.sync.values.searchEngines;
+    const syncBefore = clone(h.storage.sync.values);
+    const writer = h.create();
+    assert.equal(null, (await writer.preview()).code);
+    const recovered = await writer.read();
+    assert.equal(before.keyboard.searchEngines, recovered.keyboard.searchEngines);
+    assert.equal(before.toolboxSource, recovered.toolboxSource);
+    assert.equal(syncBefore, h.storage.sync.values);
+    const [archive] = await writer.listCompatibilityConflictObservations();
+    assert.equal("archived", archive.status);
+    assert.equal(item.key.replace("m2-observation:", "m2-archive:"), archive.key);
+    const saved = await writer.commit({ legacyPatch: { smoothScroll: false } });
+    assert.equal(before.keyboard.searchEngines, saved.keyboard.searchEngines);
+    assert.isFalse(Object.hasOwn(h.storage.sync.values, "searchEngines"));
+  });
+
+  should("自动兼容不吞掉明确同步值、其他变更或额外观察", async () => {
+    for (const scenario of ["explicit", "empty", "custom", "other-field", "extra-observation", "quota"]) {
+      const { h, writer, item } = await searchDefaultConflictFixture();
+      if (scenario !== "explicit") delete h.storage.sync.values.searchEngines;
+      if (scenario === "empty") h.storage.sync.values.searchEngines = "";
+      if (scenario === "custom") h.storage.sync.values.searchEngines = "x: https://example.invalid/?q=%s";
+      if (scenario === "other-field") h.storage.sync.values.keyMappings = "map a scrollUp";
+      if (scenario === "extra-observation") await writer.captureCurrentCompatibilityConflict();
+      if (scenario === "quota") h.storage.local.QUOTA_BYTES = 1;
+      const syncBefore = clone(h.storage.sync.values);
+      const reader = h.create();
+      assert.equal("CONFIGURATION_EXTERNAL_CONFLICT", (await reader.preview()).code);
+      await rejects(reader.commit({ legacyPatch: { smoothScroll: false } }));
+      assert.equal(syncBefore, h.storage.sync.values);
+      assert.isTrue(Object.hasOwn(h.storage.local.values, item.key));
+    }
+  });
+
+  should("自动归档遇到同步来源变化时保留观察和新配置", async () => {
+    for (const stage of ["search-default-auto-archive", "search-default-auto-archived"]) {
+      const { h, item } = await searchDefaultConflictFixture();
+      delete h.storage.sync.values.searchEngines;
+      let changed = false;
+      const reader = h.create({
+        afterStep: async (current) => {
+          if (current === stage && !changed) {
+            changed = true;
+            await h.storage.sync.set({ searchEngines: "x: https://example.invalid/?q=%s" });
+          }
+        },
+      });
+      assert.equal("CONFIGURATION_EXTERNAL_CONFLICT", (await reader.preview()).code);
+      assert.equal("x: https://example.invalid/?q=%s", h.storage.sync.values.searchEngines);
+      assert.isTrue(Object.hasOwn(h.storage.local.values, item.key));
+      await rejects(reader.commit({ legacyPatch: { smoothScroll: false } }));
+    }
+  });
+
+  should("首次识别旧默认时同步值发生变化会进入冲突保护", async () => {
+    const h = harness();
+    const oldDefault = "bd: https://www.baidu.com/s?wd=%s 百度";
+    await h.create({ defaults: () => ({ ...Settings.defaultOptions, searchEngines: oldDefault }) }).read();
+    const originalGet = h.storage.sync.get;
+    let changed = false;
+    h.storage.sync.get = async function (keys) {
+      const result = await originalGet.call(this, keys);
+      if (!changed && Array.isArray(keys) && keys.includes("searchEngines")) {
+        changed = true;
+        this.values.searchEngines = "x: https://example.invalid/?q=%s";
+      }
+      return result;
+    };
+    const reader = h.create();
+    assert.equal("CONFIGURATION_EXTERNAL_CONFLICT", (await reader.preview()).code);
+    assert.equal("x: https://example.invalid/?q=%s", h.storage.sync.values.searchEngines);
+    await rejects(reader.commit({ legacyPatch: { smoothScroll: false } }));
+  });
+
+  should("保存其他设置时出现新的同步搜索规则不会覆盖新值", async () => {
+    const h = harness();
+    const oldDefault = "bd: https://www.baidu.com/s?wd=%s 百度";
+    const incoming = "x: https://example.invalid/?q=%s";
+    await h.create({ defaults: () => ({ ...Settings.defaultOptions, searchEngines: oldDefault }) }).read();
+    let changed = false;
+    const writer = h.create({
+      afterStep: async (stage) => {
+        if (stage === 0 && !changed) {
+          changed = true;
+          await h.storage.sync.set({ searchEngines: incoming });
+        }
+      },
+    });
+    await writer.read();
+    await rejects(writer.commit({ legacyPatch: { smoothScroll: false } }));
+    assert.isTrue(changed);
+    assert.equal(incoming, h.storage.sync.values.searchEngines);
+    assert.equal("CONFIGURATION_RECOVERY_CONFLICT", (await h.create().preview()).code);
+  });
+
+  should("自动归档或无关设置提交中断后仍能恢复原值", async () => {
+    for (const stage of ["search-default-auto-archive", "search-default-auto-archived"]) {
+      const { h, before } = await searchDefaultConflictFixture();
+      delete h.storage.sync.values.searchEngines;
+      const syncBefore = clone(h.storage.sync.values);
+      const stopped = Object.assign(new Error("合成终止"), { simulatedTermination: true });
+      const reader = h.create({ afterStep: (current) => { if (current === stage) throw stopped; } });
+      await rejects(reader.read());
+      const restarted = h.create();
+      assert.equal(null, (await restarted.preview()).code);
+      assert.equal(before.keyboard.searchEngines, (await restarted.read()).keyboard.searchEngines);
+      assert.equal(syncBefore, h.storage.sync.values);
+      assert.isTrue((await restarted.listCompatibilityConflictObservations()).some((entry) =>
+        entry.status === "archived"
+      ));
+    }
+    for (const stage of [0, 1]) {
+      const h = harness();
+      const oldDefault = "bd: https://www.baidu.com/s?wd=%s 百度";
+      await h.create({ defaults: () => ({ ...Settings.defaultOptions, searchEngines: oldDefault }) }).read();
+      const stopped = Object.assign(new Error("合成终止"), { simulatedTermination: true });
+      const writer = h.create({ afterStep: (current) => { if (current === stage) throw stopped; } });
+      await writer.read();
+      await rejects(writer.commit({ legacyPatch: { smoothScroll: false } }));
+      const restarted = h.create();
+      assert.equal(null, (await restarted.preview()).code);
+      assert.equal(oldDefault, (await restarted.read()).keyboard.searchEngines);
+      assert.isFalse(Object.hasOwn(h.storage.sync.values, "searchEngines"));
+    }
+  });
 
   should("用户选当前 Google 规则后仅更新本机代次并保留可导出的原观察", async () => {
     const { h, writer, before, item, review } = await searchDefaultConflictFixture();

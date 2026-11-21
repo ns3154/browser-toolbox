@@ -449,6 +449,8 @@
       const keyboard = this.validateKeyboard(
         Object.assign(clone(this.defaults()), this.migrateLegacy(clone(syncKeyboard))),
       );
+      const legacyImplicitSearch = await this.usesLegacyImplicitSearch(syncKeyboard);
+      if (legacyImplicitSearch) keyboard.searchEngines = OLD_SEARCH_DEFAULT;
       const toolbox = this.cleanToolbox(
         this.validateToolbox(this.migrateToolbox(selected?.value || {})),
       );
@@ -458,6 +460,7 @@
         toolbox,
         area,
         raw: { syncKeyboard, syncToolbox, localToolbox },
+        legacyImplicitSearch,
         sourceVersion: syncKeyboard.settingsVersion || "pre-2.0",
         legacy: selected?.legacy || false,
         legacyBackup: selected && selected.value.schemaVersion !== 9
@@ -468,6 +471,36 @@
           )
           : null,
       };
+    }
+
+    async usesLegacyImplicitSearch(syncKeyboard) {
+      if (
+        Object.hasOwn(syncKeyboard, "searchEngines") ||
+        this.defaults().searchEngines !== NEW_SEARCH_DEFAULT
+      ) return false;
+      const stored = await this.storage.local.get([KEYS.state, KEYS.index]);
+      const state = stored[KEYS.state];
+      if (!state) return false;
+      try {
+        this.assertRecoveryState(state);
+        const expectedDigest = await digest(OLD_SEARCH_DEFAULT);
+        if (state.phase === "COMMITTED" && !state.code &&
+          equal(stored[KEYS.index], state.committedIndex) &&
+          state.afterSnapshot?.keyboard?.searchEngines === OLD_SEARCH_DEFAULT &&
+          state.committedIndex?.fields?.searchEngines?.digest === expectedDigest) {
+          const committed = await this.loadCommitted(state, stored[KEYS.index]);
+          return !this.generationFailure && committed?.keyboard?.searchEngines === OLD_SEARCH_DEFAULT;
+        }
+        // 未完成的本机事务沿用前后均一致的旧规则，才能在重启时安全恢复。
+        return ["PREPARED", "APPLYING", "RECOVERING"].includes(state.phase) &&
+          state.beforeSnapshot?.keyboard?.searchEngines === OLD_SEARCH_DEFAULT &&
+          state.afterSnapshot?.keyboard?.searchEngines === OLD_SEARCH_DEFAULT &&
+          state.beforeIndex?.fields?.searchEngines?.digest === expectedDigest &&
+          state.afterIndex?.fields?.searchEngines?.digest === expectedDigest;
+      } catch (_) {
+        // 证据不完整时不猜测；既有冲突检测继续保护原配置。
+        return false;
+      }
     }
 
     snapshot(value, revision) {
@@ -913,6 +946,88 @@
         this.defaults().searchEngines === NEW_SEARCH_DEFAULT;
     }
 
+    async archiveImplicitSearchDefaultConflict({ state, index, conflictKeys, committed }) {
+      if (
+        state?.phase !== "COMMITTED" || state.code || !committed || this.generationFailure ||
+        !equal(index, state.committedIndex) || conflictKeys.length !== 1 ||
+        !this.validCompatibilityConflictKey(conflictKeys[0])
+      ) return false;
+      const key = conflictKeys[0];
+      let saved;
+      let removed = false;
+      const archiveKey = M2_CONFLICT_ARCHIVE_PREFIX + key.slice(M2_CONFLICT_CAPTURE_PREFIX.length);
+      try {
+        saved = await this.inspectCompatibilityConflictObservation(
+          (await this.storage.local.get(key))[key],
+        );
+        if (!this.isSearchDefaultConflict(saved)) return false;
+        const source = await this.source();
+        const asObservation = (value) => ({
+          keyboard: value.keyboard,
+          toolbox: value.toolbox,
+          area: value.area,
+        });
+        const oldDefaultSource = asObservation(source);
+        const newDefaultSource = clone(oldDefaultSource);
+        newDefaultSource.keyboard.searchEngines = NEW_SEARCH_DEFAULT;
+        if (
+          !source.legacyImplicitSearch || !equal(asObservation(committed), saved.committed) ||
+          !equal(oldDefaultSource, saved.committed) || !equal(newDefaultSource, saved.observed)
+        ) return false;
+        const local = await this.storage.local.get(null);
+        if (Object.hasOwn(local, archiveKey) && !equal(local[archiveKey], saved)) return false;
+        if (!Object.hasOwn(local, archiveKey)) {
+          const addedBytes = itemBytes(archiveKey, saved);
+          const owned = Object.entries(local).filter(([name]) =>
+            name.startsWith(CHUNK_PREFIX) || name.startsWith(ROLLBACK_BACKUP_PREFIX) ||
+            name.startsWith(IMPORT_BACKUP_PREFIX) || name.startsWith(TRANSITION_RECORD_PREFIX) ||
+            name === ROLLBACK_JOURNAL_KEY || name === SYNC_PUBLISH_JOURNAL_KEY ||
+            Object.values(KEYS).includes(name) && name !== KEYS.toolbox
+          ).reduce((total, [name, value]) => total + itemBytes(name, value), addedBytes);
+          const used = typeof this.storage.local.getBytesInUse === "function"
+            ? await this.storage.local.getBytesInUse(null)
+            : Object.entries(local).reduce((total, [name, value]) => total + itemBytes(name, value), 0);
+          if (owned > MAX_BACKUP_BYTES ||
+            used + addedBytes > (this.storage.local.QUOTA_BYTES || 10 * 1024 * 1024)) return false;
+          await this.storage.local.set({ [archiveKey]: saved });
+        }
+        const verify = async (active) => {
+          const latest = await this.storage.local.get([
+            key, archiveKey, KEYS.state, KEYS.index, ROLLBACK_JOURNAL_KEY,
+            SYNC_PUBLISH_JOURNAL_KEY,
+          ]);
+          const current = await this.source();
+          if (
+            !equal(latest[archiveKey], saved) ||
+            (active ? !equal(latest[key], saved) : Object.hasOwn(latest, key)) ||
+            !equal(latest[KEYS.state], state) || !equal(latest[KEYS.index], index) ||
+            Object.hasOwn(latest, ROLLBACK_JOURNAL_KEY) ||
+            Object.hasOwn(latest, SYNC_PUBLISH_JOURNAL_KEY) ||
+            !equal(await this.compatibilityConflictKeys(), active ? [key] : []) ||
+            !current.legacyImplicitSearch || !equal(current.raw, source.raw) ||
+            !equal(asObservation(current), saved.committed)
+          ) throw error("CONFIGURATION_EXTERNAL_CONFLICT");
+        };
+        // 先完整保留观察，再确认来源未变化，最后解除该条精确误报的阻断。
+        await this.afterStep("search-default-auto-archive", { key, archiveKey });
+        await verify(true);
+        await this.storage.local.remove(key);
+        removed = true;
+        await this.afterStep("search-default-auto-archived", { key, archiveKey });
+        await verify(false);
+        return true;
+      } catch (failure) {
+        if (failure?.simulatedTermination) throw failure;
+        if (removed && saved) {
+          const latest = await this.storage.local.get([key, archiveKey]);
+          if (!Object.hasOwn(latest, key) && equal(latest[archiveKey], saved)) {
+            await this.storage.local.set({ [key]: saved });
+          }
+        }
+        return false;
+      }
+    }
+
     reviewCompatibilityConflictObservation(key) {
       return this.enqueue(async () => {
         const { saved, fields } = await this.readCompatibilityConflictReview(key);
@@ -1235,6 +1350,9 @@
         if (!snapshot || this.generationFailure) {
           throw error(this.generationFailure || "CONFIGURATION_UNAVAILABLE");
         }
+        if (await this.archiveImplicitSearchDefaultConflict({
+          state, index, conflictKeys, committed: snapshot,
+        })) return await this.readInternal({ reconcile });
         this.lastSnapshot = snapshot;
         this.dirty = true;
         this.lastReadCode = state?.phase === "ABORTED" && state.code
@@ -1301,6 +1419,11 @@
       let source;
       try {
         source = await this.source();
+        if (source.legacyImplicitSearch) {
+          // 旧默认回填仅在再次读取仍一致时生效；并发同步变化交回普通冲突检测。
+          const checked = await this.source();
+          if (!checked.legacyImplicitSearch || !equal(checked.raw, source.raw)) source = checked;
+        }
         this.lastReadCode = null;
       } catch (failure) {
         if (!snapshot) throw failure;
@@ -1564,6 +1687,10 @@
         nextKeyboard,
         this.defaults(),
       );
+      if (source.legacyImplicitSearch && nextKeyboard.searchEngines === OLD_SEARCH_DEFAULT) {
+        // 未修改旧规则时保留同步键缺失，避免保存无关设置时改写用户同步数据。
+        delete targetKeyboard.searchEngines;
+      }
       const rawKeyboard = Object.fromEntries(
         Object.entries(source.raw.syncKeyboard).filter(([key]) =>
           this.keyboardKeys.includes(key) || key === "settingsVersion"

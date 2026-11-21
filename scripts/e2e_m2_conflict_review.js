@@ -273,11 +273,13 @@ try {
   const clean = await ready();
   await clean.page.$eval("button[data-section='backupAbout']", (button) => button.click());
   await (await clean.page.$("#import-settings")).uploadFile(candidatePath);
-  await clean.page.waitForFunction(() => document.querySelector("#import-preview-dialog")?.open);
+  await clean.page.waitForFunction(() => document.querySelector("#import-preview-dialog")?.open,
+    { polling: 50, timeout: 30000 });
   await clean.page.$eval("#import-preview-confirm", (element) => element.click());
   await clean.page.waitForFunction(() =>
     !document.querySelector("#import-preview-dialog")?.open &&
-    document.querySelector(".browser-toolbox-main")?.getAttribute("aria-busy") !== "true"
+    document.querySelector(".browser-toolbox-main")?.getAttribute("aria-busy") !== "true",
+    { polling: 50, timeout: 30000 },
   );
   const imported = await request(clean.page, "read");
   assert(imported.ok, "候选导入后无法读取配置");
@@ -311,7 +313,7 @@ try {
   const newRule = "g: https://google.com/search?q=%s Google";
   const seed = await request(search.page, "commit", { legacyPatch: { searchEngines: oldRule } });
   assert(seed.ok, "未能建立旧搜索规则");
-  await search.page.evaluate(() => chrome.storage.sync.remove("searchEngines"));
+  await search.page.evaluate((rule) => chrome.storage.sync.set({ searchEngines: rule }), newRule);
   const searchConflict = await request(search.page, "preview");
   assert(searchConflict.value?.code === "CONFIGURATION_EXTERNAL_CONFLICT", "未触发搜索冲突");
   const syncBeforeRecovery = await search.page.evaluate(() => chrome.storage.sync.get(null));
@@ -369,6 +371,49 @@ try {
       current.value.keyboard.searchEngines === newRule;
   }, "恢复后从设置页保存失败或覆盖搜索规则");
   check("搜索默认变化需显式选择，保留观察且可再次保存");
+  await browser.close();
+  browser = null;
+
+  trace("验证缺失的旧默认搜索键自动兼容并保存其他设置");
+  browser = await launch("search-default-auto-profile");
+  const automatic = await ready();
+  const seeded = await request(automatic.page, "commit", { legacyPatch: { searchEngines: oldRule } });
+  assert(seeded.ok, "未能建立旧版百度规则");
+  await automatic.page.evaluate(() => chrome.storage.sync.remove("searchEngines"));
+  await until(async () => {
+    const preview = await request(automatic.page, "preview");
+    const current = await request(automatic.page, "read");
+    return preview.ok && preview.value.code === null &&
+      current.ok && current.value.keyboard.searchEngines === oldRule;
+  }, "缺失的旧默认搜索键未自动兼容");
+  const syncBeforeAutomaticSave = await automatic.page.evaluate(() => chrome.storage.sync.get(null));
+  assert(!Object.hasOwn(syncBeforeAutomaticSave, "searchEngines"), "旧默认键不应被补写");
+  await automatic.page.reload({ waitUntil: "load" });
+  await automatic.page.waitForFunction(
+    () => document.querySelector("main")?.dataset.settingsReady === "true" &&
+      !document.querySelector(".browser-toolbox-main").hasAttribute("inert"),
+    { polling: 50, timeout: 20000 },
+  );
+  const priorAutomaticHud = await automatic.page.$eval("#global-show-hud", (element) => element.checked);
+  await automatic.page.$eval("#global-show-hud", (element) => element.click());
+  await until(() => automatic.page.$eval("#save-settings", (element) => !element.disabled), "自动兼容后设置草稿不可保存");
+  await automatic.page.$eval("#save-settings", (element) => element.click());
+  await until(async () => {
+    const current = await request(automatic.page, "read");
+    return current.ok && current.value.toolboxSource.value.general.showHud !== priorAutomaticHud &&
+      current.value.keyboard.searchEngines === oldRule;
+  }, "自动兼容后无法通过设置页保存");
+  const syncAfterAutomaticSave = await automatic.page.evaluate(() => chrome.storage.sync.get(null));
+  assert(!Object.hasOwn(syncAfterAutomaticSave, "searchEngines"), "保存无关设置时补写了搜索同步键");
+  check("旧默认搜索键自动兼容，设置页保存不改写搜索同步键");
+  await browser.close();
+  browser = await launch("search-default-auto-profile");
+  const restartedAutomatic = await ready();
+  const afterRestart = await request(restartedAutomatic.page, "read");
+  assert(afterRestart.ok && afterRestart.value.keyboard.searchEngines === oldRule &&
+    !Object.hasOwn(await restartedAutomatic.page.evaluate(() => chrome.storage.sync.get(null)), "searchEngines"),
+    "自动兼容结果重启后不一致");
+  check("自动兼容重启后保留旧规则");
   report.status = "passed";
 } catch (failure) {
   report.status = "failed";
