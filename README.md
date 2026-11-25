@@ -12,7 +12,7 @@ Try it on a regular web page. Select some JSON, such as `{"name":"example","item
 then choose **Browser Toolbox → JSON formatter** from the browser's context menu to format it locally.
 When gestures take over the right mouse button, right-click twice quickly in the same spot to open the menu.
 
-The current `manifest.json` version is `0.1.10`. This is the source version; it does not imply a
+The current `manifest.json` version is `0.1.11`. This is the source version; it does not imply a
 Chrome Web Store review or release status.
 
 ## Feature overview
