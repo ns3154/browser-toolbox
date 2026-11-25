@@ -38,9 +38,20 @@ import * as userSearchEngines from "../user_search_engines.js";
       this.repository = repository;
     }
 
+    isCommandCenterInvocation(invocation, sender) {
+      return invocation.source?.type === "ui" && !sender?.frameId &&
+        typeof sender?.url === "string" &&
+        sender.url.split(/[?#]/, 1)[0] === chrome.runtime.getURL("pages/command_center.html");
+    }
+
     async getTab(invocation, sender) {
+      const tabId = invocation.context?.tabId;
+      if (this.isCommandCenterInvocation(invocation, sender)) {
+        // 命令中心处于另一个标签页。源标签已关闭时，不切换到发送方或其它活动标签页。
+        return tabId == null ? null : chrome.tabs.get(tabId).catch(() => null);
+      }
       if (sender?.tab) return sender.tab;
-      if (invocation.context?.tabId != null) return await chrome.tabs.get(invocation.context.tabId);
+      if (tabId != null) return await chrome.tabs.get(tabId);
       return activeTabFromQuery(await chrome.tabs.query({ active: true, currentWindow: true }));
     }
 
@@ -70,6 +81,8 @@ import * as userSearchEngines from "../user_search_engines.js";
           "BrowserToolbox.newWindow",
           "BrowserToolbox.openSettings",
           "BrowserToolbox.openCommandCenter",
+          "BrowserToolbox.openTool",
+          "BrowserToolbox.showTabList",
         ].includes(
           invocation.commandName,
         )
@@ -247,6 +260,9 @@ import * as userSearchEngines from "../user_search_engines.js";
           count: invocation.count,
           tab,
           tabId: tab.id,
+          commandCenterTabId: this.isCommandCenterInvocation(invocation, sender)
+            ? sender.tab?.id
+            : undefined,
           registryEntry,
           url: invocation.context?.linkUrl,
           executionGuard,

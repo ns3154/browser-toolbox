@@ -94,11 +94,12 @@ const completers = {
   tabs: new MultiCompleter([completionSources.tabs]),
 };
 
-// A query dictionary for `chrome.tabs.query` that will return only the visible tabs.
-const visibleTabsQueryArgs = { currentWindow: true };
-if (bgUtils.isFirefox()) {
-  // Only Firefox supports hidden tabs.
-  visibleTabsQueryArgs.hidden = false;
+async function queryTabsForCommand({ tab, commandCenterTabId }) {
+  // 以来源标签所在窗口为准，避免焦点切换后把操作施加到另一个窗口。
+  const query = tab.windowId == null ? { currentWindow: true } : { windowId: tab.windowId };
+  if (bgUtils.isFirefox()) query.hidden = false;
+  const tabs = await chrome.tabs.query(query);
+  return commandCenterTabId == null ? tabs : tabs.filter((item) => item.id !== commandCenterTabId);
 }
 
 function onURLChange(details) {
@@ -189,15 +190,9 @@ function toggleMuteTab(request, sender) {
   }
 }
 
-// Find a tab's actual index in a given tab array returned by chrome.tabs.query. In Firefox, there
-// may be hidden tabs, so tab.tabIndex may not be the actual index into the array of visible tabs.
+// 忽略隐藏标签或命令中心后，可操作列表的下标可能与浏览器的标签下标不同。
 function getTabIndex(tab, tabs) {
-  // First check if the tab is where we expect it, to avoid searching the array.
-  if (tabs.length > tab.index && tabs[tab.index].index === tab.index) {
-    return tab.index;
-  } else {
-    return tabs.findIndex((t) => t.index === tab.index);
-  }
+  return tabs[tab.index]?.id === tab.id ? tab.index : tabs.findIndex((item) => item.id === tab.id);
 }
 
 //
@@ -214,20 +209,17 @@ async function selectSpecificTab(request) {
   await chrome.tabs.update(request.id, { active: true });
 }
 
-function moveTab({ count, tab, registryEntry }) {
-  if (registryEntry.command === "moveTabLeft") {
-    count = -count;
-  }
-  return chrome.tabs.query(visibleTabsQueryArgs, function (tabs) {
-    const pinnedCount = (tabs.filter((tab) => tab.pinned)).length;
-    const minIndex = tab.pinned ? 0 : pinnedCount;
-    const maxIndex = (tab.pinned ? pinnedCount : tabs.length) - 1;
-    // The tabs array index of the new position.
-    const moveIndex = Math.max(minIndex, Math.min(maxIndex, getTabIndex(tab, tabs) + count));
-    return chrome.tabs.move(tab.id, {
-      index: tabs[moveIndex].index,
-    });
-  });
+async function moveTab(request) {
+  const { count, tab, registryEntry } = request;
+  const delta = registryEntry.command === "moveTabLeft" ? -count : count;
+  const tabs = await queryTabsForCommand(request);
+  const activeIndex = getTabIndex(tab, tabs);
+  if (activeIndex < 0) return;
+  const pinnedCount = tabs.filter((item) => item.pinned).length;
+  const minIndex = tab.pinned ? 0 : pinnedCount;
+  const maxIndex = (tab.pinned ? pinnedCount : tabs.length) - 1;
+  const moveIndex = Math.max(minIndex, Math.min(maxIndex, activeIndex + delta));
+  await chrome.tabs.move(tab.id, { index: tabs[moveIndex].index });
 }
 
 function createRepeatCommand(command) {
@@ -335,16 +327,17 @@ const BackgroundCommands = {
     request.tabId = tab.id;
   }),
 
-  moveTabToNewWindow({ count, tab }) {
-    // TODO(philc): Switch to the promise API of chrome.tabs.query.
-    chrome.tabs.query(visibleTabsQueryArgs, function (tabs) {
-      const activeTabIndex = getTabIndex(tab, tabs);
-      const startTabIndex = Math.max(0, Math.min(activeTabIndex, tabs.length - count));
-      [tab, ...tabs] = tabs.slice(startTabIndex, startTabIndex + count);
-      chrome.windows.create({ tabId: tab.id, incognito: tab.incognito }, function (window) {
-        chrome.tabs.move(tabs.map((t) => t.id), { windowId: window.id, index: -1 });
-      });
-    });
+  async moveTabToNewWindow(request) {
+    const { count, tab } = request;
+    const tabs = await queryTabsForCommand(request);
+    const activeIndex = getTabIndex(tab, tabs);
+    if (activeIndex < 0) return;
+    const start = Math.max(0, Math.min(activeIndex, tabs.length - count));
+    const [first, ...rest] = tabs.slice(start, start + count);
+    const window = await chrome.windows.create({ tabId: first.id, incognito: first.incognito });
+    if (rest.length > 0) {
+      await chrome.tabs.move(rest.map((item) => item.id), { windowId: window.id, index: -1 });
+    }
   },
 
   nextTab(request) {
@@ -359,21 +352,19 @@ const BackgroundCommands = {
   lastTab(request) {
     return selectTab("last", request);
   },
-  async removeTab({ count, tab }) {
-    await forCountTabs(count, tab, (tab) => {
+  async removeTab(request) {
+    await forCountTabs(request, (tab) => {
       // In Firefox, Ctrl-W will not close a pinned tab, but on Chrome, it will. We try to be
       // consistent with each browser's UX for pinned tabs.
       if (tab.pinned && bgUtils.isFirefox()) return;
-      chrome.tabs.remove(tab.id);
+      return chrome.tabs.remove(tab.id);
     });
   },
   restoreTab: createRepeatCommand(async (request) => {
     await chrome.sessions.restore(null);
   }),
-  async togglePinTab({ count, tab }) {
-    await forCountTabs(count, tab, (tab) => {
-      chrome.tabs.update(tab.id, { pinned: !tab.pinned });
-    });
+  async togglePinTab(request) {
+    await forCountTabs(request, (tab) => chrome.tabs.update(tab.id, { pinned: !tab.pinned }));
   },
   toggleMuteTab,
   moveTabLeft: moveTab,
@@ -458,21 +449,19 @@ const BackgroundCommands = {
     await removeTabsRelative("both", request);
   },
 
-  async visitPreviousTab({ count, tab }) {
+  async visitPreviousTab({ count, tab, commandCenterTabId }) {
     await bgUtils.tabRecency.init();
-    let tabIds = bgUtils.tabRecency.getTabsByRecency();
-    tabIds = tabIds.filter((tabId) => tabId !== tab.id);
+    const tabIds = bgUtils.tabRecency.getTabsByRecency()
+      .filter((tabId) => tabId !== tab.id && tabId !== commandCenterTabId);
     if (tabIds.length > 0) {
       const id = tabIds[(count - 1) % tabIds.length];
-      selectSpecificTab({ id });
+      await selectSpecificTab({ id });
     }
   },
 
-  async reload({ count, tab, registryEntry }) {
-    const bypassCache = registryEntry.options.hard != null ? registryEntry.options.hard : false;
-    await forCountTabs(count, tab, (tab) => {
-      chrome.tabs.reload(tab.id, { bypassCache });
-    });
+  async reload(request) {
+    const bypassCache = request.registryEntry.options.hard ?? false;
+    await forCountTabs(request, (tab) => chrome.tabs.reload(tab.id, { bypassCache }));
   },
 };
 
@@ -667,24 +656,25 @@ const browserToolboxRuntimeMaintenance = new BrowserToolboxRuntimeMaintenance(ch
   onFinished: () => browserToolboxPausedRuntimeTabs.clear(),
 });
 
-async function forCountTabs(count, currentTab, callback) {
-  const tabs = await chrome.tabs.query(visibleTabsQueryArgs);
-  const activeTabIndex = getTabIndex(currentTab, tabs);
+async function forCountTabs(request, callback) {
+  const { count, tab } = request;
+  const tabs = await queryTabsForCommand(request);
+  const activeTabIndex = getTabIndex(tab, tabs);
+  if (activeTabIndex < 0) return;
   const startTabIndex = Math.max(0, Math.min(activeTabIndex, tabs.length - count));
-  for (const tab of tabs.slice(startTabIndex, startTabIndex + count)) {
-    callback(tab);
-  }
+  await Promise.all(tabs.slice(startTabIndex, startTabIndex + count).map(callback));
 }
 
 // Remove tabs before, after, or either side of the currently active tab
-async function removeTabsRelative(direction, { count, tab }) {
+async function removeTabsRelative(direction, request) {
+  const { count: requestedCount, tab: activeTab } = request;
   // count is null if the user didn't type a count prefix before issuing this command and didn't
   // specify a count=n option in their keymapping settings. Interpret this as closing all tabs on
   // either side.
-  if (count == null) count = 99999;
-  const activeTab = tab;
-  const tabs = await chrome.tabs.query(visibleTabsQueryArgs);
+  const count = requestedCount ?? 99999;
+  const tabs = await queryTabsForCommand(request);
   const activeIndex = getTabIndex(activeTab, tabs);
+  if (activeIndex < 0) return;
   const toRemove = tabs.filter((tab, tabIndex) => {
     if (tab.pinned || tab.id == activeTab.id) {
       return false;
@@ -701,29 +691,31 @@ async function removeTabsRelative(direction, { count, tab }) {
     }
   });
 
-  await chrome.tabs.remove(toRemove.map((t) => t.id));
+  if (toRemove.length > 0) await chrome.tabs.remove(toRemove.map((t) => t.id));
 }
 
 // Selects a tab before or after the currently selected tab.
 // - direction: "next", "previous", "first" or "last".
-function selectTab(direction, { count, tab }) {
-  chrome.tabs.query(visibleTabsQueryArgs, function (tabs) {
-    if (tabs.length > 1) {
-      const toSelect = (() => {
-        switch (direction) {
-          case "next":
-            return (getTabIndex(tab, tabs) + count) % tabs.length;
-          case "previous":
-            return ((getTabIndex(tab, tabs) - count) + (count * tabs.length)) % tabs.length;
-          case "first":
-            return Math.min(tabs.length - 1, count - 1);
-          case "last":
-            return Math.max(0, tabs.length - count);
-        }
-      })();
-      chrome.tabs.update(tabs[toSelect].id, { active: true });
+async function selectTab(direction, request) {
+  const { count, tab, commandCenterTabId } = request;
+  const tabs = await queryTabsForCommand(request);
+  const current = getTabIndex(tab, tabs);
+  if (current < 0 || (tabs.length === 1 && commandCenterTabId == null)) return;
+  const toSelect = (() => {
+    switch (direction) {
+      case "next":
+        return (current + count % tabs.length) % tabs.length;
+      case "previous":
+        return (current - count % tabs.length + tabs.length) % tabs.length;
+      case "first":
+        return Math.min(tabs.length - 1, count - 1);
+      case "last":
+        return Math.max(0, tabs.length - count);
     }
-  });
+  })();
+  const id = tabs[toSelect].id;
+  if (commandCenterTabId != null) await selectSpecificTab({ id });
+  else await chrome.tabs.update(id, { active: true });
 }
 
 // Chrome 的内置 XML 查看器不会执行 manifest.content_scripts；这里只为顶层 XML 页面补一条
@@ -739,6 +731,7 @@ const browserToolboxRawDocumentFormatterScripts = [
   "lib/browser_toolbox/command_invocation.js",
   "lib/browser_toolbox/message_protocol.js",
   "lib/browser_toolbox/settings_schema.js",
+  "lib/browser_toolbox/theme.js",
   "lib/browser_toolbox/regex_safety.js",
   "lib/browser_toolbox/module_registry.js",
   "lib/browser_toolbox/settings_validator.js",
@@ -770,7 +763,7 @@ async function injectRawDocumentFormatterIntoXml(tabId, frameId) {
       });
       await chrome.scripting.insertCSS({
         target: { tabId, frameIds: [0] },
-        files: ["content_scripts/document_formatter/document_formatter.css"],
+        files: ["pages/theme_tokens.css", "content_scripts/document_formatter/document_formatter.css"],
       });
     }
     await chrome.scripting.executeScript({

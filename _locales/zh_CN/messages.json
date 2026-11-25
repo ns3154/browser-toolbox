@@ -4651,6 +4651,9 @@
   "toolTableFormulaCount": {
     "message": "检测到 {count} 个公式前缀。"
   },
+  "toolTableNoDataRows": {
+    "message": "没有数据行可导出。"
+  },
   "toolTableLimit": {
     "message": "表格的行数或单元格数超过本地上限。"
   },

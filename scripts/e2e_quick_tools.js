@@ -73,24 +73,34 @@ function response(body, contentType) {
   return new Response(body, { headers: { "content-type": contentType } });
 }
 
+const xmlParagraph = "<p><b>左</b>\n\n        <i>右</i></p>";
+const continuedJavaScript = ['const label = "left\\', '    right";'].join("\n");
+const continuedCss = [".label::before {", '  content: "left\\', '    right";', "}"].join("\n");
+
 export async function startFixtureServer() {
   const server = Deno.serve({ hostname: "127.0.0.1", port: 0 }, (request) => {
     const path = new URL(request.url).pathname;
     switch (path) {
       case "/json":
         return response(
-          '{"z":9007199254740993,"a":"<img src=x onerror=alert(1)>","a":3}',
+          '{"z":9007199254740993,"a":"<img src=x onerror=alert(1)>","a":3,"ratio":-1.5e+4,"ok":true}',
           "application/json; charset=utf-8",
         );
+      case "/invalid-json":
+        return response('{"missing":', "application/json; charset=utf-8");
       case "/xml":
         return response(
-          '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE root [<!ELEMENT root ANY>]>\n<!-- keep -->\n<root xmlns:x="urn:test" a="x y">\n  <x:item><![CDATA[a < b]]></x:item>\n  <empty />\n  <value>&amp;  text  </value>\n</root>\n',
+          `<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE root [<!ELEMENT root ANY>]>\n<!-- keep -->\n<root xmlns:x="urn:test" a="x y">\n  <x:item><![CDATA[a < b]]></x:item>\n  <empty />\n  <value>&amp;  text  </value>\n  <space xml:space="preserve">   </space>\n  <p>你好<b>世界</b>！</p>\n  ${xmlParagraph}\n</root>\n`,
           "application/xml; charset=utf-8",
         );
       case "/css":
         return response('.card{content:"}";background:url("data:image/svg+xml,<svg>{}</svg>")}', "text/css; charset=utf-8");
       case "/javascript":
         return response('const re=/[{}]/g;function run(){return `${re}`;}', "application/javascript; charset=utf-8");
+      case "/css-continued":
+        return response(continuedCss, "text/css; charset=utf-8");
+      case "/javascript-continued":
+        return response(continuedJavaScript, "application/javascript; charset=utf-8");
       case "/java":
         return response('public record Demo(String text){String value="}";}', "text/x-java-source; charset=utf-8");
       case "/html":
@@ -353,6 +363,37 @@ async function testNativeActionPopup(browser, id, baseUrl) {
   }
 }
 
+async function testCommandCenterKeyboard(browser, id, action) {
+  const prefix = `chrome-extension://${id}/pages/command_center.html?tabId=`;
+  const [target] = await Promise.all([
+    browser.waitForTarget((target) => target.url().startsWith(prefix)),
+    action.click("#browser-toolbox-open-command-center"),
+  ]);
+  const center = await target.page();
+  try {
+    await center.bringToFront();
+    await center.waitForFunction(() => document.activeElement?.id === "command-center-search");
+    const count = await center.$$eval("#command-center-results [data-entry-index]", (items) => items.length);
+    assert(count >= 3, "命令中心至少需要三条结果来检查连续导航。");
+    for (const [key, expected] of [
+      ["ArrowDown", 1], ["ArrowDown", 2], ["ArrowUp", 1],
+      ["ArrowUp", 0], ["ArrowUp", count - 1], ["ArrowDown", 0],
+    ]) {
+      await center.keyboard.press(key);
+      const { index, focused, selected } = await center.$eval("#command-center-selected", (item) => ({
+        index: Number(item.dataset.entryIndex),
+        focused: document.activeElement === item,
+        selected: item.getAttribute("aria-selected") === "true",
+      }));
+      assert(index === expected && focused && selected,
+        `按 ${key} 后焦点和选中项应在第 ${expected + 1} 条，实际为第 ${index + 1} 条。`);
+    }
+    console.log("命令中心方向键可连续下移、上移和循环。");
+  } finally {
+    await center.close();
+  }
+}
+
 async function testActionPopup(browser, id, baseUrl) {
   const fixture = await browser.newPage();
   const action = await browser.newPage();
@@ -451,6 +492,7 @@ async function testActionPopup(browser, id, baseUrl) {
       `动作弹窗窄屏布局不应横向溢出或逐字换行：${JSON.stringify(narrow)}`,
     );
     await action.screenshot({ path: "/tmp/browser-toolbox-quick-tools-popup-narrow.png", fullPage: true });
+    await testCommandCenterKeyboard(browser, id, action);
   } finally {
     await action.close().catch(() => {});
     await fixture.close().catch(() => {});
@@ -474,6 +516,185 @@ async function testActionPopup(browser, id, baseUrl) {
     await restricted.screenshot({ path: "/tmp/browser-toolbox-quick-tools-popup-restricted.png", fullPage: true });
   } finally {
     await restricted.close().catch(() => {});
+  }
+}
+
+async function testCommandCenterTarget(browser, id, baseUrl) {
+  const fixture = await browser.newPage();
+  const pages = [fixture];
+  const prefix = `chrome-extension://${id}/pages/command_center.html?tabId=`;
+  const worker = await (await browser.waitForTarget((target) =>
+    target.type() === "service_worker" &&
+    target.url() === `chrome-extension://${id}/background_scripts/main.js`
+  )).worker();
+  const openCenter = async (source = fixture) => {
+    await source.bringToFront();
+    const before = new Set(browser.targets());
+    const [target] = await Promise.all([
+      browser.waitForTarget((target) => !before.has(target) && target.url().startsWith(prefix)),
+      source.keyboard.press(":"),
+    ]);
+    const page = await target.page();
+    pages.push(page);
+    await page.bringToFront();
+    return page;
+  };
+  const pin = '[data-entry-id="command:togglePinTab"]';
+  const windows = [];
+  try {
+    await fixture.goto(`${baseUrl}/html`);
+    await fixture.evaluate(() => document.title = "命令目标网页");
+    await fixture.waitForFunction(() => document.documentElement.hasAttribute("data-bt-theme"));
+    const center = await openCenter();
+    const duplicate = '[data-entry-id="command:duplicateTab"]';
+    await center.waitForSelector(duplicate);
+    assert(await center.$eval("#command-center-context", (node) => node.textContent) === await fixture.title(),
+      "命令中心应显示打开它的网页。");
+    const centerUrl = center.url();
+    const before = new Set(browser.targets());
+    center.once("dialog", (dialog) => dialog.accept());
+    const [created] = await Promise.all([
+      browser.waitForTarget((target) =>
+        !before.has(target) && [fixture.url(), centerUrl].includes(target.url())
+      ),
+      center.click(duplicate),
+    ]);
+    const duplicatePage = await created.page();
+    pages.push(duplicatePage);
+    assert(created.url() === fixture.url(), "复制当前标签页应复制原网页。");
+    await duplicatePage.close();
+
+    const pinCenter = await openCenter();
+    const tabId = Number(new URL(pinCenter.url()).searchParams.get("tabId"));
+    await pinCenter.waitForSelector(pin);
+    await pinCenter.click(pin);
+    await waitFor(() => worker.evaluate(async (id) => (await chrome.tabs.get(id)).pinned, tabId), 3500);
+
+    const staleCenter = await openCenter();
+    await staleCenter.waitForSelector(pin);
+    await fixture.close();
+    await staleCenter.click(pin);
+    await staleCenter.waitForFunction(() =>
+      document.querySelector("#command-center-status").textContent ===
+        BrowserToolboxI18n.message("commandCenterNoTarget")
+    );
+    await setTextarea(staleCenter, "#command-center-search", "scrollDown");
+    await staleCenter.click('[data-entry-id="command:scrollDown"]');
+    await staleCenter.waitForFunction(() =>
+      document.querySelector("#command-center-status").textContent ===
+        BrowserToolboxI18n.message("commandCenterNoTarget"),
+    { timeout: 5000 });
+    await setTextarea(staleCenter, "#command-center-search", "");
+    const [listTarget] = await Promise.all([
+      browser.waitForTarget((target) => target.url() === `chrome-extension://${id}/pages/tab_list.html`),
+      staleCenter.click('[data-entry-id="command:BrowserToolbox.showTabList"]'),
+    ]);
+    pages.push(await listTarget.page());
+    console.log("命令中心复制、固定原网页，目标关闭后提示无目标。");
+
+    const firstUrl = `${baseUrl}/html?tab=first`;
+    const lastUrl = `${baseUrl}/html?tab=last`;
+    const sourceWindow = await worker.evaluate((urls) => chrome.windows.create({ url: urls }), [firstUrl, lastUrl]);
+    windows.push(sourceWindow.id);
+    const [first, last] = await Promise.all([firstUrl, lastUrl].map(async (url) => {
+      const page = await (await browser.waitForTarget((target) => target.url() === url)).page();
+      await page.waitForFunction(() => document.documentElement.hasAttribute("data-bt-theme"));
+      return page;
+    }));
+    const navigation = [];
+    for (const [source, command, expected] of [
+      [last, "nextTab", firstUrl],
+      [first, "lastTab", lastUrl],
+      [last, "visitPreviousTab", firstUrl],
+    ]) {
+      const commandCenter = await openCenter(source);
+      const selector = `[data-entry-id="command:${command}"]`;
+      await commandCenter.waitForSelector(selector);
+      await commandCenter.click(selector);
+      await waitFor(() => commandCenter.isClosed());
+      const [active] = await worker.evaluate((windowId) =>
+        chrome.tabs.query({ windowId, active: true }), sourceWindow.id);
+      if (active?.url !== expected) navigation.push(`${command} 实际跳到 ${active?.url}`);
+    }
+    await last.bringToFront();
+    await last.keyboard.down("Shift");
+    await last.keyboard.press("KeyK");
+    await last.keyboard.up("Shift");
+    await waitFor(async () => {
+      const [active] = await worker.evaluate((windowId) =>
+        chrome.tabs.query({ windowId, active: true }), sourceWindow.id);
+      return active?.url === firstUrl;
+    });
+
+    const movingCenter = await openCenter(last);
+    const movedTabId = Number(new URL(movingCenter.url()).searchParams.get("tabId"));
+    const destination = await worker.evaluate((url) =>
+      chrome.windows.create({ url, focused: false }), `${baseUrl}/html?tab=destination`);
+    windows.push(destination.id);
+    await worker.evaluate((tabId, windowId) =>
+      chrome.tabs.move(tabId, { windowId, index: 0 }), movedTabId, destination.id);
+    await movingCenter.bringToFront();
+    await movingCenter.waitForSelector(pin);
+    await movingCenter.click(pin);
+    await waitFor(() => movingCenter.isClosed());
+    const pinned = await worker.evaluate(async (tabId, windowId) => ({
+      target: (await chrome.tabs.get(tabId)).pinned,
+      others: (await chrome.tabs.query({ windowId, pinned: true })).length,
+    }), movedTabId, sourceWindow.id);
+    if (!pinned.target || pinned.others !== 0) navigation.push("固定标签作用到了其它窗口");
+    assert(navigation.length === 0, `命令中心的标签操作应跟随原网页：${navigation.join("；")}`);
+    console.log("命令中心跳过自身标签，移动到其它窗口的原网页仍可固定，K 保持可用。");
+  } finally {
+    await Promise.allSettled(windows.map((windowId) =>
+      worker.evaluate((id) => chrome.windows.remove(id), windowId)));
+    await Promise.allSettled(pages.filter((page) => !page.isClosed()).map((page) => page.close()));
+  }
+}
+
+async function testLiveTabList(browser, id, baseUrl) {
+  const source = await browser.newPage();
+  const list = await browser.newPage();
+  let late;
+  try {
+    const longTitle = "团队联调排期与功能范围说明及上周问题跟进和验收记录补充文档预算";
+    const lateTitle = "预算的新标签";
+    const matches = () => list.$$eval("#tabs button", (buttons) => buttons.map((button) => button.textContent));
+    await source.goto(`${baseUrl}/html`);
+    await source.evaluate((title) => document.title = title, longTitle);
+    await list.goto(`chrome-extension://${id}/pages/tab_list.html`);
+    await waitFor(async () => (await matches()).includes(longTitle));
+    await list.bringToFront();
+    await setTextarea(list, "#query", source.url());
+    assert((await matches()).includes(longTitle), "标签列表应支持搜索完整网址。");
+    await setTextarea(list, "#query", "预算");
+    assert((await matches()).includes(longTitle), "标签列表应匹配长标题末尾的完整关键词。");
+    const focusedId = await list.$eval("#tabs button", (button) => {
+      button.focus();
+      return button.dataset.tabId;
+    });
+
+    late = await browser.newPage();
+    await late.goto(`${baseUrl}/html`);
+    await late.evaluate((title) => document.title = title, lateTitle);
+    await list.bringToFront();
+    await waitFor(async () => (await matches()).includes(lateTitle));
+    assert(await list.evaluate(() => document.activeElement.dataset.tabId) === focusedId,
+      "列表更新时应保留仍存在的结果焦点。");
+
+    const renamedTitle = "预算已改名";
+    await late.evaluate((title) => document.title = title, renamedTitle);
+    await waitFor(async () => {
+      const titles = await matches();
+      return titles.includes(renamedTitle) && !titles.includes(lateTitle);
+    });
+    await source.close();
+    await waitFor(async () => !(await matches()).includes(longTitle));
+    assert(await list.evaluate(() => document.activeElement.id === "query"),
+      "有焦点的标签关闭后应回到搜索框。");
+    assert(await list.$eval("#query", (input) => input.value) === "预算", "刷新应保留当前搜索。");
+  } finally {
+    await Promise.allSettled([source, list, late].filter((page) => page && !page.isClosed())
+      .map((page) => page.close()));
   }
 }
 
@@ -504,7 +725,13 @@ async function uploadToolInput(page, { fileSelector, inputSelector, suffix, text
   try {
     await Deno.writeTextFile(file, text);
     await (await page.$(fileSelector)).uploadFile(file);
-    await page.waitForFunction((query, value) => document.querySelector(query).value === value, {}, inputSelector, text);
+    const editorText = text.replace(/\r\n?/g, "\n");
+    await page.waitForFunction(
+      (query, value) => document.querySelector(query).value === value,
+      {},
+      inputSelector,
+      editorText,
+    );
   } finally {
     await Deno.remove(file);
   }
@@ -678,10 +905,66 @@ async function testWorkbenchPages(browser, id) {
     await page.click(toolSelector("table-output", "Mysql"));
     await waitText(page, "#tool-output", "INSERT INTO");
     await waitText(page, "#tool-status", "SQL");
+    await setTextarea(page, "#tool-input", "name\tnote\r\n");
+    await page.waitForFunction(() =>
+      document.querySelector("#tool-status").textContent === BrowserToolboxI18n.message("toolTableNoDataRows") &&
+      !document.querySelector("#tool-output").textContent &&
+      document.querySelector("#tool-copy").disabled && document.querySelector("#tool-download").disabled
+    );
+    await setTextarea(page, "#tool-input", "name\tnote\n恢复\t0");
+    await waitText(page, "#tool-output", "('恢复', '0')");
+    await page.click(toolSelector("table-input", "csv"));
+    await setTextarea(page, "#tool-input", 'name,note\nAna,"first\nsecond"');
+    await page.click(toolSelector("table-output", "Php"));
+    await waitText(page, "#tool-output", "'name' => 'Ana'");
+    const php = await textIn(page, "#tool-output");
+    assert(php.includes(String.raw`'note' => "first\nsecond"`), "PHP 应以换行转义保留多行单元格。");
+    await page.click("#tool-copy");
+    assert(await lastCopy(page) === php, "复制的 PHP 应保留同一份多行字段输出。");
+    const originalField = String.raw`"first\r\nsecond\rthird"`;
+    for (const [format, delimiter] of [["csv", ","], ["tsv", "\t"]]) {
+      const marker = `from-${format}`;
+      await uploadToolInput(page, {
+        fileSelector: "#tool-file",
+        inputSelector: "#tool-input",
+        suffix: `.${format}`,
+        text: `name${delimiter}note\r\n${marker}${delimiter}"first\r\nsecond\rthird"`,
+      });
+      await waitText(page, "#tool-output", marker);
+      assert((await textIn(page, "#tool-output")).includes(originalField),
+        `${format.toUpperCase()} 文件导入后，PHP 输出应保留 CRLF 与 CR。`);
+    }
+    await page.click(toolSelector("table-output", "Markdown"));
+    await waitText(page, "#tool-output", "| from-tsv | first<br>second<br>third |");
+    await page.click(toolSelector("table-output", "Php"));
+    await waitText(page, "#tool-output", originalField);
+    await setTextarea(page, "#tool-input", 'name\tnote\nedited\t"first\nsecond"');
+    await waitText(page, "#tool-output", String.raw`'note' => "first\nsecond"`);
+    assert((await textIn(page, "#tool-output")).includes("'name' => 'edited'"),
+      "修改编辑框后应转换当前文本。");
     await page.click("#tool-restore");
     await page.waitForSelector("#table-preview tbody tr", { visible: true });
     await page.waitForFunction(() => document.querySelector("#tool-status").textContent === "");
     assert(await textIn(page, "#tool-status") === "", "切回普通样例应清除安全提示。");
+
+    await page.click(toolSelector("table-output", "Delimited"));
+    await setTextarea(page, "#tool-input", 'name\nvalue\n""');
+    await waitText(page, "#tool-output", 'name\nvalue\n""');
+    await page.click(toolSelector("table-output", "Json"));
+    await setTextarea(page, "#tool-input", "name\n" + "value\n".repeat(999) + ",".repeat(499));
+    await page.waitForFunction(() =>
+      document.querySelector("#tool-status").textContent === BrowserToolboxI18n.message("toolTableLimit") &&
+      !document.querySelector("#tool-output").textContent &&
+      document.querySelector("#tool-copy").disabled && document.querySelector("#tool-download").disabled,
+    { timeout: 5000 });
+    await setTextarea(page, "#tool-input", `${"h".repeat(64000)}\n${"value\n".repeat(200)}`);
+    await page.waitForFunction(() =>
+      document.querySelector("#tool-status").textContent === BrowserToolboxI18n.message("toolCodecOutputTooLarge") &&
+      !document.querySelector("#tool-output").textContent &&
+      document.querySelector("#tool-copy").disabled && document.querySelector("#tool-download").disabled,
+    { timeout: 5000 });
+    await setTextarea(page, "#tool-input", "name,note\nvalue");
+    await waitText(page, "#tool-output", '"note": ""');
   });
 
   await withWorkbench(browser, id, "text.diff", async (page) => {
@@ -887,6 +1170,75 @@ async function testToolPages(browser, id) {
   }
 }
 
+async function testDocumentThemes(browser, json) {
+  const id = await extensionId(browser);
+  const settings = await browser.newPage();
+  const checks = [
+    ["bg", "body", "backgroundColor"],
+    ["surface", ".browser-toolbox-document-toolbar", "backgroundColor"],
+    ["surface-card", ".browser-toolbox-document-output", "backgroundColor"],
+    ["text", ".browser-toolbox-document-output", "color"],
+    ["accent", ".browser-toolbox-json-toggle", "color"],
+    ["success", ".browser-toolbox-document-status", "color"],
+    ["code-key", ".browser-toolbox-token-key", "color"],
+    ["code-string", ".browser-toolbox-token-string", "color"],
+    ["warning-text", ".browser-toolbox-token-number", "color"],
+    ["code-literal", ".browser-toolbox-token-keyword", "color"],
+  ];
+  try {
+    await settings.bringToFront();
+    await settings.goto(`chrome-extension://${id}/pages/mouse_options.html#general`);
+    await settings.waitForSelector('[data-settings-ready="true"]');
+    const themes = await settings.$eval("#general-theme", (select) => [
+      ...Array.from(select.options, (option) => option.value).filter((value) => value !== select.value),
+      select.value,
+    ]);
+    // 使用已打开的同一个 JSON 标签页，最后恢复独立 profile 的初始主题及浅色外观。
+    for (const theme of themes) {
+      await settings.select("#general-theme", theme);
+      await settings.click("#save-settings");
+      await settings.waitForFunction(() =>
+        document.querySelector("#save-status").textContent === BrowserToolboxI18n.message("saved")
+      );
+      await json.waitForFunction((value) => document.documentElement.dataset.btTheme === value,
+        { polling: 50, timeout: 10000 }, theme);
+      for (const scheme of ["dark", "light"]) {
+        const media = [{ name: "prefers-color-scheme", value: scheme }];
+        await Promise.all([settings.emulateMediaFeatures(media), json.emulateMediaFeatures(media)]);
+        // 从设置页独立读取同一组语义色，然后对比文档中真正绘制出来的各元素。
+        const expected = await settings.evaluate((checks, theme, scheme) => {
+          const tokens = getComputedStyle(document.documentElement);
+          if (tokens.getPropertyValue("--bt-accent").trim() !== BrowserToolboxTheme.getPalette(theme, scheme === "dark").accent) {
+            throw new Error(`设置页没有显示 ${theme}/${scheme} 的强调色`);
+          }
+          const sample = document.createElement("span");
+          document.body.append(sample);
+          try {
+            return checks.map(([role]) => {
+              if (!tokens.getPropertyValue(`--bt-${role}`).trim()) return null;
+              sample.style.color = `var(--bt-${role})`;
+              return getComputedStyle(sample).color;
+            });
+          } finally {
+            sample.remove();
+          }
+        }, checks, theme, scheme);
+        const actual = await json.evaluate((checks) => checks.map(([, selector, property]) =>
+          getComputedStyle(document.querySelector(selector))[property]
+        ), checks);
+        checks.forEach(([role], index) => assert(actual[index] === expected[index],
+          `${theme}/${scheme} 的 ${role} 应为 ${expected[index]}，实际为 ${actual[index]}`));
+      }
+    }
+  } finally {
+    await settings.close();
+  }
+  assert(await json.$eval(".browser-toolbox-token-key", (key) => getComputedStyle(key).fontWeight === "700"),
+    "JSON 键名应与工具工作台一样加粗。");
+  assert(await json.$$eval(".browser-toolbox-token-number", (numbers) =>
+    numbers.some((number) => number.textContent === "-1.5e+4")), "带符号和指数的数值应整体着色。");
+}
+
 export async function testDocumentFormatter(browser, baseUrl) {
   const json = await browser.newPage();
   try {
@@ -900,7 +1252,8 @@ export async function testDocumentFormatter(browser, baseUrl) {
     assert(await json.$eval(".browser-toolbox-document-output", (element) => element.textContent.includes("<img")), "JSON 输出应以文本节点显示源码。 ");
     assert(await json.$('.browser-toolbox-document-toolbar [data-document-action="repair-mojibake"]'), "JSON 应有专属修复工具栏。 ");
     assert(await json.$eval(".browser-toolbox-document-brand", (element) => /JSON/.test(element.textContent)), "JSON 工具栏应显示格式品牌。 ");
-    assert(await json.$eval(".browser-toolbox-document-status", (element) => getComputedStyle(element).color !== "rgb(0, 0, 0)"), "JSON 工具栏应显示状态色。 ");
+    await testDocumentThemes(browser, json);
+    await json.bringToFront();
     const documentToolbar = await json.evaluate(() => {
       const toolbar = document.querySelector(".browser-toolbox-document-toolbar");
       const actions = document.querySelector(".browser-toolbox-document-actions");
@@ -973,16 +1326,26 @@ export async function testDocumentFormatter(browser, baseUrl) {
     });
     try {
       await downloadClient.send("Browser.setDownloadBehavior", {
-        behavior: "allow", downloadPath: downloadDir, eventsEnabled: true,
+        behavior: "allowAndName", downloadPath: downloadDir, eventsEnabled: true,
       });
-      await clickDocumentButton(json, "download");
-      await waitFor(() => download && completedDownloads.has(download.guid));
-      assert(
-        /^browser-toolbox-\d+\.json$/.test(download.suggestedFilename),
-        `自动美化 JSON 下载文件名应使用毫秒级时间戳前缀：${download.suggestedFilename}`,
-      );
-      const downloadedText = await Deno.readTextFile(`${downloadDir}/${download.suggestedFilename}`);
+      const downloadText = async () => {
+        download = null;
+        await clickDocumentButton(json, "download");
+        await waitFor(() => download && completedDownloads.has(download.guid));
+        assert(
+          /^browser-toolbox-\d+\.json$/.test(download.suggestedFilename),
+          `自动美化 JSON 下载文件名应使用毫秒级时间戳前缀：${download.suggestedFilename}`,
+        );
+        return Deno.readTextFile(`${downloadDir}/${download.guid}`);
+      };
+      const downloadedText = await downloadText();
       assert(downloadedText.includes("9007199254740993") && downloadedText.includes("<img"), "实际 JSON 下载应保留大整数和原始文本。 ");
+      await clickDocumentButton(json, "toggle-original");
+      const originalText = await textIn(json, ".browser-toolbox-document-output");
+      assert(originalText.includes("9007199254740993") && originalText !== downloadedText,
+        "查看原文应显示独立的原始文本。");
+      assert(await downloadText() === originalText, "查看原文时实际下载应匹配原始文本。");
+      await clickDocumentButton(json, "toggle-original");
     } finally {
       await downloadClient.send("Browser.setDownloadBehavior", { behavior: "default" }).catch(() => {});
       await downloadClient.detach().catch(() => {});
@@ -990,16 +1353,18 @@ export async function testDocumentFormatter(browser, baseUrl) {
     }
     await focusTargetPage(browser, json);
     await json.screenshot({ path: "/tmp/browser-toolbox-document-json.png", fullPage: true });
-    await clickDocumentButton(json, "toggle-original");
-    assert(await json.$eval(".browser-toolbox-document-output", (element) => element.textContent.includes("9007199254740993")), "查看原文应保留原始文本。 ");
-    await clickDocumentButton(json, "toggle-original");
     await clickDocumentButton(json, "restore-original");
     assert(await json.$(".browser-toolbox-document-toolbar") === null, "恢复原文应释放格式化视图。 ");
+    assert(await json.$eval("body", (body) => !getComputedStyle(body).getPropertyValue("--bt-accent")),
+      "恢复原文应同时移除格式化页面的主题。");
   } finally {
     await json.close();
   }
 
-  for (const [path, label] of [["xml", "XML"], ["css", "CSS"], ["javascript", "JavaScript"], ["java", "Java"]]) {
+  for (const [path, label, expectedSource] of [
+    ["xml", "XML"], ["css", "CSS"], ["javascript", "JavaScript"], ["java", "Java"],
+    ["css-continued", "CSS", continuedCss], ["javascript-continued", "JavaScript", continuedJavaScript],
+  ]) {
     const page = await browser.newPage();
     try {
       await page.bringToFront();
@@ -1024,6 +1389,13 @@ export async function testDocumentFormatter(browser, baseUrl) {
         const output = await page.$eval(".browser-toolbox-document-output", (element) => element.textContent);
         assert(output.includes("<root"), "XML 格式化输出应来自源码节点而不是查看器说明文字。 ");
         assert(!output.includes("This XML file does not appear"), "XML 输出不得混入浏览器查看器说明。 ");
+        assert(output.includes('<space xml:space="preserve">   </space>'), "XML 应保留声明的三个空格。");
+        assert(output.includes("<p>你好<b>世界</b>！</p>"), "XML 混合正文中不应插入缩进。");
+        assert(output.includes(xmlParagraph), "XML 应保留正文标签之间的两个换行和八个空格。");
+      }
+      if (expectedSource) {
+        assert(await textIn(page, ".browser-toolbox-document-output") === expectedSource,
+          `${label} 跨行字符串的续行和空格应原样保留。`);
       }
       assert(await page.$(".browser-toolbox-json-toggle") === null, `${label} 不应显示 JSON 专属折叠树。 `);
       assert(await page.$('[aria-label="Sort JSON keys"]') === null, `${label} 不应显示 JSON 排序控件。 `);
@@ -1039,6 +1411,21 @@ export async function testDocumentFormatter(browser, baseUrl) {
     await ordinary.goto(`${baseUrl}/html`, { waitUntil: "load" });
     await sleep(800);
     assert(await ordinary.$(".browser-toolbox-document-toolbar") === null, "普通 HTML 页面不得被文档格式化器接管。 ");
+    assert(await ordinary.$eval("body", (body) => !getComputedStyle(body).getPropertyValue("--bt-accent")),
+      "普通网页不应收到扩展的主题样式。");
+    await ordinary.goto(`${baseUrl}/invalid-json`, { waitUntil: "load" });
+    const notice = ".browser-toolbox-document-notice";
+    await ordinary.waitForSelector(notice);
+    assert(await ordinary.$eval(notice, (element) => {
+      const expected = document.createElement("span");
+      expected.style.color = "var(--bt-warning-bg)";
+      element.append(expected);
+      const matches = getComputedStyle(element).backgroundColor === getComputedStyle(expected).color;
+      expected.remove();
+      return matches && !getComputedStyle(document.body).getPropertyValue("--bt-accent");
+    }), "无效 JSON 的警告应使用主题警告色，原始文档保留自己的样式。");
+    await ordinary.click(".browser-toolbox-document-notice-close");
+    assert(await ordinary.$(notice) === null, "应能关闭无效 JSON 的警告。");
   } finally {
     await ordinary.close();
   }
@@ -1161,6 +1548,8 @@ async function main() {
     if (Deno.env.get("BROWSER_TOOLBOX_E2E_NATIVE_POPUP_ONLY") === "true") return;
     await runStage(browser, "工具设置", () => testSettings(browser, id));
     await runStage(browser, "动作弹窗", () => testActionPopup(browser, id, baseUrl));
+    await runStage(browser, "命令中心的标签目标", () => testCommandCenterTarget(browser, id, baseUrl));
+    await runStage(browser, "标签列表搜索和刷新", () => testLiveTabList(browser, id, baseUrl));
     await runStage(browser, "七个 V3 工具工作台", () => testWorkbenchPages(browser, id));
     await runStage(browser, "编码转换与无效令牌", () => testToolPages(browser, id));
     await runStage(browser, "文档格式化器", () => testDocumentFormatter(browser, baseUrl));

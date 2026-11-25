@@ -8,7 +8,7 @@
   --workbench-line: var(--bt-border-subtle);
   --workbench-row-line: color-mix(in srgb, var(--bt-border-subtle) 65%, transparent);
   --workbench-hover: color-mix(in srgb, var(--bt-accent-soft) 58%, var(--bt-surface-card));
-  --workbench-string: color-mix(in srgb, var(--bt-success) 68%, var(--bt-text));
+  --workbench-string: var(--bt-code-string);
   --workbench-danger: color-mix(in srgb, var(--bt-danger) 76%, var(--bt-text));
   --workbench-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "PingFang SC", monospace;
   --pane-padding: 18px;

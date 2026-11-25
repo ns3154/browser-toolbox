@@ -3805,6 +3805,9 @@
   "toolTableFormulaCount": {
     "message": "Prefijos de fórmula detectados: {count}."
   },
+  "toolTableNoDataRows": {
+    "message": "No hay filas de datos para exportar."
+  },
   "toolTableLimit": {
     "message": "La tabla supera el límite local de filas o celdas."
   },

@@ -16,7 +16,10 @@ import "../background_scripts/browser_toolbox/settings_repository.js";
 // 标签页列表只使用 tabs API，不申请 management 权限，也不保存标签历史。
 (function () {
   const LOCALE_READ_TIMEOUT_MS = 500;
+  const TAB_REFRESH_DELAY_MS = 50;
   let tabs = [];
+  let refreshRevision = 0;
+  let refreshTimer;
 
   function fuzzyScore(text, query) {
     const normalizedText = text.toLowerCase();
@@ -24,7 +27,7 @@ import "../background_scripts/browser_toolbox/settings_repository.js";
     let index = 0;
     for (const char of normalizedQuery) {
       index = normalizedText.indexOf(char, index);
-      if (index < 0) return -1;
+      if (index < 0) return Number.NEGATIVE_INFINITY;
       index++;
     }
     return normalizedQuery.length * 10 - index;
@@ -45,7 +48,13 @@ import "../background_scripts/browser_toolbox/settings_repository.js";
     if (parsedUrl) {
       const url = parsedUrl;
       // 扩展 ID 是随机值，不应参与用户搜索；普通网页再按 URL 组件分别匹配。
-      if (!url.protocol.endsWith("-extension:")) candidates.push(url.hostname);
+      if (!isExtensionUrl) {
+        candidates.push(url.hostname);
+        if (/[/:?#]/.test(query)) {
+          const path = url.pathname + url.search + url.hash;
+          candidates.push(url.href, url.host + path, path);
+        }
+      }
       candidates.push(url.pathname, url.search, url.hash);
     } else if (tab.url) {
       candidates.push(tab.url);
@@ -56,7 +65,7 @@ import "../background_scripts/browser_toolbox/settings_repository.js";
   function filterTabs(value, query) {
     const normalizedQuery = String(query || "").trim();
     return value.map((tab) => ({ tab, score: score(tab, normalizedQuery) }))
-      .filter((item) => item.score >= 0)
+      .filter((item) => Number.isFinite(item.score))
       .sort((a, b) => b.score - a.score || a.tab.index - b.tab.index)
       .map(({ tab }) => tab);
   }
@@ -65,20 +74,42 @@ import "../background_scripts/browser_toolbox/settings_repository.js";
   const tabListApi = Object.freeze({ fuzzyScore, score, filterTabs });
   globalThis.BrowserToolboxTabList = tabListApi;
 
-  async function render() {
-    const query = document.querySelector("#query").value.trim();
+  function render() {
+    const query = document.querySelector("#query");
     const list = document.querySelector("#tabs");
-    list.replaceChildren();
-    for (const tab of filterTabs(tabs, query)) {
+    const focusedId = list.contains(document.activeElement)
+      ? document.activeElement.dataset.tabId
+      : undefined;
+    const rows = document.createDocumentFragment();
+    let focusedButton;
+    for (const tab of filterTabs(tabs, query.value)) {
       const item = document.createElement("li");
       const button = document.createElement("button");
       button.type = "button";
       button.dataset.tabId = String(tab.id);
       button.textContent = (tab.pinned ? "📌 " : "") +
         (tab.title || tab.url || BrowserToolboxI18n.message("untitledTab"));
+      if (button.dataset.tabId === focusedId) focusedButton = button;
       item.appendChild(button);
-      list.appendChild(item);
+      rows.appendChild(item);
     }
+    list.replaceChildren(rows);
+    if (focusedId != null) (focusedButton || query).focus({ preventScroll: true });
+  }
+
+  async function refreshTabs(revision) {
+    const updated = await chrome.tabs.query({}).catch(() => null);
+    // 浏览器事件可能在查询期间到达，只用最新一轮的结果更新列表。
+    if (updated && revision === refreshRevision) {
+      tabs = updated;
+      render();
+    }
+  }
+
+  function scheduleRefresh() {
+    const revision = ++refreshRevision;
+    clearTimeout(refreshTimer);
+    refreshTimer = setTimeout(() => refreshTabs(revision), TAB_REFRESH_DELAY_MS);
   }
 
   function tabFromEvent(event, list) {
@@ -92,18 +123,22 @@ import "../background_scripts/browser_toolbox/settings_repository.js";
     list.addEventListener("click", async (event) => {
       const tab = tabFromEvent(event, list);
       if (!tab) return;
-      await chrome.tabs.update(tab.id, { active: true });
-      if (tab.windowId != null) await chrome.windows.update(tab.windowId, { focused: true });
-      window.close();
+      try {
+        const active = await chrome.tabs.update(tab.id, { active: true });
+        if (active?.windowId != null) await chrome.windows.update(active.windowId, { focused: true });
+        window.close();
+      } catch (_) {
+        scheduleRefresh();
+      }
     });
     list.addEventListener("auxclick", async (event) => {
       if (event.button !== 1) return;
       const tab = tabFromEvent(event, list);
       if (!tab) return;
       event.preventDefault();
-      await chrome.tabs.remove(tab.id);
-      tabs = tabs.filter((item) => item.id !== tab.id);
-      render();
+      // 标签可能在点击前被其它窗口关闭，仍刷新一次列表。
+      await chrome.tabs.remove(tab.id).catch(() => {});
+      scheduleRefresh();
     });
   }
 
@@ -117,10 +152,16 @@ import "../background_scripts/browser_toolbox/settings_repository.js";
     // 语言偏好只是显示增强项；存储事件竞争或浏览器暂时变慢时，不能阻塞标签页列表。
     if (locale) BrowserToolboxI18n.setLocale(locale);
     BrowserToolboxI18n.apply(document);
-    tabs = await chrome.tabs.query({});
     const list = document.querySelector("#tabs");
     installListInteractions(list);
     document.querySelector("#query").addEventListener("input", render);
-    render();
+    for (const event of [
+      chrome.tabs.onCreated, chrome.tabs.onRemoved, chrome.tabs.onMoved,
+      chrome.tabs.onAttached, chrome.tabs.onDetached, chrome.tabs.onReplaced,
+    ]) event?.addListener(scheduleRefresh);
+    chrome.tabs.onUpdated?.addListener((_id, change) => {
+      if ("title" in change || "url" in change || "pinned" in change) scheduleRefresh();
+    });
+    await refreshTabs(++refreshRevision);
   });
 })();

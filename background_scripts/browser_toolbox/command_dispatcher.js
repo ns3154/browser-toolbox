@@ -164,7 +164,10 @@
      */
     async dispatchToPage(invocation, sender, topFrame) {
       let tab = sender.tab;
-      if (invocation.source.type === "ui" && invocation.context?.tabId != null) {
+      if (this.browserAdapter.isCommandCenterInvocation?.(invocation, sender)) {
+        tab = await this.browserAdapter.getTab(invocation, sender);
+        if (!tab) return invocationApi.createResult(false, invocationApi.ERROR_CODES.NO_ACTIVE_TAB);
+      } else if (invocation.source.type === "ui" && invocation.context?.tabId != null) {
         try {
           tab = await chrome.tabs.get(invocation.context.tabId);
         } catch (_) {

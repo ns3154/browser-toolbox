@@ -1,21 +1,11 @@
 /* 直接文档格式化器：把接口响应作为整页文档呈现，工具栏只占用顶部一行。 */
 body.browser-toolbox-document-formatted {
-  --toolbox-document-bg: #f7f9fc;
-  --toolbox-document-surface: #ffffff;
-  --toolbox-document-surface-muted: #f5f8fd;
-  --toolbox-document-ink: #17233a;
-  --toolbox-document-muted: #6d7f99;
-  --toolbox-document-line: #d8e2ef;
-  --toolbox-document-blue: #1f5fe7;
-  --toolbox-document-blue-soft: #edf4ff;
-  --toolbox-document-green: #13855d;
   box-sizing: border-box;
   min-height: 100vh;
   margin: 0;
   overflow-x: hidden;
-  background: var(--toolbox-document-bg);
-  color: var(--toolbox-document-ink);
-  color-scheme: light;
+  background: var(--bt-bg);
+  color: var(--bt-text);
   font: 14px/1.5 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
 }
 
@@ -38,10 +28,10 @@ body.browser-toolbox-document-formatted *::after {
   padding: 10px 28px;
   overflow-x: auto;
   overflow-y: hidden;
-  border-bottom: 1px solid var(--toolbox-document-line);
-  background: rgb(255 255 255 / 98%);
-  box-shadow: 0 3px 12px rgb(29 52 84 / 5%);
-  color: var(--toolbox-document-ink);
+  border-bottom: 1px solid var(--bt-border-subtle);
+  background: var(--bt-surface);
+  box-shadow: 0 3px 12px color-mix(in srgb, var(--bt-text) 6%, transparent);
+  color: var(--bt-text);
   overscroll-behavior-inline: contain;
   scrollbar-width: thin;
   white-space: nowrap;
@@ -60,7 +50,7 @@ body.browser-toolbox-document-formatted *::after {
   display: inline-flex;
   align-items: center;
   gap: 9px;
-  color: var(--toolbox-document-ink);
+  color: var(--bt-text);
   font-size: 14px;
   white-space: nowrap;
 }
@@ -70,15 +60,15 @@ body.browser-toolbox-document-formatted *::after {
   width: 30px;
   height: 30px;
   place-items: center;
-  border: 1px solid #c6d8f8;
+  border: 1px solid var(--bt-border);
   border-radius: 8px;
-  background: var(--toolbox-document-blue-soft);
-  color: var(--toolbox-document-blue);
+  background: var(--bt-accent-soft);
+  color: var(--bt-accent);
   font: 700 12px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
 .browser-toolbox-document-status {
-  color: var(--toolbox-document-green);
+  color: var(--bt-success);
   font-size: 11px;
   font-weight: 600;
   white-space: nowrap;
@@ -113,13 +103,13 @@ body.browser-toolbox-document-formatted *::after {
   box-sizing: border-box;
   min-height: 36px;
   padding: 6px 10px;
-  border: 1px solid var(--toolbox-document-line);
-  border-radius: 8px;
-  background: var(--toolbox-document-surface-muted);
+  border: 1px solid var(--bt-border-subtle);
+  border-radius: 6px;
+  background: var(--bt-surface-card);
   box-shadow: none;
-  color: var(--toolbox-document-ink);
+  color: var(--bt-text);
   cursor: pointer;
-  font: 12px/1.3 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font: 600 12px/1.3 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   text-shadow: none;
   white-space: nowrap;
 }
@@ -128,23 +118,23 @@ body.browser-toolbox-document-formatted *::after {
 .browser-toolbox-document-toolbar button:focus-visible,
 .browser-toolbox-document-toolbar select:hover,
 .browser-toolbox-document-toolbar select:focus-visible {
-  border-color: #a9c3ed;
-  background: var(--toolbox-document-blue-soft);
-  color: var(--toolbox-document-blue);
-  outline: 2px solid rgb(37 99 235 / 16%);
+  border-color: var(--bt-border-strong);
+  background: var(--bt-accent-soft);
+  color: var(--bt-accent);
+  outline: 2px solid var(--bt-accent);
   outline-offset: 1px;
 }
 
 .browser-toolbox-document-toolbar [data-document-action="toggle-original"] {
-  border-color: #b6cdef;
-  background: #f7faff;
-  color: var(--toolbox-document-blue);
+  border-color: var(--bt-border);
+  background: var(--bt-accent-soft);
+  color: var(--bt-accent);
   font-weight: 600;
 }
 
 .browser-toolbox-document-toolbar [data-document-action="restore-original"] {
   background: transparent;
-  color: var(--toolbox-document-muted);
+  color: var(--bt-muted);
 }
 
 .browser-toolbox-document-metadata {
@@ -152,9 +142,9 @@ body.browser-toolbox-document-formatted *::after {
   margin: 0;
   padding: 9px 28px;
   border: 0;
-  border-bottom: 1px solid var(--toolbox-document-line);
-  background: rgb(251 252 254 / 98%);
-  color: var(--toolbox-document-ink);
+  border-bottom: 1px solid var(--bt-border-subtle);
+  background: var(--bt-surface-subtle);
+  color: var(--bt-text);
 }
 
 .browser-toolbox-document-metadata summary {
@@ -163,7 +153,7 @@ body.browser-toolbox-document-formatted *::after {
   gap: 20px;
   min-height: 23px;
   overflow: hidden;
-  color: var(--toolbox-document-ink);
+  color: var(--bt-text);
   cursor: pointer;
   font-size: 12px;
   font-weight: 700;
@@ -181,7 +171,7 @@ body.browser-toolbox-document-formatted *::after {
   height: 0;
   border-top: 4px solid transparent;
   border-bottom: 4px solid transparent;
-  border-left: 5px solid var(--toolbox-document-blue);
+  border-left: 5px solid var(--bt-accent);
   content: "";
   transform: rotate(0deg);
   transition: transform 120ms ease;
@@ -192,13 +182,13 @@ body.browser-toolbox-document-formatted *::after {
 }
 
 .browser-toolbox-document-metadata summary:focus-visible {
-  outline: 2px solid var(--toolbox-document-blue);
+  outline: 2px solid var(--bt-accent);
   outline-offset: 2px;
 }
 
 .browser-toolbox-document-metadata-preview {
   overflow: hidden;
-  color: var(--toolbox-document-muted);
+  color: var(--bt-muted);
   font: 11px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-weight: 400;
   text-overflow: ellipsis;
@@ -210,13 +200,13 @@ body.browser-toolbox-document-formatted *::after {
   gap: 4px 16px;
   margin: 10px 0 2px;
   padding-top: 10px;
-  border-top: 1px solid var(--toolbox-document-line);
-  color: var(--toolbox-document-muted);
+  border-top: 1px solid var(--bt-border-subtle);
+  color: var(--bt-muted);
   font: 11px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
 .browser-toolbox-document-metadata dt {
-  color: var(--toolbox-document-ink);
+  color: var(--bt-text);
   font-weight: 700;
 }
 
@@ -231,8 +221,8 @@ body.browser-toolbox-document-formatted *::after {
   margin: 0;
   padding: 20px 28px 48px;
   overflow: auto;
-  background: var(--toolbox-document-surface);
-  color: #1f2d45;
+  background: var(--bt-surface-card);
+  color: var(--bt-text);
   font: 13px/1.7 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   tab-size: 2;
   white-space: pre;
@@ -243,9 +233,9 @@ body.browser-toolbox-document-formatted *::after {
   margin: 0;
   padding: 0 2px;
   border: 0;
-  border-radius: 4px;
+  border-radius: 3px;
   background: transparent;
-  color: var(--toolbox-document-blue);
+  color: var(--bt-accent);
   cursor: pointer;
   font: inherit;
   vertical-align: baseline;
@@ -270,16 +260,16 @@ body.browser-toolbox-document-formatted *::after {
 
 .browser-toolbox-json-toggle:hover,
 .browser-toolbox-json-toggle:focus-visible {
-  background: var(--toolbox-document-blue-soft);
-  outline: 2px solid rgb(37 99 235 / 22%);
+  background: var(--bt-accent-soft);
+  outline: 2px solid var(--bt-accent);
   outline-offset: 1px;
 }
 
-.browser-toolbox-token-comment { color: #75839a; }
-.browser-toolbox-token-key { color: #2f63ae; }
-.browser-toolbox-token-string { color: #bd3f42; }
-.browser-toolbox-token-number { color: #1558d6; }
-.browser-toolbox-token-keyword { color: #13855d; }
+.browser-toolbox-token-comment { color: var(--bt-muted); font-style: italic; }
+.browser-toolbox-token-key { color: var(--bt-code-key); font-weight: 700; }
+.browser-toolbox-token-string { color: var(--bt-code-string); }
+.browser-toolbox-token-number { color: var(--bt-warning-text); }
+.browser-toolbox-token-keyword { color: var(--bt-code-literal); }
 
 .browser-toolbox-document-notice {
   position: fixed;
@@ -291,11 +281,11 @@ body.browser-toolbox-document-formatted *::after {
   gap: 10px;
   max-width: min(620px, calc(100vw - 32px));
   padding: 11px 13px;
-  border: 1px solid #f1d6aa;
+  border: 1px solid var(--bt-warning-border);
   border-radius: 10px;
-  background: #fffaf1;
-  box-shadow: 0 8px 24px rgb(29 52 84 / 14%);
-  color: #7c4a12;
+  background: var(--bt-warning-bg);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--bt-scrim) 40%, transparent);
+  color: var(--bt-warning-text);
   font-size: 12px;
 }
 
@@ -308,47 +298,6 @@ body.browser-toolbox-document-formatted *::after {
   color: inherit;
   cursor: pointer;
   font: inherit;
-}
-
-@media (prefers-color-scheme: dark) {
-  body.browser-toolbox-document-formatted {
-    --toolbox-document-bg: #101827;
-    --toolbox-document-surface: #182438;
-    --toolbox-document-surface-muted: #202f46;
-    --toolbox-document-ink: #e8eef8;
-    --toolbox-document-muted: #a5b5c9;
-    --toolbox-document-line: #354862;
-    --toolbox-document-blue: #82aaff;
-    --toolbox-document-blue-soft: #203a66;
-    --toolbox-document-green: #70d8ab;
-    color-scheme: dark;
-  }
-
-  .browser-toolbox-document-toolbar,
-  .browser-toolbox-document-metadata {
-    background: rgb(24 36 56 / 98%);
-  }
-
-  .browser-toolbox-document-toolbar [data-document-action="toggle-original"] {
-    border-color: #466a9d;
-    background: #203a66;
-  }
-
-  .browser-toolbox-document-output {
-    color: var(--toolbox-document-ink);
-  }
-
-  .browser-toolbox-token-comment { color: #9aabc0; }
-  .browser-toolbox-token-key { color: #9ec4ff; }
-  .browser-toolbox-token-string { color: #ff9b9e; }
-  .browser-toolbox-token-number { color: #8eb7ff; }
-  .browser-toolbox-token-keyword { color: #70d8ab; }
-
-  .browser-toolbox-document-notice {
-    border-color: #704f25;
-    background: #332718;
-    color: #ffd18b;
-  }
 }
 
 @media (max-width: 720px) {

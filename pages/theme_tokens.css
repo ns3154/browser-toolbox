@@ -1,8 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
-/* 浏览器工具箱多主题语义化设计令牌（唯一样式真源）。 */
+/* 扩展页在根元素启用主题。网页只有格式化视图或错误提示使用配色，切换主题时继承页面的主题选择。 */
 
-:root,
-:root[data-bt-theme="sage-mist"] {
+.browser-toolbox-themed {
   color-scheme: light dark;
   --bt-bg: #f4f7f5;
   --bt-surface: #f3f7f4;
@@ -33,14 +32,18 @@
   --bt-warning-border: #fed7aa;
   --bt-warning-text: #9a3412;
   --bt-scrim: rgba(15, 30, 22, 0.45);
-}
-
-:root {
   --bt-code-key: #215574;
   --bt-code-literal: #5945a1;
+  --bt-code-string: var(--bt-success);
 }
 
-:root[data-bt-theme="cobalt"] {
+@supports (color: color-mix(in srgb, black, white)) {
+  .browser-toolbox-themed {
+    --bt-code-string: color-mix(in srgb, var(--bt-success) 68%, var(--bt-text));
+  }
+}
+
+.browser-toolbox-themed:is([data-bt-theme="cobalt"], [data-bt-theme="cobalt"] *) {
   color-scheme: light dark;
   --bt-bg: #f6f8fc;
   --bt-surface: #ffffff;
@@ -73,7 +76,7 @@
   --bt-scrim: rgba(15, 23, 42, 0.45);
 }
 
-:root[data-bt-theme="paper-ink"] {
+.browser-toolbox-themed:is([data-bt-theme="paper-ink"], [data-bt-theme="paper-ink"] *) {
   color-scheme: light dark;
   --bt-bg: #f6f2eb;
   --bt-surface: #faf8f5;
@@ -106,7 +109,7 @@
   --bt-scrim: rgba(31, 27, 22, 0.45);
 }
 
-:root[data-bt-theme="slate"] {
+.browser-toolbox-themed:is([data-bt-theme="slate"], [data-bt-theme="slate"] *) {
   color-scheme: light dark;
   --bt-bg: #f4f4f5;
   --bt-surface: #ffffff;
@@ -140,13 +143,9 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  .browser-toolbox-themed {
     --bt-code-key: #a4cef2;
     --bt-code-literal: #c8b9fb;
-  }
-
-  :root,
-  :root[data-bt-theme="sage-mist"] {
     --bt-bg: #0c120f;
     --bt-surface: #141e19;
     --bt-surface-card: #18241e;
@@ -178,7 +177,7 @@
     --bt-scrim: rgba(2, 6, 12, 0.62);
   }
 
-  :root[data-bt-theme="cobalt"] {
+  .browser-toolbox-themed:is([data-bt-theme="cobalt"], [data-bt-theme="cobalt"] *) {
     --bt-bg: #0d121d;
     --bt-surface: #141b2b;
     --bt-surface-card: #1a2338;
@@ -210,7 +209,7 @@
     --bt-scrim: rgba(2, 6, 12, 0.62);
   }
 
-  :root[data-bt-theme="paper-ink"] {
+  .browser-toolbox-themed:is([data-bt-theme="paper-ink"], [data-bt-theme="paper-ink"] *) {
     --bt-bg: #12100d;
     --bt-surface: #191714;
     --bt-surface-card: #211e19;
@@ -242,7 +241,7 @@
     --bt-scrim: rgba(6, 5, 4, 0.66);
   }
 
-  :root[data-bt-theme="slate"] {
+  .browser-toolbox-themed:is([data-bt-theme="slate"], [data-bt-theme="slate"] *) {
     --bt-bg: #0e0e11;
     --bt-surface: #18181c;
     --bt-surface-card: #202026;
@@ -276,7 +275,7 @@
 }
 
 /* 将旧有页面令牌统一映射到当前主题语义变量，保持各样式表联动切换。 */
-:root {
+:root:where(.browser-toolbox-themed) {
   --toolbox-bg: var(--bt-bg);
   --toolbox-action-bg: var(--bt-bg);
   --toolbox-surface: var(--bt-surface-card);

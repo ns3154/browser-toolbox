@@ -1,4 +1,5 @@
 import "../lib/browser_toolbox/command_invocation.js";
+import "./settings_sections.js";
 
 // 命令中心只通过 Runtime 命令协议执行操作，不直接执行页面脚本或读取页面内容。
 (function () {
@@ -6,26 +7,21 @@ import "../lib/browser_toolbox/command_invocation.js";
   const invocationApi = globalThis.BrowserToolboxCommandInvocation;
   const toolRegistry = globalThis.BrowserToolboxToolRegistry;
   const i18n = globalThis.BrowserToolboxI18n;
-  const settings = [
-    {
-      id: "mouse",
-      hash: "#mouse",
+  const settingShortcuts = {
+    mouse: {
       titleKey: "commandCenterMouseSettings",
       descriptionKey: "commandCenterMouseSettingsDescription",
     },
-    {
-      id: "siteRules",
-      hash: "#siteRules",
+    siteRules: {
       titleKey: "commandCenterSiteRules",
       descriptionKey: "commandCenterSiteRulesDescription",
     },
-    {
+    toolsOverview: {
       id: "tools",
-      hash: "#toolsOverview",
       titleKey: "commandCenterToolSettings",
       descriptionKey: "commandCenterToolSettingsDescription",
     },
-  ];
+  };
   const state = {
     entries: [],
     filtered: [],
@@ -47,19 +43,20 @@ import "../lib/browser_toolbox/command_invocation.js";
     return tab.title || tab.url || message("untitledTab");
   }
 
+  function setTarget(tab) {
+    state.tab = tab;
+    document.querySelector("#command-center-context").textContent = tabLabel(tab);
+  }
+
   async function findTargetTab() {
-    const requested = Number(new URLSearchParams(location.search).get("tabId"));
-    if (Number.isInteger(requested) && requested >= 0) {
-      try {
-        const tab = await chrome.tabs.get(requested);
-        if (tab?.id != null) return tab;
-      } catch (_) {
-        // 来源标签页可能在打开命令中心后关闭，继续寻找当前活动标签页。
-      }
+    const requested = new URLSearchParams(location.search).get("tabId");
+    if (requested != null) {
+      // 传入了来源时，来源关闭后保留无目标状态，避免把命令发送到其它标签页。
+      return /^\d+$/.test(requested) ? chrome.tabs.get(Number(requested)).catch(() => null) : null;
     }
     const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-    const currentPage = location.href;
-    return tabs.find((tab) => tab.url !== currentPage && !tab.url?.includes("/pages/command_center.html")) || null;
+    const centerUrl = chrome.runtime.getURL("pages/command_center.html");
+    return tabs.find((tab) => tab.url?.split(/[?#]/, 1)[0] !== centerUrl) || null;
   }
 
   function iconName(entry) {
@@ -203,6 +200,11 @@ import "../lib/browser_toolbox/command_invocation.js";
         context,
       );
       const result = await chrome.runtime.sendMessage({ handler: "browserToolbox.invoke", invocation });
+      if (result?.code === invocationApi.ERROR_CODES.NO_ACTIVE_TAB) {
+        setTarget(null);
+        setError(message("commandCenterNoTarget"));
+        return;
+      }
       if (!result?.ok) throw new Error(result?.message || message("commandCenterExecuteFailed"));
       globalThis.close();
     } catch (error) {
@@ -216,24 +218,27 @@ import "../lib/browser_toolbox/command_invocation.js";
       state.selectedIndex = 0;
       render();
     });
-    input?.addEventListener("keydown", (event) => {
-      if (event.key === "ArrowDown") {
-        event.preventDefault();
-        select(state.selectedIndex + 1, { focus: true });
-      } else if (event.key === "ArrowUp") {
-        event.preventDefault();
-        select(state.selectedIndex - 1, { focus: true });
-      } else if (event.key === "Enter") {
-        event.preventDefault();
-        execute(state.filtered[state.selectedIndex]);
-      } else if (event.key === "Escape") {
-        event.preventDefault();
-        globalThis.close();
-      }
-    });
     document.querySelector("#command-center-close")?.addEventListener("click", () => globalThis.close());
     document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape" && document.activeElement !== input) globalThis.close();
+      if (event.defaultPrevented || event.isComposing) return;
+      if (event.key === "Escape") {
+        event.preventDefault();
+        globalThis.close();
+        return;
+      }
+      const fromSearch = event.target === input;
+      if (fromSearch && event.key === "Enter") {
+        event.preventDefault();
+        execute(state.filtered[state.selectedIndex]);
+        return;
+      }
+      if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+      // 第一次移动会把焦点交给结果按钮，后续按键从该按钮的位置继续。
+      const result = event.target?.closest?.("#command-center-results [data-entry-index]");
+      if (!fromSearch && !result) return;
+      event.preventDefault();
+      const currentIndex = result ? Number(result.dataset.entryIndex) : state.selectedIndex;
+      select(currentIndex + (event.key === "ArrowDown" ? 1 : -1), { focus: true });
     });
   }
 
@@ -242,20 +247,25 @@ import "../lib/browser_toolbox/command_invocation.js";
     await globalThis.BrowserToolboxTheme?.applyStoredTheme?.(document);
     globalThis.BrowserToolboxTheme?.watchTheme?.(document);
     i18n?.apply?.(document);
-    state.tab = await findTargetTab();
-    document.querySelector("#command-center-context").textContent = tabLabel(state.tab);
+    setTarget(await findTargetTab());
     const commands = await chrome.runtime.sendMessage({ handler: "browserToolbox.commandRegistry" });
     if (!Array.isArray(commands)) throw new Error(message("commandCenterLoadFailed"));
-    const localize = (key) => message(key);
+    const { GROUPS, SECTIONS } = globalThis.BrowserToolboxSettingsSections;
     state.entries = commandCenterApi.createEntries({
       commands,
       tools: toolRegistry?.list?.({ source: "command" }) || [],
-      settings: settings.map((setting) => ({
-        ...setting,
-        title: localized(setting.titleKey, setting.id),
-        description: localized(setting.descriptionKey, ""),
-      })),
-      localize,
+      settings: SECTIONS.map(({ id, labelKey, group, searchKeys }) => {
+        const shortcut = settingShortcuts[id];
+        const groupKey = GROUPS.find((entry) => entry.id === group).labelKey;
+        return {
+          id: shortcut?.id || id,
+          hash: `#${id}`,
+          title: localized(shortcut?.titleKey || labelKey, id),
+          description: message(shortcut?.descriptionKey || groupKey),
+          keywords: [id, message(labelKey), ...searchKeys.map(message)],
+        };
+      }),
+      localize: message,
     });
     installEvents();
     render();

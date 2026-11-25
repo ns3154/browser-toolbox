@@ -126,6 +126,91 @@ context("BrowserToolbox local tool implementations", () => {
     assert.equal([2, 13], position);
   });
 
+  should("MySQL 导出要求至少一条数据行，保留空字段和零值", () => {
+    const table = BrowserToolboxTableTool;
+    for (const [header, mode] of [["name,age", "csvToMysql"], ["name\tage\r\n", "tsvToMysql"]]) {
+      let errorKey;
+      try {
+        table.run(header, { mode });
+      } catch (error) {
+        errorKey = error.messageKey;
+      }
+      assert.equal("toolTableNoDataRows", errorKey);
+    }
+    assert.isTrue(table.run("name,age\n,0", { mode: "csvToMysql" }).output.includes("(NULL, '0')"));
+    assert.equal([], JSON.parse(table.run("name,age", { mode: "csvToJson" }).output));
+  });
+
+  should("PHP 导出保留 CSV 与 TSV 字段中的换行和转义字符", () => {
+    const expected = [
+      "<?php",
+      "return [",
+      "  [",
+      "    'name' => 'Ana',",
+      String.raw`    "多行\r\n表头" => "first\r\nsecond\nthird\rfourth \"双引号\" '单引号' \\n \$name",`,
+      "  ],",
+      "];",
+      "",
+    ].join("\n");
+    for (const [delimiter, mode] of [[",", "csvToPhp"], ["\t", "tsvToPhp"]]) {
+      const source = `name${delimiter}"多行\r\n表头"\r\nAna${delimiter}"first\r\nsecond\nthird\rfourth ""双引号"" '单引号' \\n $name"`;
+      assert.equal(expected, BrowserToolboxTableTool.run(source, { mode }).output);
+    }
+  });
+
+  should("Markdown 将 CSV 单元格内的不同换行符都转成单元格内换行", () => {
+    const source = 'name,note\r\nAna,"first\r\nsecond\rthird\nfourth"';
+    const { output } = BrowserToolboxTableTool.run(source, { mode: "csvToMarkdown" });
+    assert.equal("| name | note |\n| --- | --- |\n| Ana | first<br>second<br>third<br>fourth |", output);
+  });
+
+  should("表格补齐列数时也遵守单元格上限", () => {
+    const table = BrowserToolboxTableTool;
+    const source = "name\n" + "value\n".repeat(999) + ",".repeat(499);
+    for (const target of ["Markdown", "Json", "Xml", "Mysql", "Php"]) {
+      let errorKey;
+      try {
+        table.run(source, { mode: `csvTo${target}` });
+      } catch (error) {
+        errorKey = error.messageKey;
+      }
+      assert.equal("toolTableLimit", errorKey);
+    }
+    assert.equal(1001, table.run(source, { mode: "csvToTsv" }).metadata.rows);
+    assert.equal([{ name: "value", column_2: "" }, { name: "", column_2: "ok" }],
+      JSON.parse(table.run("name\nvalue\n,ok", { mode: "csvToJson" }).output));
+  });
+
+  should("CSV 与 TSV 互转保留首字段的 BOM 字符和最后的空字段行", () => {
+    const table = BrowserToolboxTableTool;
+    const source = '"\uFEFFname"\nvalue\n""';
+    for (const [mode, delimiter] of [["csvToTsv", "\t"], ["tsvToCsv", ","]]) {
+      const { output } = table.run(source, { mode });
+      assert.equal([["\uFEFFname"], ["value"], [""]], table.parseDelimited(output, delimiter));
+    }
+    assert.equal("name\nvalue", table.run("name\nvalue\n", { mode: "csvToTsv" }).output);
+  });
+
+  should("重复表头后的实际输出仍遵守 10 MiB 大小限制", () => {
+    const table = BrowserToolboxTableTool;
+    const header = "h".repeat(64000);
+    const source = `${header}\n${"value\n".repeat(200)}`;
+    for (const target of ["Json", "Xml", "Php"]) {
+      let errorKey;
+      try {
+        table.run(source, { mode: `csvTo${target}` });
+      } catch (error) {
+        errorKey = error.messageKey;
+      }
+      assert.equal("toolCodecOutputTooLarge", errorKey);
+    }
+    assert.isTrue(table.run(source, { mode: "csvToMarkdown" }).output.startsWith(`| ${header} |`));
+    const multibyte = `${"表".repeat(32000)}\n${"value\n".repeat(120)}`;
+    assert.throwsError(() => table.run(multibyte, { mode: "csvToJson" }));
+    const expected = JSON.stringify([{ name: "first" }, { name: "second" }], null, 2);
+    assert.equal(expected, table.run("name\nfirst\nsecond", { mode: "csvToJson" }).output);
+  });
+
   should("parse quoted tables and expose every implementation through the static loader", () => {
     const table = BrowserToolboxTableTool.run('name,note\n"A","x,y"', {
       mode: "csvToMarkdown",
@@ -139,6 +224,9 @@ context("BrowserToolbox local tool implementations", () => {
     assert.equal("A", JSON.parse(json.output)[0].name);
     const duplicateHeaders = BrowserToolboxTableTool.run("a,a\n1,2", { mode: "csvToJson" });
     assert.equal({ a: "1", a_2: "2" }, JSON.parse(duplicateHeaders.output)[0]);
+    const collidingHeaders = BrowserToolboxTableTool.run("a,a_2,a,a,a_3\n1,2,3,4,5", { mode: "csvToJson" });
+    assert.equal({ a: "1", a_2: "2", a_3: "3", a_4: "4", a_3_2: "5" },
+      JSON.parse(collidingHeaders.output)[0]);
     const formula = BrowserToolboxTableTool.run("name\n=SUM(A1)", { mode: "csvToTsv" });
     assert.equal(1, formula.metadata.formulaCells);
     const preview = BrowserToolboxTableTool.run('name\tnote\nA\t"line 1\nline 2"', {

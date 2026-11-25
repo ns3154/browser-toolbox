@@ -95,7 +95,7 @@
   function showFailureNotice(error) {
     if (!document.body || document.querySelector(".browser-toolbox-document-notice")) return;
     const notice = createElement("div");
-    notice.className = "browser-toolbox-document-notice";
+    notice.className = "browser-toolbox-document-notice browser-toolbox-themed";
     notice.setAttribute("role", "alert");
     const text = createElement("span");
     const detail = String(error?.message || message("documentFormatterKeptOriginal")).slice(0, 240);
@@ -271,6 +271,13 @@
     }
   }
 
+  function appendToken(root, text, kind) {
+    const span = createElement("span");
+    span.className = `browser-toolbox-token-${kind}`;
+    span.textContent = text;
+    root.append(span);
+  }
+
   function appendHighlightedText(root, text, kind) {
     const fragment = document.createDocumentFragment();
     const pattern = kind === "css"
@@ -281,17 +288,15 @@
       if (match.index > last) {
         fragment.append(document.createTextNode(text.slice(last, match.index)));
       }
-      const span = createElement("span");
       const token = match[0];
-      span.className = token.startsWith("/")
-        ? "browser-toolbox-token-comment"
+      const tokenKind = token.startsWith("/")
+        ? "comment"
         : token.startsWith('"') || token.startsWith("'") || token.startsWith("`")
-        ? kind === "json-key" ? "browser-toolbox-token-key" : "browser-toolbox-token-string"
+        ? "string"
         : /^\d/.test(token)
-        ? "browser-toolbox-token-number"
-        : "browser-toolbox-token-keyword";
-      span.textContent = token;
-      fragment.append(span);
+        ? "number"
+        : "keyword";
+      appendToken(fragment, token, tokenKind);
       last = match.index + token.length;
     }
     if (last < String(text).length) {
@@ -347,7 +352,7 @@
   function appendJsonNode(root, node, level, path) {
     const indent = state.indent === "tab" ? "\t" : " ".repeat(Number(state.indent));
     if (node.kind === "literal" || node.kind === "number" || node.kind === "string") {
-      appendHighlightedText(root, node.raw, "json");
+      appendToken(root, node.raw, node.kind === "literal" ? "keyword" : node.kind);
       return;
     }
     const isObject = node.kind === "object";
@@ -365,7 +370,7 @@
       root.append(document.createTextNode("\n"));
       appendIndent(root, indent, level + 1);
       if (isObject) {
-        appendHighlightedText(root, item.key.raw, "json-key");
+        appendToken(root, item.key.raw, "key");
         root.append(document.createTextNode(": "));
         appendJsonNode(root, item.value, level + 1, `${path}.${index}`);
       } else {
@@ -420,13 +425,18 @@
     }
   }
 
+  function exportText(view) {
+    return view.showingOriginal ? view.originalSource : view.formatted;
+  }
+
   async function copyOutput() {
-    if (!state) return;
+    const view = state;
+    if (!view) return;
     try {
-      await navigator.clipboard.writeText(state.formatted);
-      state.toolbar._status.textContent = message("documentFormatterCopied");
+      await navigator.clipboard.writeText(exportText(view));
+      view.toolbar._status.textContent = message("documentFormatterCopied");
     } catch (_) {
-      state.toolbar._status.textContent = message("documentFormatterCopyUnavailable");
+      view.toolbar._status.textContent = message("documentFormatterCopyUnavailable");
     }
   }
 
@@ -435,7 +445,7 @@
     const mime = state.kind === "json"
       ? "application/json;charset=utf-8"
       : "text/plain;charset=utf-8";
-    const blob = new Blob([state.formatted], { type: mime });
+    const blob = new Blob([exportText(state)], { type: mime });
     const url = URL.createObjectURL(blob);
     const anchor = createElement("a");
     anchor.href = url;
@@ -487,7 +497,7 @@
 
   function restoreOriginal() {
     if (!state) return;
-    document.body.classList.remove("browser-toolbox-document-formatted");
+    document.body.classList.remove("browser-toolbox-document-formatted", "browser-toolbox-themed");
     document.body.replaceChildren(
       ...state.originalBodyChildren.map((node) => node.cloneNode(true)),
     );
@@ -542,7 +552,7 @@
     };
     toolbar._indent.value = state.indent;
     if (toolbar._sort) toolbar._sort.value = state.sortOrder;
-    body.classList.add("browser-toolbox-document-formatted");
+    body.classList.add("browser-toolbox-document-formatted", "browser-toolbox-themed");
     body.replaceChildren(toolbar, metadataPanel, output);
     render();
   }

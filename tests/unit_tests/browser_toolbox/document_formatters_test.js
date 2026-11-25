@@ -113,6 +113,36 @@ context("BrowserToolbox document formatters", () => {
     assert.isTrue(multipleRoots);
   });
 
+  should("保留 XML 混合正文和声明保留空白的子树，只在结构区域缩进", () => {
+    const paragraphs = [
+      '<p xml:space="preserve">   </p>',
+      "<组 xml:space = 'preserve'>\n <子/>  <子/>\t</组>",
+      "<p>你好<b>世界</b>！</p>",
+      "<p><b>你好</b>，世界</p>",
+      "<p><b>甲</b> <b>乙</b></p>",
+      "<p>\u00a0<!-- 注释 -->\u00a0</p>",
+      "<p><![CDATA[ 文本 ]]><b/></p>",
+    ];
+    for (const paragraph of paragraphs) {
+      const output = api().formatDocument(`<root>${paragraph}<empty/></root>`, "xml").formatted;
+      assert.equal(`<root>\n  ${paragraph}\n  <empty/>\n</root>`, output);
+    }
+    const attribute = `<root note=" xml:space='preserve' " xml:space="default">`;
+    assert.equal(`${attribute}\n  <child/>\n</root>`, api().formatXmlDocument(`${attribute}<child/></root>`).formatted);
+    assert.equal("<root/>", api().formatXmlDocument("\uFEFF<root/>").formatted);
+    assert.throwsError(() => api().formatXmlDocument('<root xml:space="preserve"><a></root>'));
+  });
+
+  should("保留 XML 正文标签之间的换行、空行和缩进", () => {
+    const paragraph = "<p><b>左</b>\n\n        <i>右</i></p>";
+    assert.equal(paragraph, api().formatXmlDocument(paragraph).formatted);
+    const nested = '<p xml:space="default"><b>甲</b>\r\n\t<i>乙</i></p>';
+    assert.equal(
+      `<root>\n    ${nested}\n    <empty/>\n</root>`,
+      api().formatXmlDocument(`<root>${nested}<empty/></root>`, { indentSize: 4 }).formatted,
+    );
+  });
+
   should("indent CSS, JavaScript, and Java without rewriting string contents", () => {
     const css = api().formatCodeDocument('.a{content:"}";color:red}', "css");
     assert.isTrue(css.formatted.includes('content:"}";'));
@@ -131,6 +161,22 @@ context("BrowserToolbox document formatters", () => {
     ).formatted);
     assert.equal("css", api().adapterFor("css").id);
     assert.equal("java", api().adapterFor("java").id);
+  });
+
+  should("保留 JavaScript 和 CSS 跨行字符串内的空格与原始行尾", () => {
+    const cases = [
+      ["javascript", ['const label = "left\\', '    right";']],
+      ["css", [".label::before {", '  content: "left\\', '    right";', "}"]],
+      ["css", [".label::before {", '  content: "\\41', '    B";', "}"]],
+    ];
+    for (const [kind, lines] of cases) {
+      for (const lineEnding of ["\n", "\r\n"]) {
+        const source = lines.join(lineEnding);
+        const result = api().formatCodeDocument(source, kind);
+        assert.equal(source, result.formatted);
+        assert.isTrue(result.metadata.conservative);
+      }
+    }
   });
 
   should("keep oversized documents unchanged and expose byte budgets", () => {

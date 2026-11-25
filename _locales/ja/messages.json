@@ -3805,6 +3805,9 @@
   "toolTableFormulaCount": {
     "message": "数式の接頭辞を {count} 件検出しました。"
   },
+  "toolTableNoDataRows": {
+    "message": "エクスポートするデータ行がありません。"
+  },
   "toolTableLimit": {
     "message": "表の行数またはセル数がローカル上限を超えています。"
   },

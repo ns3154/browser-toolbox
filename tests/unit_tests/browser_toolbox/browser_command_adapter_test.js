@@ -179,6 +179,37 @@ context("Browser command adapter", () => {
     assert.equal("UNKNOWN_COMMAND", (await adapter.execute(invocation("missing"), { tab })).code);
   });
 
+  should("命令中心的后台命令作用在选定网页，关闭后返回无目标", async () => {
+    const page = { id: 7, windowId: 1, url: "https://example.test/" };
+    const centerUrl = "chrome-extension://test/pages/command_center.html?tabId=7";
+    const sender = { url: centerUrl, frameId: 0, tab: { id: 8, url: centerUrl } };
+    let available = true;
+    stub(chrome.runtime, "getURL", (path) => `chrome-extension://test/${path}`);
+    stub(chrome.tabs, "get", async (id) => {
+      if (!available || id !== page.id) throw new Error("目标已关闭");
+      return page;
+    });
+    const request = BrowserToolboxCommandInvocation.createInvocation(
+      "togglePinTab",
+      {},
+      { type: "ui" },
+      { tabId: page.id },
+    );
+    const adapter = new BrowserToolboxBrowserCommandAdapter({});
+    const pinned = [];
+    const commands = { togglePinTab: ({ tabId }) => pinned.push(tabId) };
+
+    assert.isTrue((await adapter.executeExisting("togglePinTab", request, sender, commands)).ok);
+    available = false;
+    const closed = await adapter.executeExisting("togglePinTab", request, sender, commands);
+    assert.equal("NO_ACTIVE_TAB", closed.code);
+    assert.equal([page.id], pinned);
+    assert.equal(page, await adapter.getTab(
+      { ...request, context: { tabId: sender.tab.id } },
+      { url: page.url, tab: page },
+    ));
+  });
+
   should("handle tab lookup and existing background commands", async () => {
     const tab = { id: 9, index: 0, windowId: 5, url: "https://example.com/" };
     stub(chrome.tabs, "get", async () => tab);
@@ -194,7 +225,7 @@ context("Browser command adapter", () => {
     assert.equal(tab, byContext);
     assert.equal(
       "NO_ACTIVE_TAB",
-      (await adapter.execute(invocation("BrowserToolbox.showTabList"), {})).code,
+      (await adapter.execute(invocation("BrowserToolbox.toggleKeyboard"), {})).code,
     );
     assert.isTrue(
       (await adapter.execute(invocation("BrowserToolbox.openSettings"), {})).ok,

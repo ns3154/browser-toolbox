@@ -171,7 +171,7 @@ export function mountTable(ctx) {
   }
   const refresh = liveResult(
     () => {
-      const value = input.input.value;
+      const value = input.readValue();
       assertSize(ctx, value);
       if (value === "") return null;
       return ctx.implementation.run({

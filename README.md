@@ -6,6 +6,12 @@ Browser Toolbox builds on Vimium v2.4.2 keyboard navigation and adds mouse gestu
 wheel and rocker gestures, site rules, browser-startup and new-tab actions, and a set of fully local
 utility tools.
 
+[Install from the Chrome Web Store](https://chromewebstore.google.com/detail/browser-toolbox/alndedffffmbeaejeemaedkopmhaddfi)
+
+Try it on a regular web page. Select some JSON, such as `{"name":"example","items":[1,2]}`,
+then choose **Browser Toolbox → JSON formatter** from the browser's context menu to format it locally.
+When gestures take over the right mouse button, right-click twice quickly in the same spot to open the menu.
+
 The current `manifest.json` version is `0.1.10`. This is the source version; it does not imply a
 Chrome Web Store review or release status.
 
@@ -21,7 +27,7 @@ Chrome Web Store review or release status.
 | Configuration | Five languages, import preview, export backups, Vimium-compatible settings, migrations, and explicit sync boundaries |
 | Privacy | No account, advertising, subscription, telemetry, or remote code; tools and settings are local by default |
 
-## Install
+## Install the development build
 
 Browser Toolbox currently targets Chrome or Chromium 117 and later. To install the development build:
 

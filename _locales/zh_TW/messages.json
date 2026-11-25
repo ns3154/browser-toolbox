@@ -4651,6 +4651,9 @@
   "toolTableFormulaCount": {
     "message": "偵測到 {count} 個公式前綴。"
   },
+  "toolTableNoDataRows": {
+    "message": "沒有資料列可匯出。"
+  },
   "toolTableLimit": {
     "message": "表格行數或儲存格數超過本機上限。"
   },

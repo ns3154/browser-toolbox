@@ -4651,6 +4651,9 @@
   "toolTableFormulaCount": {
     "message": "Formula prefixes detected: {count}."
   },
+  "toolTableNoDataRows": {
+    "message": "There are no data rows to export."
+  },
   "toolTableLimit": {
     "message": "The table exceeds the local row or cell limit."
   },

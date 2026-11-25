@@ -1,4 +1,6 @@
 import "../test_helper.js";
+import "../../../lib/browser_toolbox/tools/tool_contract.js";
+import "../../../lib/browser_toolbox/tools/tool_registry.js";
 import "../../../lib/browser_toolbox/command_center.js";
 
 context("Command center", () => {
@@ -49,6 +51,19 @@ context("Command center", () => {
       ["command:reload", "command:reloadPage"],
       BrowserToolboxCommandCenter.searchEntries(entries, "reload").map((entry) => entry.id),
     );
+  });
+
+  should("用各语言的目录关键词在命令中心查找同一工具", () => {
+    const registry = BrowserToolboxToolRegistry;
+    const localize = (key) => ({
+      toolKeywordValidate: "校验", toolKeywordDiff: "差异", toolKeywordTimezone: "时区",
+    }[key] || key);
+    const api = BrowserToolboxCommandCenter;
+    const entries = api.createEntries({ tools: registry.list({ source: "command" }), localize });
+    for (const [query, id] of [["校验", "json.format"], ["差异", "text.diff"], ["时区", "time.convert"]]) {
+      assert.equal([id], registry.search(query, { localize }).map((tool) => tool.id));
+      assert.equal([id], api.searchEntries(entries, query).map((entry) => entry.toolId));
+    }
   });
 
   should("fall back to command metadata when a locale key is unavailable", () => {

@@ -161,6 +161,7 @@ export function inputPane(ctx, {
   onFile,
 }) {
   let revision = 0;
+  let originalInput = null;
   const file = node("input");
   file.id = id === "tool-input" ? "tool-file" : "tool-file-right";
   file.type = "file";
@@ -204,7 +205,8 @@ export function inputPane(ctx, {
     gutter.scrollTop = input.scrollTop;
     syncHighlight();
   }
-  input.addEventListener("input", () => {
+  input.addEventListener("input", (event) => {
+    if (event !== originalInput?.event) originalInput = null;
     revision++;
     choose.removeAttribute("title");
     redraw();
@@ -215,7 +217,10 @@ export function inputPane(ctx, {
     input.value = value;
     input.setSelectionRange(0, 0);
     input.scrollTo(0, 0);
-    input.dispatchEvent(new Event("input", { bubbles: true }));
+    const event = new Event("input", { bubbles: true });
+    // 编辑框会统一行尾，保留赋值前的文本，直到输入被编辑。
+    originalInput = value === input.value ? null : { value, event };
+    input.dispatchEvent(event);
   }
 
   file.addEventListener("change", async () => {
@@ -239,7 +244,7 @@ export function inputPane(ctx, {
   });
   view.element.append(element, file);
   redraw();
-  return { ...view, input, set, redraw };
+  return { ...view, input, set, redraw, readValue: () => originalInput?.value ?? input.value };
 }
 
 export function codeResult(headingId) {

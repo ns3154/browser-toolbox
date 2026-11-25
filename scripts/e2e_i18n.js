@@ -44,6 +44,42 @@ async function assertLocale(page, locale) {
   );
 }
 
+async function checkCommandCenter(extensionBase, locale, catalog, panelCount) {
+  const center = await newPage();
+  await center.bringToFront();
+  await center.goto(`${extensionBase}/pages/command_center.html`);
+  await assertLocale(center, locale);
+  await center.waitForSelector('[data-entry-id^="setting:"]');
+  const count = await center.$$eval('[data-entry-id^="setting:"]', (items) => items.length);
+  assert(count === panelCount, `${locale} 命令中心仅列出 ${count}/${panelCount} 个设置入口`);
+  const search = (query) => center.$eval("#command-center-search", (input, value) => {
+    input.value = value;
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  }, query);
+  for (const [key, id] of [
+    ["toolKeywordValidate", "json.format"], ["toolKeywordDiff", "text.diff"], ["toolKeywordTimezone", "time.convert"],
+  ]) {
+    await search(catalog[key].message);
+    assert(await center.$(`[data-entry-id="tool:${id}"]`), `${locale} 的目录关键词未命中 ${id}`);
+  }
+  if (locale !== "zh_CN") {
+    await center.close();
+    return;
+  }
+  await search("备份");
+  const selected = await center.$eval("#command-center-selected", (item) => item.dataset.entryId);
+  assert(selected === "setting:backupAbout", "搜索备份应首选备份设置");
+  // 按下回车就会打开设置并关闭命令中心，松键发给新标签页。
+  const [opened] = await Promise.all([
+    browser.waitForTarget((target) => target.url() === `${extensionBase}/pages/mouse_options.html#backupAbout`),
+    center.keyboard.down("Enter"),
+  ]);
+  const backup = await opened.page();
+  await backup.keyboard.up("Enter");
+  await backup.waitForSelector('[data-panel="backupAbout"]:not([hidden])', { visible: true });
+  await backup.close();
+}
+
 async function checkWidth(page, label, width, locale) {
   await page.setViewport({ width, height: width < 500 ? 844 : 800, deviceScaleFactor: 1 });
   const geometry = await page.evaluate(() => ({
@@ -167,6 +203,8 @@ try {
     const narrow = await checkWidth(options, "settings", 390, locale);
 
     console.log(`设置保存与布局通过：${locale}`);
+    await checkCommandCenter(extensionBase, locale, catalog, await options.$$eval("[data-panel]", (panels) => panels.length));
+    console.log(`命令中心关键词和设置入口通过：${locale}`);
     await tool.bringToFront();
     await tool.goto(`${extensionBase}/pages/tools/index.html?tool=json.format`);
     await assertLocale(tool, locale);

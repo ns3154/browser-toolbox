@@ -114,6 +114,7 @@
       ],
       "css": [
         "content_scripts/vimium.css",
+        "pages/theme_tokens.css",
         "content_scripts/document_formatter/document_formatter.css"
       ],
       "run_at": "document_start",

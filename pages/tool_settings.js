@@ -56,13 +56,7 @@
   }
 
   function searchableToolText(descriptor) {
-    return [
-      descriptor.id,
-      descriptor.categoryId,
-      message(descriptor.titleKey),
-      message(descriptor.descriptionKey),
-      ...descriptor.keywordKeys.map((key) => message(key)),
-    ].join(" ").toLocaleLowerCase();
+    return registry.searchTerms(descriptor, message).join(" ").toLocaleLowerCase();
   }
 
   function createToolDirectoryItem(descriptor) {

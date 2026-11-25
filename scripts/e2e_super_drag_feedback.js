@@ -55,6 +55,27 @@ try {
     target.type() === "service_worker" && target.url().endsWith("/background_scripts/main.js")
   );
   const worker = await workerTarget.worker();
+  const settingsPage = await browser.newPage();
+  await settingsPage.goto(`chrome-extension://${new URL(workerTarget.url()).host}/pages/mouse_options.html`);
+  await settingsPage.waitForSelector('.browser-toolbox-main[data-settings-ready="true"]');
+  const saveFixtureSettings = (showHud) => settingsPage.evaluate(async (showHud) => {
+    // 把绑定写到独立 profile 的配置源，内容脚本收到刷新通知后仍会取得同一套测试绑定。
+    const client = globalThis.BrowserToolboxConfigurationClientInstance;
+    const { toolboxSource } = await client.read();
+    const settings = toolboxSource.value;
+    settings.general.showHud = showHud;
+    settings.mouse.showCommandHud = true;
+    settings.mouse.maxDurationMs = 10000;
+    const pattern = ["L", "R", "L"];
+    settings.mouse.bindings = [{ id: "feedback-mouse", pattern, commandName: "reload", options: {} }];
+    settings.superDrag.bindings = [
+      { id: "feedback-link", context: "LINK", commandName: "BrowserToolbox.openLinkForeground" },
+      { id: "feedback-image", context: "IMAGE", commandName: "BrowserToolbox.openImageForeground" },
+      { id: "feedback-text", context: "SELECTED_TEXT", commandName: "BrowserToolbox.searchSelection" },
+    ].map((binding) => ({ ...binding, pattern, options: {} }));
+    await client.commit({ toolbox: settings });
+  }, showHud);
+  await saveFixtureSettings(true);
   const page = await browser.newPage();
   const pageErrors = [];
   page.on("pageerror", (error) => pageErrors.push(error.message));
@@ -69,43 +90,17 @@ try {
       const results = await chrome.scripting.executeScript({
         target: { tabId: tab.id },
         world: "ISOLATED",
-        func: (operation, flushHeadlessGesture) => {
+        func: async (operation, flushHeadlessGesture) => {
           const controller = globalThis.BrowserToolboxMouseControllerInstance;
           if (!controller?.settingsReady) return { ready: false };
+          if (operation === "install" || operation === "hud-off") {
+            const settings = await controller.refreshSettings();
+            if (
+              settings.general.showHud !== (operation === "install") ||
+              !settings.superDrag.bindings.some((binding) => binding.id === "feedback-link")
+            ) return { ready: false };
+          }
           if (operation === "install") {
-            controller.settings = structuredClone(controller.settings);
-            controller.settings.general.showHud = true;
-            controller.settings.mouse.showCommandHud = true;
-            controller.settings.mouse.maxDurationMs = 10000;
-            controller.settings.mouse.bindings = [{
-              id: "feedback-mouse",
-              pattern: ["L", "R", "L"],
-              commandName: "reload",
-              options: {},
-            }];
-            controller.settings.superDrag.bindings = [
-              {
-                id: "feedback-link",
-                context: "LINK",
-                pattern: ["L", "R", "L"],
-                commandName: "BrowserToolbox.openLinkForeground",
-                options: {},
-              },
-              {
-                id: "feedback-image",
-                context: "IMAGE",
-                pattern: ["L", "R", "L"],
-                commandName: "BrowserToolbox.openImageForeground",
-                options: {},
-              },
-              {
-                id: "feedback-text",
-                context: "SELECTED_TEXT",
-                pattern: ["L", "R", "L"],
-                commandName: "BrowserToolbox.searchSelection",
-                options: {},
-              },
-            ];
             controller.feedbackTestCalls = [];
             controller.dispatchBinding = function (binding, sourceType, context) {
               this.feedbackTestCalls.push({
@@ -116,10 +111,6 @@ try {
             };
           } else if (operation === "reset") {
             controller.feedbackTestCalls = [];
-          } else if (operation === "hud-off") {
-            controller.settings.general.showHud = false;
-          } else if (operation === "hud-on") {
-            controller.settings.general.showHud = true;
           }
           if (
             flushHeadlessGesture && operation === "snapshot" && controller.gesture?.isActive() &&
@@ -185,12 +176,14 @@ try {
       return results[0].result;
     }, { fixtureUrl, operation, flushHeadlessGesture });
 
-  let ready = false;
-  for (let attempt = 0; attempt < 100 && !ready; attempt++) {
-    ready = (await probe("install"))?.ready === true;
-    if (!ready) await delay(100);
-  }
-  assert(ready, "扩展输入控制器没有准备好");
+  const waitForFixtureSettings = async (operation) => {
+    for (let attempt = 0; attempt < 100; attempt++) {
+      if ((await probe(operation))?.ready) return;
+      await delay(100);
+    }
+    throw new Error(`扩展输入控制器未加载测试绑定或提示开关：${operation}`);
+  };
+  await waitForFixtureSettings("install");
   const client = await page.createCDPSession();
   let pending = [];
   let current = null;
@@ -372,7 +365,8 @@ try {
   );
   console.log("通过：与右键手势样式一致");
 
-  await probe("hud-off");
+  await saveFixtureSettings(false);
+  await waitForFixtureSettings("hud-off");
   await start("#link");
   const origin = { ...current };
   state = await move(origin.x - 100, origin.y, (value) => value.dragActive && value.cancelVisible);

@@ -34,4 +34,25 @@ context("BrowserToolbox tab list", () => {
     }];
     assert.equal(1, BrowserToolboxTabList.filterTabs(tabs, "settings").length);
   });
+
+  should("支持按完整网址和不带协议的地址搜索普通标签页", () => {
+    const url = "http://example.test:8080/report?week=12#summary";
+    const tabs = [
+      { id: 1, index: 0, title: "统计", url },
+      { id: 2, index: 1, title: "Browser Toolbox", url: "chrome-extension://random-id/pages/report.html" },
+    ];
+    for (const query of [url, "example.test:8080/report", "/report?week=12#summary"]) {
+      assert.equal([1], BrowserToolboxTabList.filterTabs(tabs, query).map((tab) => tab.id));
+    }
+    assert.equal([], BrowserToolboxTabList.filterTabs(tabs, "random-id/pages"));
+  });
+
+  should("保留位于长标题末尾的模糊匹配并继续按分数排序", () => {
+    const tabs = [
+      { id: 1, index: 0, title: "团队联调排期与功能范围说明及上周问题跟进和验收记录补充文档预算" },
+      { id: 2, index: 1, title: "预算报告" },
+      { id: 3, index: 2, title: "上线清单" },
+    ];
+    assert.equal([2, 1], BrowserToolboxTabList.filterTabs(tabs, "预算").map((tab) => tab.id));
+  });
 });
